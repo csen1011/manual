@@ -1,6 +1,3 @@
-Took a snapshot of manual.cs50.io
+# CSEN1011 Manual pages
 
-Run the script in each directory.  
-```bash
-for f in *; do echo $f; mv $f index.html; mkdir $f; mv index.html $f/.; done
-```
+These manual pages are created using a snapshot of https://manual.cs50.io
