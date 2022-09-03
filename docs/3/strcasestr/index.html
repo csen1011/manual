@@ -255,7 +255,7 @@
 <p>strstr, strcasestr - locate a substring</p>
 </div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br></span>
 <span class="cp">#define _GNU_SOURCE<br>#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"><br></span>
 <span class="n">string</span> <span class="nf">strcasestr</span><span class="p">(</span><span class="n">string</span> <span class="n">haystack</span><span class="p">,</span> <span class="n">string</span> <span class="n">needle</span><span class="p">);</span>
 </code></pre></div></div>
@@ -287,7 +287,7 @@
 <p>These functions return a pointer to the beginning of the located substring, or NULL if the substring is not found.</p>
 </div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br></span>
 <span class="cp">#define _GNU_SOURCE<br>#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"><br></span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>

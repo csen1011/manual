@@ -259,12 +259,12 @@
 <p>get_long - prompts user for a line of text from stdin and returns the equivalent long</p>
 </div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br></span>
 <span class="kt">long</span> <span class="nf">get_long</span><span class="p">(</span><span class="n">string</span> <span class="n">prompt</span><span class="p">,</span> <span class="p">...);</span>
 </code></pre></div></div>
 
 </div><div data-more>
-<p><strong>#include &lt;cs50.h&gt;</strong></p>
+<p><strong>#include "gstio.h"</strong></p>
 <p><strong>long get_long(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>format, ...);</strong></p>
 </div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-less>
 
@@ -283,7 +283,7 @@
 <p>Returns the long equivalent to the line read from stdin in [<strong>LONG_MIN</strong>, <strong>LONG_MAX</strong>). If line can’t be read, returns <strong>LONG_MAX</strong>.</p>
 </div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br></span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">long</span> <span class="n">l</span> <span class="o">=</span> <span class="n">get_long</span><span class="p">(</span><span class="s">"Input:  "</span><span class="p">);</span>

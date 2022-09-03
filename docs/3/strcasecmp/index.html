@@ -259,7 +259,7 @@
 <p><a data-bs-content='This is the man page for &lt;code&gt;strcasecmp&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>strcasecmp</a>, strncasecmp - compare two strings ignoring case</p>
 </div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;strings.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br>#include</span> <span class="cpf">&lt;strings.h&gt;</span><span class="cp"><br></span>
 <span class="kt">int</span> <span class="nf">strcasecmp</span><span class="p">(</span><span class="n">string</span> <span class="n">s1</span><span class="p">,</span> <span class="n">string</span> <span class="n">s2</span><span class="p">);</span>
 </code></pre></div></div>
 
@@ -292,7 +292,7 @@ int strncasecmp(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/co
 <p>The <a href='strcasecmp'>strcasecmp</a>() and <a href='strncasecmp'>strncasecmp</a>() functions return an integer less than, equal to, or greater than zero if <code>s1</code> is, after ignoring case, found to be less than, to match, or be greater than <code>s2</code>, respectively.</p>
 </div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-less>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cs50.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;strings.h&gt;</span><span class="cp"><br></span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"gstio.h"</span><span class="cp"><br>#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"><br>#include</span> <span class="cpf">&lt;strings.h&gt;</span><span class="cp"><br></span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">string</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">get_string</span><span class="p">(</span><span class="s">"s1: "</span><span class="p">);</span>
