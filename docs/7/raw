@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>raw - Linux IPv4 raw sockets</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/socket.h&gt;</strong><br/>
+<strong>#include &lt;netinet/in.h&gt;</strong><br/>
+<strong>raw_socket = socket(AF_INET, SOCK_RAW, int </strong><code>protocol</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Raw sockets allow new IPv4 protocols to be implemented in user space. A raw socket receives or sends the raw datagram not including link level headers.</p>
+<p>The IPv4 layer generates an IP header when sending a packet unless the <strong>IP_HDRINCL</strong> socket option is enabled on the socket. When it is enabled, the packet must contain an IP header. For receiving, the IP header is always included in the packet.</p>
+<p>In order to create a raw socket, a process must have the <strong>CAP_NET_RAW</strong> capability in the user namespace that governs its network namespace.</p>
+<p>All packets or errors matching the <code>protocol</code> number specified for the raw socket are passed to this socket. For a list of the allowed protocols, see the IANA list of assigned protocol numbers at <a href="<a href="http://www.iana.org/assignments/protocol-numbers/">http://www.iana.org/assignments/protocol-numbers/</a>"></a> and <a href='/3/getprotobyname'>getprotobyname</a>(3).</p>
+<p>A protocol of <strong>IPPROTO_RAW</strong> implies enabled <strong>IP_HDRINCL</strong> and is able to send any IP protocol that is specified in the passed header. Receiving of all IP protocols via <strong>IPPROTO_RAW</strong> is not possible using raw sockets.</p>
+<blockquote>
+<p>TABLE</p>
+</blockquote>
+<p>If <strong>IP_HDRINCL</strong> is specified and the IP header has a nonzero destination address, then the destination address of the socket is used to route the packet. When <strong>MSG_DONTROUTE</strong> is specified, the destination address should refer to a local interface, otherwise a routing table lookup is done anyway but gatewayed routes are ignored.</p>
+<p>If <strong>IP_HDRINCL</strong> isn't set, then IP header options can be set on raw sockets with <a href='/2/setsockopt'>setsockopt</a>(2); see <a href='/7/ip'>ip</a>(7) for more information.</p>
+<p>Starting with Linux 2.2, all IP header fields and options can be set using IP socket options. This means raw sockets are usually needed only for new protocols or protocols with no user interface (like ICMP).</p>
+<p>When a packet is received, it is passed to any raw sockets which have been bound to its protocol before it is passed to other protocol handlers (e.g., kernel protocol modules).</p>
+<h2>Address format</h2>
+<p>For sending and receiving datagrams (<a href='/2/sendto'>sendto</a>(2), <a href='/2/recvfrom'>recvfrom</a>(2), and similar), raw sockets use the standard <code>sockaddr_in</code> address structure defined in <a href='/7/ip'>ip</a>(7). The <code>sin_port</code> field could be used to specify the IP protocol number, but it is ignored for sending in Linux 2.2 and later, and should be always set to 0 (see BUGS). For incoming packets, <code>sin_port</code> is set to zero.</p>
+<h2>Socket options</h2>
+<p>Raw socket options can be set with <a href='/2/setsockopt'>setsockopt</a>(2) and read with <a href='/2/getsockopt'>getsockopt</a>(2) by passing the <strong>IPPROTO_RAW</strong> family flag.</p>
+<dl>
+<dt><strong>ICMP_FILTER</strong></dt>
+<dd><p>Enable a special filter for raw sockets bound to the <strong>IPPROTO_ICMP</strong> protocol. The value has a bit set for each ICMP message type which should be filtered out. The default is to filter no ICMP messages.</p>
+</dd>
+</dl>
+<p>In addition, all <a href='/7/ip'>ip</a>(7) <strong>IPPROTO_IP</strong> socket options valid for datagram sockets are supported.</p>
+<h2>Error handling</h2>
+<p>Errors originating from the network are passed to the user only when the socket is connected or the <strong>IP_RECVERR</strong> flag is enabled. For connected sockets, only <strong>EMSGSIZE</strong> and <strong>EPROTO</strong> are passed for compatibility. With <strong>IP_RECVERR</strong>, all network errors are saved in the error queue.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>User tried to send to a broadcast address without having the broadcast flag set on the socket.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>An invalid memory address was supplied.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid argument.</p>
+</dd>
+<dt><strong>EMSGSIZE</strong></dt>
+<dd><p>Packet too big. Either Path MTU Discovery is enabled (the <strong>IP_MTU_DISCOVER</strong> socket flag) or the packet size exceeds the maximum allowed IPv4 packet size of 64 kB.</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>Invalid flag has been passed to a socket call (like <strong>MSG_OOB</strong>).</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The user doesn't have permission to open raw sockets. Only processes with an effective user ID of 0 or the <strong>CAP_NET_RAW</strong> attribute may do that.</p>
+</dd>
+<dt><strong>EPROTO</strong></dt>
+<dd><p>An ICMP error has arrived reporting a parameter problem.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><strong>IP_RECVERR</strong> and <strong>ICMP_FILTER</strong> are new in Linux 2.2. They are Linux extensions and should not be used in portable programs.</p>
+<p>Linux 2.0 enabled some bug-to-bug compatibility with BSD in the raw socket code when the <strong>SO_BSDCOMPAT</strong> socket option was set; since Linux 2.2, this option no longer has that effect.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>By default, raw sockets do path MTU (Maximum Transmission Unit) discovery. This means the kernel will keep track of the MTU to a specific target IP address and return <strong>EMSGSIZE</strong> when a raw packet write exceeds it. When this happens, the application should decrease the packet size. Path MTU discovery can be also turned off using the <strong>IP_MTU_DISCOVER</strong> socket option or the <code>/proc/sys/net/ipv4/ip_no_pmtu_disc</code> file, see <a href='/7/ip'>ip</a>(7) for details. When turned off, raw sockets will fragment outgoing packets that exceed the interface MTU. However, disabling it is not recommended for performance and reliability reasons.</p>
+<p>A raw socket can be bound to a specific local address using the <a href='/2/bind'>bind</a>(2) call. If it isn't bound, all packets with the specified IP protocol are received. In addition, a raw socket can be bound to a specific network device using <strong>SO_BINDTODEVICE</strong>; see <a href='/7/socket'>socket</a>(7).</p>
+<p>An <strong>IPPROTO_RAW</strong> socket is send only. If you really want to receive all IP packets, use a <a href='/7/packet'>packet</a>(7) socket with the <strong>ETH_P_IP</strong> protocol. Note that packet sockets don't reassemble IP fragments, unlike raw sockets.</p>
+<p>If you want to receive all ICMP packets for a datagram socket, it is often better to use <strong>IP_RECVERR</strong> on that particular socket; see <a href='/7/ip'>ip</a>(7).</p>
+<p>Raw sockets may tap all IP protocols in Linux, even protocols like ICMP or TCP which have a protocol module in the kernel. In this case, the packets are passed to both the kernel module and the raw socket(s). This should not be relied upon in portable programs, many other BSD socket implementation have limitations here.</p>
+<p>Linux never changes headers passed from the user (except for filling in some zeroed fields as described for <strong>IP_HDRINCL</strong>). This differs from many other implementations of raw sockets.</p>
+<p>Raw sockets are generally rather unportable and should be avoided in programs intended to be portable.</p>
+<p>Sending on raw sockets should take the IP protocol from <code>sin_port</code>; this ability was lost in Linux 2.2. The workaround is to use <strong>IP_HDRINCL</strong>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Transparent proxy extensions are not described.</p>
+<p>When the <strong>IP_HDRINCL</strong> option is set, datagrams will not be fragmented and are limited to the interface MTU.</p>
+<p>Setting the IP protocol for sending in <code>sin_port</code> got lost in Linux 2.2. The protocol that the socket was bound to or that was specified in the initial <a href='/2/socket'>socket</a>(2) call is always used.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/recvmsg'>recvmsg</a>(2), <a href='/2/sendmsg'>sendmsg</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/ip'>ip</a>(7), <a href='/7/socket'>socket</a>(7)</p>
+<p><strong>RFC 1191</strong> for path MTU discovery. <strong>RFC 791</strong> and the <code>&lt;linux/ip.h&gt;</code> header file for the IP protocol.</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

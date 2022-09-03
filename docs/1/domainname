@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>hostname - show or set the system's host name<br/>
+domainname - show or set the system's NIS/YP domain name<br/>
+ypdomainname - show or set the system's NIS/YP domain name<br/>
+nisdomainname - show or set the system's NIS/YP domain name<br/>
+dnsdomainname - show the system's DNS domain name<br/>
+</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>hostname</strong> [<strong>-a|--alias</strong>] [<strong>-d|--domain</strong>] [<strong>-f|--fqdn|--long</strong>] [<strong>-A|--all-fqdns</strong>] [<strong>-i|--ip-address</strong>] [<strong>-I|--all-ip-addresses</strong>] [<strong>-s|--short</strong>] [<strong>-y|--yp|--nis</strong>]<br/>
+<strong>hostname</strong> [<strong>-b|--boot</strong>] [<strong>-F|--file filename</strong>] [<strong>hostname</strong>]<br/>
+<strong>hostname</strong> [<strong>-h|--help</strong>] [<strong>-V|--version</strong>]</p>
+<p><strong>domainname</strong> [<strong>nisdomain</strong>] [<strong>-F file</strong>]<br/>
+<strong>ypdomainname</strong> [<strong>nisdomain</strong>] [<strong>-F file</strong>]<br/>
+<strong>nisdomainname</strong> [<strong>nisdomain</strong>] [<strong>-F file</strong>]</p>
+<p><strong>dnsdomainname</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>Hostname</strong> is used to display the system's DNS name, and to display or set its hostname or NIS domain name.</p>
+<h2>GET NAME</h2>
+<p>When called without any arguments, the program displays the current names:</p>
+<p><strong>hostname</strong> will print the name of the system as returned by the <a href='/2/gethostname'>gethostname</a>(2) function.</p>
+<p><strong>domainname</strong> will print the NIS domainname of the system. <strong>domainname</strong> uses the <a href='/2/gethostname'>gethostname</a>(2) function, while <strong>ypdomainname</strong> and <strong>nisdomainname</strong> use the <a href='/2/getdomainname'>getdomainname</a>(2).</p>
+<p><strong>dnsdomainname</strong> will print the domain part of the FQDN (Fully Qualified Domain Name). The complete FQDN of the system is returned with <strong>hostname --fqdn</strong> (but see the warnings in section <strong>THE FQDN</strong> below).</p>
+<h2>SET NAME</h2>
+<p>When called with one argument or with the <strong>--file</strong> option, the commands set the host name or the NIS/YP domain name. <strong>hostname</strong> uses the <a href='/2/sethostname'>sethostname</a>(2) function, while all of the three <strong>domainname</strong>, <strong>ypdomainname</strong> and <strong>nisdomainname</strong> use <a href='/2/setdomainname'>setdomainname</a>(2). Note, that this is effective only until the next reboot. Edit /etc/hostname for permanent change.</p>
+<p>Note, that only the super-user can change the names.</p>
+<p>It is not possible to set the FQDN or the DNS domain name with the <strong>dnsdomainname</strong> command (see <strong>THE FQDN</strong> below).</p>
+<p>The host name is usually set once at system startup in <code>/etc/init.d/<a href="http://hostname.sh">hostname.sh</a></code> (normally by reading the contents of a file which contains the host name, e.g. <code>/etc/hostname</code>).</p>
+<h2>THE FQDN</h2>
+<p>The FQDN (Fully Qualified Domain Name) of the system is the name that the <a href='/3/resolver'>resolver</a>(3) returns for the host name, such as, <code><a href="http://ursula.example.com">ursula.example.com</a></code>. It is usually the hostname followed by the DNS domain name (the part after the first dot). You can check the FQDN using <strong>hostname --fqdn</strong> or the domain name using <strong>dnsdomainname</strong>.</p>
+<p>You cannot change the FQDN with <strong>hostname</strong> or <strong>dnsdomainname</strong>.</p>
+<p>The recommended method of setting the FQDN is to make the hostname be an alias for the fully qualified name using <code>/etc/hosts</code>, DNS, or NIS. For example, if the hostname was "ursula", one might have a line in <code>/etc/hosts</code> which reads</p>
+<blockquote>
+<p>127.0.1.1 <a href="http://ursula.example.com">ursula.example.com</a> ursula</p>
+</blockquote>
+<p>Technically: The FQDN is the name <a href='/3/getaddrinfo'>getaddrinfo</a>(3) returns for the host name returned by <a href='/2/gethostname'>gethostname</a>(2). The DNS domain name is the part after the first dot.</p>
+<p>Therefore it depends on the configuration of the resolver (usually in <code>/etc/host.conf</code>) how you can change it. Usually the hosts file is parsed before DNS or NIS, so it is most common to change the FQDN in <code>/etc/hosts</code>.</p>
+<p>If a machine has multiple network interfaces/addresses or is used in a mobile environment, then it may either have multiple FQDNs/domain names or none at all. Therefore avoid using <strong>hostname --fqdn</strong>, <strong>hostname --domain</strong> and <strong>dnsdomainname</strong>. <strong>hostname --ip-address</strong> is subject to the same limitations so it should be avoided as well.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><code>-a, --alias</code></dt>
+<dd><p>Display the alias name of the host (if used). This option is deprecated and should not be used anymore.</p>
+</dd>
+<dt><code>-A, --all-fqdns</code></dt>
+<dd><p>Displays all FQDNs of the machine. This option enumerates all configured network addresses on all configured network interfaces, and translates them to DNS domain names. Addresses that cannot be translated (i.e. because they do not have an appropriate reverse IP entry) are skipped. Note that different addresses may resolve to the same name, therefore the output may contain duplicate entries. Do not make any assumptions about the order of the output.</p>
+</dd>
+<dt><code>-b, --boot</code></dt>
+<dd><p>Always set a hostname; this allows the file specified by <code>-F</code> to be non-existent or empty, in which case the default hostname <code>localhost</code> will be used if none is yet set.</p>
+</dd>
+<dt><code>-d, --domain</code></dt>
+<dd><p>Display the name of the DNS domain. Don't use the command <strong>domainname</strong> to get the DNS domain name because it will show the NIS domain name and not the DNS domain name. Use <strong>dnsdomainname</strong> instead. See the warnings in section <strong>THE FQDN</strong> above, and avoid using this option.</p>
+</dd>
+<dt><code>-f, --fqdn, --long</code></dt>
+<dd><p>Display the FQDN (Fully Qualified Domain Name). A FQDN consists of a short host name and the DNS domain name. Unless you are using bind or NIS for host lookups you can change the FQDN and the DNS domain name (which is part of the FQDN) in the <code>/etc/hosts</code> file. See the warnings in section <strong>THE FQDN</strong> above und use <strong>hostname --all-fqdns</strong> instead wherever possible.</p>
+</dd>
+<dt><code>-F, --file filename</code></dt>
+<dd><p>Read the host name from the specified file. Comments (lines starting with a `#') are ignored.</p>
+</dd>
+<dt><code>-i, --ip-address</code></dt>
+<dd><p>Display the network address(es) of the host name. Note that this works only if the host name can be resolved. Avoid using this option; use <strong>hostname --all-ip-addresses</strong> instead.</p>
+</dd>
+<dt><code>-I, --all-ip-addresses</code></dt>
+<dd><p>Display all network addresses of the host. This option enumerates all configured addresses on all network interfaces. The loopback interface and IPv6 link-local addresses are omitted. Contrary to option <code>-i</code>, this option does not depend on name resolution. Do not make any assumptions about the order of the output.</p>
+</dd>
+<dt><code>-s, --short</code></dt>
+<dd><p>Display the short host name. This is the host name cut at the first dot.</p>
+</dd>
+<dt><code>-V, --version</code></dt>
+<dd><p>Print version information on standard output and exit successfully.</p>
+</dd>
+<dt><code>-y, --yp, --nis</code></dt>
+<dd><p>Display the NIS domain name. If a parameter is given (or <strong>--file name</strong> ) then root can also set a new NIS domain.</p>
+</dd>
+<dt><code>-h, --help</code></dt>
+<dd><p>Print a usage message and exit.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The address families <strong>hostname</strong> tries when looking up the FQDN, aliases and network addresses of the host are determined by the configuration of your resolver. For instance, on GNU Libc systems, the resolver can be instructed to try IPv6 lookups first by using the <strong>inet6</strong> option in <strong>/etc/resolv.conf</strong>.</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><strong>/etc/hostname</strong> Historically this file was supposed to only contain the hostname and not the full canonical FQDN. Nowadays most software is able to cope with a full FQDN here. This file is read at boot time by the system initialization scripts to set the hostname.</p>
+<p><strong>/etc/hosts</strong> Usually, this is where one sets the domain name by aliasing the host name to the FQDN.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>Peter Tobias, &lt;<a href="mailto:tobias@et-inf.fho-emden.de">tobias@et-inf.fho-emden.de</a>&gt;<br/>
+Bernd Eckenfels, &lt;<a href="mailto:net-tools@lina.inka.de">net-tools@lina.inka.de</a>&gt; (NIS and manpage).<br/>
+Michael Meskes, &lt;<a href="mailto:meskes@debian.org">meskes@debian.org</a>&gt;<br/>
+</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

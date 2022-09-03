@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>netdevice - low-level access to Linux network devices</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/ioctl.h&gt;</strong><br/>
+<strong>#include &lt;net/if.h&gt;</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This man page describes the sockets interface which is used to configure network devices.</p>
+<p>Linux supports some standard ioctls to configure network devices. They can be used on any socket's file descriptor regardless of the family or type. Most of them pass an <code>ifreq</code> structure:</p>
+<pre><code>struct ifreq {
+    char ifr_name[IFNAMSIZ]; /* Interface name */
+    union {
+        struct sockaddr ifr_addr;
+        struct sockaddr ifr_dstaddr;
+        struct sockaddr ifr_broadaddr;
+        struct sockaddr ifr_netmask;
+        struct sockaddr ifr_hwaddr;
+        short           ifr_flags;
+        int             ifr_ifindex;
+        int             ifr_metric;
+        int             ifr_mtu;
+        struct ifmap    ifr_map;
+        char            ifr_slave[IFNAMSIZ];
+        char            ifr_newname[IFNAMSIZ];
+        char           *ifr_data;
+    };
+};</code></pre>
+<p>Normally, the user specifies which device to affect by setting <code>ifr_name</code> to the name of the interface. All other members of the structure may share memory.</p>
+<h2>Ioctls</h2>
+<p>If an ioctl is marked as privileged, then using it requires an effective user ID of 0 or the <strong>CAP_NET_ADMIN</strong> capability. If this is not the case, <strong>EPERM</strong> will be returned.</p>
+<dl>
+<dt><strong>SIOCGIFNAME</strong></dt>
+<dd><p>Given the <code>ifr_ifindex</code>, return the name of the interface in <code>ifr_name</code>. This is the only ioctl which returns its result in <code>ifr_name</code>.</p>
+</dd>
+<dt><strong>SIOCGIFINDEX</strong></dt>
+<dd><p>Retrieve the interface index of the interface into <code>ifr_ifindex</code>.</p>
+</dd>
+<dt><strong>SIOCGIFFLAGS</strong>, <strong>SIOCSIFFLAGS</strong></dt>
+<dd><p>Get or set the active flag word of the device. <code>ifr_flags</code> contains a bit mask of the following values:</p>
+</dd>
+</dl>
+<p>TABLE</p>
+<p>Setting the active flag word is a privileged operation, but any process may read it.</p>
+<dl>
+<dt><strong>SIOCGIFPFLAGS</strong>, <strong>SIOCSIFPFLAGS</strong></dt>
+<dd><p>Get or set extended (private) flags for the device. <code>ifr_flags</code> contains a bit mask of the following values:</p>
+</dd>
+</dl>
+<p>TABLE</p>
+<p>Setting the extended (private) interface flags is a privileged operation.</p>
+<dl>
+<dt><strong>SIOCGIFADDR</strong>, <strong>SIOCSIFADDR</strong></dt>
+<dd><p>Get or set the address of the device using <code>ifr_addr</code>. Setting the interface address is a privileged operation. For compatibility, only <strong>AF_INET</strong> addresses are accepted or returned.</p>
+</dd>
+<dt><strong>SIOCGIFDSTADDR</strong>, <strong>SIOCSIFDSTADDR</strong></dt>
+<dd><p>Get or set the destination address of a point-to-point device using <code>ifr_dstaddr</code>. For compatibility, only <strong>AF_INET</strong> addresses are accepted or returned. Setting the destination address is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCGIFBRDADDR</strong>, <strong>SIOCSIFBRDADDR</strong></dt>
+<dd><p>Get or set the broadcast address for a device using <code>ifr_brdaddr</code>. For compatibility, only <strong>AF_INET</strong> addresses are accepted or returned. Setting the broadcast address is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCGIFNETMASK</strong>, <strong>SIOCSIFNETMASK</strong></dt>
+<dd><p>Get or set the network mask for a device using <code>ifr_netmask</code>. For compatibility, only <strong>AF_INET</strong> addresses are accepted or returned. Setting the network mask is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCGIFMETRIC</strong>, <strong>SIOCSIFMETRIC</strong></dt>
+<dd><p>Get or set the metric of the device using <code>ifr_metric</code>. This is currently not implemented; it sets <code>ifr_metric</code> to 0 if you attempt to read it and returns <strong>EOPNOTSUPP</strong> if you attempt to set it.</p>
+</dd>
+<dt><strong>SIOCGIFMTU</strong>, <strong>SIOCSIFMTU</strong></dt>
+<dd><p>Get or set the MTU (Maximum Transfer Unit) of a device using <code>ifr_mtu</code>. Setting the MTU is a privileged operation. Setting the MTU to too small values may cause kernel crashes.</p>
+</dd>
+<dt><strong>SIOCGIFHWADDR</strong>, <strong>SIOCSIFHWADDR</strong></dt>
+<dd><p>Get or set the hardware address of a device using <code>ifr_hwaddr</code>. The hardware address is specified in a struct <code>sockaddr</code>. <code>sa_family</code> contains the ARPHRD_* device type, <code>sa_data</code> the L2 hardware address starting from byte 0. Setting the hardware address is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCSIFHWBROADCAST</strong></dt>
+<dd><p>Set the hardware broadcast address of a device from <code>ifr_hwaddr</code>. This is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCGIFMAP</strong>, <strong>SIOCSIFMAP</strong></dt>
+<dd><p>Get or set the interface's hardware parameters using <code>ifr_map</code>. Setting the parameters is a privileged operation.</p>
+<pre><code>struct ifmap {
+    unsigned long   mem_start;
+    unsigned long   mem_end;
+    unsigned short  base_addr;
+    unsigned char   irq;
+    unsigned char   dma;
+    unsigned char   port;
+};</code></pre>
+<p>The interpretation of the ifmap structure depends on the device driver and the architecture.</p>
+</dd>
+<dt><strong>SIOCADDMULTI</strong>, <strong>SIOCDELMULTI</strong></dt>
+<dd><p>Add an address to or delete an address from the device's link layer multicast filters using <code>ifr_hwaddr</code>. These are privileged operations. See also <a href='/7/packet'>packet</a>(7) for an alternative.</p>
+</dd>
+<dt><strong>SIOCGIFTXQLEN</strong>, <strong>SIOCSIFTXQLEN</strong></dt>
+<dd><p>Get or set the transmit queue length of a device using <code>ifr_qlen</code>. Setting the transmit queue length is a privileged operation.</p>
+</dd>
+<dt><strong>SIOCSIFNAME</strong></dt>
+<dd><p>Changes the name of the interface specified in <code>ifr_name</code> to <code>ifr_newname</code>. This is a privileged operation. It is allowed only when the interface is not up.</p>
+</dd>
+<dt><strong>SIOCGIFCONF</strong></dt>
+<dd><p>Return a list of interface (network layer) addresses. This currently means only addresses of the <strong>AF_INET</strong> (IPv4) family for compatibility. Unlike the others, this ioctl passes an <code>ifconf</code> structure:</p>
+<pre><code>struct ifconf {
+    int                 ifc_len; /* size of buffer */
+    union {
+        char           *ifc_buf; /* buffer address */
+        struct ifreq   *ifc_req; /* array of structures */
+    };
+};</code></pre>
+<p>If <code>ifc_req</code> is NULL, <strong>SIOCGIFCONF</strong> returns the necessary buffer size in bytes for receiving all available addresses in <code>ifc_len</code>. Otherwise, <code>ifc_req</code> contains a pointer to an array of <code>ifreq</code> structures to be filled with all currently active L3 interface addresses. <code>ifc_len</code> contains the size of the array in bytes. Within each <code>ifreq</code> structure, <code>ifr_name</code> will receive the interface name, and <code>ifr_addr</code> the address. The actual number of bytes transferred is returned in <code>ifc_len</code>.</p>
+<p>If the size specified by <code>ifc_len</code> is insufficient to store all the addresses, the kernel will skip the exceeding ones and return success. There is no reliable way of detecting this condition once it has occurred. It is therefore recommended to either determine the necessary buffer size beforehand by calling <strong>SIOCGIFCONF</strong> with <code>ifc_req</code> set to NULL, or to retry the call with a bigger buffer whenever <code>ifc_len</code> upon return differs by less than <code>sizeof(struct ifreq)</code> from its original value.</p>
+<p>If an error occurs accessing the <code>ifconf</code> or <code>ifreq</code> structures, <strong>EFAULT</strong> will be returned.</p>
+</dd>
+</dl>
+<p>Most protocols support their own ioctls to configure protocol-specific interface options. See the protocol man pages for a description. For configuring IP addresses, see <a href='/7/ip'>ip</a>(7).</p>
+<p>In addition, some devices support private ioctls. These are not described here.</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p><strong>SIOCGIFCONF</strong> and the other ioctls that accept or return only <strong>AF_INET</strong> socket addresses are IP-specific and perhaps should rather be documented in <a href='/7/ip'>ip</a>(7).</p>
+<p>The names of interfaces with no addresses or that don't have the <strong>IFF_RUNNING</strong> flag set can be found via <code>/proc/net/dev</code>.</p>
+<p>Local IPv6 IP addresses can be found via <code>/proc/net</code> or via <a href='/7/rtnetlink'>rtnetlink</a>(7).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>glibc 2.1 is missing the <code>ifr_newname</code> macro in <code>&lt;net/if.h&gt;</code>. Add the following to your program as a workaround:</p>
+<pre><code>#ifndef ifr_newname
+#define ifr_newname     ifr_ifru.ifru_slave
+#endif</code></pre>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/proc'>proc</a>(5), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/ip'>ip</a>(7), <a href='/7/rtnetlink'>rtnetlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

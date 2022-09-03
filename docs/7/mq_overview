@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>mq_overview - overview of POSIX message queues</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>POSIX message queues allow processes to exchange data in the form of messages. This API is distinct from that provided by System V message queues (<a href='/2/msgget'>msgget</a>(2), <a href='/2/msgsnd'>msgsnd</a>(2), <a href='/2/msgrcv'>msgrcv</a>(2), etc.), but provides similar functionality.</p>
+<p>Message queues are created and opened using <a href='/3/mq_open'>mq_open</a>(3); this function returns a <code>message queue descriptor</code> (<code>mqd_t</code>), which is used to refer to the open message queue in later calls. Each message queue is identified by a name of the form <code>/somename</code>; that is, a null-terminated string of up to <strong>NAME_MAX</strong> (i.e., 255) characters consisting of an initial slash, followed by one or more characters, none of which are slashes. Two processes can operate on the same queue by passing the same name to <a href='/3/mq_open'>mq_open</a>(3).</p>
+<p>Messages are transferred to and from a queue using <a href='/3/mq_send'>mq_send</a>(3) and <a href='/3/mq_receive'>mq_receive</a>(3). When a process has finished using the queue, it closes it using <a href='/3/mq_close'>mq_close</a>(3), and when the queue is no longer required, it can be deleted using <a href='/3/mq_unlink'>mq_unlink</a>(3). Queue attributes can be retrieved and (in some cases) modified using <a href='/3/mq_getattr'>mq_getattr</a>(3) and <a href='/3/mq_setattr'>mq_setattr</a>(3). A process can request asynchronous notification of the arrival of a message on a previously empty queue using <a href='/3/mq_notify'>mq_notify</a>(3).</p>
+<p>A message queue descriptor is a reference to an <code>open message queue description</code> (see <a href='/2/open'>open</a>(2)). After a <a href='/2/fork'>fork</a>(2), a child inherits copies of its parent's message queue descriptors, and these descriptors refer to the same open message queue descriptions as the corresponding message queue descriptors in the parent. Corresponding message queue descriptors in the two processes share the flags (<code>mq_flags</code>) that are associated with the open message queue description.</p>
+<p>Each message has an associated <code>priority</code>, and messages are always delivered to the receiving process highest priority first. Message priorities range from 0 (low) to <code>sysconf(_SC_MQ_PRIO_MAX) - 1</code> (high). On Linux, <code>sysconf(_SC_MQ_PRIO_MAX)</code> returns 32768, but POSIX.1 requires only that an implementation support at least priorities in the range 0 to 31; some implementations provide only this range.</p>
+<p>The remainder of this section describes some specific details of the Linux implementation of POSIX message queues.</p>
+<h2>Library interfaces and system calls</h2>
+<p>In most cases the <a href='mq_*'>mq_*</a>() library interfaces listed above are implemented on top of underlying system calls of the same name. Deviations from this scheme are indicated in the following table:</p>
+<blockquote>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Library interface</td>
+<td style="text-align: left;">System call</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mq_close(3)</td>
+<td style="text-align: left;">close(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mq_getattr(3)</td>
+<td style="text-align: left;">mq_getsetattr(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mq_notify(3)</td>
+<td style="text-align: left;">mq_notify(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mq_open(3)</td>
+<td style="text-align: left;">mq_open(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mq_receive(3)</td>
+<td style="text-align: left;">mq_timedreceive(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mq_send(3)</td>
+<td style="text-align: left;">mq_timedsend(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mq_setattr(3)</td>
+<td style="text-align: left;">mq_getsetattr(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mq_timedreceive(3)</td>
+<td style="text-align: left;">mq_timedreceive(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mq_timedsend(3)</td>
+<td style="text-align: left;">mq_timedsend(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mq_unlink(3)</td>
+<td style="text-align: left;">mq_unlink(2)</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h2>Versions</h2>
+<p>POSIX message queues have been supported on Linux since kernel 2.6.6. Glibc support has been provided since version 2.3.4.</p>
+<h2>Kernel configuration</h2>
+<p>Support for POSIX message queues is configurable via the <strong>CONFIG_POSIX_MQUEUE</strong> kernel configuration option. This option is enabled by default.</p>
+<h2>Persistence</h2>
+<p>POSIX message queues have kernel persistence: if not removed by <a href='/3/mq_unlink'>mq_unlink</a>(3), a message queue will exist until the system is shut down.</p>
+<h2>Linking</h2>
+<p>Programs using the POSIX message queue API must be compiled with <code>cc -lrt</code> to link against the real-time library, <code>librt</code>.</p>
+<h2>/proc interfaces</h2>
+<p>The following interfaces can be used to limit the amount of kernel memory consumed by POSIX message queues and to set the default attributes for new message queues:</p>
+<dl>
+<dt><code>/proc/sys/fs/mqueue/msg_default</code> (since Linux 3.5)</dt>
+<dd><p>This file defines the value used for a new queue's <code>mq_maxmsg</code> setting when the queue is created with a call to <a href='/3/mq_open'>mq_open</a>(3) where <code>attr</code> is specified as NULL. The default value for this file is 10. The minimum and maximum are as for <code>/proc/sys/fs/mqueue/msg_max</code>. A new queue's default <code>mq_maxmsg</code> value will be the smaller of <code>msg_default</code> and <code>msg_max</code>. Up until Linux 2.6.28, the default <code>mq_maxmsg</code> was 10; from Linux 2.6.28 to Linux 3.4, the default was the value defined for the <code>msg_max</code> limit.</p>
+</dd>
+<dt><code>/proc/sys/fs/mqueue/msg_max</code></dt>
+<dd><p>This file can be used to view and change the ceiling value for the maximum number of messages in a queue. This value acts as a ceiling on the <code>attr-&gt;mq_maxmsg</code> argument given to <a href='/3/mq_open'>mq_open</a>(3). The default value for <code>msg_max</code> is 10. The minimum value is 1 (10 in kernels before 2.6.28). The upper limit is <strong>HARD_MSGMAX</strong>. The <code>msg_max</code> limit is ignored for privileged processes (<strong>CAP_SYS_RESOURCE</strong>), but the <strong>HARD_MSGMAX</strong> ceiling is nevertheless imposed.</p>
+<p>The definition of <strong>HARD_MSGMAX</strong> has changed across kernel versions:</p>
+<ul>
+<li><p>Up to Linux 2.6.32: <code>131072 / sizeof(void *)</code></p></li>
+<li><p>Linux 2.6.33 to 3.4: <code>(32768 * sizeof(void *) / 4)</code></p></li>
+<li><p>Since Linux 3.5: 65,536</p></li>
+</ul>
+</dd>
+<dt><code>/proc/sys/fs/mqueue/msgsize_default</code> (since Linux 3.5)</dt>
+<dd><p>This file defines the value used for a new queue's <code>mq_msgsize</code> setting when the queue is created with a call to <a href='/3/mq_open'>mq_open</a>(3) where <code>attr</code> is specified as NULL. The default value for this file is 8192 (bytes). The minimum and maximum are as for <code>/proc/sys/fs/mqueue/msgsize_max</code>. If <code>msgsize_default</code> exceeds <code>msgsize_max</code>, a new queue's default <code>mq_msgsize</code> value is capped to the <code>msgsize_max</code> limit. Up until Linux 2.6.28, the default <code>mq_msgsize</code> was 8192; from Linux 2.6.28 to Linux 3.4, the default was the value defined for the <code>msgsize_max</code> limit.</p>
+</dd>
+<dt><code>/proc/sys/fs/mqueue/msgsize_max</code></dt>
+<dd><p>This file can be used to view and change the ceiling on the maximum message size. This value acts as a ceiling on the <code>attr-&gt;mq_msgsize</code> argument given to <a href='/3/mq_open'>mq_open</a>(3). The default value for <code>msgsize_max</code> is 8192 bytes. The minimum value is 128 (8192 in kernels before 2.6.28). The upper limit for <code>msgsize_max</code> has varied across kernel versions:</p>
+<ul>
+<li><p>Before Linux 2.6.28, the upper limit is <strong>INT_MAX</strong>.</p></li>
+<li><p>From Linux 2.6.28 to 3.4, the limit is 1,048,576.</p></li>
+<li><p>Since Linux 3.5, the limit is 16,777,216 (<strong>HARD_MSGSIZEMAX</strong>).</p></li>
+</ul>
+<p>The <code>msgsize_max</code> limit is ignored for privileged process (<strong>CAP_SYS_RESOURCE</strong>), but, since Linux 3.5, the <strong>HARD_MSGSIZEMAX</strong> ceiling is enforced for privileged processes.</p>
+</dd>
+<dt><code>/proc/sys/fs/mqueue/queues_max</code></dt>
+<dd><p>This file can be used to view and change the system-wide limit on the number of message queues that can be created. The default value for <code>queues_max</code> is 256. No ceiling is imposed on the <code>queues_max</code> limit; privileged processes (<strong>CAP_SYS_RESOURCE</strong>) can exceed the limit (but see BUGS).</p>
+</dd>
+</dl>
+<h2>Resource limit</h2>
+<p>The <strong>RLIMIT_MSGQUEUE</strong> resource limit, which places a limit on the amount of space that can be consumed by all of the message queues belonging to a process's real user ID, is described in <a href='/2/getrlimit'>getrlimit</a>(2).</p>
+<h2>Mounting the message queue filesystem</h2>
+<p>On Linux, message queues are created in a virtual filesystem. (Other implementations may also provide such a feature, but the details are likely to differ.) This filesystem can be mounted (by the superuser) using the following commands:</p>
+<pre><code># mkdir /dev/mqueue
+# mount -t mqueue none /dev/mqueue</code></pre>
+<p>The sticky bit is automatically enabled on the mount directory.</p>
+<p>After the filesystem has been mounted, the message queues on the system can be viewed and manipulated using the commands usually used for files (e.g., <a href='/1/ls'>ls</a>(1) and <a href='/1/rm'>rm</a>(1)).</p>
+<p>The contents of each file in the directory consist of a single line containing information about the queue:</p>
+<pre><code>$ cat /dev/mqueue/mymq
+QSIZE:129     NOTIFY:2    SIGNO:0    NOTIFY_PID:8260</code></pre>
+<p>These fields are as follows:</p>
+<dl>
+<dt><strong>QSIZE</strong></dt>
+<dd><p>Number of bytes of data in all messages in the queue (but see BUGS).</p>
+</dd>
+<dt><strong>NOTIFY_PID</strong></dt>
+<dd><p>If this is nonzero, then the process with this PID has used <a href='/3/mq_notify'>mq_notify</a>(3) to register for asynchronous message notification, and the remaining fields describe how notification occurs.</p>
+</dd>
+<dt><strong>NOTIFY</strong></dt>
+<dd><p>Notification method: 0 is <strong>SIGEV_SIGNAL</strong>; 1 is <strong>SIGEV_NONE</strong>; and 2 is <strong>SIGEV_THREAD</strong>.</p>
+</dd>
+<dt><strong>SIGNO</strong></dt>
+<dd><p>Signal number to be used for <strong>SIGEV_SIGNAL</strong>.</p>
+</dd>
+</dl>
+<h2>Linux implementation of message queue descriptors</h2>
+<p>On Linux, a message queue descriptor is actually a file descriptor. (POSIX does not require such an implementation.) This means that a message queue descriptor can be monitored using <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), or <a href='/7/epoll'>epoll</a>(7). This is not portable.</p>
+<p>The close-on-exec flag (see <a href='/2/open'>open</a>(2)) is automatically set on the file descriptor returned by <a href='/2/mq_open'>mq_open</a>(2).</p>
+<h2>IPC namespaces</h2>
+<p>For a discussion of the interaction of POSIX message queue objects and IPC namespaces, see <a href='/7/ipc_namespaces'>ipc_namespaces</a>(7).</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>System V message queues (<a href='/2/msgget'>msgget</a>(2), <a href='/2/msgsnd'>msgsnd</a>(2), <a href='/2/msgrcv'>msgrcv</a>(2), etc.) are an older API for exchanging messages between processes. POSIX message queues provide a better designed interface than System V message queues; on the other hand POSIX message queues are less widely available (especially on older systems) than System V message queues.</p>
+<p>Linux does not currently (2.6.26) support the use of access control lists (ACLs) for POSIX message queues.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In Linux versions 3.5 to 3.14, the kernel imposed a ceiling of 1024 (<strong>HARD_QUEUESMAX</strong>) on the value to which the <code>queues_max</code> limit could be raised, and the ceiling was enforced even for privileged processes. This ceiling value was removed in Linux 3.14, and patches to stable kernels 3.5.x to 3.13.x also removed the ceiling.</p>
+<p>As originally implemented (and documented), the QSIZE field displayed the total number of (user-supplied) bytes in all messages in the message queue. Some changes in Linux 3.5 inadvertently changed the behavior, so that this field also included a count of kernel overhead bytes used to store the messages in the queue. This behavioral regression was rectified in Linux 4.2 (and earlier stable kernel series), so that the count once more included just the bytes of user data in messages in the queue.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>An example of the use of various message queue functions is shown in <a href='/3/mq_notify'>mq_notify</a>(3).</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/getrlimit'>getrlimit</a>(2), <a href='/2/mq_getsetattr'>mq_getsetattr</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/2/select'>select</a>(2), <a href='/3/mq_close'>mq_close</a>(3), <a href='/3/mq_getattr'>mq_getattr</a>(3), <a href='/3/mq_notify'>mq_notify</a>(3), <a href='/3/mq_open'>mq_open</a>(3), <a href='/3/mq_receive'>mq_receive</a>(3), <a href='/3/mq_send'>mq_send</a>(3), <a href='/3/mq_unlink'>mq_unlink</a>(3), <a href='/7/epoll'>epoll</a>(7), <a href='/7/namespaces'>namespaces</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

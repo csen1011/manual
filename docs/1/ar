@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ar - create, modify, and extract from archives</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>ar [<strong>-X32_64</strong>] [<strong>-</strong>]<code>p</code>[<code>mod</code>] [<strong>--plugin</strong> <code>name</code>] [<strong>--target</strong> <code>bfdname</code>] [<strong>--output</strong> <code>dirname</code>] [<strong>--record-libdeps</strong> <code>libdeps</code>] [<strong>--thin</strong>] [<code>relpos</code>] [<code>count</code>] <code>archive</code> [<code>member</code>...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The GNU <strong>ar</strong> program creates, modifies, and extracts from archives. An <code>archive</code> is a single file holding a collection of other files in a structure that makes it possible to retrieve the original individual files (called <code>members</code> of the archive).</p>
+<p>The original files' contents, mode (permissions), timestamp, owner, and group are preserved in the archive, and can be restored on extraction.</p>
+<p>GNU <strong>ar</strong> can maintain archives whose members have names of any length; however, depending on how <strong>ar</strong> is configured on your system, a limit on member-name length may be imposed for compatibility with archive formats maintained with other tools. If it exists, the limit is often 15 characters (typical of formats related to a.out) or 16 characters (typical of formats related to coff).</p>
+<p><strong>ar</strong> is considered a binary utility because archives of this sort are most often used as <code>libraries</code> holding commonly needed subroutines. Since libraries often will depend on other libraries, <strong>ar</strong> can also record the dependencies of a library when the <strong>--record-libdeps</strong> option is specified.</p>
+<p><strong>ar</strong> creates an index to the symbols defined in relocatable object modules in the archive when you specify the modifier <strong>s</strong>. Once created, this index is updated in the archive whenever <strong>ar</strong> makes a change to its contents (save for the <strong>q</strong> update operation). An archive with such an index speeds up linking to the library, and allows routines in the library to call each other without regard to their placement in the archive.</p>
+<p>You may use <strong>nm -s</strong> or <strong>nm --print-armap</strong> to list this index table. If an archive lacks the table, another form of <strong>ar</strong> called <strong>ranlib</strong> can be used to add just the table.</p>
+<p>GNU <strong>ar</strong> can optionally create a <code>thin</code> archive, which contains a symbol index and references to the original copies of the member files of the archive. This is useful for building libraries for use within a local build tree, where the relocatable objects are expected to remain available, and copying the contents of each object would only waste time and space.</p>
+<p>An archive can either be <code>thin</code> or it can be normal. It cannot be both at the same time. Once an archive is created its format cannot be changed without first deleting it and then creating a new archive in its place.</p>
+<p>Thin archives are also <code>flattened</code>, so that adding one thin archive to another thin archive does not nest it, as would happen with a normal archive. Instead the elements of the first archive are added individually to the second archive.</p>
+<p>The paths to the elements of the archive are stored relative to the archive itself.</p>
+<p>GNU <strong>ar</strong> is designed to be compatible with two different facilities. You can control its activity using command-line options, like the different varieties of <strong>ar</strong> on Unix systems; or, if you specify the single command-line option <strong>-M</strong>, you can control it with a script supplied via standard input, like the MRI ``librarian'' program.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>GNU <strong>ar</strong> allows you to mix the operation code <code>p</code> and modifier flags <code>mod</code> in any order, within the first command-line argument.</p>
+<p>If you wish, you may begin the first command-line argument with a dash.</p>
+<p>The <code>p</code> keyletter specifies what operation to execute; it may be any of the following, but you must specify only one of them:</p>
+<ol start="4" type="a">
+<li><p><code>Delete</code> modules from the archive. Specify the names of modules to be deleted as <code>member</code>...; the archive is untouched if you specify no files to delete. If you specify the <strong>v</strong> modifier, <strong>ar</strong> lists each module as it is deleted.</p></li>
+<li><p>Use this operation to <code>move</code> members in an archive. The ordering of members in an archive can make a difference in how programs are linked using the library, if a symbol is defined in more than one member. If no modifiers are used with <code>m</code>, any members you name in the <code>member</code> arguments are moved to the <code>end</code> of the archive; you can use the <strong>a</strong>, <strong>b</strong>, or <strong>i</strong> modifiers to move them to a specified place instead.</p></li>
+<li><p><code>Print</code> the specified members of the archive, to the standard output file. If the <strong>v</strong> modifier is specified, show the member name before copying its contents to standard output. If you specify no <code>member</code> arguments, all the files in the archive are printed.</p></li>
+<li><p><code>Quick append</code>; Historically, add the files <code>member</code>... to the end of <code>archive</code>, without checking for replacement. The modifiers <strong>a</strong>, <strong>b</strong>, and <strong>i</strong> do <code>not</code> affect this operation; new members are always placed at the end of the archive. The modifier <strong>v</strong> makes <strong>ar</strong> list each file as it is appended. Since the point of this operation is speed, implementations of <strong>ar</strong> have the option of not updating the archive's symbol table if one exists. Too many different systems however assume that symbol tables are always up-to-date, so GNU <strong>ar</strong> will rebuild the table even with a quick append. Note - GNU <strong>ar</strong> treats the command <strong>qs</strong> as a synonym for <strong>r</strong> - replacing already existing files in the archive and appending new ones at the end.</p></li>
+<li><p>Insert the files <code>member</code>... into <code>archive</code> (with <code>replacement</code>). This operation differs from <strong>q</strong> in that any previously existing members are deleted if their names match those being added. If one of the files named in <code>member</code>... does not exist, <strong>ar</strong> displays an error message, and leaves undisturbed any existing members of the archive matching that name. By default, new members are added at the end of the file; but you may use one of the modifiers <strong>a</strong>, <strong>b</strong>, or <strong>i</strong> to request placement relative to some existing member. The modifier <strong>v</strong> used with this operation elicits a line of output for each file inserted, along with one of the letters <strong>a</strong> or <strong>r</strong> to indicate whether the file was appended (no old member deleted) or replaced.</p></li>
+<li><p>Add an index to the archive, or update it if it already exists. Note this command is an exception to the rule that there can only be one command letter, as it is possible to use it as either a command or a modifier. In either case it does the same thing.</p></li>
+<li><p>Display a <code>table</code> listing the contents of <code>archive</code>, or those of the files listed in <code>member</code>... that are present in the archive. Normally only the member name is shown, but if the modifier <strong>O</strong> is specified, then the corresponding offset of the member is also displayed. Finally, in order to see the modes (permissions), timestamp, owner, group, and size the <strong>v</strong> modifier should be included. If you do not specify a <code>member</code>, all files in the archive are listed. If there is more than one file with the same name (say, <strong>fie</strong>) in an archive (say <strong>b.a</strong>), <strong>ar t b.a fie</strong> lists only the first instance; to see them all, you must ask for a complete listing---in our example, <strong>ar t b.a</strong>.</p></li>
+<li><p><code>Extract</code> members (named <code>member</code>) from the archive. You can use the <strong>v</strong> modifier with this operation, to request that <strong>ar</strong> list each name as it extracts it. If you do not specify a <code>member</code>, all files in the archive are extracted. Files cannot be extracted from a thin archive, and there are restrictions on extracting from archives created with <strong>P</strong>: The paths must not be absolute, may not contain <code>..</code>, and any subdirectories in the paths must exist. If it is desired to avoid these restrictions then used the <strong>--output</strong> option to specify an output directory.</p></li>
+</ol>
+<p>A number of modifiers (<code>mod</code>) may immediately follow the <code>p</code> keyletter, to specify variations on an operation's behavior:</p>
+<ol type="a">
+<li><p>Add new files <code>after</code> an existing member of the archive. If you use the modifier <strong>a</strong>, the name of an existing archive member must be present as the <code>relpos</code> argument, before the <code>archive</code> specification.</p></li>
+<li><p>Add new files <code>before</code> an existing member of the archive. If you use the modifier <strong>b</strong>, the name of an existing archive member must be present as the <code>relpos</code> argument, before the <code>archive</code> specification. (same as <strong>i</strong>).</p></li>
+<li><p><code>Create</code> the archive. The specified <code>archive</code> is always created if it did not exist, when you request an update. But a warning is issued unless you specify in advance that you expect to create it, by using this modifier.</p></li>
+</ol>
+<ol start="4" type="A">
+<li><p>Operate in <code>deterministic</code> mode. When adding files and the archive index use zero for UIDs, GIDs, timestamps, and use consistent file modes for all files. When this option is used, if <strong>ar</strong> is used with identical options and identical input files, multiple runs will create identical output files regardless of the input files' owners, groups, file modes, or modification times. If <code>binutils</code> was configured with <strong>--enable-deterministic-archives</strong>, then this mode is on by default. It can be disabled with the <strong>U</strong> modifier, below.</p></li>
+</ol>
+<ol start="6" type="a">
+<li><p>Truncate names in the archive. GNU <strong>ar</strong> will normally permit file names of any length. This will cause it to create archives which are not compatible with the native <strong>ar</strong> program on some systems. If this is a concern, the <strong>f</strong> modifier may be used to truncate file names when putting them in the archive.</p></li>
+</ol>
+<ol type="i">
+<li><p>Insert new files <code>before</code> an existing member of the archive. If you use the modifier <strong>i</strong>, the name of an existing archive member must be present as the <code>relpos</code> argument, before the <code>archive</code> specification. (same as <strong>b</strong>).</p></li>
+</ol>
+<ol start="12" type="a">
+<li><p>Specify dependencies of this library. The dependencies must immediately follow this option character, must use the same syntax as the linker command line, and must be specified within a single argument. I.e., if multiple items are needed, they must be quoted to form a single command line argument. For example <strong>L ``-L/usr/local/lib -lmydep1 -lmydep2''</strong></p></li>
+</ol>
+<ol start="14" type="A">
+<li><p>Uses the <code>count</code> parameter. This is used if there are multiple entries in the archive with the same name. Extract or delete instance <code>count</code> of the given name from the archive.</p></li>
+</ol>
+<ol start="15" type="a">
+<li><p>Preserve the <code>original</code> dates of members when extracting them. If you do not specify this modifier, files extracted from the archive are stamped with the time of extraction.</p></li>
+</ol>
+<ol start="15" type="A">
+<li><p>Display member offsets inside the archive. Use together with the <strong>t</strong> option.</p></li>
+<li><p>Use the full path name when matching or storing names in the archive. Archives created with full path names are not POSIX compliant, and thus may not work with tools other than up to date GNU tools. Modifying such archives with GNU <strong>ar</strong> without using <strong>P</strong> will remove the full path names unless the archive is a thin archive. Note that <strong>P</strong> may be useful when adding files to a thin archive since <strong>r</strong> without <strong>P</strong> ignores the path when choosing which element to replace. Thus ar rcST archive.a subdir/file1 subdir/file2 file1 will result in the first <code>subdir/file1</code> being replaced with <code>file1</code> from the current directory. Adding <strong>P</strong> will prevent this replacement.</p></li>
+</ol>
+<ol start="19" type="a">
+<li><p>Write an object-file index into the archive, or update an existing one, even if no other change is made to the archive. You may use this modifier flag either with any operation, or alone. Running <strong>ar s</strong> on an archive is equivalent to running <strong>ranlib</strong> on it.</p></li>
+</ol>
+<ol start="19" type="A">
+<li><p>Do not generate an archive symbol table. This can speed up building a large library in several steps. The resulting archive can not be used with the linker. In order to build a symbol table, you must omit the <strong>S</strong> modifier on the last execution of <strong>ar</strong>, or you must run <strong>ranlib</strong> on the archive.</p></li>
+<li><p>Deprecated alias for <strong>--thin</strong>. <strong>T</strong> is not recommended because in many ar implementations <strong>T</strong> has a different meaning, as specified by X/Open System Interface.</p></li>
+</ol>
+<ol start="21" type="a">
+<li><p>Normally, <strong>ar r</strong>... inserts all files listed into the archive. If you would like to insert <code>only</code> those of the files you list that are newer than existing members of the same names, use this modifier. The <strong>u</strong> modifier is allowed only for the operation <strong>r</strong> (replace). In particular, the combination <strong>qu</strong> is not allowed, since checking the timestamps would lose any speed advantage from the operation <strong>q</strong>.</p></li>
+</ol>
+<ol start="21" type="A">
+<li><p>Do <code>not</code> operate in <code>deterministic</code> mode. This is the inverse of the <strong>D</strong> modifier, above: added files and the archive index will get their actual UID, GID, timestamp, and file mode values. This is the default unless <code>binutils</code> was configured with <strong>--enable-deterministic-archives</strong>.</p></li>
+</ol>
+<ol start="22" type="a">
+<li><p>This modifier requests the <code>verbose</code> version of an operation. Many operations display additional information, such as filenames processed, when the modifier <strong>v</strong> is appended.</p></li>
+</ol>
+<ol start="22" type="A">
+<li><p>This modifier shows the version number of <strong>ar</strong>.</p></li>
+</ol>
+<p>The <strong>ar</strong> program also supports some command-line options which are neither modifiers nor actions, but which do change its behaviour in specific ways:</p>
+<ul>
+<li><p>Displays the list of command-line options supported by <strong>ar</strong> and then exits.</p></li>
+<li><p>Displays the version information of <strong>ar</strong> and then exits.</p></li>
+<li><p><strong>ar</strong> ignores an initial option spelled <strong>-X32_64</strong>, for compatibility with AIX. The behaviour produced by this option is the default for GNU <strong>ar</strong>. <strong>ar</strong> does not support any of the other <strong>-X</strong> options; in particular, it does not support <strong>-X32</strong> which is the default for AIX <strong>ar</strong>.</p></li>
+<li><p>The optional command-line switch <strong>--plugin</strong> <code>name</code> causes <strong>ar</strong> to load the plugin called <code>name</code> which adds support for more file formats, including object files with link-time optimization information. This option is only available if the toolchain has been built with plugin support enabled. If <strong>--plugin</strong> is not provided, but plugin support has been enabled then <strong>ar</strong> iterates over the files in <code>${libdir}/bfd-plugins</code> in alphabetic order and the first plugin that claims the object in question is used. Please note that this plugin search directory is <code>not</code> the one used by <strong>ld</strong>'s <strong>-plugin</strong> option. In order to make <strong>ar</strong> use the linker plugin it must be copied into the <code>${libdir}/bfd-plugins</code> directory. For GCC based compilations the linker plugin is called <code>liblto_plugin.so.0.0.0</code>. For Clang based compilations it is called <code><a href="http://LLVMgold.so">LLVMgold.so</a></code>. The GCC plugin is always backwards compatible with earlier versions, so it is sufficient to just copy the newest one.</p></li>
+<li><p>The optional command-line switch <strong>--target</strong> <code>bfdname</code> specifies that the archive members are in an object code format different from your system's default format. See</p></li>
+<li><p>The <strong>--output</strong> option can be used to specify a path to a directory into which archive members should be extracted. If this option is not specified then the current directory will be used. Note - although the presence of this option does imply a <strong>x</strong> extraction operation that option must still be included on the command line.</p></li>
+<li><p>The <strong>--record-libdeps</strong> option is identical to the <strong>l</strong> modifier, just handled in long form.</p></li>
+<li><p>Make the specified <code>archive</code> a <code>thin</code> archive. If it already exists and is a regular archive, the existing members must be present in the same directory as <code>archive</code>.</p></li>
+</ul>
+<ol class="example" type="1">
+<li><p>Read command-line options from <code>file</code>. The options read are inserted in place of the original @<code>file</code> option. If <code>file</code> does not exist, or cannot be read, then the option will be treated literally, and not removed. Options in <code>file</code> are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The <code>file</code> may itself contain additional @<code>file</code> options; any such options will be processed recursively.</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>nm</strong> (1), <strong>ranlib</strong> (1), and the Info entries for <code>binutils</code>.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1991-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License''.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

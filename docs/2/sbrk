@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>brk, sbrk - change data segment size</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong>int brk(void *</strong><code>addr</code><strong>);</strong></p>
+<p><strong>void *sbrk(intptr_t </strong><code>increment</code><strong>);</strong></p>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='brk'>brk</a>(), <a href='sbrk'>sbrk</a>():</p>
+<blockquote>
+<dl>
+<dt>Since glibc 2.19:</dt>
+<dd>
+</dd>
+</dl>
+<pre><code>_DEFAULT_SOURCE ||
+    (_XOPEN_SOURCE &gt;= 500) &amp;&amp;
+    ! (_POSIX_C_SOURCE &gt;= 200112L)</code></pre>
+<dl>
+<dt>From glibc 2.12 to 2.19:</dt>
+<dd>
+</dd>
+</dl>
+<pre><code>_BSD_SOURCE || _SVID_SOURCE ||
+    (_XOPEN_SOURCE &gt;= 500) &amp;&amp;
+    ! (_POSIX_C_SOURCE &gt;= 200112L)</code></pre>
+<dl>
+<dt>Before glibc 2.12:</dt>
+<dd><p>_BSD_SOURCE || _SVID_SOURCE || _XOPEN_SOURCE &gt;= 500</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='brk'>brk</a>() and <a href='sbrk'>sbrk</a>() change the location of the <code>program break</code>, which defines the end of the process's data segment (i.e., the program break is the first location after the end of the uninitialized data segment). Increasing the program break has the effect of allocating memory to the process; decreasing the break deallocates memory.</p>
+<p><a href='brk'>brk</a>() sets the end of the data segment to the value specified by <code>addr</code>, when that value is reasonable, the system has enough memory, and the process does not exceed its maximum data size (see <a href='/2/setrlimit'>setrlimit</a>(2)).</p>
+<p><a href='sbrk'>sbrk</a>() increments the program's data space by <code>increment</code> bytes. Calling <a href='sbrk'>sbrk</a>() with an <code>increment</code> of 0 can be used to find the current location of the program break.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='brk'>brk</a>() returns zero. On error, -1 is returned, and <code>errno</code> is set to <strong>ENOMEM</strong>.</p>
+<p>On success, <a href='sbrk'>sbrk</a>() returns the previous program break. (If the break was increased, then this value is a pointer to the start of the newly allocated memory). On error, <code>(void *) -1</code> is returned, and <code>errno</code> is set to <strong>ENOMEM</strong>.</p>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>4.3BSD; SUSv1, marked LEGACY in SUSv2, removed in POSIX.1-2001.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Avoid using <a href='brk'>brk</a>() and <a href='sbrk'>sbrk</a>(): the <a href='/3/malloc'>malloc</a>(3) memory allocation package is the portable and comfortable way of allocating memory.</p>
+<p>Various systems use various types for the argument of <a href='sbrk'>sbrk</a>(). Common are <code>int</code>, <code>ssize_t</code>, <code>ptrdiff_t</code>, <code>intptr_t</code>.</p>
+<h2>C library/kernel differences</h2>
+<p>The return value described above for <a href='brk'>brk</a>() is the behavior provided by the glibc wrapper function for the Linux <a href='brk'>brk</a>() system call. (On most other implementations, the return value from <a href='brk'>brk</a>() is the same; this return value was also specified in SUSv2.) However, the actual Linux system call returns the new program break on success. On failure, the system call returns the current break. The glibc wrapper function does some work (i.e., checks whether the new break is less than <code>addr</code>) to provide the 0 and -1 return values described above.</p>
+<p>On Linux, <a href='sbrk'>sbrk</a>() is implemented as a library function that uses the <a href='brk'>brk</a>() system call, and does some internal bookkeeping so that it can return the old break value.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/execve'>execve</a>(2), <a href='/2/getrlimit'>getrlimit</a>(2), <a href='/3/end'>end</a>(3), <a href='/3/malloc'>malloc</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

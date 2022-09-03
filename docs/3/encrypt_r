@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>encrypt, setkey, <a data-bs-content='This is the man page for &lt;code&gt;encrypt_r&lt;/code&gt; and 3 related functions.' data-bs-toggle='popover' tabindex='0'>encrypt_r</a>, setkey_r - encrypt 64-bit messages</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _XOPEN_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+void encrypt(char block[64], int edflag);
+
+#define _XOPEN_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;stdlib.h&gt;</a>
+
+void setkey(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>key);
+
+#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;crypt.h&gt;</a>
+
+void setkey_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>key, struct crypt_data *data);
+void encrypt_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>block, int edflag, struct crypt_data *data);</code></pre>
+<p>Each of these requires linking with <code>-lcrypt</code>.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These functions encrypt and decrypt 64-bit messages. The <a href='setkey'>setkey</a>() function sets the key used by <a href='encrypt'>encrypt</a>(). The <code>key</code> argument used here is an array of 64 bytes, each of which has numerical value 1 or 0. The bytes key[n] where n=8*i-1 are ignored, so that the effective key length is 56 bits.</p>
+<p>The <a href='encrypt'>encrypt</a>() function modifies the passed buffer, encoding if <code>edflag</code> is 0, and decoding if 1 is being passed. Like the <code>key</code> argument, also <code>block</code> is a bit vector representation of the actual value that is encoded. The result is returned in that same vector.</p>
+<p>These two functions are not reentrant, that is, the key data is kept in static storage. The functions <a href='setkey_r'>setkey_r</a>() and <a href='encrypt_r'>encrypt_r</a>() are the reentrant versions. They use the following structure to hold the key data:</p>
+<pre><code>struct crypt_data {
+    char keysched[16 * 8];
+    char sb0[32768];
+    char sb1[32768];
+    char sb2[32768];
+    char sb3[32768];
+    char crypt_3_buf[14];
+    char current_salt[2];
+    long current_saltbits;
+    int  direction;
+    int  initialized;
+};</code></pre>
+<p>Before calling <a href='setkey_r'>setkey_r</a>() set <code>data-&gt;initialized</code> to zero.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>These functions do not return any value.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>#define _XOPEN_SOURCE
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;crypt.h&gt;
+
+int
+main(void)
+{
+    char key[64];
+    char orig[9] = "eggplant";
+    char buf[64];
+    char txt[9];
+
+    for (int i = 0; i &lt; 64; i++) {
+        key[i] = rand() &amp; 1;
+    }
+
+    for (int i = 0; i &lt; 8; i++) {
+        for (int j = 0; j &lt; 8; j++) {
+            buf[i * 8 + j] = orig[i] &gt;&gt; j &amp; 1;
+        }
+        setkey(key);
+    }
+    printf("Before encrypting: %s\n", orig);
+
+    encrypt(buf, 0);
+    for (int i = 0; i &lt; 8; i++) {
+        for (int j = 0, txt[i] = '\0'; j &lt; 8; j++) {
+            txt[i] |= buf[i * 8 + j] &lt;&lt; j;
+        }
+        txt[8] = '\0';
+    }
+    printf("After encrypting:  %s\n", txt);
+
+    encrypt(buf, 1);
+    for (int i = 0; i &lt; 8; i++) {
+        for (int j = 0, txt[i] = '\0'; j &lt; 8; j++) {
+            txt[i] |= buf[i * 8 + j] &lt;&lt; j;
+        }
+        txt[8] = '\0';
+    }
+    printf("After decrypting:  %s\n", txt);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>Set <code>errno</code> to zero before calling the above functions. On success, it is unchanged.</p>
+<dl>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>The function is not provided. (For example because of former USA export restrictions.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>Because they employ the DES block cipher, which is no longer considered secure, <a href='crypt'>crypt</a>(), <a href='crypt_r'>crypt_r</a>(), <a href='setkey'>setkey</a>(), and <a href='setkey_r'>setkey_r</a>() were removed in glibc 2.28. Applications should switch to a modern cryptography library, such as <strong>libgcrypt</strong>.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='encrypt'>encrypt</a>(), <a href='setkey'>setkey</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:crypt</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='encrypt_r'>encrypt_r</a>(), <a href='setkey_r'>setkey_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='encrypt'>encrypt</a>(), <a href='setkey'>setkey</a>(): POSIX.1-2001, POSIX.1-2008, SUS, SVr4.</p>
+<p>The functions <a href='encrypt_r'>encrypt_r</a>() and <a href='setkey_r'>setkey_r</a>() are GNU extensions.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Availability in glibc</h2>
+<p>See <a href='/3/crypt'>crypt</a>(3).</p>
+<h2>Features in glibc</h2>
+<p>In glibc 2.2, these functions use the DES algorithm.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/cbc_crypt'>cbc_crypt</a>(3), <a href='/3/crypt'>crypt</a>(3), <a href='/3/ecb_crypt'>ecb_crypt</a>(3),</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

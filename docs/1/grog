@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>grog - guess options for a following groff command</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>grog</strong> [ <strong>-C</strong> ] [ <strong>-T</strong> device ] [ <strong>--run</strong> ] [ <strong>--warnings</strong> ] [ <strong>--ligatures</strong> ] [<code>groff-option</code> . . .] [ <strong>--</strong> ] [<code>filespec</code> . . .] <strong>grog</strong> <strong>-h</strong> <strong>grog</strong> <strong>--help</strong> <strong>grog</strong> <strong>-v</strong> <strong>grog</strong> <strong>--version</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>grog</strong> reads the input (file names or standard input) and guesses which of the <a href='/1/groff'>groff</a>(1) options are needed to perform the input with the <strong>groff</strong> program. A suitable device is now always written as <strong>-T</strong><code>device</code> including the groff default as <strong>-T ps</strong>.</p>
+<p>The corresponding <strong>groff</strong> command is usually displayed in standard output. With the option <strong>--run</strong>, the generated line is output into standard error and the generated <strong>groff</strong> command is run on the <code>standard output</code>. <a href='/1/groffer'>groffer</a>(1) relies on a perfectly running <a href='/1/groff'>groff</a>(1).</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The option <strong>-v</strong> or <strong>--version</strong> prints information on the version number. Also <strong>-h</strong> or <strong>--help</strong> prints usage information. Both of these options automatically end the <strong>grog</strong> program. Other options are thenignored, and no <strong>groff</strong> command line is generated. The following 3 options are the only <strong>grog</strong> options,</p>
+<dl>
+<dt><strong>-C</strong></dt>
+<dd><p>this option means enabling the <code>groff</code> compatibility mode, which is also transfered to the generated <strong>groff</strong> command line.</p>
+</dd>
+<dt><strong>--ligatures</strong></dt>
+<dd><p>this option forces to include the arguments <strong>-P-y -PU</strong> within the generated <strong>groff</strong> command line.</p>
+</dd>
+<dt><strong>--run</strong></dt>
+<dd><p>with this option, the command line is output at standard error and then run on the computer.</p>
+</dd>
+<dt><strong>--warnings</strong></dt>
+<dd><p>with this option, some more warnings are output to standard error.</p>
+</dd>
+</dl>
+<p>All other specified short options (words starting with one minus character <strong>-</strong>) are interpreted as <strong>groff</strong> options or option clusters with or without argument. No space is allowed between options and their argument. Except from the <strong>-m</strong><code>arg</code> options, all options will be passed on, i.e. they are included unchanged in the command for the output without effecting the work of <strong>grog</strong>.</p>
+<p>A <code>filespec</code> argument can either be the name of an existing file or a single minus <strong>-</strong> to mean standard input. If no <code>filespec</code> is specified standard input is read automatically.</p>
+</div></div></div><h1 id='details'><a href='#details'>DETAILS</a></h1><div data-for='details' data-hide><div class='section' data-for='details'><div data-more>
+<p><strong>grog</strong> reads all <code>filespec</code> parameters as a whole. It tries to guess which of the following <strong>groff</strong> options are required for running the input under <strong>groff</strong>: <strong>-e</strong>, <strong>-g</strong>, <strong>-G</strong>, <strong>-j</strong>, <strong>-p</strong>, <strong>-R</strong>, <strong>-s</strong>, <strong>-t</strong> (preprocessors); and <strong>-man</strong>, <strong>-mdoc</strong>, <strong>-mdoc-old</strong>, <strong>-me</strong>, <strong>-mm</strong>, <strong>-mom</strong>, and <strong>-ms</strong> (macro packages).</p>
+<p>The guessed <strong>groff</strong> command including those options and the found <code>filespec</code> parameters is put on the standard output.</p>
+<p>It is possible to specify arbitrary <strong>groff</strong> options on the command line. These are passed on the output without change, except for the <strong>-m</strong><code>arg</code> options.</p>
+<p>The <strong>groff</strong> program has trouble when the wrong <strong>-m</strong><code>arg</code> option or several of these options are specified. In these cases, <strong>grog</strong> will print an error message and exit with an error code. It is better to specify no <strong>-m</strong><code>arg</code> option. Because such an option is only accepted and passed when <strong>grog</strong> does not find any of these options or the same option is found.</p>
+<p>If several different <strong>-m</strong><code>arg</code> options are found by <strong>grog</strong> an error message is produced and the program is terminated with an error code. But the output is written with the wrong options nevertheless.</p>
+<p>Remember that it is not necessary to determine a macro package. A <code>roff</code> file can also be written in the <code>groff</code> language without any macro package. <strong>grog</strong> will produce an output without an <strong>-m</strong><code>arg</code> option.</p>
+<p>As <strong>groff</strong> also works with pure text files without any <code>roff</code> requests, <strong>grog</strong> cannot be used to identify a file to be a <code>roff</code> file.</p>
+<p>The <a href='/1/groffer'>groffer</a>(1) program heavily depends on a working <strong>grog</strong>.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Calling</p>
+<blockquote>
+<pre><code>grog <a href="http://meintro.me">meintro.me</a></code></pre>
+</blockquote>
+<p>results in</p>
+<blockquote>
+<pre><code>groff -me <a href="http://meintro.me">meintro.me</a></code></pre>
+</blockquote>
+<p>So <strong>grog</strong> recognized that the file <strong><a href="http://meintro.me">meintro.me</a></strong> is written with the <strong>-me</strong> macro package.</p>
+<p>On the other hand,</p>
+<blockquote>
+<pre><code>grog <a href="http://pic.ms">pic.ms</a></code></pre>
+</blockquote>
+<p>outputs</p>
+<blockquote>
+<pre><code>groff -p -t -e -ms <a href="http://pic.ms">pic.ms</a></code></pre>
+</blockquote>
+<p>Besides determining the macro package <strong>-ms</strong>, <strong>grog</strong> recognized that the file <strong><a href="http://pic.ms">pic.ms</a></strong> additionally needs <strong>-pte</strong>, the combination of <strong>-p</strong> for <code>pic</code>, <strong>-t</strong> for <code>tbl</code>, and <strong>-e</strong> for <code>eqn</code>.</p>
+<p>If both of the former example files are combined by the command</p>
+<blockquote>
+<pre><code>grog <a href="http://meintro.me">meintro.me</a> <a href="http://pic.ms">pic.ms</a></code></pre>
+</blockquote>
+<p>an error message is sent to standard error because <strong>groff</strong> cannot work with two different macro packages:</p>
+<blockquote>
+<p>grog: error: there are several macro packages: -me -ms</p>
+</blockquote>
+<p>Additionally the corresponding output with the wrong options is printed to standard output:</p>
+<blockquote>
+<pre><code>groff -pte -me -ms <a href="http://meintro.me">meintro.me</a> <a href="http://pic.ms">pic.ms</a></code></pre>
+</blockquote>
+<p>But the program is terminated with an error code. The call of</p>
+<blockquote>
+<pre><code>grog -ksS -Tdvi grnexmpl.g</code></pre>
+</blockquote>
+<p>contains several <strong>groff</strong> options that are just passed on the output without any interface to <strong>grog</strong>. These are the option cluster <strong>-ksS</strong> consisting of <strong>-k</strong>, <strong>-s</strong>, and <strong>-S</strong>; and the option <strong>-T</strong> with argument <strong>dvi</strong>. The output is</p>
+<blockquote>
+<pre><code>groff -k -s -S -Tdvi grnexmpl.g</code></pre>
+</blockquote>
+<p>so no additional option was added by <strong>grog</strong>. As no option <strong>-m</strong><code>arg</code> was found by <strong>grog</strong> this file does not use a macro package.</p>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p><strong>grog</strong> was originally written by James Clark. The current Perl implementation was written by <a href="<a href="mailto:groff-bernd.warken-72@web.de">mailto:groff-bernd.warken-72@web.de</a>">Bernd Warken</a> with contributions from Ralph Corderoy, and is maintained by <a href="<a href="mailto:wl@gnu.org">mailto:wl@gnu.org</a>">Werner Lemberg</a>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/groff'>groff</a>(1), <a href='/1/groffer'>groffer</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

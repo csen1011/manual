@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;pipe&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>pipe</a>, pipe2 - create pipe</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+/* On Alpha, IA-64, MIPS, SuperH, and SPARC/SPARC64; see NOTES */
+struct fd_pair {
+ long fd[2];
+};
+struct fd_pair pipe();
+
+/* On all other architectures */
+int pipe(int pipefd[2]);
+
+#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a> /* Obtain O_* constant definitions */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+int pipe2(int pipefd[2], int flags);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='pipe'>pipe</a>() creates a pipe, a unidirectional data channel that can be used for interprocess communication. The array <code>pipefd</code> is used to return two file descriptors referring to the ends of the pipe. <code>pipefd[0]</code> refers to the read end of the pipe. <code>pipefd[1]</code> refers to the write end of the pipe. Data written to the write end of the pipe is buffered by the kernel until it is read from the read end of the pipe. For further details, see <a href='/7/pipe'>pipe</a>(7).</p>
+<p>If <code>flags</code> is 0, then <a href='pipe2'>pipe2</a>() is the same as <a href='pipe'>pipe</a>(). The following values can be bitwise ORed in <code>flags</code> to obtain different behavior:</p>
+<dl>
+<dt><strong>O_CLOEXEC</strong></dt>
+<dd><p>Set the close-on-exec (<strong>FD_CLOEXEC</strong>) flag on the two new file descriptors. See the description of the same flag in <a href='/2/open'>open</a>(2) for reasons why this may be useful.</p>
+</dd>
+<dt><strong>O_DIRECT</strong> (since Linux 3.4)</dt>
+<dd><p>Create a pipe that performs I/O in "packet" mode. Each <a href='/2/write'>write</a>(2) to the pipe is dealt with as a separate packet, and <a href='/2/read'>read</a>(2)s from the pipe will read one packet at a time. Note the following points:</p>
+<ul>
+<li><p>Writes of greater than <strong>PIPE_BUF</strong> bytes (see <a href='/7/pipe'>pipe</a>(7)) will be split into multiple packets. The constant <strong>PIPE_BUF</strong> is defined in <code>&lt;limits.h&gt;</code>.</p></li>
+<li><p>If a <a href='/2/read'>read</a>(2) specifies a buffer size that is smaller than the next packet, then the requested number of bytes are read, and the excess bytes in the packet are discarded. Specifying a buffer size of <strong>PIPE_BUF</strong> will be sufficient to read the largest possible packets (see the previous point).</p></li>
+<li><p>Zero-length packets are not supported. (A <a href='/2/read'>read</a>(2) that specifies a buffer size of zero is a no-op, and returns 0.)</p></li>
+</ul>
+<p>Older kernels that do not support this flag will indicate this via an <strong>EINVAL</strong> error.</p>
+<p>Since Linux 4.5, it is possible to change the <strong>O_DIRECT</strong> setting of a pipe file descriptor using <a href='/2/fcntl'>fcntl</a>(2).</p>
+</dd>
+<dt><strong>O_NONBLOCK</strong></dt>
+<dd><p>Set the <strong>O_NONBLOCK</strong> file status flag on the open file descriptions referred to by the new file descriptors. Using this flag saves extra calls to <a href='/2/fcntl'>fcntl</a>(2) to achieve the same result.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, zero is returned. On error, -1 is returned, <code>errno</code> is set appropriately, and <code>pipefd</code> is left unchanged.</p>
+<p>On Linux (and other systems), <a href='pipe'>pipe</a>() does not modify <code>pipefd</code> on failure. A requirement standardizing this behavior was added in POSIX.1-2008 TC2. The Linux-specific <a href='pipe2'>pipe2</a>() system call likewise does not modify <code>pipefd</code> on failure.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program creates a pipe, and then <a href='/2/fork'>fork</a>(2)s to create a child process; the child inherits a duplicate set of file descriptors that refer to the same pipe. After the <a href='/2/fork'>fork</a>(2), each process closes the file descriptors that it doesn't need for the pipe (see <a href='/7/pipe'>pipe</a>(7)). The parent then writes the string contained in the program's command-line argument to the pipe, and the child reads this string a byte at a time from the pipe and echoes it on standard output.</p>
+<h2>Program source</h2>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int pipefd[2];
+    pid_t cpid;
+    char buf;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;string&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    cpid = fork();
+    if (cpid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid == 0) {    /* Child reads from pipe */
+        close(pipefd[1]);          /* Close unused write end */
+
+        while (read(pipefd[0], &amp;buf, 1) &gt; 0)
+            write(STDOUT_FILENO, &amp;buf, 1);
+
+        write(STDOUT_FILENO, "\n", 1);
+        close(pipefd[0]);
+        _exit(EXIT_SUCCESS);
+
+    } else {            /* Parent writes argv[1] to pipe */
+        close(pipefd[0]);          /* Close unused read end */
+        write(pipefd[1], argv[1], strlen(argv[1]));
+        close(pipefd[1]);          /* Reader will see EOF */
+        wait(NULL);                /* Wait for child */
+        exit(EXIT_SUCCESS);
+    }
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>pipefd</code> is not valid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>(<a href='pipe2'>pipe2</a>()) Invalid value in <code>flags</code>.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The user hard limit on memory that can be allocated for pipes has been reached and the caller is not privileged; see <a href='/7/pipe'>pipe</a>(7).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='pipe2'>pipe2</a>() was added to Linux in version 2.6.27; glibc support is available starting with version 2.9.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='pipe'>pipe</a>(): POSIX.1-2001, POSIX.1-2008.</p>
+<p><a href='pipe2'>pipe2</a>() is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The System V ABI on some architectures allows the use of more than one register for returning multiple values; several architectures (namely, Alpha, IA-64, MIPS, SuperH, and SPARC/SPARC64) (ab)use this feature in order to implement the <a href='pipe'>pipe</a>() system call in a functional manner: the call doesn't take any arguments and returns a pair of file descriptors as the return value on success. The glibc <a href='pipe'>pipe</a>() wrapper function transparently deals with this. See <a href='/2/syscall'>syscall</a>(2) for information regarding registers used for storing second file descriptor.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/fork'>fork</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/socketpair'>socketpair</a>(2), <a href='/2/splice'>splice</a>(2), <a href='/2/tee'>tee</a>(2), <a href='/2/vmsplice'>vmsplice</a>(2), <a href='/2/write'>write</a>(2), <a href='/3/popen'>popen</a>(3), <a href='/7/pipe'>pipe</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

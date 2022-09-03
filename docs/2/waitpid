@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>wait, <a data-bs-content='This is the man page for &lt;code&gt;waitpid&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>waitpid</a>, waitid - wait for process to change state</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/types.h&gt;</strong><br/>
+<strong>#include &lt;sys/wait.h&gt;</strong></p>
+<p><strong>pid_t wait(int *</strong><code>wstatus</code><strong>);</strong></p>
+<p><strong>pid_t waitpid(pid_t </strong><code>pid</code><strong>, int *</strong><code>wstatus</code><strong>, int </strong><code>options</code><strong>);</strong></p>
+<p><strong>int waitid(idtype_t </strong><code>idtype</code><strong>, id_t </strong><code>id</code><strong>, siginfo_t *</strong><code>infop</code><strong>, int </strong><code>options</code><strong>);</strong> /* This is the glibc and POSIX interface; see NOTES for information on the raw system call. */</p>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='waitid'>waitid</a>():</p>
+<blockquote>
+<p>Since glibc 2.26: _XOPEN_SOURCE &gt;= 500 || _POSIX_C_SOURCE &gt;= 200809L<br/>
+Glibc 2.25 and earlier: _XOPEN_SOURCE || /* Since glibc 2.12: */ _POSIX_C_SOURCE &gt;= 200809L || /* Glibc versions &lt;= 2.19: */ _BSD_SOURCE</p>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>All of these system calls are used to wait for state changes in a child of the calling process, and obtain information about the child whose state has changed. A state change is considered to be: the child terminated; the child was stopped by a signal; or the child was resumed by a signal. In the case of a terminated child, performing a wait allows the system to release the resources associated with the child; if a wait is not performed, then the terminated child remains in a "zombie" state (see NOTES below).</p>
+<p>If a child has already changed state, then these calls return immediately. Otherwise, they block until either a child changes state or a signal handler interrupts the call (assuming that system calls are not automatically restarted using the <strong>SA_RESTART</strong> flag of <a href='/2/sigaction'>sigaction</a>(2)). In the remainder of this page, a child whose state has changed and which has not yet been waited upon by one of these system calls is termed <code>waitable</code>.</p>
+<h2>wait() and waitpid()</h2>
+<p>The <a href='wait'>wait</a>() system call suspends execution of the calling thread until one of its children terminates. The call <code>wait(&amp;wstatus)</code> is equivalent to:</p>
+<pre><code>waitpid(-1, &amp;wstatus, 0);</code></pre>
+<p>The <a href='waitpid'>waitpid</a>() system call suspends execution of the calling thread until a child specified by <code>pid</code> argument has changed state. By default, <a href='waitpid'>waitpid</a>() waits only for terminated children, but this behavior is modifiable via the <code>options</code> argument, as described below.</p>
+<p>The value of <code>pid</code> can be:</p>
+<ul>
+<li><p>meaning wait for any child process whose process group ID is equal to the absolute value of <code>pid</code>.</p></li>
+<li><p>meaning wait for any child process.</p></li>
+</ul>
+<ol start="0" type="1">
+<li><p>meaning wait for any child process whose process group ID is equal to that of the calling process at the time of the call to <a href='waitpid'>waitpid</a>().</p></li>
+</ol>
+<ul>
+<li><p>meaning wait for the child whose process ID is equal to the value of <code>pid</code>.</p></li>
+</ul>
+<p>The value of <code>options</code> is an OR of zero or more of the following constants:</p>
+<dl>
+<dt><strong>WNOHANG</strong></dt>
+<dd><p>return immediately if no child has exited.</p>
+</dd>
+<dt><strong>WUNTRACED</strong></dt>
+<dd><p>also return if a child has stopped (but not traced via <a href='/2/ptrace'>ptrace</a>(2)). Status for <code>traced</code> children which have stopped is provided even if this option is not specified.</p>
+</dd>
+<dt><strong>WCONTINUED</strong> (since Linux 2.6.10)</dt>
+<dd><p>also return if a stopped child has been resumed by delivery of <strong>SIGCONT</strong>.</p>
+</dd>
+</dl>
+<p>(For Linux-only options, see below.)</p>
+<p>If <code>wstatus</code> is not NULL, <a href='wait'>wait</a>() and <a href='waitpid'>waitpid</a>() store status information in the <code>int</code> to which it points. This integer can be inspected with the following macros (which take the integer itself as an argument, not a pointer to it, as is done in <a href='wait'>wait</a>() and <a href='waitpid'>waitpid</a>()!):</p>
+<dl>
+<dt><strong><a href='WIFEXITED'>WIFEXITED</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns true if the child terminated normally, that is, by calling <a href='/3/exit'>exit</a>(3) or <a href='/2/_exit'>_exit</a>(2), or by returning from main().</p>
+</dd>
+<dt><strong><a href='WEXITSTATUS'>WEXITSTATUS</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns the exit status of the child. This consists of the least significant 8 bits of the <code>status</code> argument that the child specified in a call to <a href='/3/exit'>exit</a>(3) or <a href='/2/_exit'>_exit</a>(2) or as the argument for a return statement in main(). This macro should be employed only if <strong>WIFEXITED</strong> returned true.</p>
+</dd>
+<dt><strong><a href='WIFSIGNALED'>WIFSIGNALED</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns true if the child process was terminated by a signal.</p>
+</dd>
+<dt><strong><a href='WTERMSIG'>WTERMSIG</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns the number of the signal that caused the child process to terminate. This macro should be employed only if <strong>WIFSIGNALED</strong> returned true.</p>
+</dd>
+<dt><strong><a href='WCOREDUMP'>WCOREDUMP</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns true if the child produced a core dump (see <a href='/5/core'>core</a>(5)). This macro should be employed only if <strong>WIFSIGNALED</strong> returned true.</p>
+<p>This macro is not specified in POSIX.1-2001 and is not available on some UNIX implementations (e.g., AIX, SunOS). Therefore, enclose its use inside <code>#ifdef WCOREDUMP ... #endif</code>.</p>
+</dd>
+<dt><strong><a href='WIFSTOPPED'>WIFSTOPPED</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns true if the child process was stopped by delivery of a signal; this is possible only if the call was done using <strong>WUNTRACED</strong> or when the child is being traced (see <a href='/2/ptrace'>ptrace</a>(2)).</p>
+</dd>
+<dt><strong><a href='WSTOPSIG'>WSTOPSIG</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>returns the number of the signal which caused the child to stop. This macro should be employed only if <strong>WIFSTOPPED</strong> returned true.</p>
+</dd>
+<dt><strong><a href='WIFCONTINUED'>WIFCONTINUED</a>(</strong><code>wstatus</code><strong>)</strong></dt>
+<dd><p>(since Linux 2.6.10) returns true if the child process was resumed by delivery of <strong>SIGCONT</strong>.</p>
+</dd>
+</dl>
+<h2>waitid()</h2>
+<p>The <a href='waitid'>waitid</a>() system call (available since Linux 2.6.9) provides more precise control over which child state changes to wait for.</p>
+<p>The <code>idtype</code> and <code>id</code> arguments select the child(ren) to wait for, as follows:</p>
+<ul>
+<li><p>Wait for the child whose process ID matches <code>id</code>.</p></li>
+<li><p>Wait for the child referred to by the PID file descriptor specified in <code>id</code>. (See <a href='/2/pidfd_open'>pidfd_open</a>(2) for further information on PID file descriptors.)</p></li>
+<li><p>Wait for any child whose process group ID matches <code>id</code>. Since Linux 5.4, if <code>id</code> is zero, then wait for any child that is in the same process group as the caller's process group at the time of the call.</p></li>
+<li><p>Wait for any child; <code>id</code> is ignored.</p></li>
+</ul>
+<p>The child state changes to wait for are specified by ORing one or more of the following flags in <code>options</code>:</p>
+<dl>
+<dt><strong>WEXITED</strong></dt>
+<dd><p>Wait for children that have terminated.</p>
+</dd>
+<dt><strong>WSTOPPED</strong></dt>
+<dd><p>Wait for children that have been stopped by delivery of a signal.</p>
+</dd>
+<dt><strong>WCONTINUED</strong></dt>
+<dd><p>Wait for (previously stopped) children that have been resumed by delivery of <strong>SIGCONT</strong>.</p>
+</dd>
+</dl>
+<p>The following flags may additionally be ORed in <code>options</code>:</p>
+<dl>
+<dt><strong>WNOHANG</strong></dt>
+<dd><p>As for <a href='waitpid'>waitpid</a>().</p>
+</dd>
+<dt><strong>WNOWAIT</strong></dt>
+<dd><p>Leave the child in a waitable state; a later wait call can be used to again retrieve the child status information.</p>
+</dd>
+</dl>
+<p>Upon successful return, <a href='waitid'>waitid</a>() fills in the following fields of the <code>siginfo_t</code> structure pointed to by <code>infop</code>:</p>
+<dl>
+<dt><code>si_pid</code></dt>
+<dd><p>The process ID of the child.</p>
+</dd>
+<dt><code>si_uid</code></dt>
+<dd><p>The real user ID of the child. (This field is not set on most other implementations.)</p>
+</dd>
+<dt><code>si_signo</code></dt>
+<dd><p>Always set to <strong>SIGCHLD</strong>.</p>
+</dd>
+<dt><code>si_status</code></dt>
+<dd><p>Either the exit status of the child, as given to <a href='/2/_exit'>_exit</a>(2) (or <a href='/3/exit'>exit</a>(3)), or the signal that caused the child to terminate, stop, or continue. The <code>si_code</code> field can be used to determine how to interpret this field.</p>
+</dd>
+<dt><code>si_code</code></dt>
+<dd><p>Set to one of: <strong>CLD_EXITED</strong> (child called <a href='/2/_exit'>_exit</a>(2)); <strong>CLD_KILLED</strong> (child killed by signal); <strong>CLD_DUMPED</strong> (child killed by signal, and dumped core); <strong>CLD_STOPPED</strong> (child stopped by signal); <strong>CLD_TRAPPED</strong> (traced child has trapped); or <strong>CLD_CONTINUED</strong> (child continued by <strong>SIGCONT</strong>).</p>
+</dd>
+</dl>
+<p>If <strong>WNOHANG</strong> was specified in <code>options</code> and there were no children in a waitable state, then <a href='waitid'>waitid</a>() returns 0 immediately and the state of the <code>siginfo_t</code> structure pointed to by <code>infop</code> depends on the implementation. To (portably) distinguish this case from that where a child was in a waitable state, zero out the <code>si_pid</code> field before the call and check for a nonzero value in this field after the call returns.</p>
+<p>POSIX.1-2008 Technical Corrigendum 1 (2013) adds the requirement that when <strong>WNOHANG</strong> is specified in <code>options</code> and there were no children in a waitable state, then <a href='waitid'>waitid</a>() should zero out the <code>si_pid</code> and <code>si_signo</code> fields of the structure. On Linux and other implementations that adhere to this requirement, it is not necessary to zero out the <code>si_pid</code> field before calling <a href='waitid'>waitid</a>(). However, not all implementations follow the POSIX.1 specification on this point.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='wait'>wait</a>(): on success, returns the process ID of the terminated child; on error, -1 is returned.</p>
+<p><a href='waitpid'>waitpid</a>(): on success, returns the process ID of the child whose state has changed; if <strong>WNOHANG</strong> was specified and one or more child(ren) specified by <code>pid</code> exist, but have not yet changed state, then 0 is returned. On error, -1 is returned.</p>
+<p><a href='waitid'>waitid</a>(): returns 0 on success or if <strong>WNOHANG</strong> was specified and no child(ren) specified by <code>id</code> has yet changed state; on error, -1 is returned.</p>
+<p>Each of these calls sets <code>errno</code> to an appropriate value in the case of an error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program demonstrates the use of <a href='/2/fork'>fork</a>(2) and <a href='waitpid'>waitpid</a>(). The program creates a child process. If no command-line argument is supplied to the program, then the child suspends its execution using <a href='/2/pause'>pause</a>(2), to allow the user to send signals to the child. Otherwise, if a command-line argument is supplied, then the child exits immediately, using the integer supplied on the command line as the exit status. The parent process executes a loop that monitors the child using <a href='waitpid'>waitpid</a>(), and uses the W*() macros described above to analyze the wait status value.</p>
+<p>The following shell session demonstrates the use of the program:</p>
+<pre><code>$ ./a.out &amp;
+Child PID is 32360
+[1] 32359
+$ kill -STOP 32360
+stopped by signal 19
+$ kill -CONT 32360
+continued
+$ kill -TERM 32360
+killed by signal 15
+[1]+  Done                    ./a.out
+$</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;sys/wait.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    pid_t cpid, w;
+    int wstatus;
+
+    cpid = fork();
+    if (cpid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid == 0) {            /* Code executed by child */
+        printf("Child PID is %jd\n", (intmax_t) getpid());
+        if (argc == 1)
+            pause();                    /* Wait for signals */
+        _exit(atoi(argv[1]));
+
+    } else {                    /* Code executed by parent */
+        do {
+            w = waitpid(cpid, &amp;wstatus, WUNTRACED | WCONTINUED);
+            if (w == -1) {
+                perror("waitpid");
+                exit(EXIT_FAILURE);
+            }
+
+            if (WIFEXITED(wstatus)) {
+                printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+            } else if (WIFSIGNALED(wstatus)) {
+                printf("killed by signal %d\n", WTERMSIG(wstatus));
+            } else if (WIFSTOPPED(wstatus)) {
+                printf("stopped by signal %d\n", WSTOPSIG(wstatus));
+            } else if (WIFCONTINUED(wstatus)) {
+                printf("continued\n");
+            }
+        } while (!WIFEXITED(wstatus) &amp;&amp; !WIFSIGNALED(wstatus));
+        exit(EXIT_SUCCESS);
+    }
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ECHILD</strong></dt>
+<dd><p>(for <a href='wait'>wait</a>()) The calling process does not have any unwaited-for children.</p>
+</dd>
+<dt><strong>ECHILD</strong></dt>
+<dd><p>(for <a href='waitpid'>waitpid</a>() or <a href='waitid'>waitid</a>()) The process specified by <code>pid</code> (<a href='waitpid'>waitpid</a>()) or <code>idtype</code> and <code>id</code> (<a href='waitid'>waitid</a>()) does not exist or is not a child of the calling process. (This can happen for one's own child if the action for <strong>SIGCHLD</strong> is set to <strong>SIG_IGN</strong>. See also the <code>Linux Notes</code> section about threads.)</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p><strong>WNOHANG</strong> was not set and an unblocked signal or a <strong>SIGCHLD</strong> was caught; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The <code>options</code> argument was invalid.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>SVr4, 4.3BSD, POSIX.1-2001.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A child that terminates, but has not been waited for becomes a "zombie". The kernel maintains a minimal set of information about the zombie process (PID, termination status, resource usage information) in order to allow the parent to later perform a wait to obtain information about the child. As long as a zombie is not removed from the system via a wait, it will consume a slot in the kernel process table, and if this table fills, it will not be possible to create further processes. If a parent process terminates, then its "zombie" children (if any) are adopted by <a href='/1/init'>init</a>(1), (or by the nearest "subreaper" process as defined through the use of the <a href='/2/prctl'>prctl</a>(2) <strong>PR_SET_CHILD_SUBREAPER</strong> operation); <a href='/1/init'>init</a>(1) automatically performs a wait to remove the zombies.</p>
+<p>POSIX.1-2001 specifies that if the disposition of <strong>SIGCHLD</strong> is set to <strong>SIG_IGN</strong> or the <strong>SA_NOCLDWAIT</strong> flag is set for <strong>SIGCHLD</strong> (see <a href='/2/sigaction'>sigaction</a>(2)), then children that terminate do not become zombies and a call to <a href='wait'>wait</a>() or <a href='waitpid'>waitpid</a>() will block until all children have terminated, and then fail with <code>errno</code> set to <strong>ECHILD</strong>. (The original POSIX standard left the behavior of setting <strong>SIGCHLD</strong> to <strong>SIG_IGN</strong> unspecified. Note that even though the default disposition of <strong>SIGCHLD</strong> is "ignore", explicitly setting the disposition to <strong>SIG_IGN</strong> results in different treatment of zombie process children.)</p>
+<p>Linux 2.6 conforms to the POSIX requirements. However, Linux 2.4 (and earlier) does not: if a <a href='wait'>wait</a>() or <a href='waitpid'>waitpid</a>() call is made while <strong>SIGCHLD</strong> is being ignored, the call behaves just as though <strong>SIGCHLD</strong> were not being ignored, that is, the call blocks until the next child terminates and then returns the process ID and status of that child.</p>
+<h2>Linux notes</h2>
+<p>In the Linux kernel, a kernel-scheduled thread is not a distinct construct from a process. Instead, a thread is simply a process that is created using the Linux-unique <a href='/2/clone'>clone</a>(2) system call; other routines such as the portable <a href='/3/pthread_create'>pthread_create</a>(3) call are implemented using <a href='/2/clone'>clone</a>(2). Before Linux 2.4, a thread was just a special case of a process, and as a consequence one thread could not wait on the children of another thread, even when the latter belongs to the same thread group. However, POSIX prescribes such functionality, and since Linux 2.4 a thread can, and by default will, wait on children of other threads in the same thread group.</p>
+<p>The following Linux-specific <code>options</code> are for use with children created using <a href='/2/clone'>clone</a>(2); they can also, since Linux 4.7, be used with <a href='waitid'>waitid</a>():</p>
+<dl>
+<dt><strong>__WCLONE</strong></dt>
+<dd><p>Wait for "clone" children only. If omitted, then wait for "non-clone" children only. (A "clone" child is one which delivers no signal, or a signal other than <strong>SIGCHLD</strong> to its parent upon termination.) This option is ignored if <strong>__WALL</strong> is also specified.</p>
+</dd>
+<dt><strong>__WALL</strong> (since Linux 2.4)</dt>
+<dd><p>Wait for all children, regardless of type ("clone" or "non-clone").</p>
+</dd>
+<dt><strong>__WNOTHREAD</strong> (since Linux 2.4)</dt>
+<dd><p>Do not wait for children of other threads in the same thread group. This was the default before Linux 2.4.</p>
+</dd>
+</dl>
+<p>Since Linux 4.7, the <strong>__WALL</strong> flag is automatically implied if the child is being ptraced.</p>
+<h2>C library/kernel differences</h2>
+<p><a href='wait'>wait</a>() is actually a library function that (in glibc) is implemented as a call to <a href='/2/wait4'>wait4</a>(2).</p>
+<p>On some architectures, there is no <a href='waitpid'>waitpid</a>() system call; instead, this interface is implemented via a C library wrapper function that calls <a href='/2/wait4'>wait4</a>(2).</p>
+<p>The raw <a href='waitid'>waitid</a>() system call takes a fifth argument, of type <code>struct rusage *</code>. If this argument is non-NULL, then it is used to return resource usage information about the child, in the same manner as <a href='/2/wait4'>wait4</a>(2). See <a href='/2/getrusage'>getrusage</a>(2) for details.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>According to POSIX.1-2008, an application calling <a href='waitid'>waitid</a>() must ensure that <code>infop</code> points to a <code>siginfo_t</code> structure (i.e., that it is a non-null pointer). On Linux, if <code>infop</code> is NULL, <a href='waitid'>waitid</a>() succeeds, and returns the process ID of the waited-for child. Applications should avoid relying on this inconsistent, nonstandard, and unnecessary feature.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/_exit'>_exit</a>(2), <a href='/2/clone'>clone</a>(2), <a href='/2/fork'>fork</a>(2), <a href='/2/kill'>kill</a>(2), <a href='/2/ptrace'>ptrace</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/signal'>signal</a>(2), <a href='/2/wait4'>wait4</a>(2), <a href='/3/pthread_create'>pthread_create</a>(3), <a href='/5/core'>core</a>(5), <a href='/7/credentials'>credentials</a>(7), <a href='/7/signal'>signal</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

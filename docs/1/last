@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;last&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>last</a>, lastb - show a listing of last logged in users</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>last</strong> [options] [<code>username</code>...] [<code>tty</code>...]</p>
+<p><strong>lastb</strong> [options] [<code>username</code>...] [<code>tty</code>...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>last</strong> searches back through the <code>/var/log/wtmp</code> file (or the file designated by the <strong>-f</strong> option) and displays a list of all users logged in (and out) since that file was created. One or more <code>usernames</code> and/or <code>ttys</code> can be given, in which case <strong>last</strong> will show only the entries matching those arguments. Names of <code>ttys</code> can be abbreviated, thus <strong>last 0</strong> is the same as <strong>last tty0</strong>.</p>
+<p>When catching a <strong>SIGINT</strong> signal (generated by the interrupt key, usually control-C) or a SIGQUIT signal, <strong>last</strong> will show how far it has searched through the file; in the case of the <strong>SIGINT</strong> signal <strong>last</strong> will then terminate.</p>
+<p>The pseudo user <strong>reboot</strong> logs in each time the system is rebooted. Thus <strong>last reboot</strong> will show a log of all the reboots since the log file was created.</p>
+<p><strong>lastb</strong> is the same as <strong>last</strong>, except that by default it shows a log of the <code>/var/log/btmp</code> file, which contains all the bad login attempts.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-a</strong>, <strong>--hostlast</strong></p>
+<blockquote>
+<p>Display the hostname in the last column. Useful in combination with the <strong>--dns</strong> option.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--dns</strong></p>
+<blockquote>
+<p>For non-local logins, Linux stores not only the host name of the remote host, but its IP number as well. This option translates the IP number back into a hostname.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--file</strong> <code>file</code></p>
+<blockquote>
+<p>Tell <strong>last</strong> to use a specific <code>file</code> instead of <code>/var/log/wtmp</code>. The <strong>--file</strong> option can be given multiple times, and all of the specified files will be processed.</p>
+</blockquote>
+<p><strong>-F</strong>, <strong>--fulltimes</strong></p>
+<blockquote>
+<p>Print full login and logout times and dates.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--ip</strong></p>
+<blockquote>
+<p>Like <strong>--dns ,</strong> but displays the host’s IP number instead of the name.</p>
+</blockquote>
+<p><strong>-</strong><code>number</code>; <strong>-n</strong>, <strong>--limit</strong> <code>number</code></p>
+<blockquote>
+<p>Tell <strong>last</strong> how many lines to show.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--present</strong> <code>time</code></p>
+<blockquote>
+<p>Display the users who were present at the specified time. This is like using the options <strong>--since</strong> and <strong>--until</strong> together with the same <code>time</code>.</p>
+</blockquote>
+<p><strong>-R</strong>, <strong>--nohostname</strong></p>
+<blockquote>
+<p>Suppresses the display of the hostname field.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--since</strong> <code>time</code></p>
+<blockquote>
+<p>Display the state of logins since the specified <code>time</code>. This is useful, e.g., to easily determine who was logged in at a particular time. The option is often combined with <strong>--until</strong>.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--until</strong> <code>time</code></p>
+<blockquote>
+<p>Display the state of logins until the specified <code>time</code>.</p>
+</blockquote>
+<p><strong>--time-format</strong> <code>format</code></p>
+<blockquote>
+<p>Define the output timestamp <code>format</code> to be one of <code>notime</code>, <code>short</code>, <code>full</code>, or <code>iso</code>. The <code>notime</code> variant will not print any timestamps at all, <code>short</code> is the default, and <code>full</code> is the same as the <strong>--fulltimes</strong> option. The <code>iso</code> variant will display the timestamp in ISO-8601 format. The ISO format contains timezone information, making it preferable when printouts are investigated outside of the system.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--fullnames</strong></p>
+<blockquote>
+<p>Display full user names and domain names in the output.</p>
+</blockquote>
+<p><strong>-x</strong>, <strong>--system</strong></p>
+<blockquote>
+<p>Display the system shutdown entries and run level changes.</p>
+</blockquote>
+</div></div></div><h1 id='time-formats'><a href='#time-formats'>TIME FORMATS</a></h1><div data-for='time-formats' data-hide><div class='section' data-for='time-formats'><div data-more>
+<p>The options that take the <code>time</code> argument understand the following formats:</p>
+<table>
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">YYYYMMDDhhmmss</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">YYYY-MM-DD hh:mm:ss</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">YYYY-MM-DD hh:mm</td>
+<td style="text-align: left;">(seconds will be set to 00)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">YYYY-MM-DD</td>
+<td style="text-align: left;">(time will be set to 00:00:00)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hh:mm:ss</td>
+<td style="text-align: left;">(date will be set to today)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hh:mm</td>
+<td style="text-align: left;">(date will be set to today, seconds to 00)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">now</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">yesterday</td>
+<td style="text-align: left;">(time is set to 00:00:00)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">today</td>
+<td style="text-align: left;">(time is set to 00:00:00)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tomorrow</td>
+<td style="text-align: left;">(time is set to 00:00:00)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">+5min</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">-5days</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/var/log/wtmp</code>, <code>/var/log/btmp</code></p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The files <code>wtmp</code> and <code>btmp</code> might not be found. The system only logs information in these files if they are present. This is a local configuration issue. If you want the files to be used, they can be created with a simple <a href='/1/touch'>touch</a>(1) command (for example, <strong>touch /var/log/wtmp</strong>).</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/login'>login</a>(1), <a href='/5/wtmp'>wtmp</a>(5), <a href='/8/init'>init</a>(8), <a href='/8/shutdown'>shutdown</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>last</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

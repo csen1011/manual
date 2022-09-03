@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>resize2fs - ext2/ext3/ext4 file system resizer</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>resize2fs</strong> [ <strong>-fFpPMbs</strong> ] [ <strong>-d</strong> <code>debug-flags</code> ] [ <strong>-S</strong> <code>RAID-stride</code> ] [ <strong>-z</strong> <code>undo_file</code> ] <code>device</code> [ <code>size</code> ]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>resize2fs</strong> program will resize ext2, ext3, or ext4 file systems. It can be used to enlarge or shrink an unmounted file system located on <code>device</code>. If the file system is mounted, it can be used to expand the size of the mounted file system, assuming the kernel and the file system supports on-line resizing. (Modern Linux 2.6 kernels will support on-line resize for file systems mounted using ext3 and ext4; ext3 file systems will require the use of file systems with the resize_inode feature enabled.)</p>
+<p>The <code>size</code> parameter specifies the requested new size of the file system. If no units are specified, the units of the <code>size</code> parameter shall be the file system blocksize of the file system. Optionally, the <code>size</code> parameter may be suffixed by one of the following units designators: 'K', 'M', 'G', 'T' (either upper-case or lower-case) or 's' for power-of-two kilobytes, megabytes, gigabytes, terabytes or 512 byte sectors respectively. The <code>size</code> of the file system may never be larger than the size of the partition. If <code>size</code> parameter is not specified, it will default to the size of the partition.</p>
+<p>The <strong>resize2fs</strong> program does not manipulate the size of partitions. If you wish to enlarge a file system, you must make sure you can expand the size of the underlying partition first. This can be done using <a href='/8/fdisk'>fdisk</a>(8) by deleting the partition and recreating it with a larger size or using <a href='/8/lvextend'>lvextend</a>(8), if you're using the logical volume manager <a href='/8/lvm'>lvm</a>(8). When recreating the partition, make sure you create it with the same starting disk cylinder as before! Otherwise, the resize operation will certainly not work, and you may lose your entire file system. After running <a href='/8/fdisk'>fdisk</a>(8), run resize2fs to resize the ext2 file system to use all of the space in the newly enlarged partition.</p>
+<p>If you wish to shrink an ext2 partition, first use <strong>resize2fs</strong> to shrink the size of file system. Then you may use <a href='/8/fdisk'>fdisk</a>(8) to shrink the size of the partition. When shrinking the size of the partition, make sure you do not make it smaller than the new size of the ext2 file system!</p>
+<p>The <strong>-b</strong> and <strong>-s</strong> options enable and disable the 64bit feature, respectively. The resize2fs program will, of course, take care of resizing the block group descriptors and moving other data blocks out of the way, as needed. It is not possible to resize the file system concurrent with changing the 64bit status.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-b</strong></dt>
+<dd><p>Turns on the 64bit feature, resizes the group descriptors as necessary, and moves other metadata out of the way.</p>
+</dd>
+<dt><strong>-d <code>debug-flags</code></strong></dt>
+<dd><p>Turns on various resize2fs debugging features, if they have been compiled into the binary. <code>debug-flags</code> should be computed by adding the numbers of the desired features from the following list:<br/>
+2 - Debug block relocations<br/>
+4 - Debug inode relocations<br/>
+8 - Debug moving the inode table<br/>
+16 - Print timing information<br/>
+32 - Debug minimum file system size (-M) calculation</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Forces resize2fs to proceed with the file system resize operation, overriding some safety checks which resize2fs normally enforces.</p>
+</dd>
+<dt><strong>-F</strong></dt>
+<dd><p>Flush the file system device's buffer caches before beginning. Only really useful for doing <strong>resize2fs</strong> time trials.</p>
+</dd>
+<dt><strong>-M</strong></dt>
+<dd><p>Shrink the file system to minimize its size as much as possible, given the files stored in the file system.</p>
+</dd>
+<dt><strong>-p</strong></dt>
+<dd><p>Print out percentage completion bars for each <strong>resize2fs</strong> phase during an offline (non-trivial) resize operation, so that the user can keep track of what the program is doing. (For very fast resize operations, no progress bars may be displayed.)</p>
+</dd>
+<dt><strong>-P</strong></dt>
+<dd><p>Print an estimate of the number of file system blocks in the file system if it is shrunk using <strong>resize2fs</strong>'s <strong>-M</strong> option and then exit.</p>
+</dd>
+<dt><strong>-s</strong></dt>
+<dd><p>Turns off the 64bit feature and frees blocks that are no longer in use.</p>
+</dd>
+<dt><strong>-S <code>RAID-stride</code></strong></dt>
+<dd><p>The <strong>resize2fs</strong> program will heuristically determine the RAID stride that was specified when the file system was created. This option allows the user to explicitly specify a RAID stride setting to be used by resize2fs instead.</p>
+</dd>
+<dt><strong>-z</strong><code> undo_file</code></dt>
+<dd><p>Before overwriting a file system block, write the old contents of the block to an undo file. This undo file can be used with e2undo(8) to restore the old contents of the file system should something go wrong. If the empty string is passed as the undo_file argument, the undo file will be written to a file named resize2fs-<code>device</code>.e2undo in the directory specified via the <code>E2FSPROGS_UNDO_DIR</code> environment variable.</p>
+</dd>
+</dl>
+<p>WARNING: The undo file cannot be used to recover from a power or system crash.</p>
+</div></div></div><h1 id='known-bugs'><a href='#known-bugs'>KNOWN BUGS</a></h1><div data-for='known-bugs' data-hide><div class='section' data-for='known-bugs'><div data-more>
+<p>The minimum size of the file system as estimated by resize2fs may be incorrect, especially for file systems with 1k and 2k blocksizes.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p><strong>resize2fs</strong> was written by Theodore Ts'o &lt;<a href="mailto:tytso@mit.edu">tytso@mit.edu</a>&gt;.</p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Resize2fs is Copyright 1998 by Theodore Ts'o and PowerQuest, Inc. All rights reserved. As of April, 2000 <strong>Resize2fs</strong> may be redistributed under the terms of the GPL.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/8/fdisk'>fdisk</a>(8), <a href='/8/e2fsck'>e2fsck</a>(8), <a href='/8/mke2fs'>mke2fs</a>(8), <a href='/8/lvm'>lvm</a>(8), <a href='/8/lvextend'>lvextend</a>(8)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

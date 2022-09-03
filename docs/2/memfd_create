@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>memfd_create - create an anonymous file</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/mman.h&gt;</a>
+
+int memfd_create(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name, unsigned int flags);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='memfd_create'>memfd_create</a>() creates an anonymous file and returns a file descriptor that refers to it. The file behaves like a regular file, and so can be modified, truncated, memory-mapped, and so on. However, unlike a regular file, it lives in RAM and has a volatile backing storage. Once all references to the file are dropped, it is automatically released. Anonymous memory is used for all backing pages of the file. Therefore, files created by <a href='memfd_create'>memfd_create</a>() have the same semantics as other anonymous memory allocations such as those allocated using <a href='/2/mmap'>mmap</a>(2) with the <strong>MAP_ANONYMOUS</strong> flag.</p>
+<p>The initial size of the file is set to 0. Following the call, the file size should be set using <a href='/2/ftruncate'>ftruncate</a>(2). (Alternatively, the file may be populated by calls to <a href='/2/write'>write</a>(2) or similar.)</p>
+<p>The name supplied in <code>name</code> is used as a filename and will be displayed as the target of the corresponding symbolic link in the directory <code>/proc/self/fd/</code>. The displayed name is always prefixed with <code>memfd:</code> and serves only for debugging purposes. Names do not affect the behavior of the file descriptor, and as such multiple files can have the same name without any side effects.</p>
+<p>The following values may be bitwise ORed in <code>flags</code> to change the behavior of <a href='memfd_create'>memfd_create</a>():</p>
+<dl>
+<dt><strong>MFD_CLOEXEC</strong></dt>
+<dd><p>Set the close-on-exec (<strong>FD_CLOEXEC</strong>) flag on the new file descriptor. See the description of the <strong>O_CLOEXEC</strong> flag in <a href='/2/open'>open</a>(2) for reasons why this may be useful.</p>
+</dd>
+<dt><strong>MFD_ALLOW_SEALING</strong></dt>
+<dd><p>Allow sealing operations on this file. See the discussion of the <strong>F_ADD_SEALS</strong> and <strong>F_GET_SEALS</strong> operations in <a href='/2/fcntl'>fcntl</a>(2), and also NOTES, below. The initial set of seals is empty. If this flag is not set, the initial set of seals will be <strong>F_SEAL_SEAL</strong>, meaning that no other seals can be set on the file.</p>
+</dd>
+<dt><strong>MFD_HUGETLB</strong> (since Linux 4.14)</dt>
+<dd><p>The anonymous file will be created in the hugetlbfs filesystem using huge pages. See the Linux kernel source file <code>Documentation/admin-guide/mm/hugetlbpage.rst</code> for more information about hugetlbfs. Specifying both <strong>MFD_HUGETLB</strong> and <strong>MFD_ALLOW_SEALING</strong> in <code>flags</code> is supported since Linux 4.16.</p>
+</dd>
+<dt><strong>MFD_HUGE_2MB</strong>, <strong>MFD_HUGE_1GB</strong>, <strong>...</strong></dt>
+<dd><p>Used in conjunction with <strong>MFD_HUGETLB</strong> to select alternative hugetlb page sizes (respectively, 2 MB, 1 GB, ...) on systems that support multiple hugetlb page sizes. Definitions for known huge page sizes are included in the header file <code>&lt;linux/memfd.h&gt;.</code></p>
+<p>For details on encoding huge page sizes not included in the header file, see the discussion of the similarly named constants in <a href='/2/mmap'>mmap</a>(2).</p>
+</dd>
+</dl>
+<p>Unused bits in <code>flags</code> must be 0.</p>
+<p>As its return value, <a href='memfd_create'>memfd_create</a>() returns a new file descriptor that can be used to refer to the file. This file descriptor is opened for both reading and writing (<strong>O_RDWR</strong>) and <strong>O_LARGEFILE</strong> is set for the file descriptor.</p>
+<p>With respect to <a href='/2/fork'>fork</a>(2) and <a href='/2/execve'>execve</a>(2), the usual semantics apply for the file descriptor created by <a href='memfd_create'>memfd_create</a>(). A copy of the file descriptor is inherited by the child produced by <a href='/2/fork'>fork</a>(2) and refers to the same file. The file descriptor is preserved across <a href='/2/execve'>execve</a>(2), unless the close-on-exec flag has been set.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='memfd_create'>memfd_create</a>() returns a new file descriptor. On error, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Below are shown two example programs that demonstrate the use of <a href='memfd_create'>memfd_create</a>() and the file sealing API.</p>
+<p>The first program, <code>t_memfd_create.c</code>, creates a <a href='/5/tmpfs'>tmpfs</a>(5) file using <a href='memfd_create'>memfd_create</a>(), sets a size for the file, maps it into memory, and optionally places some seals on the file. The program accepts up to three command-line arguments, of which the first two are required. The first argument is the name to associate with the file, the second argument is the size to be set for the file, and the optional third argument is a string of characters that specify seals to be set on file.</p>
+<p>The second program, <code>t_get_seals.c</code>, can be used to open an existing file that was created via <a href='memfd_create'>memfd_create</a>() and inspect the set of seals that have been applied to that file.</p>
+<p>The following shell session demonstrates the use of these programs. First we create a <a href='/5/tmpfs'>tmpfs</a>(5) file and set some seals on it:</p>
+<pre><code>$ ./t_memfd_create my_memfd_file 4096 sw &amp;
+[1] 11775
+PID: 11775; fd: 3; /proc/11775/fd/3</code></pre>
+<p>At this point, the <code>t_memfd_create</code> program continues to run in the background. From another program, we can obtain a file descriptor for the file created by <a href='memfd_create'>memfd_create</a>() by opening the <code>/proc/[pid]/fd</code> file that corresponds to the file descriptor opened by <a href='memfd_create'>memfd_create</a>(). Using that pathname, we inspect the content of the <code>/proc/[pid]/fd</code> symbolic link, and use our <code>t_get_seals</code> program to view the seals that have been placed on the file:</p>
+<pre><code>$ readlink /proc/11775/fd/3
+/memfd:my_memfd_file (deleted)
+$ ./t_get_seals /proc/11775/fd/3
+Existing seals: WRITE SHRINK</code></pre>
+<h2>Program source: t_memfd_create.c</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;stdint.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int fd;
+    unsigned int seals;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>addr;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>name, *seals_arg;
+    ssize_t len;
+
+    if (argc &lt; 3) {
+        fprintf(stderr, "%s name size [seals]\n", argv[0]);
+        fprintf(stderr, "\t'seals' can contain any of the "
+                "following characters:\n");
+        fprintf(stderr, "\t\tg - F_SEAL_GROW\n");
+        fprintf(stderr, "\t\ts - F_SEAL_SHRINK\n");
+        fprintf(stderr, "\t\tw - F_SEAL_WRITE\n");
+        fprintf(stderr, "\t\tW - F_SEAL_FUTURE_WRITE\n");
+        fprintf(stderr, "\t\tS - F_SEAL_SEAL\n");
+        exit(EXIT_FAILURE);
+    }
+
+    name = argv[1];
+    len = atoi(argv[2]);
+    seals_arg = argv[3];
+
+    /* Create an anonymous file in tmpfs; allow seals to be
+       placed on the file */
+
+    fd = memfd_create(name, MFD_ALLOW_SEALING);
+    if (fd == -1)
+        errExit("memfd_create");
+
+    /* Size the file as specified on the command line */
+
+    if (ftruncate(fd, len) == -1)
+        errExit("truncate");
+
+    printf("PID: %jd; fd: %d; /proc/%jd/fd/%d\n",
+            (intmax_t) getpid(), fd, (intmax_t) getpid(), fd);
+
+    /* Code to map the file and populate the mapping with data
+       omitted */
+
+    /* If a 'seals' command-line argument was supplied, set some
+       seals on the file */
+
+    if (seals_arg != NULL) {
+        seals = 0;
+
+        if (strchr(seals_arg, 'g') != NULL)
+            seals |= F_SEAL_GROW;
+        if (strchr(seals_arg, 's') != NULL)
+            seals |= F_SEAL_SHRINK;
+        if (strchr(seals_arg, 'w') != NULL)
+            seals |= F_SEAL_WRITE;
+        if (strchr(seals_arg, 'W') != NULL)
+            seals |= F_SEAL_FUTURE_WRITE;
+        if (strchr(seals_arg, 'S') != NULL)
+            seals |= F_SEAL_SEAL;
+
+        if (fcntl(fd, F_ADD_SEALS, seals) == -1)
+            errExit("fcntl");
+    }
+
+    /* Keep running, so that the file created by memfd_create()
+       continues to exist */
+
+    pause();
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<h2>Program source: t_get_seals.c</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;sys/mman.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int fd;
+    unsigned int seals;
+
+    if (argc != 2) {
+        fprintf(stderr, "%s /proc/PID/fd/FD\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDWR);
+    if (fd == -1)
+        errExit("open");
+
+    seals = fcntl(fd, F_GET_SEALS);
+    if (seals == -1)
+        errExit("fcntl");
+
+    printf("Existing seals:");
+    if (seals &amp; F_SEAL_SEAL)
+        printf(" SEAL");
+    if (seals &amp; F_SEAL_GROW)
+        printf(" GROW");
+    if (seals &amp; F_SEAL_WRITE)
+        printf(" WRITE");
+    if (seals &amp; F_SEAL_FUTURE_WRITE)
+        printf(" FUTURE_WRITE");
+    if (seals &amp; F_SEAL_SHRINK)
+        printf(" SHRINK");
+    printf("\n");
+
+    /* Code to map the file and access the contents of the
+       resulting mapping omitted */
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The address in <code>name</code> points to invalid memory.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> included unknown bits.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>name</code> was too long. (The limit is 249 bytes, excluding the terminating null byte.)</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Both <strong>MFD_HUGETLB</strong> and <strong>MFD_ALLOW_SEALING</strong> were specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>There was insufficient memory to create a new anonymous file.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='memfd_create'>memfd_create</a>() system call first appeared in Linux 3.17; glibc support was added in version 2.27.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <a href='memfd_create'>memfd_create</a>() system call is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The <a href='memfd_create'>memfd_create</a>() system call provides a simple alternative to manually mounting a <a href='/5/tmpfs'>tmpfs</a>(5) filesystem and creating and opening a file in that filesystem. The primary purpose of <a href='memfd_create'>memfd_create</a>() is to create files and associated file descriptors that are used with the file-sealing APIs provided by <a href='/2/fcntl'>fcntl</a>(2).</p>
+<p>The <a href='memfd_create'>memfd_create</a>() system call also has uses without file sealing (which is why file-sealing is disabled, unless explicitly requested with the <strong>MFD_ALLOW_SEALING</strong> flag). In particular, it can be used as an alternative to creating files in <code>tmp</code> or as an alternative to using the <a href='/2/open'>open</a>(2) <strong>O_TMPFILE</strong> in cases where there is no intention to actually link the resulting file into the filesystem.</p>
+<h2>File sealing</h2>
+<p>In the absence of file sealing, processes that communicate via shared memory must either trust each other, or take measures to deal with the possibility that an untrusted peer may manipulate the shared memory region in problematic ways. For example, an untrusted peer might modify the contents of the shared memory at any time, or shrink the shared memory region. The former possibility leaves the local process vulnerable to time-of-check-to-time-of-use race conditions (typically dealt with by copying data from the shared memory region before checking and using it). The latter possibility leaves the local process vulnerable to <strong>SIGBUS</strong> signals when an attempt is made to access a now-nonexistent location in the shared memory region. (Dealing with this possibility necessitates the use of a handler for the <strong>SIGBUS</strong> signal.)</p>
+<p>Dealing with untrusted peers imposes extra complexity on code that employs shared memory. Memory sealing enables that extra complexity to be eliminated, by allowing a process to operate secure in the knowledge that its peer can't modify the shared memory in an undesired fashion.</p>
+<p>An example of the usage of the sealing mechanism is as follows:</p>
+<ol type="1">
+<li><p>The first process creates a <a href='/5/tmpfs'>tmpfs</a>(5) file using <a href='memfd_create'>memfd_create</a>(). The call yields a file descriptor used in subsequent steps.</p></li>
+<li><p>The first process sizes the file created in the previous step using <a href='/2/ftruncate'>ftruncate</a>(2), maps it using <a href='/2/mmap'>mmap</a>(2), and populates the shared memory with the desired data.</p></li>
+<li><p>The first process uses the <a href='/2/fcntl'>fcntl</a>(2) <strong>F_ADD_SEALS</strong> operation to place one or more seals on the file, in order to restrict further modifications on the file. (If placing the seal <strong>F_SEAL_WRITE</strong>, then it will be necessary to first unmap the shared writable mapping created in the previous step. Otherwise, behavior similar to <strong>F_SEAL_WRITE</strong> can be achieved by using <strong>F_SEAL_FUTURE_WRITE</strong>, which will prevent future writes via <a href='/2/mmap'>mmap</a>(2) and <a href='/2/write'>write</a>(2) from succeeding while keeping existing shared writable mappings).</p></li>
+<li><p>A second process obtains a file descriptor for the <a href='/5/tmpfs'>tmpfs</a>(5) file and maps it. Among the possible ways in which this could happen are the following:</p>
+<ul>
+<li><p>The process that called <a href='memfd_create'>memfd_create</a>() could transfer the resulting file descriptor to the second process via a UNIX domain socket (see <a href='/7/unix'>unix</a>(7) and <a href='/3/cmsg'>cmsg</a>(3)). The second process then maps the file using <a href='/2/mmap'>mmap</a>(2).</p></li>
+<li><p>The second process is created via <a href='/2/fork'>fork</a>(2) and thus automatically inherits the file descriptor and mapping. (Note that in this case and the next, there is a natural trust relationship between the two processes, since they are running under the same user ID. Therefore, file sealing would not normally be necessary.)</p></li>
+<li><p>The second process opens the file <code>/proc/&lt;pid&gt;/fd/&lt;fd&gt;</code>, where <code>&lt;pid&gt;</code> is the PID of the first process (the one that called <a href='memfd_create'>memfd_create</a>()), and <code>&lt;fd&gt;</code> is the number of the file descriptor returned by the call to <a href='memfd_create'>memfd_create</a>() in that process. The second process then maps the file using <a href='/2/mmap'>mmap</a>(2).</p></li>
+</ul></li>
+<li><p>The second process uses the <a href='/2/fcntl'>fcntl</a>(2) <strong>F_GET_SEALS</strong> operation to retrieve the bit mask of seals that has been applied to the file. This bit mask can be inspected in order to determine what kinds of restrictions have been placed on file modifications. If desired, the second process can apply further seals to impose additional restrictions (so long as the <strong>F_SEAL_SEAL</strong> seal has not yet been applied).</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/fcntl'>fcntl</a>(2), <a href='/2/ftruncate'>ftruncate</a>(2), <a href='/2/mmap'>mmap</a>(2), <a href='/2/shmget'>shmget</a>(2), <a href='/3/shm_open'>shm_open</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

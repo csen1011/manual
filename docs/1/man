@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>man - an interface to the system reference manuals</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>man</strong> [ <code>man options</code> ] [ [ <code>section</code> ] <code>page</code>  . . . ] ` . .<br/>
+<strong>man</strong> <strong>-k</strong> [ <code>apropos options</code> ] <code>regexp</code> . . .<br/>
+<strong>man</strong> <strong>-K</strong> [ <code>man options</code> ] [ <code>section</code> ] <code>term</code> . . .<br/>
+<strong>man</strong> <strong>-f</strong> [ <code>whatis</code> <code>options</code> ] <code>page</code> . . .<br/>
+<strong>man</strong> <strong>-l</strong> [ <code>man options</code> ] <code>file</code> . . .<br/>
+<strong>man</strong> <strong>-w</strong> | <strong>-W</strong> [ <code>man options</code> ] <code>page</code> . . .</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>man</strong> is the system's manual pager. Each <code>page</code> argument given to <strong>man</strong> is normally the name of a program, utility or function. The <code>manual page</code> associated with each of these arguments is then found and displayed. A <code>section</code>, if provided, will direct <strong>man</strong> to look only in that <code>section</code> of the manual. The default action is to search in all of the available <code>sections</code> following a pre-defined order (see <strong>DEFAULTS</strong>), and to show only the first <code>page</code> found, even if <code>page</code> exists in several <code>sections</code>.</p>
+<p>The table below shows the <code>section</code> numbers of the manual followed by the types of pages they contain.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Executable programs or shell commands</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">System calls (functions provided by the kernel)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Library calls (functions within program libraries)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Special files (usually found in <code>/dev</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">File formats and conventions, e.g. <code>/etc/passwd</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">Miscellaneous (including macro packages and conventions), e.g. <a href='/7/man'>man</a>(7), <a href='/7/groff'>groff</a>(7), <a href='/7/man-pages'>man-pages</a>(7)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">System administration commands (usually only for root)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">Kernel routines [ Non standard ]</td>
+</tr>
+</tbody>
+</table>
+<p>A manual <code>page</code> consists of several sections.</p>
+<p>Conventional section names include <strong>NAME</strong>, <strong>SYNOPSIS</strong>, <strong>CONFIGURATION</strong>, <strong>DESCRIPTION</strong>, <strong>OPTIONS</strong>, <strong>EXIT STATUS</strong>, <strong>RETURN VALUE</strong>, <strong>ERRORS</strong>, <strong>ENVIRONMENT</strong>, <strong>FILES</strong>, <strong>VERSIONS</strong>, <strong>CONFORMING TO</strong>, <strong>NOTES</strong>, <strong>BUGS</strong>, <strong>EXAMPLE</strong>, <strong>AUTHORS</strong>, and <strong>SEE ALSO</strong>.</p>
+<p>The following conventions apply to the <strong>SYNOPSIS</strong> section and can be used as a guide in other sections.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>bold text</strong></td>
+<td style="text-align: left;">type exactly as shown.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>italic text</code></td>
+<td style="text-align: left;">replace with appropriate argument.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">[ <strong>-abc</strong> ]</td>
+<td style="text-align: left;">any or all arguments within [ ] are optional.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>-a </strong>| <strong>-b</strong></td>
+<td style="text-align: left;">options delimited by | cannot be used together.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>argument</code> . . .</td>
+<td style="text-align: left;"><code>argument</code> is repeatable.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">[ <code>expression</code> ] . . .</td>
+<td style="text-align: left;">entire <code>expression</code> within [ ] is repeatable.</td>
+</tr>
+</tbody>
+</table>
+<p>Exact rendering may vary depending on the output device. For instance, man will usually not be able to render italics when running in a terminal, and will typically use underlined or coloured text instead.</p>
+<p>The command or function illustration is a pattern that should match all possible invocations. In some cases it is advisable to illustrate several exclusive invocations as is shown in the <strong>SYNOPSIS</strong> section of this manual page.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<dl>
+<dt><strong>man</strong><code> ls</code></dt>
+<dd><p>Display the manual page for the <code>item</code> (program) <code>ls</code>.</p>
+</dd>
+<dt><strong>man</strong> <code>man</code>.<code>7</code></dt>
+<dd><p>Display the manual page for macro package <code>man</code> from section <code>7</code>. (This is an alternative spelling of "<strong>man</strong> <code>7 man</code>".)</p>
+</dd>
+<dt><strong>man '</strong><code>man</code>(<code>7</code>)'</dt>
+<dd><p>Display the manual page for macro package <code>man</code> from section <code>7</code>. (This is another alternative spelling of "<strong>man</strong> <code>7 man</code>". It may be more convenient when copying and pasting cross-references to manual pages. Note that the parentheses must normally be quoted to protect them from the shell.)</p>
+</dd>
+<dt><strong>man -a</strong><code> intro</code></dt>
+<dd><p>Display, in succession, all of the available <code>intro</code> manual pages contained within the manual. It is possible to quit between successive displays or skip any of them.</p>
+</dd>
+<dt><strong>man -t </strong><code>bash </code>|<code> lpr -Pps</code></dt>
+<dd><p>Format the manual page for <code>bash</code> into the default <strong>troff</strong> or <strong>groff</strong> format and pipe it to the printer named <code>ps</code>. The default output for <strong>groff</strong> is usually PostScript. <strong>man --help</strong> should advise as to which processor is bound to the <strong>-t</strong> option.</p>
+</dd>
+<dt><strong>man -l -T</strong><code>dvi ./foo.1x.gz</code><strong> &gt; </strong><code>./foo.1x.dvi</code></dt>
+<dd><p>This command will decompress and format the nroff source manual page <code>./foo.1x.gz</code> into a <strong>device independent (dvi)</strong> file. The redirection is necessary as the <strong>-T</strong> flag causes output to be directed to <strong>stdout</strong> with no pager. The output could be viewed with a program such as <strong>xdvi</strong> or further processed into PostScript using a program such as <strong>dvips</strong>.</p>
+</dd>
+<dt><strong>man -k</strong><code> printf</code></dt>
+<dd><p>Search the short descriptions and manual page names for the keyword <code>printf</code> as regular expression. Print out any matches. Equivalent to <strong>apropos</strong><code> printf</code><strong>.</strong></p>
+</dd>
+<dt><strong>man -f</strong><code> smail</code></dt>
+<dd><p>Lookup the manual pages referenced by <code>smail</code> and print out the short descriptions of any found. Equivalent to <strong>whatis</strong><code> smail</code><strong>.</strong></p>
+</dd>
+</dl>
+</div></div><h1 id='overview'><a href='#overview'>OVERVIEW</a></h1><div data-for='overview' data-hide><div class='section' data-for='overview'><div data-more>
+<p>Many options are available to <strong>man</strong> in order to give as much flexibility as possible to the user. Changes can be made to the search path, section order, output processor, and other behaviours and operations detailed below.</p>
+<p>If set, various environment variables are interrogated to determine the operation of <strong>man</strong>. It is possible to set the "catch-all" variable $<strong>MANOPT</strong> to any string in command line format, with the exception that any spaces used as part of an option's argument must be escaped (preceded by a backslash). <strong>man</strong> will parse $<strong>MANOPT</strong> prior to parsing its own command line. Those options requiring an argument will be overridden by the same options found on the command line. To reset all of the options set in $<strong>MANOPT</strong>, <strong>-D</strong> can be specified as the initial command line option. This will allow man to "forget" about the options specified in $<strong>MANOPT</strong>, although they must still have been valid.</p>
+<p>Manual pages are normally stored in <a href='/1/nroff'>nroff</a>(1) format under a directory such as <code>/usr/share/man</code>. In some installations, there may also be preformatted <code>cat pages</code> to improve performance. See <a href='/5/manpath'>manpath</a>(5) for details of where these files are stored.</p>
+<p>This package supports manual pages in multiple languages, controlled by your <code>locale</code>. If your system did not set this up for you automatically, then you may need to set $<strong>LC_MESSAGES</strong>, $<strong>LANG</strong>, or another system-dependent environment variable to indicate your preferred locale, usually specified in the <strong>POSIX</strong> format:</p>
+<p>&lt;<code>language</code>&gt;[ <strong>_</strong>&lt;<code>territory</code>&gt; [ <strong>.</strong>&lt;<code>character-set</code>&gt; [ <strong>,</strong>&lt;<code>version</code>&gt; ] ] ]</p>
+<p>If the desired page is available in your <code>locale</code>, it will be displayed in lieu of the standard (usually American English) page.</p>
+<p>If you find that the translations supplied with this package are not available in your native language and you would like to supply them, please contact the maintainer who will be coordinating such activity.</p>
+<p>Individual manual pages are normally written and maintained by the maintainers of the program, function, or other topic that they document, and are not included with this package. If you find that a manual page is missing or inadequate, please report that to the maintainers of the package in question.</p>
+<p>For information regarding other features and extensions available with this manual pager, please read the documents supplied with the package.</p>
+</div></div></div><h1 id='defaults'><a href='#defaults'>DEFAULTS</a></h1><div data-for='defaults' data-hide><div class='section' data-for='defaults'><div data-more>
+<p>The order of sections to search may be overridden by the environment variable $<strong>MANSECT</strong> or by the <strong>SECTION</strong> directive in <code>/etc/manpath.config</code>. By default it is as follows:</p>
+<blockquote>
+<p>1 n l 8 3 0 2 3posix 3pm 3perl 3am 5 4 9 6 7</p>
+</blockquote>
+<p>The formatted manual page is displayed using a <code>pager</code>. This can be specified in a number of ways, or else will fall back to a default (see option <strong>-P</strong> for details).</p>
+<p>The filters are deciphered by a number of means. Firstly, the command line option <strong>-p</strong> or the environment variable $<strong>MANROFFSEQ</strong> is interrogated. If <strong>-p</strong> was not used and the environment variable was not set, the initial line of the nroff file is parsed for a preprocessor string. To contain a valid preprocessor string, the first line must resemble</p>
+<p><strong>'\"</strong> &lt;<strong>string</strong>&gt;</p>
+<p>where <strong>string</strong> can be any combination of letters described by option <strong>-p</strong> below.</p>
+<p>If none of the above methods provide any filter information, a default set is used.</p>
+<p>A formatting pipeline is formed from the filters and the primary formatter (<strong>nroff</strong> or [<strong>tg</strong>]<strong>roff</strong> with <strong>-t</strong>) and executed. Alternatively, if an executable program <code>mandb_nfmt</code> (or <code>mandb_tfmt</code> with <strong>-t</strong>) exists in the man tree root, it is executed instead. It gets passed the manual source file, the preprocessor string, and optionally the device specified with <strong>-T</strong> or <strong>-E</strong> as arguments.</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Non-argument options that are duplicated either on the command line, in $<strong>MANOPT</strong>, or both, are not harmful. For options that require an argument, each duplication will override the previous argument value.</p>
+<h2>General options</h2>
+<dl>
+<dt><strong>-C </strong><code>file</code><strong>, <strong>--config-file=</strong></strong><code>file</code></dt>
+<dd><p>Use this user configuration file rather than the default of <code>~/.manpath</code>.</p>
+</dd>
+<dt><strong>-d</strong>, <strong>--debug</strong></dt>
+<dd><p>Print debugging information.</p>
+</dd>
+<dt><strong>-D</strong>, <strong>--default</strong></dt>
+<dd><p>This option is normally issued as the very first option and resets <strong>man's</strong> behaviour to its default. Its use is to reset those options that may have been set in $<strong>MANOPT</strong>. Any options that follow <strong>-D</strong> will have their usual effect.</p>
+</dd>
+<dt><strong>--warnings[=</strong><code>warnings</code><strong>]</strong></dt>
+<dd><p>Enable warnings from <code>groff</code>. This may be used to perform sanity checks on the source text of manual pages. <code>warnings</code> is a comma-separated list of warning names; if it is not supplied, the default is "mac". See the “Warnings” node in <strong>info groff</strong> for a list of available warning names.</p>
+</dd>
+</dl>
+<h2>Main modes of operation</h2>
+<dl>
+<dt><strong>-f</strong>, <strong>--whatis</strong></dt>
+<dd><p>Equivalent to <strong>whatis</strong>. Display a short description from the manual page, if available. See <a href='/1/whatis'>whatis</a>(1) for details.</p>
+</dd>
+<dt><strong>-k</strong>, <strong>--apropos</strong></dt>
+<dd><p>Equivalent to <strong>apropos</strong>. Search the short manual page descriptions for keywords and display any matches. See <a href='/1/apropos'>apropos</a>(1) for details.</p>
+</dd>
+<dt><strong>-K</strong>, <strong>--global-apropos</strong></dt>
+<dd><p>Search for text in all manual pages. This is a brute-force search, and is likely to take some time; if you can, you should specify a section to reduce the number of pages that need to be searched. Search terms may be simple strings (the default), or regular expressions if the <strong>--regex</strong> option is used.</p>
+<p>Note that this searches the <code>sources</code> of the manual pages, not the rendered text, and so may include false positives due to things like comments in source files. Searching the rendered text would be much slower.</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--local-file</strong></dt>
+<dd><p>Activate "local" mode. Format and display local manual files instead of searching through the system's manual collection. Each manual page argument will be interpreted as an nroff source file in the correct format. No cat file is produced. If '-' is listed as one of the arguments, input will be taken from stdin. When this option is not used, and man fails to find the page required, before displaying the error message, it attempts to act as if this option was supplied, using the name as a filename and looking for an exact match.</p>
+</dd>
+<dt><strong>-w</strong>, <strong>--where</strong>, <strong>--path</strong>, <strong>--location</strong></dt>
+<dd><p>Don't actually display the manual page, but do print the location of the source nroff file that would be formatted. If the <strong>-a</strong> option is also used, then print the locations of all source files that match the search criteria.</p>
+</dd>
+<dt><strong>-W</strong>, <strong>--where-cat</strong>, <strong>--location-cat</strong></dt>
+<dd><p>Don't actually display the manual page, but do print the location of the preformatted cat file that would be displayed. If the <strong>-a</strong> option is also used, then print the locations of all preformatted cat files that match the search criteria.</p>
+<p>If <strong>-w</strong> and <strong>-W</strong> are both used, then print both source file and cat file separated by a space. If all of <strong>-w</strong>, <strong>-W</strong>, and <strong>-a</strong> are used, then do this for each possible match.</p>
+</dd>
+<dt><strong>-c</strong>, <strong>--catman</strong></dt>
+<dd><p>This option is not for general use and should only be used by the <strong>catman</strong> program.</p>
+</dd>
+<dt><strong>-R </strong><code>encoding, </code><strong>--recode=<code>encoding</code></strong></dt>
+<dd><p>Instead of formatting the manual page in the usual way, output its source converted to the specified <code>encoding</code>. If you already know the encoding of the source file, you can also use <a href='/1/manconv'>manconv</a>(1) directly. However, this option allows you to convert several manual pages to a single encoding without having to explicitly state the encoding of each, provided that they were already installed in a structure similar to a manual page hierarchy.</p>
+<p>Consider using <a href='/1/man-recode'>man-recode</a>(1) instead for converting multiple manual pages, since it has an interface designed for bulk conversion and so can be much faster.</p>
+</dd>
+</dl>
+<h2>Finding manual pages</h2>
+<dl>
+<dt><strong>-L </strong><code>locale</code><strong>, <strong>--locale=</strong></strong><code>locale</code></dt>
+<dd><p><strong>man</strong> will normally determine your current locale by a call to the C function <a href='/3/setlocale'>setlocale</a>(3) which interrogates various environment variables, possibly including $<strong>LC_MESSAGES</strong> and $<strong>LANG</strong>. To temporarily override the determined value, use this option to supply a <code>locale</code> string directly to <strong>man</strong>. Note that it will not take effect until the search for pages actually begins. Output such as the help message will always be displayed in the initially determined locale.</p>
+</dd>
+<dt><strong>-m</strong> <code>system</code> [ ,. . . ] , <strong>--systems=</strong><code>system</code> [ ,. . . ]</dt>
+<dd><p>If this system has access to other operating systems' manual pages, they can be accessed using this option. To search for a manual page from NewOS's manual page collection, use the option <strong>-m</strong> <strong>NewOS</strong>.</p>
+</dd>
+</dl>
+<p>The <code>system</code> specified can be a combination of comma delimited operating system names. To include a search of the native operating system's manual pages, include the system name <strong>man</strong> in the argument string. This option will override the $<strong>SYSTEM</strong> environment variable.</p>
+<dl>
+<dt><strong>-M </strong><code>path</code><strong>, <strong>--manpath=</strong></strong><code>path</code></dt>
+<dd><p>Specify an alternate manpath to use. By default, <strong>man</strong> uses <strong>manpath</strong> derived code to determine the path to search. This option overrides the $<strong>MANPATH</strong> environment variable and causes option <strong>-m</strong> to be ignored.</p>
+</dd>
+</dl>
+<p>A path specified as a manpath must be the root of a manual page hierarchy structured into sections as described in the man-db manual (under "The manual page system"). To view manual pages outside such hierarchies, see the <strong>-l</strong> option.</p>
+<dl>
+<dt><strong>-S</strong> <code>list</code>, <strong>-s</strong> <code>list</code>, <strong>--sections=</strong><code>list</code></dt>
+<dd><p>The given <code>list</code> is a colon- or comma-separated list of sections, used to determine which manual sections to search and in what order. This option overrides the $<strong>MANSECT</strong> environment variable. (The <strong>-s</strong> spelling is for compatibility with System V.)</p>
+</dd>
+<dt><strong>-e </strong><code>sub-extension</code><strong>, <strong>--extension=</strong></strong><code>sub-extension</code></dt>
+<dd><p>Some systems incorporate large packages of manual pages, such as those that accompany the <strong>Tcl</strong> package, into the main manual page hierarchy. To get around the problem of having two manual pages with the same name such as <a href='/3/exit'>exit</a>(3), the <strong>Tcl</strong> pages were usually all assigned to section <strong>l</strong>. As this is unfortunate, it is now possible to put the pages in the correct section, and to assign a specific "extension" to them, in this case, <strong>exit</strong>(3tcl). Under normal operation, <strong>man</strong> will display <a href='/3/exit'>exit</a>(3) in preference to <strong>exit</strong>(3tcl). To negotiate this situation and to avoid having to know which section the page you require resides in, it is now possible to give <strong>man</strong> a <code>sub-extension</code> string indicating which package the page must belong to. Using the above example, supplying the option <strong>-e tcl</strong> to <strong>man</strong> will restrict the search to pages having an extension of <strong>*tcl</strong>.</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--ignore-case</strong></dt>
+<dd><p>Ignore case when searching for manual pages. This is the default.</p>
+</dd>
+<dt><strong>-I</strong>, <strong>--match-case</strong></dt>
+<dd><p>Search for manual pages case-sensitively.</p>
+</dd>
+<dt><strong>--regex</strong></dt>
+<dd><p>Show all pages with any part of either their names or their descriptions matching each <code>page</code> argument as a regular expression, as with <a href='/1/apropos'>apropos</a>(1). Since there is usually no reasonable way to pick a "best" page when searching for a regular expression, this option implies <strong>-a</strong>.</p>
+</dd>
+<dt><strong>--wildcard</strong></dt>
+<dd><p>Show all pages with any part of either their names or their descriptions matching each <code>page</code> argument using shell-style wildcards, as with <a href='/1/apropos'>apropos</a>(1) <strong>--wildcard</strong>. The <code>page</code> argument must match the entire name or description, or match on word boundaries in the description. Since there is usually no reasonable way to pick a "best" page when searching for a wildcard, this option implies <strong>-a</strong>.</p>
+</dd>
+<dt><strong>--names-only</strong></dt>
+<dd><p>If the <strong>--regex</strong> or <strong>--wildcard</strong> option is used, match only page names, not page descriptions, as with <a href='/1/whatis'>whatis</a>(1). Otherwise, no effect.</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--all</strong></dt>
+<dd><p>By default, <strong>man</strong> will exit after displaying the most suitable manual page it finds. Using this option forces <strong>man</strong> to display all the manual pages with names that match the search criteria.</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--update</strong></dt>
+<dd><p>This option causes <strong>man</strong> to update its database caches of installed manual pages. This is only needed in rare situations, and it is normally better to run <a href='/8/mandb'>mandb</a>(8) instead.</p>
+</dd>
+<dt><strong>--no-subpages</strong></dt>
+<dd><p>By default, <strong>man</strong> will try to interpret pairs of manual page names given on the command line as equivalent to a single manual page name containing a hyphen or an underscore. This supports the common pattern of programs that implement a number of subcommands, allowing them to provide manual pages for each that can be accessed using similar syntax as would be used to invoke the subcommands themselves. For example:</p>
+</dd>
+</dl>
+<pre><code>  $ man -aw git diff
+  /usr/share/man/man1/git-diff.1.gz</code></pre>
+<p>To disable this behaviour, use the <strong>--no-subpages</strong> option.</p>
+<pre><code>  $ man -aw --no-subpages git diff
+  /usr/share/man/man1/git.1.gz
+  /usr/share/man/man3/Git.3pm.gz
+  /usr/share/man/man1/diff.1.gz</code></pre>
+<h2>Controlling formatted output</h2>
+<dl>
+<dt><strong>-P </strong><code>pager</code><strong>, <strong>--pager=</strong></strong><code>pager</code></dt>
+<dd><p>Specify which output pager to use. By default, <strong>man</strong> uses <strong>pager</strong>, falling back to <strong>cat</strong> if <strong>pager</strong> is not found or is not executable. This option overrides the $<strong>MANPAGER</strong> environment variable, which in turn overrides the $<strong>PAGER</strong> environment variable. It is not used in conjunction with <strong>-f</strong> or <strong>-k</strong>.</p>
+</dd>
+</dl>
+<p>The value may be a simple command name or a command with arguments, and may use shell quoting (backslashes, single quotes, or double quotes). It may not use pipes to connect multiple commands; if you need that, use a wrapper script, which may take the file to display either as an argument or on standard input.</p>
+<dl>
+<dt><strong>-r </strong><code>prompt</code><strong>, <strong>--prompt=</strong></strong><code>prompt</code></dt>
+<dd><p>If a recent version of <strong>less</strong> is used as the pager, <strong>man</strong> will attempt to set its prompt and some sensible options. The default prompt looks like</p>
+</dd>
+</dl>
+<p><strong> Manual page</strong><code> name</code><strong>(</strong><code>sec</code><strong>) line</strong><code> x</code></p>
+<p>where <code>name</code> denotes the manual page name, <code>sec</code> denotes the section it was found under and <code>x</code> the current line number. This is achieved by using the $<strong>LESS</strong> environment variable.</p>
+<p>Supplying <strong>-r</strong> with a string will override this default. The string may contain the text <strong>$MAN_PN</strong> which will be expanded to the name of the current manual page and its section name surrounded by "(" and ")". The string used to produce the default could be expressed as</p>
+<p><strong>\ Manual\ page\ \$MAN_PN\ ?ltline\ %lt?L/%L.:</strong><br/>
+<strong>byte\ %bB?s/%s..?\ (END):?pB\ %pB\\%..</strong><br/>
+<strong>(press h for help or q to quit)</strong></p>
+<p>It is broken into three lines here for the sake of readability only. For its meaning see the <a href='/1/less'>less</a>(1) manual page. The prompt string is first evaluated by the shell. All double quotes, back-quotes and backslashes in the prompt must be escaped by a preceding backslash. The prompt string may end in an escaped $ which may be followed by further options for less. By default <strong>man</strong> sets the <strong>-ix8</strong> options.</p>
+<p>The $<strong>MANLESS</strong> environment variable described below may be used to set a default prompt string if none is supplied on the command line.</p>
+<dl>
+<dt><strong>-7</strong>, <strong>--ascii</strong></dt>
+<dd><p>When viewing a pure <code>ascii</code>(7) manual page on a 7 bit terminal or terminal emulator, some characters may not display correctly when using the <code>latin1</code>(7) device description with <strong>GNU</strong> <strong>nroff</strong>. This option allows pure <code>ascii</code> manual pages to be displayed in <code>ascii</code> with the <code>latin1</code> device. It will not translate any <code>latin1</code> text. The following table shows the translations performed: some parts of it may only be displayed properly when using <strong>GNU</strong> <strong>nroff</strong>'s <code>latin1</code>(7) device.</p>
+</dd>
+</dl>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Description</th>
+<th style="text-align: center;">Octal</th>
+<th style="text-align: center;">latin1</th>
+<th style="text-align: center;">ascii</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">continuation hyphen</td>
+<td style="text-align: center;">255</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">-</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bullet (middle dot)</td>
+<td style="text-align: center;">267</td>
+<td style="text-align: center;">·</td>
+<td style="text-align: center;">o</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">acute accent</td>
+<td style="text-align: center;">264</td>
+<td style="text-align: center;">´</td>
+<td style="text-align: center;">'</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">multiplication sign</td>
+<td style="text-align: center;">327</td>
+<td style="text-align: center;">×</td>
+<td style="text-align: center;">x</td>
+</tr>
+</tbody>
+</table>
+<p>If the <code>latin1</code> column displays correctly, your terminal may be set up for <code>latin1</code> characters and this option is not necessary. If the <code>latin1</code> and <code>ascii</code> columns are identical, you are reading this page using this option or <strong>man</strong> did not format this page using the <code>latin1</code> device description. If the <code>latin1</code> column is missing or corrupt, you may need to view manual pages with this option.</p>
+<p>This option is ignored when using options <strong>-t</strong>, <strong>-H</strong>, <strong>-T</strong>, or <strong>-Z</strong> and may be useless for <strong>nroff</strong> other than <strong>GNU's</strong>.</p>
+<dl>
+<dt><strong>-E </strong><code>encoding, </code><strong>--encoding=<code>encoding</code></strong></dt>
+<dd><p>Generate output for a character encoding other than the default. For backward compatibility, <code>encoding</code> may be an <strong>nroff</strong> device such as <strong>ascii</strong>, <strong>latin1</strong>, or <strong>utf8</strong> as well as a true character encoding such as <strong>UTF-8</strong>.</p>
+</dd>
+<dt><strong>--no-hyphenation</strong>, <strong>--nh</strong></dt>
+<dd><p>Normally, <strong>nroff</strong> will automatically hyphenate text at line breaks even in words that do not contain hyphens, if it is necessary to do so to lay out words on a line without excessive spacing. This option disables automatic hyphenation, so words will only be hyphenated if they already contain hyphens.</p>
+</dd>
+</dl>
+<p>If you are writing a manual page and simply want to prevent <strong>nroff</strong> from hyphenating a word at an inappropriate point, do not use this option, but consult the <strong>nroff</strong> documentation instead; for instance, you can put "\%" inside a word to indicate that it may be hyphenated at that point, or put "\%" at the start of a word to prevent it from being hyphenated.</p>
+<dl>
+<dt><strong>--no-justification</strong>, <strong>--nj</strong></dt>
+<dd><p>Normally, <strong>nroff</strong> will automatically justify text to both margins. This option disables full justification, leaving justified only to the left margin, sometimes called "ragged-right" text.</p>
+</dd>
+</dl>
+<p>If you are writing a manual page and simply want to prevent <strong>nroff</strong> from justifying certain paragraphs, do not use this option, but consult the <strong>nroff</strong> documentation instead; for instance, you can use the ".na", ".nf", ".fi", and ".ad" requests to temporarily disable adjusting and filling.</p>
+<dl>
+<dt><strong>-p </strong><code>string</code><strong>, <strong>--preprocessor=</strong></strong><code>string</code></dt>
+<dd><p>Specify the sequence of preprocessors to run before <strong>nroff</strong> or <strong>troff</strong>/<strong>groff</strong>. Not all installations will have a full set of preprocessors. Some of the preprocessors and the letters used to designate them are: <strong>eqn</strong> (<strong>e</strong>), <strong>grap</strong> (<strong>g</strong>), <strong>pic</strong> (<strong>p</strong>), <strong>tbl</strong> (<strong>t</strong>), <strong>vgrind</strong> (<strong>v</strong>), <strong>refer</strong> (<strong>r</strong>). This option overrides the $<strong>MANROFFSEQ</strong> environment variable. <strong>zsoelim</strong> is always run as the very first preprocessor.</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--troff</strong></dt>
+<dd><p>Use <code>groff -mandoc</code> to format the manual page to stdout. This option is not required in conjunction with <strong>-H</strong>, <strong>-T</strong>, or <strong>-Z</strong>.</p>
+</dd>
+<dt><strong>-T[</strong><code>device</code><strong>], --troff-device[=</strong><code>device</code><strong>]</strong></dt>
+<dd><p>This option is used to change <strong>groff</strong> (or possibly <strong>troff's</strong>) output to be suitable for a device other than the default. It implies <strong>-t</strong>. Examples (provided with Groff-1.17) include <strong>dvi</strong>, <strong>latin1</strong>, <strong>ps</strong>, <strong>utf8</strong>, <strong>X75</strong> and <strong>X100</strong>.</p>
+</dd>
+<dt><strong>-H[</strong><code>browser</code><strong>], --html[=</strong><code>browser</code><strong>]</strong></dt>
+<dd><p>This option will cause <strong>groff</strong> to produce HTML output, and will display that output in a web browser. The choice of browser is determined by the optional <code>browser</code> argument if one is provided, by the $<strong>BROWSER</strong> environment variable, or by a compile-time default if that is unset (usually <strong>lynx</strong>). This option implies <strong>-t</strong>, and will only work with <strong>GNU</strong> <strong>troff</strong>.</p>
+</dd>
+<dt><strong>-X[</strong><code>dpi</code><strong>], --gxditview[=</strong><code>dpi</code><strong>]</strong></dt>
+<dd><p>This option displays the output of <strong>groff</strong> in a graphical window using the <strong>gxditview</strong> program. The <code>dpi</code> (dots per inch) may be 75, 75-12, 100, or 100-12, defaulting to 75; the -12 variants use a 12-point base font. This option implies <strong>-T</strong> with the X75, X75-12, X100, or X100-12 device respectively.</p>
+</dd>
+<dt><strong>-Z</strong>, <strong>--ditroff</strong></dt>
+<dd><p><strong>groff</strong> will run <strong>troff</strong> and then use an appropriate post-processor to produce output suitable for the chosen device. If <code>groff -mandoc</code> is <strong>groff</strong>, this option is passed to <strong>groff</strong> and will suppress the use of a post-processor. It implies <strong>-t</strong>.</p>
+</dd>
+</dl>
+<h2>Getting help</h2>
+<dl>
+<dt><strong>-?</strong>, <strong>--help</strong></dt>
+<dd><p>Print a help message and exit.</p>
+</dd>
+<dt><strong>--usage</strong></dt>
+<dd><p>Print a short usage message and exit.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Display version information.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<dl>
+<dt><strong>0</strong></dt>
+<dd><p>Successful program execution.</p>
+</dd>
+<dt><strong>1</strong></dt>
+<dd><p>Usage, syntax or configuration file error.</p>
+</dd>
+<dt><strong>2</strong></dt>
+<dd><p>Operational error.</p>
+</dd>
+<dt><strong>3</strong></dt>
+<dd><p>A child process returned a non-zero exit status.</p>
+</dd>
+<dt><strong>16</strong></dt>
+<dd><p>At least one of the pages/files/keywords didn't exist or wasn't matched.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<dl>
+<dt><strong>MANPATH</strong></dt>
+<dd><p>If $<strong>MANPATH</strong> is set, its value is used as the path to search for manual pages.</p>
+</dd>
+</dl>
+<p>See the <strong>SEARCH PATH</strong> section of <a href='/5/manpath'>manpath</a>(5) for the default behaviour and details of how this environment variable is handled.</p>
+<dl>
+<dt><strong>MANROFFOPT</strong></dt>
+<dd><p>Every time <strong>man</strong> invokes the formatter (<strong>nroff</strong>, <strong>troff</strong>, or <strong>groff</strong>), it adds the contents of $<strong>MANROFFOPT</strong> to the formatter's command line.</p>
+</dd>
+<dt><strong>MANROFFSEQ</strong></dt>
+<dd><p>If $<strong>MANROFFSEQ</strong> is set, its value is used to determine the set of preprocessors to pass each manual page through. The default preprocessor list is system dependent.</p>
+</dd>
+<dt><strong>MANSECT</strong></dt>
+<dd><p>If $<strong>MANSECT</strong> is set, its value is a colon-delimited list of sections and it is used to determine which manual sections to search and in what order. The default is "1 n l 8 3 0 2 3posix 3pm 3perl 3am 5 4 9 6 7", unless overridden by the <strong>SECTION</strong> directive in <code>/etc/manpath.config</code>.</p>
+</dd>
+<dt><strong>MANPAGER</strong>,<strong> PAGER</strong></dt>
+<dd><p>If $<strong>MANPAGER</strong> or $<strong>PAGER</strong> is set ($<strong>MANPAGER</strong> is used in preference), its value is used as the name of the program used to display the manual page. By default, <strong>pager</strong> is used, falling back to <strong>cat</strong> if <strong>pager</strong> is not found or is not executable.</p>
+</dd>
+</dl>
+<p>The value may be a simple command name or a command with arguments, and may use shell quoting (backslashes, single quotes, or double quotes). It may not use pipes to connect multiple commands; if you need that, use a wrapper script, which may take the file to display either as an argument or on standard input.</p>
+<dl>
+<dt><strong>MANLESS</strong></dt>
+<dd><p>If $<strong>MANLESS</strong> is set, its value will be used as the default prompt string for the <strong>less</strong> pager, as if it had been passed using the <strong>-r</strong> option (so any occurrences of the text <strong>$MAN_PN</strong> will be expanded in the same way). For example, if you want to set the prompt string unconditionally to “my prompt string”, set $<strong>MANLESS</strong> to ‘<strong>-Psmy prompt string</strong>’. Using the <strong>-r</strong> option overrides this environment variable.</p>
+</dd>
+<dt><strong>BROWSER</strong></dt>
+<dd><p>If $<strong>BROWSER</strong> is set, its value is a colon-delimited list of commands, each of which in turn is used to try to start a web browser for <strong>man</strong> <strong>--html</strong>. In each command, <code>%s</code> is replaced by a filename containing the HTML output from <strong>groff</strong>, <code>%%</code> is replaced by a single percent sign (%), and <code>%c</code> is replaced by a colon (:).</p>
+</dd>
+<dt><strong>SYSTEM</strong></dt>
+<dd><p>If $<strong>SYSTEM</strong> is set, it will have the same effect as if it had been specified as the argument to the <strong>-m</strong> option.</p>
+</dd>
+<dt><strong>MANOPT</strong></dt>
+<dd><p>If $<strong>MANOPT</strong> is set, it will be parsed prior to <strong>man's</strong> command line and is expected to be in a similar format. As all of the other <strong>man</strong> specific environment variables can be expressed as command line options, and are thus candidates for being included in $<strong>MANOPT</strong> it is expected that they will become obsolete. N.B. All spaces that should be interpreted as part of an option's argument must be escaped.</p>
+</dd>
+<dt><strong>MANWIDTH</strong></dt>
+<dd><p>If $<strong>MANWIDTH</strong> is set, its value is used as the line length for which manual pages should be formatted. If it is not set, manual pages will be formatted with a line length appropriate to the current terminal (using the value of $<strong>COLUMNS</strong>, and <a href='/2/ioctl'>ioctl</a>(2) if available, or falling back to 80 characters if neither is available). Cat pages will only be saved when the default formatting can be used, that is when the terminal line length is between 66 and 80 characters.</p>
+</dd>
+<dt><strong>MAN_KEEP_FORMATTING</strong></dt>
+<dd><p>Normally, when output is not being directed to a terminal (such as to a file or a pipe), formatting characters are discarded to make it easier to read the result without special tools. However, if $<strong>MAN_KEEP_FORMATTING</strong> is set to any non-empty value, these formatting characters are retained. This may be useful for wrappers around <strong>man</strong> that can interpret formatting characters.</p>
+</dd>
+<dt><strong>MAN_KEEP_STDERR</strong></dt>
+<dd><p>Normally, when output is being directed to a terminal (usually to a pager), any error output from the command used to produce formatted versions of manual pages is discarded to avoid interfering with the pager's display. Programs such as <strong>groff</strong> often produce relatively minor error messages about typographical problems such as poor alignment, which are unsightly and generally confusing when displayed along with the manual page. However, some users want to see them anyway, so, if $<strong>MAN_KEEP_STDERR</strong> is set to any non-empty value, error output will be displayed as usual.</p>
+</dd>
+<dt><strong>MAN_DISABLE_SECCOMP</strong></dt>
+<dd><p>On Linux, <strong>man</strong> normally confines subprocesses that handle untrusted data using a <a href='/2/seccomp'>seccomp</a>(2) sandbox. This makes it safer to run complex parsing code over arbitrary manual pages. If this goes wrong for some reason unrelated to the content of the page being displayed, you can set $<strong>MAN_DISABLE_SECCOMP</strong> to any non-empty value to disable the sandbox.</p>
+</dd>
+<dt><strong>PIPELINE_DEBUG</strong></dt>
+<dd><p>If the $<strong>PIPELINE_DEBUG</strong> environment variable is set to "1", then <strong>man</strong> will print debugging messages to standard error describing each subprocess it runs.</p>
+</dd>
+<dt><strong>LANG</strong>,<strong> LC_MESSAGES</strong></dt>
+<dd><p>Depending on system and implementation, either or both of $<strong>LANG</strong> and $<strong>LC_MESSAGES</strong> will be interrogated for the current message locale. <strong>man</strong> will display its messages in that locale (if available). See <a href='/3/setlocale'>setlocale</a>(3) for precise details.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/manpath.config</code></dt>
+<dd><p>man-db configuration file.</p>
+</dd>
+<dt><code>/usr/share/man</code></dt>
+<dd><p>A global manual page hierarchy.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/apropos'>apropos</a>(1), <a href='/1/groff'>groff</a>(1), <a href='/1/less'>less</a>(1), <a href='/1/manpath'>manpath</a>(1), <a href='/1/nroff'>nroff</a>(1), <a href='/1/troff'>troff</a>(1), <a href='/1/whatis'>whatis</a>(1), <a href='/1/zsoelim'>zsoelim</a>(1), <a href='/5/manpath'>manpath</a>(5), <a href='/7/man'>man</a>(7), <a href='/8/catman'>catman</a>(8), <a href='/8/mandb'>mandb</a>(8)</p>
+<p>Documentation for some packages may be available in other formats, such as <a href='/1/info'>info</a>(1) or HTML.</p>
+</div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>1990, 1991 – Originally written by John W. Eaton (<a href="mailto:jwe@che.utexas.edu">jwe@che.utexas.edu</a>).</p>
+<p>Dec 23 1992: Rik Faith (<a href="mailto:faith@cs.unc.edu">faith@cs.unc.edu</a>) applied bug fixes supplied by Willem Kasdorp (<a href="mailto:wkasdo@nikhefk.nikef.nl">wkasdo@nikhefk.nikef.nl</a>).</p>
+<p>30th April 1994 – 23rd February 2000: Wilf. (<a href="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</a>) has been developing and maintaining this package with the help of a few dedicated people.</p>
+<p>30th October 1996 – 30th March 2001: Fabrizio Polacco &lt;<a href="mailto:fpolacco@debian.org">fpolacco@debian.org</a>&gt; maintained and enhanced this package for the Debian project, with the help of all the community.</p>
+<p>31st March 2001 – present day: Colin Watson &lt;<a href="mailto:cjwatson@debian.org">cjwatson@debian.org</a>&gt; is now developing and maintaining man-db.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p><a href="https://gitlab.com/cjwatson/man-db/-/issues">https://gitlab.com/cjwatson/man-db/-/issues</a><br/>
+<a href="https://savannah.nongnu.org/bugs/?group=man-db">https://savannah.nongnu.org/bugs/?group=man-db</a></p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

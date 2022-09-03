@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>close - close a file descriptor</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+int close(int fd);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='close'>close</a>() closes a file descriptor, so that it no longer refers to any file and may be reused. Any record locks (see <a href='/2/fcntl'>fcntl</a>(2)) held on the file it was associated with, and owned by the process, are removed (regardless of the file descriptor that was used to obtain the lock).</p>
+<p>If <code>fd</code> is the last file descriptor referring to the underlying open file description (see <a href='/2/open'>open</a>(2)), the resources associated with the open file description are freed; if the file descriptor was the last reference to a file which has been removed using <a href='/2/unlink'>unlink</a>(2), the file is deleted.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='close'>close</a>() returns zero on success. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> isn't a valid open file descriptor.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The <a href='close'>close</a>() call was interrupted by a signal; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>An I/O error occurred.</p>
+</dd>
+<dt><strong>ENOSPC</strong>, <strong>EDQUOT</strong></dt>
+<dd><p>On NFS, these errors are not normally reported against the first write which exceeds the available storage space, but instead against a subsequent <a href='/2/write'>write</a>(2), <a href='/2/fsync'>fsync</a>(2), or <a href='close'>close</a>().</p>
+</dd>
+</dl>
+<p>See <a href='#notes'>NOTES </a>for a discussion of why <a href='close'>close</a>() should not be retried after an error.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A successful close does not guarantee that the data has been successfully saved to disk, as the kernel uses the buffer cache to defer writes. Typically, filesystems do not flush buffers when a file is closed. If you need to be sure that the data is physically stored on the underlying disk, use <a href='/2/fsync'>fsync</a>(2). (It will depend on the disk hardware at this point.)</p>
+<p>The close-on-exec file descriptor flag can be used to ensure that a file descriptor is automatically closed upon a successful <a href='/2/execve'>execve</a>(2); see <a href='/2/fcntl'>fcntl</a>(2) for details. It is probably unwise to close file descriptors while they may be in use by system calls in other threads in the same process. Since a file descriptor may be reused, there are some obscure race conditions that may cause unintended side effects.</p>
+<p>Furthermore, consider the following scenario where two threads are performing operations on the same file descriptor:</p>
+<ol type="1">
+<li><p>One thread is blocked in an I/O system call on the file descriptor. For example, it is trying to <a href='/2/write'>write</a>(2) to a pipe that is already full, or trying to <a href='/2/read'>read</a>(2) from a stream socket which currently has no available data.</p></li>
+<li><p>Another thread closes the file descriptor.</p></li>
+</ol>
+<p>The behavior in this situation varies across systems. On some systems, when the file descriptor is closed, the blocking system call returns immediately with an error.</p>
+<p>On Linux (and possibly some other systems), the behavior is different. the blocking I/O system call holds a reference to the underlying open file description, and this reference keeps the description open until the I/O system call completes. (See <a href='/2/open'>open</a>(2) for a discussion of open file descriptions.) Thus, the blocking system call in the first thread may successfully complete after the <a href='close'>close</a>() in the second thread. A careful programmer will check the return value of <a href='close'>close</a>(), since it is quite possible that errors on a previous <a href='/2/write'>write</a>(2) operation are reported only on the final <a href='close'>close</a>() that releases the open file description. Failing to check the return value when closing a file may lead to <code>silent</code> loss of data. This can especially be observed with NFS and with disk quota.</p>
+<p>Note, however, that a failure return should be used only for diagnostic purposes (i.e., a warning to the application that there may still be I/O pending or there may have been failed I/O) or remedial purposes (e.g., writing the file once more or creating a backup).</p>
+<p>Retrying the <a href='close'>close</a>() after a failure return is the wrong thing to do, since this may cause a reused file descriptor from another thread to be closed. This can occur because the Linux kernel <code>always</code> releases the file descriptor early in the close operation, freeing it for reuse; the steps that may return an error, such as flushing data to the filesystem or device, occur only later in the close operation.</p>
+<p>Many other implementations similarly always close the file descriptor (except in the case of <strong>EBADF</strong>, meaning that the file descriptor was invalid) even if they subsequently report an error on return from <a href='close'>close</a>(). POSIX.1 is currently silent on this point, but there are plans to mandate this behavior in the next major release of the standard.</p>
+<p>A careful programmer who wants to know about I/O errors may precede <a href='close'>close</a>() with a call to <a href='/2/fsync'>fsync</a>(2).</p>
+<p>The <strong>EINTR</strong> error is a somewhat special case. Regarding the <strong>EINTR</strong> error, POSIX.1-2008 says:</p>
+<blockquote>
+<p>If <a href='close'>close</a>() is interrupted by a signal that is to be caught, it shall return -1 with <code>errno</code> set to <strong>EINTR</strong> and the state of <code>fildes</code> is unspecified.</p>
+</blockquote>
+<p>This permits the behavior that occurs on Linux and many other implementations, where, as with other errors that may be reported by <a href='close'>close</a>(), the file descriptor is guaranteed to be closed. However, it also permits another possibility: that the implementation returns an <strong>EINTR</strong> error and keeps the file descriptor open. (According to its documentation, HP-UX's <a href='close'>close</a>() does this.) The caller must then once more use <a href='close'>close</a>() to close the file descriptor, to avoid file descriptor leaks. This divergence in implementation behaviors provides a difficult hurdle for portable applications, since on many implementations, <a href='close'>close</a>() must not be called again after an <strong>EINTR</strong> error, and on at least one, <a href='close'>close</a>() must be called again. There are plans to address this conundrum for the next major release of the POSIX.1 standard.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/fcntl'>fcntl</a>(2), <a href='/2/fsync'>fsync</a>(2), <a href='/2/open'>open</a>(2), <a href='/2/shutdown'>shutdown</a>(2), <a href='/2/unlink'>unlink</a>(2), <a href='/3/fclose'>fclose</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

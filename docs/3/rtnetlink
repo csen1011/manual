@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>rtnetlink - macros to manipulate rtnetlink messages</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;asm/types.h&gt;</strong><br/>
+<strong>#include &lt;linux/netlink.h&gt;</strong><br/>
+<strong>#include &lt;linux/rtnetlink.h&gt;</strong><br/>
+<strong>#include &lt;sys/socket.h&gt;</strong></p>
+<p><strong>rtnetlink_socket = socket(AF_NETLINK, int </strong><code>socket_type</code><strong>, NETLINK_ROUTE);</strong></p>
+<p><strong>int RTA_OK(struct rtattr *</strong><code>rta</code><strong>, int </strong><code>rtabuflen</code><strong>);</strong></p>
+<p><strong>void *RTA_DATA(struct rtattr *</strong><code>rta</code><strong>);</strong></p>
+<p><strong>unsigned int RTA_PAYLOAD(struct rtattr *</strong><code>rta</code><strong>);</strong></p>
+<p><strong>struct rtattr *RTA_NEXT(struct rtattr *</strong><code>rta</code><strong>, unsigned int </strong><code>rtabuflen</code><strong>);</strong></p>
+<p><strong>unsigned int RTA_LENGTH(unsigned int </strong><code>length</code><strong>);</strong></p>
+<p><strong>unsigned int RTA_SPACE(unsigned int </strong><code>length</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>All <a href='/7/rtnetlink'>rtnetlink</a>(7) messages consist of a <a href='/7/netlink'>netlink</a>(7) message header and appended attributes. The attributes should be manipulated only using the macros provided here.</p>
+<p><strong><a href='RTA_OK'>RTA_OK</a>(</strong><code>rta</code><strong>, </strong><code>attrlen</code><strong>)</strong> returns true if <code>rta</code> points to a valid routing attribute; <code>attrlen</code> is the running length of the attribute buffer. When not true then you must assume there are no more attributes in the message, even if <code>attrlen</code> is nonzero.</p>
+<p><strong><a href='RTA_DATA'>RTA_DATA</a>(</strong><code>rta</code><strong>)</strong> returns a pointer to the start of this attribute's data.</p>
+<p><strong><a href='RTA_PAYLOAD'>RTA_PAYLOAD</a>(</strong><code>rta</code><strong>)</strong> returns the length of this attribute's data.</p>
+<p><strong><a href='RTA_NEXT'>RTA_NEXT</a>(</strong><code>rta</code><strong>, </strong><code>attrlen</code><strong>)</strong> gets the next attribute after <code>rta</code>. Calling this macro will update <code>attrlen</code>. You should use <strong>RTA_OK</strong> to check the validity of the returned pointer.</p>
+<p><strong><a href='RTA_LENGTH'>RTA_LENGTH</a>(</strong><code>len</code><strong>)</strong> returns the length which is required for <code>len</code> bytes of data plus the header.</p>
+<p><strong><a href='RTA_SPACE'>RTA_SPACE</a>(</strong><code>len</code><strong>)</strong> returns the amount of space which will be needed in a message with <code>len</code> bytes of data.</p>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These macros are nonstandard Linux extensions.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>This manual page is incomplete.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Creating a rtnetlink message to set the MTU of a device:</p>
+<pre><code>#include &lt;linux/rtnetlink.h&gt;
+
+...
+
+struct {
+    struct nlmsghdr  nh;
+    struct ifinfomsg if;
+    char             attrbuf[512];
+} req;
+
+struct rtattr *rta;
+unsigned int mtu = 1000;
+
+int rtnetlink_sk = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
+
+memset(&amp;req, 0, sizeof(req));
+req.nh.nlmsg_len = NLMSG_LENGTH(sizeof(req.if));
+req.nh.nlmsg_flags = NLM_F_REQUEST;
+req.nh.nlmsg_type = RTM_NEWLINK;
+req.if.ifi_family = AF_UNSPEC;
+req.if.ifi_index = INTERFACE_INDEX;
+req.if.ifi_change = 0xffffffff; /* ??? */
+rta = (struct rtattr *)(((<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>) &amp;req) +
+                         NLMSG_ALIGN(req.nh.nlmsg_len));
+rta-&gt;rta_type = IFLA_MTU;
+rta-&gt;rta_len = RTA_LENGTH(sizeof(mtu));
+req.nh.nlmsg_len = NLMSG_ALIGN(req.nh.nlmsg_len) +
+                              RTA_LENGTH(sizeof(mtu));
+memcpy(RTA_DATA(rta), &amp;mtu, sizeof(mtu));
+send(rtnetlink_sk, &amp;req, req.nh.nlmsg_len, 0);</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/netlink'>netlink</a>(3), <a href='/7/netlink'>netlink</a>(7), <a href='/7/rtnetlink'>rtnetlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

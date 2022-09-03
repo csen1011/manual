@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>setterm - set terminal attributes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>setterm</strong> [options]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>setterm</strong> writes to standard output a character string that will invoke the specified terminal capabilities. Where possible <code>terminfo</code> is consulted to find the string to use. Some options however (marked "virtual consoles only" below) do not correspond to a <a href='/5/terminfo'>terminfo</a>(5) capability. In this case, if the terminal type is "con" or "linux" the string that invokes the specified capabilities on the PC Minix virtual console driver is output. Options that are not implemented by the terminal are ignored.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>For boolean options (<strong>on</strong> or <strong>off</strong>), the default is <strong>on</strong>.</p>
+<p>Below, an <code>8-color</code> can be <strong>black</strong>, <strong>red</strong>, <strong>green</strong>, <strong>yellow</strong>, <strong>blue</strong>, <strong>magenta</strong>, <strong>cyan</strong>, or <strong>white</strong>.</p>
+<p>A <code>16-color</code> can be an <code>8-color</code>, or <strong>grey</strong>, or <strong>bright</strong> followed by <strong>red</strong>, <strong>green</strong>, <strong>yellow</strong>, <strong>blue</strong>, <strong>magenta</strong>, <strong>cyan</strong>, or <strong>white</strong>.</p>
+<p>The various color options may be set independently, at least on virtual consoles, though the results of setting multiple modes (for example, <strong>--underline</strong> and <strong>--half-bright</strong>) are hardware-dependent.</p>
+<p>The optional arguments require '=' (equals sign) and not space between the option and the argument. For example --option=argument.</p>
+<p><strong>--appcursorkeys</strong> on|off</p>
+<blockquote>
+<p>Sets Cursor Key Application Mode on or off. When on, ESC O A, ESC O B, etc. will be sent for the cursor keys instead of ESC [ A, ESC [ B, etc. See the <code>vi and Cursor-Keys</code> section of the <code>Text-Terminal-HOWTO</code> for how this can cause problems for <strong>vi</strong> users. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--append</strong> <code>console_number</code></p>
+<blockquote>
+<p>Like <strong>--dump</strong>, but appends to the snapshot file instead of overwriting it. Only works if no <strong>--dump</strong> options are given.</p>
+</blockquote>
+<p><strong>--background</strong> <code>8-color</code>|default</p>
+<blockquote>
+<p>Sets the background text color.</p>
+</blockquote>
+<p><strong>--blank</strong>[=0-60|force|poke]</p>
+<blockquote>
+<p>Sets the interval of inactivity, in minutes, after which the screen will be automatically blanked (using APM if available). Without an argument, it gets the blank status (returns which vt was blanked, or zero for an unblanked vt). Virtual consoles only.</p>
+<p>The <strong>force</strong> argument keeps the screen blank even if a key is pressed.</p>
+<p>The <strong>poke</strong> argument unblanks the screen.</p>
+</blockquote>
+<p><strong>--bfreq</strong>[=<code>number</code>]</p>
+<blockquote>
+<p>Sets the bell frequency in Hertz. Without an argument, it defaults to <strong>0</strong>. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--blength</strong>[=0-2000]</p>
+<blockquote>
+<p>Sets the bell duration in milliseconds. Without an argument, it defaults to <strong>0</strong>. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--blink</strong> on|off</p>
+<blockquote>
+<p>Turns blink mode on or off. Except on a virtual console, <strong>--blink off</strong> turns off all attributes (bold, half-brightness, blink, reverse).</p>
+</blockquote>
+<p><strong>--bold</strong> on|off</p>
+<blockquote>
+<p>urns bold (extra bright) mode on or off. Except on a virtual console, <strong>--bold off</strong> turns off all attributes (bold, half-brightness, blink, reverse).</p>
+</blockquote>
+<p><strong>--clear</strong>[=all|rest]</p>
+<blockquote>
+<p>Without an argument or with the argument <strong>all</strong>, the entire screen is cleared and the cursor is set to the home position, just like <a href='/1/clear'>clear</a>(1) does. With the argument <strong>rest</strong>, the screen is cleared from the current cursor position to the end.</p>
+</blockquote>
+<p><strong>--clrtabs</strong>[=<code>tab1 tab2 tab3</code> ...]</p>
+<blockquote>
+<p>Clears tab stops from the given horizontal cursor positions, in the range <strong>1-160</strong>. Without arguments, it clears all tab stops. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--cursor</strong> on|off</p>
+<blockquote>
+<p>Turns the terminal’s cursor on or off.</p>
+</blockquote>
+<p><strong>--default</strong></p>
+<blockquote>
+<p>Sets the terminal’s rendering options to the default values.</p>
+</blockquote>
+<p><strong>--dump</strong>[=<code>console_number</code>]</p>
+<blockquote>
+<p>Writes a snapshot of the virtual console with the given number to the file specified with the <strong>--file</strong> option, overwriting its contents; the default is <code>screen.dump</code>. Without an argument, it dumps the current virtual console. This overrides <strong>--append</strong>.</p>
+</blockquote>
+<p><strong>--file</strong> <code>filename</code></p>
+<blockquote>
+<p>Sets the snapshot file name for any <strong>--dump</strong> or <strong>--append</strong> options on the same command line. If this option is not present, the default is <code>screen.dump</code> in the current directory. A path name that exceeds the system maximum will be truncated, see <strong>PATH_MAX</strong> from <code>linux/limits.h</code> for the value.</p>
+</blockquote>
+<p><strong>--foreground</strong> <code>8-color</code>|default</p>
+<blockquote>
+<p>Sets the foreground text color.</p>
+</blockquote>
+<p><strong>--half-bright</strong> on|off</p>
+<blockquote>
+<p>Turns dim (half-brightness) mode on or off. Except on a virtual console, <strong>--half-bright off</strong> turns off all attributes (bold, half-brightness, blink, reverse).</p>
+</blockquote>
+<p><strong>--hbcolor</strong> [bright] <code>16-color</code></p>
+<blockquote>
+<p>Sets the color for half-bright characters.</p>
+</blockquote>
+<p><strong>--initialize</strong></p>
+<blockquote>
+<p>Displays the terminal initialization string, which typically sets the terminal’s rendering options, and other attributes to the default values.</p>
+</blockquote>
+<p><strong>--inversescreen</strong> on|off</p>
+<blockquote>
+<p>Swaps foreground and background colors for the whole screen.</p>
+</blockquote>
+<p><strong>--linewrap</strong> on|off</p>
+<blockquote>
+<p>Makes the terminal continue on a new line when a line is full.</p>
+</blockquote>
+<p><strong>--msg</strong> on|off</p>
+<blockquote>
+<p>Enables or disables the sending of kernel <a href='printk'>printk</a>() messages to the console. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--msglevel</strong> 0-8</p>
+<blockquote>
+<p>Sets the console logging level for kernel <strong>printk()</strong> messages. All messages strictly more important than this will be printed, so a logging level of <strong>0</strong> has the same effect as <strong>--msg on</strong> and a logging level of <strong>8</strong> will print all kernel messages. <a href='/8/klogd'>klogd</a>(8) may be a more convenient interface to the logging of kernel messages.</p>
+<p>Virtual consoles only.</p>
+</blockquote>
+<p><strong>--powerdown</strong>[=0-60]</p>
+<blockquote>
+<p>Sets the VESA powerdown interval in minutes. Without an argument, it defaults to <strong>0</strong> (disable powerdown). If the console is blanked or the monitor is in suspend mode, then the monitor will go into vsync suspend mode or powerdown mode respectively after this period of time has elapsed.</p>
+</blockquote>
+<p><strong>--powersave</strong> <code>mode</code></p>
+<blockquote>
+<p>Valid values for <code>mode</code> are:</p>
+<p><strong>vsync|on</strong></p>
+<blockquote>
+<p>Puts the monitor into VESA vsync suspend mode.</p>
+</blockquote>
+<p><strong>hsync</strong></p>
+<blockquote>
+<p>Puts the monitor into VESA hsync suspend mode.</p>
+</blockquote>
+<p><strong>powerdown</strong></p>
+<blockquote>
+<p>Puts the monitor into VESA powerdown mode.</p>
+</blockquote>
+<p><strong>off</strong></p>
+<blockquote>
+<p>Turns monitor VESA powersaving features.</p>
+</blockquote>
+</blockquote>
+<p><strong>--regtabs</strong>[=1-160]</p>
+<blockquote>
+<p>Clears all tab stops, then sets a regular tab stop pattern, with one tab every specified number of positions. Without an argument, it defaults to <strong>8</strong>. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--repeat</strong> on|off</p>
+<blockquote>
+<p>Turns keyboard repeat on or off. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--reset</strong></p>
+<blockquote>
+<p>Displays the terminal reset string, which typically resets the terminal to its power-on state.</p>
+</blockquote>
+<p><strong>--resize</strong></p>
+<blockquote>
+<p>Reset terminal size by assessing maximum row and column. This is useful when actual geometry and kernel terminal driver are not in sync. Most notable use case is with serial consoles, that do not use <strong>ioctl</strong>(3p) but just byte streams and breaks.</p>
+</blockquote>
+<p><strong>--reverse</strong> on|off</p>
+<blockquote>
+<p>Turns reverse video mode on or off. Except on a virtual console, <strong>--reverse off</strong> turns off all attributes (bold, half-brightness, blink, reverse).</p>
+</blockquote>
+<p><strong>--store</strong></p>
+<blockquote>
+<p>Stores the terminal’s current rendering options (foreground and background colors) as the values to be used at reset-to-default. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--tabs</strong>[=<code>tab1 tab2 tab3</code> ...]</p>
+<blockquote>
+<p>Sets tab stops at the given horizontal cursor positions, in the range <strong>1-160</strong>. Without arguments, it shows the current tab stop settings.</p>
+</blockquote>
+<p><strong>--term</strong> <code>terminal_name</code></p>
+<blockquote>
+<p>Overrides the <strong>TERM</strong> environment variable.</p>
+</blockquote>
+<p><strong>--ulcolor</strong> [bright] <code>16-color</code></p>
+<blockquote>
+<p>Sets the color for underlined characters. Virtual consoles only.</p>
+</blockquote>
+<p><strong>--underline</strong> on|off</p>
+<blockquote>
+<p>Turns underline mode on or off.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Displays version information and exits.</p>
+</blockquote>
+<p><strong>--help</strong></p>
+<blockquote>
+<p>Displays a help text and exits.</p>
+</blockquote>
+</div></div></div><h1 id='compatibility'><a href='#compatibility'>COMPATIBILITY</a></h1><div data-for='compatibility' data-hide><div class='section' data-for='compatibility'><div data-more>
+<p>Since version 2.25 <strong>setterm</strong> has support for long options with two hyphens, for example <strong>--help</strong>, beside the historical long options with a single hyphen, for example <strong>-help</strong>. In scripts it is better to use the backward-compatible single hyphen rather than the double hyphen. Currently there are no plans nor good reasons to discontinue single-hyphen compatibility.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Differences between the Minix and Linux versions are not documented.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/stty'>stty</a>(1), <a href='/1/tput'>tput</a>(1), <a href='/4/tty'>tty</a>(4), <a href='/5/terminfo'>terminfo</a>(5)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>setterm</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

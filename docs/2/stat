@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;stat&lt;/code&gt; and 3 related functions.' data-bs-toggle='popover' tabindex='0'>stat</a>, fstat, lstat, fstatat - get file status</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+int stat(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, struct stat *statbuf);
+int fstat(int fd, struct stat *statbuf);
+int lstat(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, struct stat *statbuf);
+
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a> /* Definition of AT_* constants */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+
+int fstatat(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, struct stat *statbuf,
+ int flags);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='lstat'>lstat</a>():</p>
+<blockquote>
+<p>/* glibc 2.19 and earlier */ _BSD_SOURCE || /* Since glibc 2.20 */ _DEFAULT_SOURCE || _XOPEN_SOURCE &gt;= 500 || /* Since glibc 2.10: */ _POSIX_C_SOURCE &gt;= 200112L</p>
+</blockquote>
+<p><a href='fstatat'>fstatat</a>():</p>
+<blockquote>
+<dl>
+<dt>Since glibc 2.10:</dt>
+<dd><p>_POSIX_C_SOURCE &gt;= 200809L</p>
+</dd>
+<dt>Before glibc 2.10:</dt>
+<dd><p>_ATFILE_SOURCE</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These functions return information about a file, in the buffer pointed to by <code>statbuf</code>. No permissions are required on the file itself, but—in the case of <a href='stat'>stat</a>(), <a href='fstatat'>fstatat</a>(), and <a href='lstat'>lstat</a>()—execute (search) permission is required on all of the directories in <code>pathname</code> that lead to the file.</p>
+<p><a href='stat'>stat</a>() and <a href='fstatat'>fstatat</a>() retrieve information about the file pointed to by <code>pathname</code>; the differences for <a href='fstatat'>fstatat</a>() are described below.</p>
+<p><a href='lstat'>lstat</a>() is identical to <a href='stat'>stat</a>(), except that if <code>pathname</code> is a symbolic link, then it returns information about the link itself, not the file that the link refers to.</p>
+<p><a href='fstat'>fstat</a>() is identical to <a href='stat'>stat</a>(), except that the file about which information is to be retrieved is specified by the file descriptor <code>fd</code>. All of these system calls return a <code>stat</code> structure, which contains the following fields:</p>
+<pre><code>struct stat {
+    dev_t     st_dev;         /* ID of device containing file */
+    ino_t     st_ino;         /* Inode number */
+    mode_t    st_mode;        /* File type and mode */
+    nlink_t   st_nlink;       /* Number of hard links */
+    uid_t     st_uid;         /* User ID of owner */
+    gid_t     st_gid;         /* Group ID of owner */
+    dev_t     st_rdev;        /* Device ID (if special file) */
+    off_t     st_size;        /* Total size, in bytes */
+    blksize_t st_blksize;     /* Block size for filesystem I/O */
+    blkcnt_t  st_blocks;      /* Number of 512B blocks allocated */
+
+    /* Since Linux 2.6, the kernel supports nanosecond
+       precision for the following timestamp fields.
+       For the details before Linux 2.6, see NOTES. */
+
+    struct timespec st_atim;  /* Time of last access */
+    struct timespec st_mtim;  /* Time of last modification */
+    struct timespec st_ctim;  /* Time of last status change */
+
+#define st_atime st_atim.tv_sec      /* Backward compatibility */
+#define st_mtime st_mtim.tv_sec
+#define st_ctime st_ctim.tv_sec
+};</code></pre>
+<p><code>Note</code>: the order of fields in the <code>stat</code> structure varies somewhat across architectures. In addition, the definition above does not show the padding bytes that may be present between some fields on various architectures. Consult the glibc and kernel source code if you need to know the details.</p>
+<p><code>Note</code>: for performance and simplicity reasons, different fields in the <code>stat</code> structure may contain state information from different moments during the execution of the system call. For example, if <code>st_mode</code> or <code>st_uid</code> is changed by another process by calling <a href='/2/chmod'>chmod</a>(2) or <a href='/2/chown'>chown</a>(2), <a href='stat'>stat</a>() might return the old <code>st_mode</code> together with the new <code>st_uid</code>, or the old <code>st_uid</code> together with the new <code>st_mode</code>.</p>
+<p>The fields in the <code>stat</code> structure are as follows:</p>
+<dl>
+<dt><code>st_dev</code></dt>
+<dd><p>This field describes the device on which this file resides. (The <a href='/3/major'>major</a>(3) and <a href='/3/minor'>minor</a>(3) macros may be useful to decompose the device ID in this field.)</p>
+</dd>
+<dt><code>st_ino</code></dt>
+<dd><p>This field contains the file's inode number.</p>
+</dd>
+<dt><code>st_mode</code></dt>
+<dd><p>This field contains the file type and mode. See <a href='/7/inode'>inode</a>(7) for further information.</p>
+</dd>
+<dt><code>st_nlink</code></dt>
+<dd><p>This field contains the number of hard links to the file.</p>
+</dd>
+<dt><code>st_uid</code></dt>
+<dd><p>This field contains the user ID of the owner of the file.</p>
+</dd>
+<dt><code>st_gid</code></dt>
+<dd><p>This field contains the ID of the group owner of the file.</p>
+</dd>
+<dt><code>st_rdev</code></dt>
+<dd><p>This field describes the device that this file (inode) represents.</p>
+</dd>
+<dt><code>st_size</code></dt>
+<dd><p>This field gives the size of the file (if it is a regular file or a symbolic link) in bytes. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.</p>
+</dd>
+<dt><code>st_blksize</code></dt>
+<dd><p>This field gives the "preferred" block size for efficient filesystem I/O.</p>
+</dd>
+<dt><code>st_blocks</code></dt>
+<dd><p>This field indicates the number of blocks allocated to the file, in 512-byte units. (This may be smaller than <code>st_size</code>/512 when the file has holes.)</p>
+</dd>
+<dt><code>st_atime</code></dt>
+<dd><p>This is the time of the last access of file data.</p>
+</dd>
+<dt><code>st_mtime</code></dt>
+<dd><p>This is the time of last modification of file data.</p>
+</dd>
+<dt><code>st_ctime</code></dt>
+<dd><p>This is the file's last status change timestamp (time of last change to the inode).</p>
+</dd>
+</dl>
+<p>For further information on the above fields, see <a href='/7/inode'>inode</a>(7). The <a href='fstatat'>fstatat</a>() system call is a more general interface for accessing file information which can still provide exactly the behavior of each of <a href='stat'>stat</a>(), <a href='lstat'>lstat</a>(), and <a href='fstat'>fstat</a>().</p>
+<p>If the pathname given in <code>pathname</code> is relative, then it is interpreted relative to the directory referred to by the file descriptor <code>dirfd</code> (rather than relative to the current working directory of the calling process, as is done by <a href='stat'>stat</a>() and <a href='lstat'>lstat</a>() for a relative pathname).</p>
+<p>If <code>pathname</code> is relative and <code>dirfd</code> is the special value <strong>AT_FDCWD</strong>, then <code>pathname</code> is interpreted relative to the current working directory of the calling process (like <a href='stat'>stat</a>() and <a href='lstat'>lstat</a>()).</p>
+<p>If <code>pathname</code> is absolute, then <code>dirfd</code> is ignored.</p>
+<p><code>flags</code> can either be 0, or include one or more of the following flags ORed:</p>
+<dl>
+<dt><strong>AT_EMPTY_PATH</strong> (since Linux 2.6.39)</dt>
+<dd><p>If <code>pathname</code> is an empty string, operate on the file referred to by <code>dirfd</code> (which may have been obtained using the <a href='/2/open'>open</a>(2) <strong>O_PATH</strong> flag). In this case, <code>dirfd</code> can refer to any type of file, not just a directory, and the behavior of <a href='fstatat'>fstatat</a>() is similar to that of <a href='fstat'>fstat</a>(). If <code>dirfd</code> is <strong>AT_FDCWD</strong>, the call operates on the current working directory. This flag is Linux-specific; define <strong>_GNU_SOURCE</strong> to obtain its definition.</p>
+</dd>
+<dt><strong>AT_NO_AUTOMOUNT</strong> (since Linux 2.6.38)</dt>
+<dd><p>Don't automount the terminal ("basename") component of <code>pathname</code> if it is a directory that is an automount point. This allows the caller to gather attributes of an automount point (rather than the location it would mount). Since Linux 4.14, also don't instantiate a nonexistent name in an on-demand directory such as used for automounter indirect maps. This flag has no effect if the mount point has already been mounted over.</p>
+<p>Both <a href='stat'>stat</a>() and <a href='lstat'>lstat</a>() act as though <strong>AT_NO_AUTOMOUNT</strong> was set.</p>
+<p>The <strong>AT_NO_AUTOMOUNT</strong> can be used in tools that scan directories to prevent mass-automounting of a directory of automount points.</p>
+<p>This flag is Linux-specific; define <strong>_GNU_SOURCE</strong> to obtain its definition.</p>
+</dd>
+<dt><strong>AT_SYMLINK_NOFOLLOW</strong></dt>
+<dd><p>If <code>pathname</code> is a symbolic link, do not dereference it: instead return information about the link itself, like <a href='lstat'>lstat</a>(). (By default, <a href='fstatat'>fstatat</a>() dereferences symbolic links, like <a href='stat'>stat</a>().)</p>
+</dd>
+</dl>
+<p>See <a href='/2/openat'>openat</a>(2) for an explanation of the need for <a href='fstatat'>fstatat</a>().</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, zero is returned. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program calls <a href='lstat'>lstat</a>() and displays selected fields in the returned <code>stat</code> structure.</p>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;time.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/sysmacros.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct stat sb;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;pathname&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (lstat(argv[1], &amp;sb) == -1) {
+        perror("lstat");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("ID of containing device:  [%jx,%jx]\n",
+            (uintmax_t) major(sb.st_dev),
+            (uintmax_t) minor(sb.st_dev));
+
+    printf("File type:                ");
+
+    switch (sb.st_mode &amp; S_IFMT) {
+    case S_IFBLK:  printf("block device\n");            break;
+    case S_IFCHR:  printf("character device\n");        break;
+    case S_IFDIR:  printf("directory\n");               break;
+    case S_IFIFO:  printf("FIFO/pipe\n");               break;
+    case S_IFLNK:  printf("symlink\n");                 break;
+    case S_IFREG:  printf("regular file\n");            break;
+    case S_IFSOCK: printf("socket\n");                  break;
+    default:       printf("unknown?\n");                break;
+    }
+
+    printf("I-node number:            %ju\n", (uintmax_t) sb.st_ino);
+
+    printf("Mode:                     %jo (octal)\n",
+            (uintmax_t) sb.st_mode);
+
+    printf("Link count:               %ju\n", (uintmax_t) sb.st_nlink);
+    printf("Ownership:                UID=%ju   GID=%ju\n",
+            (uintmax_t) sb.st_uid, (uintmax_t) sb.st_gid);
+
+    printf("Preferred I/O block size: %jd bytes\n",
+            (intmax_t) sb.st_blksize);
+    printf("File size:                %jd bytes\n",
+            (intmax_t) sb.st_size);
+    printf("Blocks allocated:         %jd\n",
+            (intmax_t) sb.st_blocks);
+
+    printf("Last status change:       %s", ctime(&amp;sb.st_ctime));
+    printf("Last file access:         %s", ctime(&amp;sb.st_atime));
+    printf("Last file modification:   %s", ctime(&amp;sb.st_mtime));
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Search permission is denied for one of the directories in the path prefix of <code>pathname</code>. (See also <a href='/7/path_resolution'>path_resolution</a>(7).)</p>
+</dd>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not a valid open file descriptor.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>Bad address.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p>Too many symbolic links encountered while traversing the path.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p><code>pathname</code> is too long.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>A component of <code>pathname</code> does not exist or is a dangling symbolic link.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p><code>pathname</code> is an empty string and <strong>AT_EMPTY_PATH</strong> was not specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Out of memory (i.e., kernel memory).</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>A component of the path prefix of <code>pathname</code> is not a directory.</p>
+</dd>
+<dt><strong>EOVERFLOW</strong></dt>
+<dd><p><code>pathname</code> or <code>fd</code> refers to a file whose size, inode number, or number of blocks cannot be represented in, respectively, the types <code>off_t</code>, <code>ino_t</code>, or <code>blkcnt_t</code>. This error can occur when, for example, an application compiled on a 32-bit platform without <code>-D_FILE_OFFSET_BITS=64</code> calls <a href='stat'>stat</a>() on a file whose size exceeds <code>(1&lt;&lt;31)-1</code> bytes.</p>
+</dd>
+</dl>
+<p>The following additional errors can occur for <a href='fstatat'>fstatat</a>():</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>dirfd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid flag specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p><code>pathname</code> is relative and <code>dirfd</code> is a file descriptor referring to a file other than a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='fstatat'>fstatat</a>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='stat'>stat</a>(), <a href='fstat'>fstat</a>(), <a href='lstat'>lstat</a>(): SVr4, 4.3BSD, POSIX.1-2001, POSIX.1.2008.</p>
+<p><a href='fstatat'>fstatat</a>(): POSIX.1-2008.</p>
+<p>According to POSIX.1-2001, <a href='lstat'>lstat</a>() on a symbolic link need return valid information only in the <code>st_size</code> field and the file type of the <code>st_mode</code> field of the <code>stat</code> structure. POSIX.1-2008 tightens the specification, requiring <a href='lstat'>lstat</a>() to return valid information in all fields except the mode bits in <code>st_mode</code>.</p>
+<p>Use of the <code>st_blocks</code> and <code>st_blksize</code> fields may be less portable. (They were introduced in BSD. The interpretation differs between systems, and possibly on a single system when NFS mounts are involved.)</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Timestamp fields</h2>
+<p>Older kernels and older standards did not support nanosecond timestamp fields. Instead, there were three timestamp fields—<code>st_atime</code>, <code>st_mtime</code>, and <code>st_ctime</code>—typed as <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a></code> that recorded timestamps with one-second precision.</p>
+<p>Since kernel 2.5.48, the <code>stat</code> structure supports nanosecond resolution for the three file timestamp fields. The nanosecond components of each timestamp are available via names of the form <code>st_atim.tv_nsec</code>, if suitable feature test macros are defined. Nanosecond timestamps were standardized in POSIX.1-2008, and, starting with version 2.12, glibc exposes the nanosecond component names if <strong>_POSIX_C_SOURCE</strong> is defined with the value 200809L or greater, or <strong>_XOPEN_SOURCE</strong> is defined with the value 700 or greater. Up to and including glibc 2.19, the definitions of the nanoseconds components are also defined if <strong>_BSD_SOURCE</strong> or <strong>_SVID_SOURCE</strong> is defined. If none of the aforementioned macros are defined, then the nanosecond values are exposed with names of the form <code>st_atimensec</code>. Over time, increases in the size of the <code>stat</code> structure have led to three successive versions of <a href='stat'>stat</a>(): <code>sys_stat</code>() (slot <code>__NR_oldstat</code>), <code>sys_newstat</code>() (slot <code>__NR_stat</code>), and <code>sys_stat64()</code> (slot <code>__NR_stat64</code>) on 32-bit platforms such as i386. The first two versions were already present in Linux 1.0 (albeit with different names); the last was added in Linux 2.4. Similar remarks apply for <a href='fstat'>fstat</a>() and <a href='lstat'>lstat</a>().</p>
+<p>The kernel-internal versions of the <code>stat</code> structure dealt with by the different versions are, respectively:</p>
+<dl>
+<dt><code>__old_kernel_stat</code></dt>
+<dd><p>The original structure, with rather narrow fields, and no padding.</p>
+</dd>
+<dt><code>stat</code></dt>
+<dd><p>Larger <code>st_ino</code> field and padding added to various parts of the structure to allow for future expansion.</p>
+</dd>
+<dt><code>stat64</code></dt>
+<dd><p>Even larger <code>st_ino</code> field, larger <code>st_uid</code> and <code>st_gid</code> fields to accommodate the Linux-2.4 expansion of UIDs and GIDs to 32 bits, and various other enlarged fields and further padding in the structure. (Various padding bytes were eventually consumed in Linux 2.6, with the advent of 32-bit device IDs and nanosecond components for the timestamp fields.)</p>
+</dd>
+</dl>
+<p>The glibc <a href='stat'>stat</a>() wrapper function hides these details from applications, invoking the most recent version of the system call provided by the kernel, and repacking the returned information if required for old binaries.</p>
+<p>On modern 64-bit systems, life is simpler: there is a single <a href='stat'>stat</a>() system call and the kernel deals with a <code>stat</code> structure that contains fields of a sufficient size.</p>
+<p>The underlying system call employed by the glibc <a href='fstatat'>fstatat</a>() wrapper function is actually called <a href='fstatat64'>fstatat64</a>() or, on some architectures, <a href='newfstatat'>newfstatat</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ls'>ls</a>(1), <a href='/1/stat'>stat</a>(1), <a href='/2/access'>access</a>(2), <a href='/2/chmod'>chmod</a>(2), <a href='/2/chown'>chown</a>(2), <a href='/2/readlink'>readlink</a>(2), <a href='/2/statx'>statx</a>(2), <a href='/2/utime'>utime</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/inode'>inode</a>(7), <a href='/7/symlink'>symlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

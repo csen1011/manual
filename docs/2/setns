@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>setns - reassociate thread with a namespace</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sched.h&gt;</a>
+
+int setns(int fd, int nstype);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='setns'>setns</a>() system call allows the calling thread to move into different namespaces. The <code>fd</code> argument is one of the following:</p>
+<ul>
+<li><p>a file descriptor referring to one of the magic links in a <code>/proc/[pid]/ns/</code> directory (or a bind mount to such a link);</p></li>
+<li><p>a PID file descriptor (see <a href='/2/pidfd_open'>pidfd_open</a>(2)).</p></li>
+</ul>
+<p>The <code>nstype</code> argument is interpreted differently in each case. If <code>fd</code> refers to a <code>/proc/[pid]/ns/</code> link, then <a href='setns'>setns</a>() reassociates the calling thread with the namespace associated with that link, subject to any constraints imposed by the <code>nstype</code> argument. In this usage, each call to <a href='setns'>setns</a>() changes just one of the caller's namespace memberships.</p>
+<p>The <code>nstype</code> argument specifies which type of namespace the calling thread may be reassociated with. This argument can have <code>one</code> of the following values:</p>
+<dl>
+<dt><strong>0</strong></dt>
+<dd><p>Allow any type of namespace to be joined.</p>
+</dd>
+<dt><strong>CLONE_NEWCGROUP</strong> (since Linux 4.6)</dt>
+<dd><p><code>fd</code> must refer to a cgroup namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWIPC</strong> (since Linux 3.0)</dt>
+<dd><p><code>fd</code> must refer to an IPC namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWNET</strong> (since Linux 3.0)</dt>
+<dd><p><code>fd</code> must refer to a network namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWNS</strong> (since Linux 3.8)</dt>
+<dd><p><code>fd</code> must refer to a mount namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWPID</strong> (since Linux 3.8)</dt>
+<dd><p><code>fd</code> must refer to a descendant PID namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWTIME</strong> (since Linux 5.8)</dt>
+<dd><p><code>fd</code> must refer to a time namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWUSER</strong> (since Linux 3.8)</dt>
+<dd><p><code>fd</code> must refer to a user namespace.</p>
+</dd>
+<dt><strong>CLONE_NEWUTS</strong> (since Linux 3.0)</dt>
+<dd><p><code>fd</code> must refer to a UTS namespace.</p>
+</dd>
+</dl>
+<p>Specifying <code>nstype</code> as 0 suffices if the caller knows (or does not care) what type of namespace is referred to by <code>fd</code>. Specifying a nonzero value for <code>nstype</code> is useful if the caller does not know what type of namespace is referred to by <code>fd</code> and wants to ensure that the namespace is of a particular type. (The caller might not know the type of the namespace referred to by <code>fd</code> if the file descriptor was opened by another process and, for example, passed to the caller via a UNIX domain socket.) Since Linux 5.8, <code>fd</code> may refer to a PID file descriptor obtained from <a href='/2/pidfd_open'>pidfd_open</a>(2) or <a href='/3/clone'>clone</a>(3). In this usage, <a href='setns'>setns</a>() atomically moves the calling thread into one or more of the same namespaces as the thread referred to by <code>fd</code>.</p>
+<p>The <code>nstype</code> argument is a bit mask specified by ORing together <code>one or more</code> of the <strong>CLONE_NEW*</strong> namespace constants listed above. The caller is moved into each of the target thread's namespaces that is specified in <code>nstype</code>; the caller's memberships in the remaining namespaces are left unchanged.</p>
+<p>For example, the following code would move the caller into the same user, network, and UTS namespaces as PID 1234, but would leave the caller's other namespace memberships unchanged:</p>
+<pre><code>int fd = pidfd_open(1234, 0);
+setns(fd, CLONE_NEWUSER | CLONE_NEWNET | CLONE_NEWUTS);</code></pre>
+<p>Note the following details and restrictions when reassociating with specific namespace types:</p>
+<dl>
+<dt>User namespaces</dt>
+<dd><p>A process reassociating itself with a user namespace must have the <strong>CAP_SYS_ADMIN</strong> capability in the target user namespace. (This necessarily implies that it is only possible to join a descendant user namespace.) Upon successfully joining a user namespace, a process is granted all capabilities in that namespace, regardless of its user and group IDs.</p>
+<p>A multithreaded process may not change user namespace with <a href='setns'>setns</a>().</p>
+<p>It is not permitted to use <a href='setns'>setns</a>() to reenter the caller's current user namespace. This prevents a caller that has dropped capabilities from regaining those capabilities via a call to <a href='setns'>setns</a>().</p>
+<p>For security reasons, a process can't join a new user namespace if it is sharing filesystem-related attributes (the attributes whose sharing is controlled by the <a href='/2/clone'>clone</a>(2) <strong>CLONE_FS</strong> flag) with another process.</p>
+<p>For further details on user namespaces, see <a href='/7/user_namespaces'>user_namespaces</a>(7).</p>
+</dd>
+<dt>Mount namespaces</dt>
+<dd><p>Changing the mount namespace requires that the caller possess both <strong>CAP_SYS_CHROOT</strong> and <strong>CAP_SYS_ADMIN</strong> capabilities in its own user namespace and <strong>CAP_SYS_ADMIN</strong> in the user namespace that owns the target mount namespace.</p>
+<p>A process can't join a new mount namespace if it is sharing filesystem-related attributes (the attributes whose sharing is controlled by the <a href='/2/clone'>clone</a>(2) <strong>CLONE_FS</strong> flag) with another process.</p>
+<p>See <a href='/7/user_namespaces'>user_namespaces</a>(7) for details on the interaction of user namespaces and mount namespaces.</p>
+</dd>
+<dt>PID namespaces</dt>
+<dd><p>In order to reassociate itself with a new PID namespace, the caller must have the <strong>CAP_SYS_ADMIN</strong> capability both in its own user namespace and in the user namespace that owns the target PID namespace.</p>
+<p>Reassociating the PID namespace has somewhat different from other namespace types. Reassociating the calling thread with a PID namespace changes only the PID namespace that subsequently created child processes of the caller will be placed in; it does not change the PID namespace of the caller itself.</p>
+<p>Reassociating with a PID namespace is allowed only if the target PID namespace is a descendant (child, grandchild, etc.) of, or is the same as, the current PID namespace of the caller.</p>
+<p>For further details on PID namespaces, see <a href='/7/pid_namespaces'>pid_namespaces</a>(7).</p>
+</dd>
+<dt>Cgroup namespaces</dt>
+<dd><p>In order to reassociate itself with a new cgroup namespace, the caller must have the <strong>CAP_SYS_ADMIN</strong> capability both in its own user namespace and in the user namespace that owns the target cgroup namespace.</p>
+<p>Using <a href='setns'>setns</a>() to change the caller's cgroup namespace does not change the caller's cgroup memberships.</p>
+</dd>
+<dt>Network, IPC, time, and UTS namespaces</dt>
+<dd><p>In order to reassociate itself with a new network, IPC, time, or UTS namespace, the caller must have the <strong>CAP_SYS_ADMIN</strong> capability both in its own user namespace and in the user namespace that owns the target namespace.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='setns'>setns</a>() returns 0. On failure, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below takes two or more arguments. The first argument specifies the pathname of a namespace file in an existing <code>/proc/[pid]/ns/</code> directory. The remaining arguments specify a command and its arguments. The program opens the namespace file, joins that namespace using <a href='setns'>setns</a>(), and executes the specified command inside that namespace.</p>
+<p>The following shell session demonstrates the use of this program (compiled as a binary named <code>ns_exec</code>) in conjunction with the <strong>CLONE_NEWUTS</strong> example program in the <a href='/2/clone'>clone</a>(2) man page (complied as a binary named <code>newuts</code>).</p>
+<p>We begin by executing the example program in <a href='/2/clone'>clone</a>(2) in the background. That program creates a child in a separate UTS namespace. The child changes the hostname in its namespace, and then both processes display the hostnames in their UTS namespaces, so that we can see that they are different.</p>
+<pre><code>$ su                   # Need privilege for namespace operations
+Password:
+# ./newuts bizarro &amp;
+[1] 3549
+clone() returned 3550
+uts.nodename in child:  bizarro
+uts.nodename in parent: antero
+# uname -n             # Verify hostname in the shell
+antero</code></pre>
+<p>We then run the program shown below, using it to execute a shell. Inside that shell, we verify that the hostname is the one set by the child created by the first program:</p>
+<pre><code># ./ns_exec /proc/3550/ns/uts /bin/bash
+# uname -n             # Executed in shell started by ns_exec
+bizarro</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;fcntl.h&gt;
+#include &lt;sched.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int fd;
+
+    if (argc &lt; 3) {
+        fprintf(stderr, "%s /proc/PID/ns/FILE cmd args...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Get file descriptor for namespace; the file descriptor is opened
+       with O_CLOEXEC so as to ensure that it is not inherited by the
+       program that is later executed. */
+
+    fd = open(argv[1], O_RDONLY | O_CLOEXEC);
+    if (fd == -1)
+        errExit("open");
+
+    if (setns(fd, 0) == -1)       /* Join that namespace */
+        errExit("setns");
+
+    execvp(argv[2], &amp;argv[2]);    /* Execute a command in namespace */
+    errExit("execvp");
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>fd</code> refers to a namespace whose type does not match that specified in <code>nstype</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There is problem with reassociating the thread with the specified namespace.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The caller tried to join an ancestor (parent, grandparent, and so on) PID namespace.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The caller attempted to join the user namespace in which it is already a member.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The caller shares filesystem (<strong>CLONE_FS</strong>) state (in particular, the root directory) with other processes and tried to join a new user namespace.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The caller is multithreaded and tried to join a new user namespace.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>fd</code> is a PID file descriptor and <code>nstype</code> is invalid (e.g., it is 0).</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Cannot allocate sufficient memory to change the specified namespace.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The calling thread did not have the required capability for this operation.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p><code>fd</code> is a PID file descriptor but the process it refers to no longer exists (i.e., it has terminated and been waited on).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='setns'>setns</a>() system call first appeared in Linux in kernel 3.0; library support was added to glibc in version 2.14.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <a href='setns'>setns</a>() system call is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For further information on the <code>/proc/[pid]/ns/</code> magic links, see <a href='/7/namespaces'>namespaces</a>(7).</p>
+<p>Not all of the attributes that can be shared when a new thread is created using <a href='/2/clone'>clone</a>(2) can be changed using <a href='setns'>setns</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/nsenter'>nsenter</a>(1), <a href='/2/clone'>clone</a>(2), <a href='/2/fork'>fork</a>(2), <a href='/2/unshare'>unshare</a>(2), <a href='/2/vfork'>vfork</a>(2), <a href='/7/namespaces'>namespaces</a>(7), <a href='/7/unix'>unix</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

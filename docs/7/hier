@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>hier - description of the filesystem hierarchy</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A typical Linux system has, among others, the following directories:</p>
+<dl>
+<dt><code>/</code></dt>
+<dd><p>This is the root directory. This is where the whole tree starts.</p>
+</dd>
+<dt><code>/bin</code></dt>
+<dd><p>This directory contains executable programs which are needed in single user mode and to bring the system up or repair it.</p>
+</dd>
+<dt><code>/boot</code></dt>
+<dd><p>Contains static files for the boot loader. This directory holds only the files which are needed during the boot process. The map installer and configuration files should go to <code>/sbin</code> and <code>/etc</code>. The operating system kernel (initrd for example) must be located in either <code>/</code> or <code>/boot</code>.</p>
+</dd>
+<dt><code>/dev</code></dt>
+<dd><p>Special or device files, which refer to physical devices. See <a href='/1/mknod'>mknod</a>(1).</p>
+</dd>
+<dt><code>/etc</code></dt>
+<dd><p>Contains configuration files which are local to the machine. Some larger software packages, like X11, can have their own subdirectories below <code>/etc</code>. Site-wide configuration files may be placed here or in <code>/usr/etc</code>. Nevertheless, programs should always look for these files in <code>/etc</code> and you may have links for these files to <code>/usr/etc</code>.</p>
+</dd>
+<dt><code>/etc/opt</code></dt>
+<dd><p>Host-specific configuration files for add-on applications installed in <code>/opt</code>.</p>
+</dd>
+<dt><code>/etc/sgml</code></dt>
+<dd><p>This directory contains the configuration files for SGML (optional).</p>
+</dd>
+<dt><code>/etc/skel</code></dt>
+<dd><p>When a new user account is created, files from this directory are usually copied into the user's home directory.</p>
+</dd>
+<dt><code>/etc/X11</code></dt>
+<dd><p>Configuration files for the X11 window system (optional).</p>
+</dd>
+<dt><code>/etc/xml</code></dt>
+<dd><p>This directory contains the configuration files for XML (optional).</p>
+</dd>
+<dt><code>/home</code></dt>
+<dd><p>On machines with home directories for users, these are usually beneath this directory, directly or not. The structure of this directory depends on local administration decisions (optional).</p>
+</dd>
+<dt><code>/lib</code></dt>
+<dd><p>This directory should hold those shared libraries that are necessary to boot the system and to run the commands in the root filesystem.</p>
+</dd>
+<dt><code>/lib&lt;qual&gt;</code></dt>
+<dd><p>These directories are variants of <code>/lib</code> on system which support more than one binary format requiring separate libraries (optional).</p>
+</dd>
+<dt><code>/lib/modules</code></dt>
+<dd><p>Loadable kernel modules (optional).</p>
+</dd>
+<dt><code>/lost+found</code></dt>
+<dd><p>This directory contains items lost in the filesystem. These items are usually chunks of files mangled as a consequence of a faulty disk or a system crash.</p>
+</dd>
+<dt><code>/media</code></dt>
+<dd><p>This directory contains mount points for removable media such as CD and DVD disks or USB sticks. On systems where more than one device exists for mounting a certain type of media, mount directories can be created by appending a digit to the name of those available above starting with '0', but the unqualified name must also exist.</p>
+</dd>
+<dt><code>/media/floppy[1-9]</code></dt>
+<dd><p>Floppy drive (optional).</p>
+</dd>
+<dt><code>/media/cdrom[1-9]</code></dt>
+<dd><p>CD-ROM drive (optional).</p>
+</dd>
+<dt><code>/media/cdrecorder[1-9]</code></dt>
+<dd><p>CD writer (optional).</p>
+</dd>
+<dt><code>/media/zip[1-9]</code></dt>
+<dd><p>Zip drive (optional).</p>
+</dd>
+<dt><code>/media/usb[1-9]</code></dt>
+<dd><p>USB drive (optional).</p>
+</dd>
+<dt><code>/mnt</code></dt>
+<dd><p>This directory is a mount point for a temporarily mounted filesystem. In some distributions, <code>/mnt</code> contains subdirectories intended to be used as mount points for several temporary filesystems.</p>
+</dd>
+<dt><code>/opt</code></dt>
+<dd><p>This directory should contain add-on packages that contain static files.</p>
+</dd>
+<dt><code>/proc</code></dt>
+<dd><p>This is a mount point for the <code>proc</code> filesystem, which provides information about running processes and the kernel. This pseudo-filesystem is described in more detail in <a href='/5/proc'>proc</a>(5).</p>
+</dd>
+<dt><code>/root</code></dt>
+<dd><p>This directory is usually the home directory for the root user (optional).</p>
+</dd>
+<dt><code>/run</code></dt>
+<dd><p>This directory contains information which describes the system since it was booted. Once this purpose was served by <code>/var/run</code> and programs may continue to use it.</p>
+</dd>
+<dt><code>/sbin</code></dt>
+<dd><p>Like <code>/bin</code>, this directory holds commands needed to boot the system, but which are usually not executed by normal users.</p>
+</dd>
+<dt><code>/srv</code></dt>
+<dd><p>This directory contains site-specific data that is served by this system.</p>
+</dd>
+<dt><code>/sys</code></dt>
+<dd><p>This is a mount point for the sysfs filesystem, which provides information about the kernel like <code>/proc</code>, but better structured, following the formalism of kobject infrastructure.</p>
+</dd>
+<dt><code>/tmp</code></dt>
+<dd><p>This directory contains temporary files which may be deleted with no notice, such as by a regular job or at system boot up.</p>
+</dd>
+<dt><code>/usr</code></dt>
+<dd><p>This directory is usually mounted from a separate partition. It should hold only shareable, read-only data, so that it can be mounted by various machines running Linux.</p>
+</dd>
+<dt><code>/usr/X11R6</code></dt>
+<dd><p>The X-Window system, version 11 release 6 (present in FHS 2.3, removed in FHS 3.0).</p>
+</dd>
+<dt><code>/usr/X11R6/bin</code></dt>
+<dd><p>Binaries which belong to the X-Window system; often, there is a symbolic link from the more traditional <code>/usr/bin/X11</code> to here.</p>
+</dd>
+<dt><code>/usr/X11R6/lib</code></dt>
+<dd><p>Data files associated with the X-Window system.</p>
+</dd>
+<dt><code>/usr/X11R6/lib/X11</code></dt>
+<dd><p>These contain miscellaneous files needed to run X; Often, there is a symbolic link from <code>/usr/lib/X11</code> to this directory.</p>
+</dd>
+<dt><code>/usr/X11R6/include/X11</code></dt>
+<dd><p>Contains include files needed for compiling programs using the X11 window system. Often, there is a symbolic link from <code>/usr/include/X11</code> to this directory.</p>
+</dd>
+<dt><code>/usr/bin</code></dt>
+<dd><p>This is the primary directory for executable programs. Most programs executed by normal users which are not needed for booting or for repairing the system and which are not installed locally should be placed in this directory.</p>
+</dd>
+<dt><code>/usr/bin/mh</code></dt>
+<dd><p>Commands for the MH mail handling system (optional).</p>
+</dd>
+<dt><code>/usr/bin/X11</code></dt>
+<dd><p>is the traditional place to look for X11 executables; on Linux, it usually is a symbolic link to <code>/usr/X11R6/bin</code>.</p>
+</dd>
+<dt><code>/usr/dict</code></dt>
+<dd><p>Replaced by <code>/usr/share/dict</code>.</p>
+</dd>
+<dt><code>/usr/doc</code></dt>
+<dd><p>Replaced by <code>/usr/share/doc</code>.</p>
+</dd>
+<dt><code>/usr/etc</code></dt>
+<dd><p>Site-wide configuration files to be shared between several machines may be stored in this directory. However, commands should always reference those files using the <code>/etc</code> directory. Links from files in <code>/etc</code> should point to the appropriate files in <code>/usr/etc</code>.</p>
+</dd>
+<dt><code>/usr/games</code></dt>
+<dd><p>Binaries for games and educational programs (optional).</p>
+</dd>
+<dt><code>/usr/include</code></dt>
+<dd><p>Include files for the C compiler.</p>
+</dd>
+<dt><code>/usr/include/bsd</code></dt>
+<dd><p>BSD compatibility include files (optional).</p>
+</dd>
+<dt><code>/usr/include/X11</code></dt>
+<dd><p>Include files for the C compiler and the X-Window system. This is usually a symbolic link to <code>/usr/X11R6/include/X11</code>.</p>
+</dd>
+<dt><code>/usr/include/asm</code></dt>
+<dd><p>Include files which declare some assembler functions. This used to be a symbolic link to <code>/usr/src/linux/include/asm</code>.</p>
+</dd>
+<dt><code>/usr/include/linux</code></dt>
+<dd><p>This contains information which may change from system release to system release and used to be a symbolic link to <code>/usr/src/linux/include/linux</code> to get at operating-system-specific information.</p>
+<p>(Note that one should have include files there that work correctly with the current libc and in user space. However, Linux kernel source is not designed to be used with user programs and does not know anything about the libc you are using. It is very likely that things will break if you let <code>/usr/include/asm</code> and <code>/usr/include/linux</code> point at a random kernel tree. Debian systems don't do this and use headers from a known good kernel version, provided in the libc*-dev package.)</p>
+</dd>
+<dt><code>/usr/include/g++</code></dt>
+<dd><p>Include files to use with the GNU C++ compiler.</p>
+</dd>
+<dt><code>/usr/lib</code></dt>
+<dd><p>Object libraries, including dynamic libraries, plus some executables which usually are not invoked directly. More complicated programs may have whole subdirectories there.</p>
+</dd>
+<dt><code>/usr/libexec</code></dt>
+<dd><p>Directory contains binaries for internal use only and they are not meant to be executed directly by users shell or scripts.</p>
+</dd>
+<dt><code>/usr/lib&lt;qual&gt;</code></dt>
+<dd><p>These directories are variants of <code>/usr/lib</code> on system which support more than one binary format requiring separate libraries, except that the symbolic link <code>/usr/lib&lt;qual&gt;/X11</code> is not required (optional).</p>
+</dd>
+<dt><code>/usr/lib/X11</code></dt>
+<dd><p>The usual place for data files associated with X programs, and configuration files for the X system itself. On Linux, it usually is a symbolic link to <code>/usr/X11R6/lib/X11</code>.</p>
+</dd>
+<dt><code>/usr/lib/gcc-lib</code></dt>
+<dd><p>contains executables and include files for the GNU C compiler, <a href='/1/gcc'>gcc</a>(1).</p>
+</dd>
+<dt><code>/usr/lib/groff</code></dt>
+<dd><p>Files for the GNU groff document formatting system.</p>
+</dd>
+<dt><code>/usr/lib/uucp</code></dt>
+<dd><p>Files for <a href='/1/uucp'>uucp</a>(1).</p>
+</dd>
+<dt><code>/usr/local</code></dt>
+<dd><p>This is where programs which are local to the site typically go.</p>
+</dd>
+<dt><code>/usr/local/bin</code></dt>
+<dd><p>Binaries for programs local to the site.</p>
+</dd>
+<dt><code>/usr/local/doc</code></dt>
+<dd><p>Local documentation.</p>
+</dd>
+<dt><code>/usr/local/etc</code></dt>
+<dd><p>Configuration files associated with locally installed programs.</p>
+</dd>
+<dt><code>/usr/local/games</code></dt>
+<dd><p>Binaries for locally installed games.</p>
+</dd>
+<dt><code>/usr/local/lib</code></dt>
+<dd><p>Files associated with locally installed programs.</p>
+</dd>
+<dt><code>/usr/local/lib&lt;qual&gt;</code></dt>
+<dd><p>These directories are variants of <code>/usr/local/lib</code> on system which support more than one binary format requiring separate libraries (optional).</p>
+</dd>
+<dt><code>/usr/local/include</code></dt>
+<dd><p>Header files for the local C compiler.</p>
+</dd>
+<dt><code>/usr/local/info</code></dt>
+<dd><p>Info pages associated with locally installed programs.</p>
+</dd>
+<dt><code>/usr/local/man</code></dt>
+<dd><p>Man pages associated with locally installed programs.</p>
+</dd>
+<dt><code>/usr/local/sbin</code></dt>
+<dd><p>Locally installed programs for system administration.</p>
+</dd>
+<dt><code>/usr/local/share</code></dt>
+<dd><p>Local application data that can be shared among different architectures of the same OS.</p>
+</dd>
+<dt><code>/usr/local/src</code></dt>
+<dd><p>Source code for locally installed software.</p>
+</dd>
+<dt><code>/usr/man</code></dt>
+<dd><p>Replaced by <code>/usr/share/man</code>.</p>
+</dd>
+<dt><code>/usr/sbin</code></dt>
+<dd><p>This directory contains program binaries for system administration which are not essential for the boot process, for mounting <code>/usr</code>, or for system repair.</p>
+</dd>
+<dt><code>/usr/share</code></dt>
+<dd><p>This directory contains subdirectories with specific application data, that can be shared among different architectures of the same OS. Often one finds stuff here that used to live in <code>/usr/doc</code> or <code>/usr/lib</code> or <code>/usr/man</code>.</p>
+</dd>
+<dt><code>/usr/share/color</code></dt>
+<dd><p>Contains color management information, like International Color Consortium (ICC) Color profiles (optional).</p>
+</dd>
+<dt><code>/usr/share/dict</code></dt>
+<dd><p>Contains the word lists used by spell checkers (optional).</p>
+</dd>
+<dt><code>/usr/share/dict/words</code></dt>
+<dd><p>List of English words (optional).</p>
+</dd>
+<dt><code>/usr/share/doc</code></dt>
+<dd><p>Documentation about installed programs (optional).</p>
+</dd>
+<dt><code>/usr/share/games</code></dt>
+<dd><p>Static data files for games in <code>/usr/games</code> (optional).</p>
+</dd>
+<dt><code>/usr/share/info</code></dt>
+<dd><p>Info pages go here (optional).</p>
+</dd>
+<dt><code>/usr/share/locale</code></dt>
+<dd><p>Locale information goes here (optional).</p>
+</dd>
+<dt><code>/usr/share/man</code></dt>
+<dd><p>Manual pages go here in subdirectories according to the man page sections.</p>
+</dd>
+<dt><code>/usr/share/man/&lt;locale&gt;/man[1-9]</code></dt>
+<dd><p>These directories contain manual pages for the specific locale in source code form. Systems which use a unique language and code set for all manual pages may omit the &lt;locale&gt; substring.</p>
+</dd>
+<dt><code>/usr/share/misc</code></dt>
+<dd><p>Miscellaneous data that can be shared among different architectures of the same OS.</p>
+</dd>
+<dt><code>/usr/share/nls</code></dt>
+<dd><p>The message catalogs for native language support go here (optional).</p>
+</dd>
+<dt><code>/usr/share/ppd</code></dt>
+<dd><p>Postscript Printer Definition (PPD) files (optional).</p>
+</dd>
+<dt><code>/usr/share/sgml</code></dt>
+<dd><p>Files for SGML (optional).</p>
+</dd>
+<dt><code>/usr/share/sgml/docbook</code></dt>
+<dd><p>DocBook DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/sgml/tei</code></dt>
+<dd><p>TEI DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/sgml/html</code></dt>
+<dd><p>HTML DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/sgml/mathtml</code></dt>
+<dd><p>MathML DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/terminfo</code></dt>
+<dd><p>The database for terminfo (optional).</p>
+</dd>
+<dt><code>/usr/share/tmac</code></dt>
+<dd><p>Troff macros that are not distributed with groff (optional).</p>
+</dd>
+<dt><code>/usr/share/xml</code></dt>
+<dd><p>Files for XML (optional).</p>
+</dd>
+<dt><code>/usr/share/xml/docbook</code></dt>
+<dd><p>DocBook DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/xml/xhtml</code></dt>
+<dd><p>XHTML DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/xml/mathml</code></dt>
+<dd><p>MathML DTD (optional).</p>
+</dd>
+<dt><code>/usr/share/zoneinfo</code></dt>
+<dd><p>Files for timezone information (optional).</p>
+</dd>
+<dt><code>/usr/src</code></dt>
+<dd><p>Source files for different parts of the system, included with some packages for reference purposes. Don't work here with your own projects, as files below /usr should be read-only except when installing software (optional).</p>
+</dd>
+<dt><code>/usr/src/linux</code></dt>
+<dd><p>This was the traditional place for the kernel source. Some distributions put here the source for the default kernel they ship. You should probably use another directory when building your own kernel.</p>
+</dd>
+<dt><code>/usr/tmp</code></dt>
+<dd><p>Obsolete. This should be a link to <code>/var/tmp</code>. This link is present only for compatibility reasons and shouldn't be used.</p>
+</dd>
+<dt><code>/var</code></dt>
+<dd><p>This directory contains files which may change in size, such as spool and log files.</p>
+</dd>
+<dt><code>/var/account</code></dt>
+<dd><p>Process accounting logs (optional).</p>
+</dd>
+<dt><code>/var/adm</code></dt>
+<dd><p>This directory is superseded by <code>/var/log</code> and should be a symbolic link to <code>/var/log</code>.</p>
+</dd>
+<dt><code>/var/backups</code></dt>
+<dd><p>Reserved for historical reasons.</p>
+</dd>
+<dt><code>/var/cache</code></dt>
+<dd><p>Data cached for programs.</p>
+</dd>
+<dt><code>/var/cache/fonts</code></dt>
+<dd><p>Locally generated fonts (optional).</p>
+</dd>
+<dt><code>/var/cache/man</code></dt>
+<dd><p>Locally formatted man pages (optional).</p>
+</dd>
+<dt><code>/var/cache/www</code></dt>
+<dd><p>WWW proxy or cache data (optional).</p>
+</dd>
+<dt><code>/var/cache/&lt;package&gt;</code></dt>
+<dd><p>Package specific cache data (optional).</p>
+</dd>
+<dt><code>/var/catman/cat[1-9]</code> or <code>/var/cache/man/cat[1-9]</code></dt>
+<dd><p>These directories contain preformatted manual pages according to their man page section. (The use of preformatted manual pages is deprecated.)</p>
+</dd>
+<dt><code>/var/crash</code></dt>
+<dd><p>System crash dumps (optional).</p>
+</dd>
+<dt><code>/var/cron</code></dt>
+<dd><p>Reserved for historical reasons.</p>
+</dd>
+<dt><code>/var/games</code></dt>
+<dd><p>Variable game data (optional).</p>
+</dd>
+<dt><code>/var/lib</code></dt>
+<dd><p>Variable state information for programs.</p>
+</dd>
+<dt><code>/var/lib/color</code></dt>
+<dd><p>Variable files containing color management information (optional).</p>
+</dd>
+<dt><code>/var/lib/hwclock</code></dt>
+<dd><p>State directory for hwclock (optional).</p>
+</dd>
+<dt><code>/var/lib/misc</code></dt>
+<dd><p>Miscellaneous state data.</p>
+</dd>
+<dt><code>/var/lib/xdm</code></dt>
+<dd><p>X display manager variable data (optional).</p>
+</dd>
+<dt><code>/var/lib/&lt;editor&gt;</code></dt>
+<dd><p>Editor backup files and state (optional).</p>
+</dd>
+<dt><code>/var/lib/&lt;name&gt;</code></dt>
+<dd><p>These directories must be used for all distribution packaging support.</p>
+</dd>
+<dt><code>/var/lib/&lt;package&gt;</code></dt>
+<dd><p>State data for packages and subsystems (optional).</p>
+</dd>
+<dt><code>/var/lib/&lt;pkgtool&gt;</code></dt>
+<dd><p>Packaging support files (optional).</p>
+</dd>
+<dt><code>/var/local</code></dt>
+<dd><p>Variable data for <code>/usr/local</code>.</p>
+</dd>
+<dt><code>/var/lock</code></dt>
+<dd><p>Lock files are placed in this directory. The naming convention for device lock files is <code>LCK..&lt;device&gt;</code> where <code>&lt;device&gt;</code> is the device's name in the filesystem. The format used is that of HDU UUCP lock files, that is, lock files contain a PID as a 10-byte ASCII decimal number, followed by a newline character.</p>
+</dd>
+<dt><code>/var/log</code></dt>
+<dd><p>Miscellaneous log files.</p>
+</dd>
+<dt><code>/var/opt</code></dt>
+<dd><p>Variable data for <code>/opt</code>.</p>
+</dd>
+<dt><code>/var/mail</code></dt>
+<dd><p>Users' mailboxes. Replaces <code>/var/spool/mail</code>.</p>
+</dd>
+<dt><code>/var/msgs</code></dt>
+<dd><p>Reserved for historical reasons.</p>
+</dd>
+<dt><code>/var/preserve</code></dt>
+<dd><p>Reserved for historical reasons.</p>
+</dd>
+<dt><code>/var/run</code></dt>
+<dd><p>Run-time variable files, like files holding process identifiers (PIDs) and logged user information <code>(utmp)</code>. Files in this directory are usually cleared when the system boots.</p>
+</dd>
+<dt><code>/var/spool</code></dt>
+<dd><p>Spooled (or queued) files for various programs.</p>
+</dd>
+<dt><code>/var/spool/at</code></dt>
+<dd><p>Spooled jobs for <a href='/1/at'>at</a>(1).</p>
+</dd>
+<dt><code>/var/spool/cron</code></dt>
+<dd><p>Spooled jobs for <a href='/8/cron'>cron</a>(8).</p>
+</dd>
+<dt><code>/var/spool/lpd</code></dt>
+<dd><p>Spooled files for printing (optional).</p>
+</dd>
+<dt><code>/var/spool/lpd/printer</code></dt>
+<dd><p>Spools for a specific printer (optional).</p>
+</dd>
+<dt><code>/var/spool/mail</code></dt>
+<dd><p>Replaced by <code>/var/mail</code>.</p>
+</dd>
+<dt><code>/var/spool/mqueue</code></dt>
+<dd><p>Queued outgoing mail (optional).</p>
+</dd>
+<dt><code>/var/spool/news</code></dt>
+<dd><p>Spool directory for news (optional).</p>
+</dd>
+<dt><code>/var/spool/rwho</code></dt>
+<dd><p>Spooled files for <a href='/8/rwhod'>rwhod</a>(8) (optional).</p>
+</dd>
+<dt><code>/var/spool/smail</code></dt>
+<dd><p>Spooled files for the <a href='/1/smail'>smail</a>(1) mail delivery program.</p>
+</dd>
+<dt><code>/var/spool/uucp</code></dt>
+<dd><p>Spooled files for <a href='/1/uucp'>uucp</a>(1) (optional).</p>
+</dd>
+<dt><code>/var/tmp</code></dt>
+<dd><p>Like <code>/tmp</code>, this directory holds temporary files stored for an unspecified duration.</p>
+</dd>
+<dt><code>/var/yp</code></dt>
+<dd><p>Database files for NIS, formerly known as the Sun Yellow Pages (YP).</p>
+</dd>
+</dl>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The Filesystem Hierarchy Standard (FHS), Version 3.0, published March 19, 2015 <a href="<a href="https://refspecs.linuxfoundation.org/fhs.shtml">https://refspecs.linuxfoundation.org/fhs.shtml</a>"></a>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>This list is not exhaustive; different distributions and systems may be configured differently.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/find'>find</a>(1), <a href='/1/ln'>ln</a>(1), <a href='/5/proc'>proc</a>(5), <a href='/7/file-hierarchy'>file-hierarchy</a>(7), <a href='/8/mount'>mount</a>(8)</p>
+<p>The Filesystem Hierarchy Standard</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

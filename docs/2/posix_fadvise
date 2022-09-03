@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>posix_fadvise - predeclare an access pattern for file data</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a>
+
+int posix_fadvise(int fd, off_t offset, off_t len, int advice);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='posix_fadvise'>posix_fadvise</a>():</p>
+<blockquote>
+<p>_POSIX_C_SOURCE &gt;= 200112L</p>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Programs can use <a href='posix_fadvise'>posix_fadvise</a>() to announce an intention to access file data in a specific pattern in the future, thus allowing the kernel to perform appropriate optimizations.</p>
+<p>The <code>advice</code> applies to a (not necessarily existent) region starting at <code>offset</code> and extending for <code>len</code> bytes (or until the end of the file if <code>len</code> is 0) within the file referred to by <code>fd</code>. The <code>advice</code> is not binding; it merely constitutes an expectation on behalf of the application.</p>
+<p>Permissible values for <code>advice</code> include:</p>
+<dl>
+<dt><strong>POSIX_FADV_NORMAL</strong></dt>
+<dd><p>Indicates that the application has no advice to give about its access pattern for the specified data. If no advice is given for an open file, this is the default assumption.</p>
+</dd>
+<dt><strong>POSIX_FADV_SEQUENTIAL</strong></dt>
+<dd><p>The application expects to access the specified data sequentially (with lower offsets read before higher ones).</p>
+</dd>
+<dt><strong>POSIX_FADV_RANDOM</strong></dt>
+<dd><p>The specified data will be accessed in random order.</p>
+</dd>
+<dt><strong>POSIX_FADV_NOREUSE</strong></dt>
+<dd><p>The specified data will be accessed only once.</p>
+<p>In kernels before 2.6.18, <strong>POSIX_FADV_NOREUSE</strong> had the same semantics as <strong>POSIX_FADV_WILLNEED</strong>. This was probably a bug; since kernel 2.6.18, this flag is a no-op.</p>
+</dd>
+<dt><strong>POSIX_FADV_WILLNEED</strong></dt>
+<dd><p>The specified data will be accessed in the near future.</p>
+<p><strong>POSIX_FADV_WILLNEED</strong> initiates a nonblocking read of the specified region into the page cache. The amount of data read may be decreased by the kernel depending on virtual memory load. (A few megabytes will usually be fully satisfied, and more is rarely useful.)</p>
+</dd>
+<dt><strong>POSIX_FADV_DONTNEED</strong></dt>
+<dd><p>The specified data will not be accessed in the near future.</p>
+<p><strong>POSIX_FADV_DONTNEED</strong> attempts to free cached pages associated with the specified region. This is useful, for example, while streaming large files. A program may periodically request the kernel to free cached data that has already been used, so that more useful cached pages are not discarded instead.</p>
+<p>Requests to discard partial pages are ignored. It is preferable to preserve needed data than discard unneeded data. If the application requires that data be considered for discarding, then <code>offset</code> and <code>len</code> must be page-aligned.</p>
+<p>The implementation <code>may</code> attempt to write back dirty pages in the specified region, but this is not guaranteed. Any unwritten dirty pages will not be freed. If the application wishes to ensure that dirty pages will be released, it should call <a href='/2/fsync'>fsync</a>(2) or <a href='/2/fdatasync'>fdatasync</a>(2) first.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, zero is returned. On error, an error number is returned.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p>The <code>fd</code> argument was not a valid file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid value was specified for <code>advice</code>.</p>
+</dd>
+<dt><strong>ESPIPE</strong></dt>
+<dd><p>The specified file descriptor refers to a pipe or FIFO. (<strong>ESPIPE</strong> is the error specified by POSIX, but before kernel version 2.6.16, Linux returned <strong>EINVAL</strong> in this case.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>Kernel support first appeared in Linux 2.5.60; the underlying system call is called <a href='fadvise64'>fadvise64</a>(). Library support has been provided since glibc version 2.2, via the wrapper function <a href='posix_fadvise'>posix_fadvise</a>().</p>
+<p>Since Linux 3.18, support for the underlying system call is optional, depending on the setting of the <strong>CONFIG_ADVISE_SYSCALLS</strong> configuration option.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008. Note that the type of the <code>len</code> argument was changed from <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> to <code>off_t</code> in POSIX.1-2001 TC1.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Under Linux, <strong>POSIX_FADV_NORMAL</strong> sets the readahead window to the default size for the backing device; <strong>POSIX_FADV_SEQUENTIAL</strong> doubles this size, and <strong>POSIX_FADV_RANDOM</strong> disables file readahead entirely. These changes affect the entire file, not just the specified region (but other open file handles to the same file are unaffected).</p>
+<p>The contents of the kernel buffer cache can be cleared via the <code>/proc/sys/vm/drop_caches</code> interface described in <a href='/5/proc'>proc</a>(5).</p>
+<p>One can obtain a snapshot of which pages of a file are resident in the buffer cache by opening a file, mapping it with <a href='/2/mmap'>mmap</a>(2), and then applying <a href='/2/mincore'>mincore</a>(2) to the mapping.</p>
+<h2>C library/kernel differences</h2>
+<p>The name of the wrapper function in the C library is <a href='posix_fadvise'>posix_fadvise</a>(). The underlying system call is called <a href='fadvise64'>fadvise64</a>() (or, on some architectures, <a href='fadvise64_64'>fadvise64_64</a>()); the difference between the two is that the former system call assumes that the type of the <code>len</code> argument is <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code>, while the latter expects <code>loff_t</code> there.</p>
+<h2>Architecture-specific variants</h2>
+<p>Some architectures require 64-bit arguments to be aligned in a suitable pair of registers (see <a href='/2/syscall'>syscall</a>(2) for further detail). On such architectures, the call signature of <a href='posix_fadvise'>posix_fadvise</a>() shown in the SYNOPSIS would force a register to be wasted as padding between the <code>fd</code> and <code>offset</code> arguments. Therefore, these architectures define a version of the system call that orders the arguments suitably, but is otherwise exactly the same as <a href='posix_fadvise'>posix_fadvise</a>().</p>
+<p>For example, since Linux 2.6.14, ARM has the following system call:</p>
+<pre><code>long arm_fadvise64_64(int fd, int advice,
+ loff_t offset, loff_t len);</code></pre>
+<p>These architecture-specific details are generally hidden from applications by the glibc <a href='posix_fadvise'>posix_fadvise</a>() wrapper function, which invokes the appropriate architecture-specific system call.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In kernels before 2.6.6, if <code>len</code> was specified as 0, then this was interpreted literally as "zero bytes", rather than as meaning "all bytes through to the end of the file".</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/fincore'>fincore</a>(1), <a href='/2/mincore'>mincore</a>(2), <a href='/2/readahead'>readahead</a>(2), <a href='/2/sync_file_range'>sync_file_range</a>(2), <a href='/3/posix_fallocate'>posix_fallocate</a>(3), <a href='/3/posix_madvise'>posix_madvise</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

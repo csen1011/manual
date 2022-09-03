@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>semop, semtimedop - System V semaphore operations</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ipc.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/sem.h&gt;</a>
+
+int semop(int semid, struct sembuf *sops, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> nsops);
+
+int semtimedop(int semid, struct sembuf *sops, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> nsops,
+ const struct timespec *timeout);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='semtimedop'>semtimedop</a>(): _GNU_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Each semaphore in a System V semaphore set has the following associated values:</p>
+<pre><code>unsigned short  semval;   /* semaphore value */
+unsigned short  semzcnt;  /* # waiting for zero */
+unsigned short  semncnt;  /* # waiting for increase */
+pid_t           sempid;   /* PID of process that last</code></pre>
+<p><a href='semop'>semop</a>() performs operations on selected semaphores in the set indicated by <code>semid</code>. Each of the <code>nsops</code> elements in the array pointed to by <code>sops</code> is a structure that specifies an operation to be performed on a single semaphore. The elements of this structure are of type <code>struct sembuf</code>, containing the following members:</p>
+<pre><code>unsigned short sem_num;  /* semaphore number */
+short          sem_op;   /* semaphore operation */
+short          sem_flg;  /* operation flags */</code></pre>
+<p>Flags recognized in <code>sem_flg</code> are <strong>IPC_NOWAIT</strong> and <strong>SEM_UNDO</strong>. If an operation specifies <strong>SEM_UNDO</strong>, it will be automatically undone when the process terminates.</p>
+<p>The set of operations contained in <code>sops</code> is performed in <code>array order</code>, and <code>atomically</code>, that is, the operations are performed either as a complete unit, or not at all. The behavior of the system call if not all operations can be performed immediately depends on the presence of the <strong>IPC_NOWAIT</strong> flag in the individual <code>sem_flg</code> fields, as noted below.</p>
+<p>Each operation is performed on the <code>sem_num</code>-th semaphore of the semaphore set, where the first semaphore of the set is numbered 0. There are three types of operation, distinguished by the value of <code>sem_op</code>.</p>
+<p>If <code>sem_op</code> is a positive integer, the operation adds this value to the semaphore value (<code>semval</code>). Furthermore, if <strong>SEM_UNDO</strong> is specified for this operation, the system subtracts the value <code>sem_op</code> from the semaphore adjustment (<code>semadj</code>) value for this semaphore. This operation can always proceed—it never forces a thread to wait. The calling process must have alter permission on the semaphore set.</p>
+<p>If <code>sem_op</code> is zero, the process must have read permission on the semaphore set. This is a "wait-for-zero" operation: if <code>semval</code> is zero, the operation can immediately proceed. Otherwise, if <strong>IPC_NOWAIT</strong> is specified in <code>sem_flg</code>, <a href='semop'>semop</a>() fails with <code>errno</code> set to <strong>EAGAIN</strong> (and none of the operations in <code>sops</code> is performed). Otherwise, <code>semzcnt</code> (the count of threads waiting until this semaphore's value becomes zero) is incremented by one and the thread sleeps until one of the following occurs:</p>
+<ul>
+<li><p><code>semval</code> becomes 0, at which time the value of <code>semzcnt</code> is decremented.</p></li>
+<li><p>The semaphore set is removed: <a href='semop'>semop</a>() fails, with <code>errno</code> set to <strong>EIDRM</strong>.</p></li>
+<li><p>The calling thread catches a signal: the value of <code>semzcnt</code> is decremented and <a href='semop'>semop</a>() fails, with <code>errno</code> set to <strong>EINTR</strong>.</p></li>
+</ul>
+<p>If <code>sem_op</code> is less than zero, the process must have alter permission on the semaphore set. If <code>semval</code> is greater than or equal to the absolute value of <code>sem_op</code>, the operation can proceed immediately: the absolute value of <code>sem_op</code> is subtracted from <code>semval</code>, and, if <strong>SEM_UNDO</strong> is specified for this operation, the system adds the absolute value of <code>sem_op</code> to the semaphore adjustment (<code>semadj</code>) value for this semaphore. If the absolute value of <code>sem_op</code> is greater than <code>semval</code>, and <strong>IPC_NOWAIT</strong> is specified in <code>sem_flg</code>, <a href='semop'>semop</a>() fails, with <code>errno</code> set to <strong>EAGAIN</strong> (and none of the operations in <code>sops</code> is performed). Otherwise, <code>semncnt</code> (the counter of threads waiting for this semaphore's value to increase) is incremented by one and the thread sleeps until one of the following occurs:</p>
+<ul>
+<li><p><code>semval</code> becomes greater than or equal to the absolute value of <code>sem_op</code>: the operation now proceeds, as described above.</p></li>
+<li><p>The semaphore set is removed from the system: <a href='semop'>semop</a>() fails, with <code>errno</code> set to <strong>EIDRM</strong>.</p></li>
+<li><p>The calling thread catches a signal: the value of <code>semncnt</code> is decremented and <a href='semop'>semop</a>() fails, with <code>errno</code> set to <strong>EINTR</strong>.</p></li>
+</ul>
+<p>On successful completion, the <code>sempid</code> value for each semaphore specified in the array pointed to by <code>sops</code> is set to the caller's process ID. In addition, the <code>sem_otime</code> is set to the current time.</p>
+<h2>semtimedop()</h2>
+<p><a href='semtimedop'>semtimedop</a>() behaves identically to <a href='semop'>semop</a>() except that in those cases where the calling thread would sleep, the duration of that sleep is limited by the amount of elapsed time specified by the <code>timespec</code> structure whose address is passed in the <code>timeout</code> argument. (This sleep interval will be rounded up to the system clock granularity, and kernel scheduling delays mean that the interval may overrun by a small amount.) If the specified time limit has been reached, <a href='semtimedop'>semtimedop</a>() fails with <code>errno</code> set to <strong>EAGAIN</strong> (and none of the operations in <code>sops</code> is performed). If the <code>timeout</code> argument is NULL, then <a href='semtimedop'>semtimedop</a>() behaves exactly like <a href='semop'>semop</a>().</p>
+<p>Note that if <a href='semtimedop'>semtimedop</a>() is interrupted by a signal, causing the call to fail with the error <strong>EINTR</strong>, the contents of <code>timeout</code> are left unchanged.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>If successful, <a href='semop'>semop</a>() and <a href='semtimedop'>semtimedop</a>() return 0; otherwise they return -1 with <code>errno</code> indicating the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following code segment uses <a href='semop'>semop</a>() to atomically wait for the value of semaphore 0 to become zero, and then increment the semaphore value by one.</p>
+<pre><code>struct sembuf sops[2];
+int semid;
+
+/* Code to set semid omitted */
+
+sops[0].sem_num = 0;        /* Operate on semaphore 0 */
+sops[0].sem_op = 0;         /* Wait for value to equal 0 */
+sops[0].sem_flg = 0;
+
+sops[1].sem_num = 0;        /* Operate on semaphore 0 */
+sops[1].sem_op = 1;         /* Increment value by one */
+sops[1].sem_flg = 0;
+
+if (semop(semid, sops, 2) == -1) {
+    perror("semop");
+    exit(EXIT_FAILURE);
+}</code></pre>
+<p>A further example of the use of <a href='semop'>semop</a>() can be found in <a href='/2/shmop'>shmop</a>(2).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>On failure, <code>errno</code> is set to one of the following:</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>The argument <code>nsops</code> is greater than <strong>SEMOPM</strong>, the maximum number of operations allowed per system call.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The calling process does not have the permissions required to perform the specified semaphore operations, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>An operation could not proceed immediately and either <strong>IPC_NOWAIT</strong> was specified in <code>sem_flg</code> or the time limit specified in <code>timeout</code> expired.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>An address specified in either the <code>sops</code> or the <code>timeout</code> argument isn't accessible.</p>
+</dd>
+<dt><strong>EFBIG</strong></dt>
+<dd><p>For some operation the value of <code>sem_num</code> is less than 0 or greater than or equal to the number of semaphores in the set.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p>The semaphore set was removed.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>While blocked in this system call, the thread caught a signal; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The semaphore set doesn't exist, or <code>semid</code> is less than zero, or <code>nsops</code> has a nonpositive value.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>The <code>sem_flg</code> of some operation specified <strong>SEM_UNDO</strong> and the system does not have enough memory to allocate the undo structure.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>For some operation <code>sem_op+semval</code> is greater than <strong>SEMVMX</strong>, the implementation dependent maximum value for <code>semval</code>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='semtimedop'>semtimedop</a>() first appeared in Linux 2.5.52, and was subsequently backported into kernel 2.4.22. Glibc support for <a href='semtimedop'>semtimedop</a>() first appeared in version 2.3.3.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p>The <code>sem_undo</code> structures of a process aren't inherited by the child produced by <a href='/2/fork'>fork</a>(2), but they are inherited across an <a href='/2/execve'>execve</a>(2) system call.</p>
+<p><a href='semop'>semop</a>() is never automatically restarted after being interrupted by a signal handler, regardless of the setting of the <strong>SA_RESTART</strong> flag when establishing a signal handler.</p>
+<p>A semaphore adjustment (<code>semadj</code>) value is a per-process, per-semaphore integer that is the negated sum of all operations performed on a semaphore specifying the <strong>SEM_UNDO</strong> flag. Each process has a list of <code>semadj</code> values—one value for each semaphore on which it has operated using <strong>SEM_UNDO</strong>. When a process terminates, each of its per-semaphore <code>semadj</code> values is added to the corresponding semaphore, thus undoing the effect of that process's operations on the semaphore (but see BUGS below). When a semaphore's value is directly set using the <strong>SETVAL</strong> or <strong>SETALL</strong> request to <a href='/2/semctl'>semctl</a>(2), the corresponding <code>semadj</code> values in all processes are cleared. The <a href='/2/clone'>clone</a>(2) <strong>CLONE_SYSVSEM</strong> flag allows more than one process to share a <code>semadj</code> list; see <a href='/2/clone'>clone</a>(2) for details.</p>
+<p>The <code>semval</code>, <code>sempid</code>, <code>semzcnt</code>, and <code>semnct</code> values for a semaphore can all be retrieved using appropriate <a href='/2/semctl'>semctl</a>(2) calls.</p>
+<h2>Semaphore limits</h2>
+<p>The following limits on semaphore set resources affect the <a href='semop'>semop</a>() call:</p>
+<dl>
+<dt><strong>SEMOPM</strong></dt>
+<dd><p>Maximum number of operations allowed for one <a href='semop'>semop</a>() call. Before Linux 3.19, the default value for this limit was 32. Since Linux 3.19, the default value is 500. On Linux, this limit can be read and modified via the third field of <code>/proc/sys/kernel/sem</code>. <code>Note</code>: this limit should not be raised above 1000, because of the risk of that <a href='semop'>semop</a>() fails due to kernel memory fragmentation when allocating memory to copy the <code>sops</code> array.</p>
+</dd>
+<dt><strong>SEMVMX</strong></dt>
+<dd><p>Maximum allowable value for <code>semval</code>: implementation dependent (32767).</p>
+</dd>
+</dl>
+<p>The implementation has no intrinsic limits for the adjust on exit maximum value (<strong>SEMAEM</strong>), the system wide maximum number of undo structures (<strong>SEMMNU</strong>) and the per-process maximum number of undo entries system parameters.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>When a process terminates, its set of associated <code>semadj</code> structures is used to undo the effect of all of the semaphore operations it performed with the <strong>SEM_UNDO</strong> flag. This raises a difficulty: if one (or more) of these semaphore adjustments would result in an attempt to decrease a semaphore's value below zero, what should an implementation do? One possible approach would be to block until all the semaphore adjustments could be performed. This is however undesirable since it could force process termination to block for arbitrarily long periods. Another possibility is that such semaphore adjustments could be ignored altogether (somewhat analogously to failing when <strong>IPC_NOWAIT</strong> is specified for a semaphore operation). Linux adopts a third approach: decreasing the semaphore value as far as possible (i.e., to zero) and allowing process termination to proceed immediately.</p>
+<p>In kernels 2.6.x, x &lt;= 10, there is a bug that in some circumstances prevents a thread that is waiting for a semaphore value to become zero from being woken up when the value does actually become zero. This bug is fixed in kernel 2.6.11.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clone'>clone</a>(2), <a href='/2/semctl'>semctl</a>(2), <a href='/2/semget'>semget</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/sem_overview'>sem_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7), <a href='/7/time'>time</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

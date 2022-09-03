@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.resource-control - Resource control unit settings</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>slice</code>.slice, <code>scope</code>.scope, <code>service</code>.service, <code>socket</code>.socket, <code>mount</code>.mount, <code>swap</code>.swap</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Unit configuration files for services, slices, scopes, sockets, mount points, and swap devices share a subset of configuration options for resource control of spawned processes. Internally, this relies on the Linux Control Groups (cgroups) kernel concept for organizing processes in a hierarchical tree of named groups for the purpose of resource management.</p>
+<p>This man page lists the configuration options shared by those six unit types. See <a href='/5/systemd.unit'>systemd.unit</a>(5) for the common options of all unit configuration files, and <a href='/5/systemd.slice'>systemd.slice</a>(5), <a href='/5/systemd.scope'>systemd.scope</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/5/systemd.socket'>systemd.socket</a>(5), <a href='/5/systemd.mount'>systemd.mount</a>(5), and <a href='/5/systemd.swap'>systemd.swap</a>(5) for more information on the specific unit configuration files. The resource control configuration options are configured in the [Slice], [Scope], [Service], [Socket], [Mount], or [Swap] sections, depending on the unit type.</p>
+<p>In addition, options which control resources available to programs <code>executed</code> by systemd are listed in <a href='/5/systemd.exec'>systemd.exec</a>(5). Those options complement options listed here.</p>
+<p>See the <strong>New Control Group Interfaces</strong>[1] for an introduction on how to make use of resource control APIs from programs.</p>
+<h2>Setting resource controls for a group of related units</h2>
+<p>As described in <a href='/5/systemd.unit'>systemd.unit</a>(5), the settings listed here may be set through the main file of a unit and drop-in snippets in *.d/ directories. The list of directories searched for drop-ins includes names formed by repeatedly truncating the unit name after all dashes. This is particularly convenient to set resource limits for a group of units with similar names.</p>
+<p>For example, every user gets their own slice user-<code>nnn</code>.slice. Drop-ins with local configuration that affect user 1000 may be placed in /etc/systemd/system/user-1000.slice, /etc/systemd/system/user-1000.slice.d/*.conf, but also /etc/systemd/system/user-.slice.d/*.conf. This last directory applies to all user slices.</p>
+</div></div><h1 id='implicit-dependencies'><a href='#implicit-dependencies'>IMPLICIT DEPENDENCIES</a></h1><div data-for='implicit-dependencies' data-hide><div class='section' data-for='implicit-dependencies'><div data-more>
+<p>The following dependencies are implicitly added:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Units with the <code>Slice=</code> setting set automatically acquire <code>Requires=</code> and <code>After=</code> dependencies on the specified slice unit.</p>
+</blockquote>
+</div></div></div><h1 id='unified-and-legacy-control-group-hierarchies'><a href='#unified-and-legacy-control-group-hierarchies'>UNIFIED AND LEGACY CONTROL GROUP HIERARCHIES</a></h1><div data-for='unified-and-legacy-control-group-hierarchies' data-hide><div class='section' data-for='unified-and-legacy-control-group-hierarchies'><div data-more>
+<p>The unified control group hierarchy is the new version of kernel control group interface, see <strong>Control Groups v2</strong>[2]. Depending on the resource type, there are differences in resource control capabilities. Also, because of interface changes, some resource types have separate set of options on the unified hierarchy.</p>
+<p>CPU</p>
+<blockquote>
+<p><code>CPUWeight=</code> and <code>StartupCPUWeight=</code> replace <code>CPUShares=</code> and <code>StartupCPUShares=</code>, respectively.</p>
+<p>The "cpuacct" controller does not exist separately on the unified hierarchy.</p>
+</blockquote>
+<p>Memory</p>
+<blockquote>
+<p><code>MemoryMax=</code> replaces <code>MemoryLimit=</code>. <code>MemoryLow=</code> and <code>MemoryHigh=</code> are effective only on unified hierarchy.</p>
+</blockquote>
+<p>IO</p>
+<blockquote>
+<p>"IO"-prefixed settings are a superset of and replace "BlockIO"-prefixed ones. On unified hierarchy, IO resource control also applies to buffered writes.</p>
+</blockquote>
+<p>To ease the transition, there is best-effort translation between the two versions of settings. For each controller, if any of the settings for the unified hierarchy are present, all settings for the legacy hierarchy are ignored. If the resulting settings are for the other type of hierarchy, the configurations are translated before application.</p>
+<p>Legacy control group hierarchy (see <strong>Control Groups version 1</strong>[3]), also called cgroup-v1, doesnt allow safe delegation of controllers to unprivileged processes. If the system uses the legacy control group hierarchy, resource control is disabled for the systemd user instance, see <a href='/1/systemd'>systemd</a>(1).</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Units of the types listed above can have settings for resource control configuration:</p>
+<p><code>CPUAccounting=</code></p>
+<blockquote>
+<p>Turn on CPU usage accounting for this unit. Takes a boolean argument. Note that turning on CPU accounting for one unit will also implicitly turn it on for all units contained in the same slice and for all its parent slices and the units contained therein. The system default for this setting may be controlled with <code>DefaultCPUAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p><code>CPUWeight=weight</code>, <code>StartupCPUWeight=weight</code></p>
+<blockquote>
+<p>Assign the specified CPU time weight to the processes executed, if the unified control group hierarchy is used on the system. These options take an integer value and control the "cpu.weight" control group attribute. The allowed range is 1 to 10000. Defaults to 100. For details about this control group attribute, see <strong>Control Groups v2</strong>[2] and <strong>CFS Scheduler</strong>[4]. The available CPU time is split up among all units within one slice relative to their CPU time weight. A higher weight means more CPU time, a lower weight means less.</p>
+<p>While <code>StartupCPUWeight=</code> only applies to the startup phase of the system, <code>CPUWeight=</code> applies to normal runtime of the system, and if the former is not set also to the startup phase. Using <code>StartupCPUWeight=</code> allows prioritizing specific services at boot-up differently than during normal runtime.</p>
+<p>These settings replace <code>CPUShares=</code> and <code>StartupCPUShares=</code>.</p>
+</blockquote>
+<p><code>CPUQuota=</code></p>
+<blockquote>
+<p>Assign the specified CPU time quota to the processes executed. Takes a percentage value, suffixed with "%". The percentage specifies how much CPU time the unit shall get at maximum, relative to the total CPU time available on one CPU. Use values &gt; 100% for allotting CPU time on more than one CPU. This controls the "cpu.max" attribute on the unified control group hierarchy and "cpu.cfs_quota_us" on legacy. For details about these control group attributes, see <strong>Control Groups v2</strong>[2] and <strong>sched-bwc.txt</strong>[5]. Setting <code>CPUQuota=</code> to an empty value unsets the quota.</p>
+<p>Example: <code>CPUQuota=20%</code> ensures that the executed processes will never get more than 20% CPU time on one CPU.</p>
+</blockquote>
+<p><code>CPUQuotaPeriodSec=</code></p>
+<blockquote>
+<p>Assign the duration over which the CPU time quota specified by <code>CPUQuota=</code> is measured. Takes a time duration value in seconds, with an optional suffix such as "ms" for milliseconds (or "s" for seconds.) The default setting is 100ms. The period is clamped to the range supported by the kernel, which is [1ms, 1000ms]. Additionally, the period is adjusted up so that the quota interval is also at least 1ms. Setting <code>CPUQuotaPeriodSec=</code> to an empty value resets it to the default.</p>
+<p>This controls the second field of "cpu.max" attribute on the unified control group hierarchy and "cpu.cfs_period_us" on legacy. For details about these control group attributes, see <strong>Control Groups v2</strong>[2] and <strong>CFS Scheduler</strong>[4].</p>
+<p>Example: <code>CPUQuotaPeriodSec=10ms</code> to request that the CPU quota is measured in periods of 10ms.</p>
+</blockquote>
+<p><code>AllowedCPUs=</code></p>
+<blockquote>
+<p>Restrict processes to be executed on specific CPUs. Takes a list of CPU indices or ranges separated by either whitespace or commas. CPU ranges are specified by the lower and upper CPU indices separated by a dash.</p>
+<p>Setting <code>AllowedCPUs=</code> doesnt guarantee that all of the CPUs will be used by the processes as it may be limited by parent units. The effective configuration is reported as <code>EffectiveCPUs=</code>.</p>
+<p>This setting is supported only with the unified control group hierarchy.</p>
+</blockquote>
+<p><code>AllowedMemoryNodes=</code></p>
+<blockquote>
+<p>Restrict processes to be executed on specific memory NUMA nodes. Takes a list of memory NUMA nodes indices or ranges separated by either whitespace or commas. Memory NUMA nodes ranges are specified by the lower and upper NUMA nodes indices separated by a dash.</p>
+<p>Setting <code>AllowedMemoryNodes=</code> doesnt guarantee that all of the memory NUMA nodes will be used by the processes as it may be limited by parent units. The effective configuration is reported as <code>EffectiveMemoryNodes=</code>.</p>
+<p>This setting is supported only with the unified control group hierarchy.</p>
+</blockquote>
+<p><code>MemoryAccounting=</code></p>
+<blockquote>
+<p>Turn on process and kernel memory accounting for this unit. Takes a boolean argument. Note that turning on memory accounting for one unit will also implicitly turn it on for all units contained in the same slice and for all its parent slices and the units contained therein. The system default for this setting may be controlled with <code>DefaultMemoryAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p><code>MemoryMin=bytes</code>, <code>MemoryLow=bytes</code></p>
+<blockquote>
+<p>Specify the memory usage protection of the executed processes in this unit. When reclaiming memory, the unit is treated as if it was using less memory resulting in memory to be preferentially reclaimed from unprotected units. Using <code>MemoryLow=</code> results in a weaker protection where memory may still be reclaimed to avoid invoking the OOM killer in case there is no other reclaimable memory.</p>
+<p>For a protection to be effective, it is generally required to set a corresponding allocation on all ancestors, which is then distributed between children (with the exception of the root slice). Any <code>MemoryMin=</code> or <code>MemoryLow=</code> allocation that is not explicitly distributed to specific children is used to create a shared protection for all children. As this is a shared protection, the children will freely compete for the memory.</p>
+<p>Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. Alternatively, a percentage value may be specified, which is taken relative to the installed physical memory on the system. If assigned the special value "infinity", all available memory is protected, which may be useful in order to always inherit all of the protection afforded by ancestors. This controls the "memory.min" or "memory.low" control group attribute. For details about this control group attribute, see <strong>Memory Interface Files</strong>[6].</p>
+<p>This setting is supported only if the unified control group hierarchy is used and disables <code>MemoryLimit=</code>.</p>
+<p>Units may have their children use a default "memory.min" or "memory.low" value by specifying <code>DefaultMemoryMin=</code> or <code>DefaultMemoryLow=</code>, which has the same semantics as <code>MemoryMin=</code> and <code>MemoryLow=</code>. This setting does not affect "memory.min" or "memory.low" in the unit itself. Using it to set a default child allocation is only useful on kernels older than 5.7, which do not support the "memory_recursiveprot" cgroup2 mount option.</p>
+</blockquote>
+<p><code>MemoryHigh=bytes</code></p>
+<blockquote>
+<p>Specify the throttling limit on memory usage of the executed processes in this unit. Memory usage may go above the limit if unavoidable, but the processes are heavily slowed down and memory is taken away aggressively in such cases. This is the main mechanism to control memory usage of a unit.</p>
+<p>Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. Alternatively, a percentage value may be specified, which is taken relative to the installed physical memory on the system. If assigned the special value "infinity", no memory throttling is applied. This controls the "memory.high" control group attribute. For details about this control group attribute, see <strong>Memory Interface Files</strong>[6].</p>
+<p>This setting is supported only if the unified control group hierarchy is used and disables <code>MemoryLimit=</code>.</p>
+</blockquote>
+<p><code>MemoryMax=bytes</code></p>
+<blockquote>
+<p>Specify the absolute limit on memory usage of the executed processes in this unit. If memory usage cannot be contained under the limit, out-of-memory killer is invoked inside the unit. It is recommended to use <code>MemoryHigh=</code> as the main control mechanism and use <code>MemoryMax=</code> as the last line of defense.</p>
+<p>Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. Alternatively, a percentage value may be specified, which is taken relative to the installed physical memory on the system. If assigned the special value "infinity", no memory limit is applied. This controls the "memory.max" control group attribute. For details about this control group attribute, see <strong>Memory Interface Files</strong>[6].</p>
+<p>This setting replaces <code>MemoryLimit=</code>.</p>
+</blockquote>
+<p><code>MemorySwapMax=bytes</code></p>
+<blockquote>
+<p>Specify the absolute limit on swap usage of the executed processes in this unit.</p>
+<p>Takes a swap size in bytes. If the value is suffixed with K, M, G or T, the specified swap size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. If assigned the special value "infinity", no swap limit is applied. This controls the "memory.swap.max" control group attribute. For details about this control group attribute, see <strong>Memory Interface Files</strong>[6].</p>
+<p>This setting is supported only if the unified control group hierarchy is used and disables <code>MemoryLimit=</code>.</p>
+</blockquote>
+<p><code>TasksAccounting=</code></p>
+<blockquote>
+<p>Turn on task accounting for this unit. Takes a boolean argument. If enabled, the system manager will keep track of the number of tasks in the unit. The number of tasks accounted this way includes both kernel threads and userspace processes, with each thread counting individually. Note that turning on tasks accounting for one unit will also implicitly turn it on for all units contained in the same slice and for all its parent slices and the units contained therein. The system default for this setting may be controlled with <code>DefaultTasksAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p><code>TasksMax=N</code></p>
+<blockquote>
+<p>Specify the maximum number of tasks that may be created in the unit. This ensures that the number of tasks accounted for the unit (see above) stays below a specific limit. This either takes an absolute number of tasks or a percentage value that is taken relative to the configured maximum number of tasks on the system. If assigned the special value "infinity", no tasks limit is applied. This controls the "pids.max" control group attribute. For details about this control group attribute, see <strong>Process Number Controller</strong>[7].</p>
+<p>The system default for this setting may be controlled with <code>DefaultTasksMax=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p><code>IOAccounting=</code></p>
+<blockquote>
+<p>Turn on Block I/O accounting for this unit, if the unified control group hierarchy is used on the system. Takes a boolean argument. Note that turning on block I/O accounting for one unit will also implicitly turn it on for all units contained in the same slice and all for its parent slices and the units contained therein. The system default for this setting may be controlled with <code>DefaultIOAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+<p>This setting replaces <code>BlockIOAccounting=</code> and disables settings prefixed with <code>BlockIO</code> or <code>StartupBlockIO</code>.</p>
+</blockquote>
+<p><code>IOWeight=weight</code>, <code>StartupIOWeight=weight</code></p>
+<blockquote>
+<p>Set the default overall block I/O weight for the executed processes, if the unified control group hierarchy is used on the system. Takes a single weight value (between 1 and 10000) to set the default block I/O weight. This controls the "io.weight" control group attribute, which defaults to 100. For details about this control group attribute, see <strong>IO Interface Files</strong>[8]. The available I/O bandwidth is split up among all units within one slice relative to their block I/O weight. A higher weight means more I/O bandwidth, a lower weight means less.</p>
+<p>While <code>StartupIOWeight=</code> only applies to the startup phase of the system, <code>IOWeight=</code> applies to the later runtime of the system, and if the former is not set also to the startup phase. This allows prioritizing specific services at boot-up differently than during runtime.</p>
+<p>These settings replace <code>BlockIOWeight=</code> and <code>StartupBlockIOWeight=</code> and disable settings prefixed with <code>BlockIO</code> or <code>StartupBlockIO</code>.</p>
+</blockquote>
+<p><code>IODeviceWeight=device weight</code></p>
+<blockquote>
+<p>Set the per-device overall block I/O weight for the executed processes, if the unified control group hierarchy is used on the system. Takes a space-separated pair of a file path and a weight value to specify the device specific weight value, between 1 and 10000. (Example: "/dev/sda 1000"). The file path may be specified as path to a block device node or as any other file, in which case the backing block device of the file system of the file is determined. This controls the "io.weight" control group attribute, which defaults to 100. Use this option multiple times to set weights for multiple devices. For details about this control group attribute, see <strong>IO Interface Files</strong>[8].</p>
+<p>This setting replaces <code>BlockIODeviceWeight=</code> and disables settings prefixed with <code>BlockIO</code> or <code>StartupBlockIO</code>.</p>
+<p>The specified device node should reference a block device that has an I/O scheduler associated, i.e. should not refer to partition or loopback block devices, but to the originating, physical device. When a path to a regular file or directory is specified it is attempted to discover the correct originating device backing the file system of the specified path. This works correctly only for simpler cases, where the file system is directly placed on a partition or physical block device, or where simple 1:1 encryption using dm-crypt/LUKS is used. This discovery does not cover complex storage and in particular RAID and volume management storage devices.</p>
+</blockquote>
+<p><code>IOReadBandwidthMax=device bytes</code>, <code>IOWriteBandwidthMax=device bytes</code></p>
+<blockquote>
+<p>Set the per-device overall block I/O bandwidth maximum limit for the executed processes, if the unified control group hierarchy is used on the system. This limit is not work-conserving and the executed processes are not allowed to use more even if the device has idle capacity. Takes a space-separated pair of a file path and a bandwidth value (in bytes per second) to specify the device specific bandwidth. The file path may be a path to a block device node, or as any other file in which case the backing block device of the file system of the file is used. If the bandwidth is suffixed with K, M, G, or T, the specified bandwidth is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes, respectively, to the base of 1000. (Example: "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M"). This controls the "io.max" control group attributes. Use this option multiple times to set bandwidth limits for multiple devices. For details about this control group attribute, see <strong>IO Interface Files</strong>[8].</p>
+<p>These settings replace <code>BlockIOReadBandwidth=</code> and <code>BlockIOWriteBandwidth=</code> and disable settings prefixed with <code>BlockIO</code> or <code>StartupBlockIO</code>.</p>
+<p>Similar restrictions on block device discovery as for <code>IODeviceWeight=</code> apply, see above.</p>
+</blockquote>
+<p><code>IOReadIOPSMax=device IOPS</code>, <code>IOWriteIOPSMax=device IOPS</code></p>
+<blockquote>
+<p>Set the per-device overall block I/O IOs-Per-Second maximum limit for the executed processes, if the unified control group hierarchy is used on the system. This limit is not work-conserving and the executed processes are not allowed to use more even if the device has idle capacity. Takes a space-separated pair of a file path and an IOPS value to specify the device specific IOPS. The file path may be a path to a block device node, or as any other file in which case the backing block device of the file system of the file is used. If the IOPS is suffixed with K, M, G, or T, the specified IOPS is parsed as KiloIOPS, MegaIOPS, GigaIOPS, or TeraIOPS, respectively, to the base of 1000. (Example: "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 1K"). This controls the "io.max" control group attributes. Use this option multiple times to set IOPS limits for multiple devices. For details about this control group attribute, see <strong>IO Interface Files</strong>[8].</p>
+<p>These settings are supported only if the unified control group hierarchy is used and disable settings prefixed with <code>BlockIO</code> or <code>StartupBlockIO</code>.</p>
+<p>Similar restrictions on block device discovery as for <code>IODeviceWeight=</code> apply, see above.</p>
+</blockquote>
+<p><code>IODeviceLatencyTargetSec=device target</code></p>
+<blockquote>
+<p>Set the per-device average target I/O latency for the executed processes, if the unified control group hierarchy is used on the system. Takes a file path and a timespan separated by a space to specify the device specific latency target. (Example: "/dev/sda 25ms"). The file path may be specified as path to a block device node or as any other file, in which case the backing block device of the file system of the file is determined. This controls the "io.latency" control group attribute. Use this option multiple times to set latency target for multiple devices. For details about this control group attribute, see <strong>IO Interface Files</strong>[8].</p>
+<p>Implies "IOAccounting=yes".</p>
+<p>These settings are supported only if the unified control group hierarchy is used.</p>
+<p>Similar restrictions on block device discovery as for <code>IODeviceWeight=</code> apply, see above.</p>
+</blockquote>
+<p><code>IPAccounting=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If true, turns on IPv4 and IPv6 network traffic accounting for packets sent or received by the unit. When this option is turned on, all IPv4 and IPv6 sockets created by any process of the unit are accounted for.</p>
+<p>When this option is used in socket units, it applies to all IPv4 and IPv6 sockets associated with it (including both listening and connection sockets where this applies). Note that for socket-activated services, this configuration setting and the accounting data of the service unit and the socket unit are kept separate, and displayed separately. No propagation of the setting and the collected statistics is done, in either direction. Moreover, any traffic sent or received on any of the socket units sockets is accounted to the socket unit — and never to the service unit it might have activated, even if the socket is used by it.</p>
+<p>The system default for this setting may be controlled with <code>DefaultIPAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p><code>IPAddressAllow=ADDRESS[/PREFIXLENGTH]...</code>, <code>IPAddressDeny=ADDRESS[/PREFIXLENGTH]...</code></p>
+<blockquote>
+<p>Turn on network traffic filtering for IP packets sent and received over <strong>AF_INET</strong> and <strong>AF_INET6</strong> sockets. Both directives take a space separated list of IPv4 or IPv6 addresses, each optionally suffixed with an address prefix length in bits after a "/" character. If the suffix is omitted, the address is considered a host address, i.e. the filter covers the whole address (32 bits for IPv4, 128 bits for IPv6).</p>
+<p>The access lists configured with this option are applied to all sockets created by processes of this unit (or in the case of socket units, associated with it). The lists are implicitly combined with any lists configured for any of the parent slice units this unit might be a member of. By default both access lists are empty. Both ingress and egress traffic is filtered by these settings. In case of ingress traffic the source IP address is checked against these access lists, in case of egress traffic the destination IP address is checked. The following rules are applied in turn:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Access is granted when the checked IP address matches an entry in the <code>IPAddressAllow=</code> list.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Otherwise, access is denied when the checked IP address matches an entry in the <code>IPAddressDeny=</code> list.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Otherwise, access is granted.</p>
+</blockquote>
+<p>In order to implement an allow-listing IP firewall, it is recommended to use a <code>IPAddressDeny=</code><strong>any</strong> setting on an upper-level slice unit (such as the root slice -.slice or the slice containing all system services system.slice – see <a href='/7/systemd.special'>systemd.special</a>(7) for details on these slice units), plus individual per-service <code>IPAddressAllow=</code> lines permitting network access to relevant services, and only them.</p>
+<p>Note that for socket-activated services, the IP access list configured on the socket unit applies to all sockets associated with it directly, but not to any sockets created by the ultimately activated services for it. Conversely, the IP access list configured for the service is not applied to any sockets passed into the service via socket activation. Thus, it is usually a good idea to replicate the IP access lists on both the socket and the service unit. Nevertheless, it may make sense to maintain one list more open and the other one more restricted, depending on the usecase.</p>
+<p>If these settings are used multiple times in the same unit the specified lists are combined. If an empty string is assigned to these settings the specific access list is reset and all previous settings undone.</p>
+<p>In place of explicit IPv4 or IPv6 address and prefix length specifications a small set of symbolic names may be used. The following names are defined:</p>
+<p><br/>
+<strong>Table 1. Special address/network names</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Symbolic Name</td>
+<td style="text-align: left;">Definition</td>
+<td style="text-align: left;">Meaning</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>any</strong></td>
+<td style="text-align: left;">0.0.0.0/0 ::/0</td>
+<td style="text-align: left;">Any host</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>localhost</strong></td>
+<td style="text-align: left;">127.0.0.0/8 ::1/128</td>
+<td style="text-align: left;">All addresses on the local loopback</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>link-local</strong></td>
+<td style="text-align: left;">169.254.0.0/16 fe80::/64</td>
+<td style="text-align: left;">All link-local IP addresses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>multicast</strong></td>
+<td style="text-align: left;">224.0.0.0/4 ff00::/8</td>
+<td style="text-align: left;">All IP multicasting addresses</td>
+</tr>
+</tbody>
+</table>
+<p>Note that these settings might not be supported on some systems (for example if eBPF control group support is not enabled in the underlying kernel or container manager). These settings will have no effect in that case. If compatibility with such systems is desired it is hence recommended to not exclusively rely on them for IP security.</p>
+</blockquote>
+<p><code>IPIngressFilterPath=BPF_FS_PROGRAM_PATH</code>, <code>IPEgressFilterPath=BPF_FS_PROGRAM_PATH</code></p>
+<blockquote>
+<p>Add custom network traffic filters implemented as BPF programs, applying to all IP packets sent and received over <strong>AF_INET</strong> and <strong>AF_INET6</strong> sockets. Takes an absolute path to a pinned BPF program in the BPF virtual filesystem (/sys/fs/bpf/).</p>
+<p>The filters configured with this option are applied to all sockets created by processes of this unit (or in the case of socket units, associated with it). The filters are loaded in addition to filters any of the parent slice units this unit might be a member of as well as any <code>IPAddressAllow=</code> and <code>IPAddressDeny=</code> filters in any of these units. By default there are no filters specified.</p>
+<p>If these settings are used multiple times in the same unit all the specified programs are attached. If an empty string is assigned to these settings the program list is reset and all previous specified programs ignored.</p>
+<p>If the path <code>BPF_FS_PROGRAM_PATH</code> in <code>IPIngressFilterPath=</code> assignment is already being handled by <code>BPFProgram=</code> ingress hook, e.g. <code>BPFProgram=</code><strong>ingress</strong>:<code>BPF_FS_PROGRAM_PATH</code>, the assignment will be still considered valid and the program will be attached to a cgroup. Same for <code>IPEgressFilterPath=</code> path and <strong>egress</strong> hook.</p>
+<p>Note that for socket-activated services, the IP filter programs configured on the socket unit apply to all sockets associated with it directly, but not to any sockets created by the ultimately activated services for it. Conversely, the IP filter programs configured for the service are not applied to any sockets passed into the service via socket activation. Thus, it is usually a good idea, to replicate the IP filter programs on both the socket and the service unit, however it often makes sense to maintain one configuration more open and the other one more restricted, depending on the usecase.</p>
+<p>Note that these settings might not be supported on some systems (for example if eBPF control group support is not enabled in the underlying kernel or container manager). These settings will fail the service in that case. If compatibility with such systems is desired it is hence recommended to attach your filter manually (requires <code>Delegate=</code><strong>yes</strong>) instead of using this setting.</p>
+</blockquote>
+<p><code>BPFProgram=type</code><strong>:</strong><code>program-path</code></p>
+<blockquote>
+<p>Add a custom cgroup BPF program.</p>
+<p><code>BPFProgram=</code> allows attaching BPF hooks to the cgroup of a systemd unit. (This generalizes the functionality exposed via <code>IPEgressFilterPath=</code> for egress and <code>IPIngressFilterPath=</code> for ingress.) Cgroup-bpf hooks in the form of BPF programs loaded to the BPF filesystem are attached with cgroup-bpf attach flags determined by the unit. For details about attachment types and flags see <strong><a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/uapi/linux/bpf.h">https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/uapi/linux/bpf.h</a></strong>. For general BPF documentation please refer to <strong><a href="https://www.kernel.org/doc/html/latest/bpf/index.html">https://www.kernel.org/doc/html/latest/bpf/index.html</a></strong>.</p>
+<p>The specification of BPF program consists of a <code>type</code> followed by a <code>program-path</code> with ":" as the separator: <code>type</code><strong>:</strong><code>program-path</code>.</p>
+<p><code>type</code> is the string name of BPF attach type also used in <strong>bpftool</strong>. <code>type</code> can be one of <strong>egress</strong>, <strong>ingress</strong>, <strong>sock_create</strong>, <strong>sock_ops</strong>, <strong>device</strong>, <strong>bind4</strong>, <strong>bind6</strong>, <strong>connect4</strong>, <strong>connect6</strong>, <strong>post_bind4</strong>, <strong>post_bind6</strong>, <strong>sendmsg4</strong>, <strong>sendmsg6</strong>, <strong>sysctl</strong>, <strong>recvmsg4</strong>, <strong>recvmsg6</strong>, <strong>getsockopt</strong>, <strong>setsockopt</strong>.</p>
+<p>Setting <code>BPFProgram=</code> to an empty value makes previous assignments ineffective.</p>
+<p>Multiple assignments of the same <code>type</code>:<code>program-path</code> value have the same effect as a single assignment: the program with the path <code>program-path</code> will be attached to cgroup hook <code>type</code> just once.</p>
+<p>If BPF <strong>egress</strong> pinned to <code>program-path</code> path is already being handled by <code>IPEgressFilterPath=</code>, <code>BPFProgram=</code> assignment will be considered valid and <code>BPFProgram=</code> will be attached to a cgroup. Similarly for <strong>ingress</strong> hook and <code>IPIngressFilterPath=</code> assignment.</p>
+<p>BPF programs passed with <code>BPFProgram=</code> are attached to the cgroup of a unit with BPF attach flag <strong>multi</strong>, that allows further attachments of the same <code>type</code> within cgroup hierarchy topped by the unit cgroup.</p>
+<p>Examples:</p>
+<p>.RS 4</p>
+<pre><code>BPFProgram=egress:/sys/fs/bpf/egress-hook
+BPFProgram=bind6:/sys/fs/bpf/sock-addr-hook</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><code>SocketBindAllow=bind-rule</code>, <code>SocketBindDeny=bind-rule</code></p>
+<blockquote>
+<p>Allow or deny binding a socket address to a socket by matching it with the <code>bind-rule</code> and applying a corresponding action if there is a match.</p>
+<p><code>bind-rule</code> describes socket properties such as <code>address-family</code>, <code>transport-protocol</code> and <code>ip-ports</code>.</p>
+<p><code>bind-rule</code> := { [<code>address-family</code><strong>:</strong>][<code>transport-protocol</code><strong>:</strong>][<code>ip-ports</code>] | <strong>any</strong> }</p>
+<p><code>address-family</code> := { <strong>ipv4</strong> | <strong>ipv6</strong> }</p>
+<p><code>transport-protocol</code> := { <strong>tcp</strong> | <strong>udp</strong> }</p>
+<p><code>ip-ports</code> := { <code>ip-port</code> | <code>ip-port-range</code> }</p>
+<p>An optional <code>address-family</code> expects <strong>ipv4</strong> or <strong>ipv6</strong> values. If not specified, a rule will be matched for both IPv4 and IPv6 addresses and applied depending on other socket fields, e.g. <code>transport-protocol</code>, <code>ip-port</code>.</p>
+<p>An optional <code>transport-protocol</code> expects <strong>tcp</strong> or <strong>udp</strong> transport protocol names. If not specified, a rule will be matched for any transport protocol.</p>
+<p>An optional <code>ip-port</code> value must lie within 1...65535 interval inclusively, i.e. dynamic port <strong>0</strong> is not allowed. A range of sequential ports is described by <code>ip-port-range</code> := <code>ip-port-low</code><strong>-</strong><code>ip-port-high</code>, where <code>ip-port-low</code> is smaller than or equal to <code>ip-port-high</code> and both are within 1...65535 inclusively.</p>
+<p>A special value <strong>any</strong> can be used to apply a rule to any address family, transport protocol and any port with a positive value.</p>
+<p>To allow multiple rules assign <code>SocketBindAllow=</code> or <code>SocketBindDeny=</code> multiple times. To clear the existing assignments pass an empty <code>SocketBindAllow=</code> or <code>SocketBindDeny=</code> assignment.</p>
+<p>For each of <code>SocketBindAllow=</code> and <code>SocketBindDeny=</code>, maximum allowed number of assignments is <strong>128</strong>.</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Binding to a socket is allowed when a socket address matches an entry in the <code>SocketBindAllow=</code> list.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Otherwise, binding is denied when the socket address matches an entry in the <code>SocketBindDeny=</code> list.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Otherwise, binding is allowed.</p>
+</blockquote>
+<p>The feature is implemented with <strong>cgroup/bind4</strong> and <strong>cgroup/bind6</strong> cgroup-bpf hooks.</p>
+<p>Examples:</p>
+<p>.RS 4</p>
+<pre><code>...
+# Allow binding IPv6 socket addresses with a port greater than or equal to 10000.
+[Service]
+SocketBindAllow=ipv6:10000-65535
+SocketBindDeny=any
+...
+# Allow binding IPv4 and IPv6 socket addresses with 1234 and 4321 ports.
+[Service]
+SocketBindAllow=1234
+SocketBindAllow=4321
+SocketBindDeny=any
+...
+# Deny binding IPv6 socket addresses.
+[Service]
+SocketBindDeny=ipv6
+...
+# Deny binding IPv4 and IPv6 socket addresses.
+[Service]
+SocketBindDeny=any
+...
+# Allow binding only over TCP
+[Service]
+SocketBindAllow=tcp
+SocketBindDeny=any
+...
+# Allow binding only over IPv6/TCP
+[Service]
+SocketBindAllow=ipv6:tcp
+SocketBindDeny=any
+...
+# Allow binding ports within 10000-65535 range over IPv4/UDP.
+[Service]
+SocketBindAllow=ipv4:udp:10000-65535
+SocketBindDeny=any
+...</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><code>DeviceAllow=</code></p>
+<blockquote>
+<p>Control access to specific device nodes by the executed processes. Takes two space-separated strings: a device node specifier followed by a combination of <strong>r</strong>, <strong>w</strong>, <strong>m</strong> to control <code>r</code>eading, <code>w</code>riting, or creation of the specific device node(s) by the unit (<code>m</code>knod), respectively. On cgroup-v1 this controls the "devices.allow" control group attribute. For details about this control group attribute, see <strong>Device Whitelist Controller</strong>[9]. In the unified cgroup hierarchy this functionality is implemented using eBPF filtering.</p>
+<p>The device node specifier is either a path to a device node in the file system, starting with /dev/, or a string starting with either "char-" or "block-" followed by a device group name, as listed in /proc/devices. The latter is useful to allow-list all current and future devices belonging to a specific device group at once. The device group is matched according to filename globbing rules, you may hence use the "*" and "?" wildcards. (Note that such globbing wildcards are not available for device node path specifications!) In order to match device nodes by numeric major/minor, use device node paths in the /dev/char/ and /dev/block/ directories. However, matching devices by major/minor is generally not recommended as assignments are neither stable nor portable between systems or different kernel versions.</p>
+<p>Examples: /dev/sda5 is a path to a device node, referring to an ATA or SCSI block device. "char-pts" and "char-alsa" are specifiers for all pseudo TTYs and all ALSA sound devices, respectively. "char-cpu/*" is a specifier matching all CPU related device groups.</p>
+<p>Note that allow lists defined this way should only reference device groups which are resolvable at the time the unit is started. Any device groups not resolvable then are not added to the device allow list. In order to work around this limitation, consider extending service units with a pair of <strong><a href="mailto:After=modprobe@xyz.servic">After=modprobe@xyz.servic</a>e</strong> and <strong><a href="mailto:Wants=modprobe@xyz.servic">Wants=modprobe@xyz.servic</a>e</strong> lines that load the necessary kernel module implementing the device group if missing. Example:</p>
+<p>.RS 4</p>
+<pre><code>...
+[Unit]
+<a href="mailto:Wants=modprobe@loop.servic">Wants=modprobe@loop.servic</a>e
+<a href="mailto:After=modprobe@loop.servic">After=modprobe@loop.servic</a>e
+
+[Service]
+DeviceAllow=block-loop
+DeviceAllow=/dev/loop-control
+...</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><code>DevicePolicy=auto|closed|strict</code></p>
+<blockquote>
+<p>Control the policy for allowing device access:</p>
+<p><strong>strict</strong></p>
+<blockquote>
+<p>means to only allow types of access that are explicitly specified.</p>
+</blockquote>
+<p><strong>closed</strong></p>
+<blockquote>
+<p>in addition, allows access to standard pseudo devices including /dev/null, /dev/zero, /dev/full, /dev/random, and /dev/urandom.</p>
+</blockquote>
+<p><strong>auto</strong></p>
+<blockquote>
+<p>in addition, allows access to all devices if no explicit <code>DeviceAllow=</code> is present. This is the default.</p>
+</blockquote>
+</blockquote>
+<p><code>Slice=</code></p>
+<blockquote>
+<p>The name of the slice unit to place the unit in. Defaults to system.slice for all non-instantiated units of all unit types (except for slice units themselves see below). Instance units are by default placed in a subslice of system.slice that is named after the template name.</p>
+<p>This option may be used to arrange systemd units in a hierarchy of slices each of which might have resource settings applied.</p>
+<p>For units of type slice, the only accepted value for this setting is the parent slice. Since the name of a slice unit implies the parent slice, it is hence redundant to ever set this parameter directly for slice units.</p>
+<p>Special care should be taken when relying on the default slice assignment in templated service units that have <code>DefaultDependencies=no</code> set, see <a href='/5/systemd.service'>systemd.service</a>(5), section "Default Dependencies" for details.</p>
+</blockquote>
+<p><code>Delegate=</code></p>
+<blockquote>
+<p>Turns on delegation of further resource control partitioning to processes of the unit. Units where this is enabled may create and manage their own private subhierarchy of control groups below the control group of the unit itself. For unprivileged services (i.e. those using the <code>User=</code> setting) the units control group will be made accessible to the relevant user. When enabled the service manager will refrain from manipulating control groups or moving processes below the units control group, so that a clear concept of ownership is established: the control group tree above the units control group (i.e. towards the root control group) is owned and managed by the service manager of the host, while the control group tree below the units control group is owned and managed by the unit itself. Takes either a boolean argument or a list of control group controller names. If true, delegation is turned on, and all supported controllers are enabled for the unit, making them available to the units processes for management. If false, delegation is turned off entirely (and no additional controllers are enabled). If set to a list of controllers, delegation is turned on, and the specified controllers are enabled for the unit. Note that additional controllers than the ones specified might be made available as well, depending on configuration of the containing slice unit or other units contained in it. Note that assigning the empty string will enable delegation, but reset the list of controllers, all assignments prior to this will have no effect. Defaults to false.</p>
+<p>Note that controller delegation to less privileged code is only safe on the unified control group hierarchy. Accordingly, access to the specified controllers will not be granted to unprivileged services on the legacy hierarchy, even when requested.</p>
+<p>The following controller names may be specified: <strong>cpu</strong>, <strong>cpuacct</strong>, <strong>cpuset</strong>, <strong>io</strong>, <strong>blkio</strong>, <strong>memory</strong>, <strong>devices</strong>, <strong>pids</strong>, <strong>bpf-firewall</strong>, and <strong>bpf-devices</strong>.</p>
+<p>Not all of these controllers are available on all kernels however, and some are specific to the unified hierarchy while others are specific to the legacy hierarchy. Also note that the kernel might support further controllers, which arent covered here yet as delegation is either not supported at all for them or not defined cleanly.</p>
+<p>For further details on the delegation model consult <strong>Control Group APIs and Delegation</strong>[10].</p>
+</blockquote>
+<p><code>DisableControllers=</code></p>
+<blockquote>
+<p>Disables controllers from being enabled for a units children. If a controller listed is already in use in its subtree, the controller will be removed from the subtree. This can be used to avoid child units being able to implicitly or explicitly enable a controller. Defaults to not disabling any controllers.</p>
+<p>It may not be possible to successfully disable a controller if the unit or any child of the unit in question delegates controllers to its children, as any delegated subtree of the cgroup hierarchy is unmanaged by systemd.</p>
+<p>Multiple controllers may be specified, separated by spaces. You may also pass <code>DisableControllers=</code> multiple times, in which case each new instance adds another controller to disable. Passing <code>DisableControllers=</code> by itself with no controller name present resets the disabled controller list.</p>
+<p>The following controller names may be specified: <strong>cpu</strong>, <strong>cpuacct</strong>, <strong>cpuset</strong>, <strong>io</strong>, <strong>blkio</strong>, <strong>memory</strong>, <strong>devices</strong>, <strong>pids</strong>, <strong>bpf-firewall</strong>, and <strong>bpf-devices</strong>.</p>
+</blockquote>
+<p><code>ManagedOOMSwap=auto|kill</code>, <code>ManagedOOMMemoryPressure=auto|kill</code></p>
+<blockquote>
+<p>Specifies how <a href='/8/systemd-oomd.service'>systemd-oomd.service</a>(8) will act on this units cgroups. Defaults to <strong>auto</strong>.</p>
+<p>When set to <strong>kill</strong>, <strong>systemd-oomd</strong> will actively monitor this units cgroup metrics to decide whether it needs to act. If the cgroup passes the limits set by <a href='/5/oomd.conf'>oomd.conf</a>(5) or its overrides, <strong>systemd-oomd</strong> will send a <strong>SIGKILL</strong> to all of the processes under the chosen candidate cgroup. Note that only descendant cgroups can be eligible candidates for killing; the unit that set its property to <strong>kill</strong> is not a candidate (unless one of its ancestors set their property to <strong>kill</strong>). You can find more details on candidates and kill behavior at <a href='/8/systemd-oomd.service'>systemd-oomd.service</a>(8) and <a href='/5/oomd.conf'>oomd.conf</a>(5). Setting either of these properties to <strong>kill</strong> will also automatically acquire <code>After=</code> and <code>Wants=</code> dependencies on systemd-oomd.service unless <code>DefaultDependencies=no</code>.</p>
+<p>When set to <strong>auto</strong>, <strong>systemd-oomd</strong> will not actively use this cgroups data for monitoring and detection. However, if an ancestor cgroup has one of these properties set to <strong>kill</strong>, a unit with <strong>auto</strong> can still be an eligible candidate for <strong>systemd-oomd</strong> to act on.</p>
+</blockquote>
+<p><code>ManagedOOMMemoryPressureLimit=</code></p>
+<blockquote>
+<p>Overrides the default memory pressure limit set by <a href='/5/oomd.conf'>oomd.conf</a>(5) for this unit (cgroup). Takes a percentage value between 0% and 100%, inclusive. This property is ignored unless <code>ManagedOOMMemoryPressure=</code><strong>kill</strong>. Defaults to 0%, which means to use the default set by <a href='/5/oomd.conf'>oomd.conf</a>(5).</p>
+</blockquote>
+<p><code>ManagedOOMPreference=none|avoid|omit</code></p>
+<blockquote>
+<p>Allows deprioritizing or omitting this units cgroup as a candidate when <strong>systemd-oomd</strong> needs to act. Requires support for extended attributes (see <a href='/7/xattr'>xattr</a>(7)) in order to use <strong>avoid</strong> or <strong>omit</strong>. Additionally, <strong>systemd-oomd</strong> will ignore these extended attributes if the units cgroup is not owned by the root user.</p>
+<p>If this property is set to <strong>avoid</strong>, the service manager will convey this to <strong>systemd-oomd</strong>, which will only select this cgroup if there are no other viable candidates.</p>
+<p>If this property is set to <strong>omit</strong>, the service manager will convey this to <strong>systemd-oomd</strong>, which will ignore this cgroup as a candidate and will not perform any actions on it.</p>
+<p>It is recommended to use <strong>avoid</strong> and <strong>omit</strong> sparingly, as it can adversely affect <strong>systemd-oomd</strong>s kill behavior. Also note that these extended attributes are not applied recursively to cgroups under this units cgroup.</p>
+<p>Defaults to <strong>none</strong> which means <strong>systemd-oomd</strong> will rank this units cgroup as defined in <a href='/8/systemd-oomd.service'>systemd-oomd.service</a>(8) and <a href='/5/oomd.conf'>oomd.conf</a>(5).</p>
+</blockquote>
+</div></div></div><h1 id='deprecated-options'><a href='#deprecated-options'>DEPRECATED OPTIONS</a></h1><div data-for='deprecated-options' data-hide><div class='section' data-for='deprecated-options'><div data-more>
+<p>The following options are deprecated. Use the indicated superseding options instead:</p>
+<p><code>CPUShares=weight</code>, <code>StartupCPUShares=weight</code></p>
+<blockquote>
+<p>Assign the specified CPU time share weight to the processes executed. These options take an integer value and control the "cpu.shares" control group attribute. The allowed range is 2 to 262144. Defaults to 1024. For details about this control group attribute, see <strong>CFS Scheduler</strong>[4]. The available CPU time is split up among all units within one slice relative to their CPU time share weight.</p>
+<p>While <code>StartupCPUShares=</code> only applies to the startup phase of the system, <code>CPUShares=</code> applies to normal runtime of the system, and if the former is not set also to the startup phase. Using <code>StartupCPUShares=</code> allows prioritizing specific services at boot-up differently than during normal runtime.</p>
+<p>Implies "CPUAccounting=yes".</p>
+<p>These settings are deprecated. Use <code>CPUWeight=</code> and <code>StartupCPUWeight=</code> instead.</p>
+</blockquote>
+<p><code>MemoryLimit=bytes</code></p>
+<blockquote>
+<p>Specify the limit on maximum memory usage of the executed processes. The limit specifies how much process and kernel memory can be used by tasks in this unit. Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. Alternatively, a percentage value may be specified, which is taken relative to the installed physical memory on the system. If assigned the special value "infinity", no memory limit is applied. This controls the "memory.limit_in_bytes" control group attribute. For details about this control group attribute, see <strong>Memory Resource Controller</strong>[11].</p>
+<p>Implies "MemoryAccounting=yes".</p>
+<p>This setting is deprecated. Use <code>MemoryMax=</code> instead.</p>
+</blockquote>
+<p><code>BlockIOAccounting=</code></p>
+<blockquote>
+<p>Turn on Block I/O accounting for this unit, if the legacy control group hierarchy is used on the system. Takes a boolean argument. Note that turning on block I/O accounting for one unit will also implicitly turn it on for all units contained in the same slice and all for its parent slices and the units contained therein. The system default for this setting may be controlled with <code>DefaultBlockIOAccounting=</code> in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+<p>This setting is deprecated. Use <code>IOAccounting=</code> instead.</p>
+</blockquote>
+<p><code>BlockIOWeight=weight</code>, <code>StartupBlockIOWeight=weight</code></p>
+<blockquote>
+<p>Set the default overall block I/O weight for the executed processes, if the legacy control group hierarchy is used on the system. Takes a single weight value (between 10 and 1000) to set the default block I/O weight. This controls the "blkio.weight" control group attribute, which defaults to 500. For details about this control group attribute, see <strong>Block IO Controller</strong>[12]. The available I/O bandwidth is split up among all units within one slice relative to their block I/O weight.</p>
+<p>While <code>StartupBlockIOWeight=</code> only applies to the startup phase of the system, <code>BlockIOWeight=</code> applies to the later runtime of the system, and if the former is not set also to the startup phase. This allows prioritizing specific services at boot-up differently than during runtime.</p>
+<p>Implies "BlockIOAccounting=yes".</p>
+<p>These settings are deprecated. Use <code>IOWeight=</code> and <code>StartupIOWeight=</code> instead.</p>
+</blockquote>
+<p><code>BlockIODeviceWeight=device weight</code></p>
+<blockquote>
+<p>Set the per-device overall block I/O weight for the executed processes, if the legacy control group hierarchy is used on the system. Takes a space-separated pair of a file path and a weight value to specify the device specific weight value, between 10 and 1000. (Example: "/dev/sda 500"). The file path may be specified as path to a block device node or as any other file, in which case the backing block device of the file system of the file is determined. This controls the "blkio.weight_device" control group attribute, which defaults to 1000. Use this option multiple times to set weights for multiple devices. For details about this control group attribute, see <strong>Block IO Controller</strong>[12].</p>
+<p>Implies "BlockIOAccounting=yes".</p>
+<p>This setting is deprecated. Use <code>IODeviceWeight=</code> instead.</p>
+</blockquote>
+<p><code>BlockIOReadBandwidth=device bytes</code>, <code>BlockIOWriteBandwidth=device bytes</code></p>
+<blockquote>
+<p>Set the per-device overall block I/O bandwidth limit for the executed processes, if the legacy control group hierarchy is used on the system. Takes a space-separated pair of a file path and a bandwidth value (in bytes per second) to specify the device specific bandwidth. The file path may be a path to a block device node, or as any other file in which case the backing block device of the file system of the file is used. If the bandwidth is suffixed with K, M, G, or T, the specified bandwidth is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes, respectively, to the base of 1000. (Example: "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M"). This controls the "blkio.throttle.read_bps_device" and "blkio.throttle.write_bps_device" control group attributes. Use this option multiple times to set bandwidth limits for multiple devices. For details about these control group attributes, see <strong>Block IO Controller</strong>[12].</p>
+<p>Implies "BlockIOAccounting=yes".</p>
+<p>These settings are deprecated. Use <code>IOReadBandwidthMax=</code> and <code>IOWriteBandwidthMax=</code> instead.</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/5/systemd.slice'>systemd.slice</a>(5), <a href='/5/systemd.scope'>systemd.scope</a>(5), <a href='/5/systemd.socket'>systemd.socket</a>(5), <a href='/5/systemd.mount'>systemd.mount</a>(5), <a href='/5/systemd.swap'>systemd.swap</a>(5), <a href='/5/systemd.exec'>systemd.exec</a>(5), <a href='/7/systemd.directives'>systemd.directives</a>(7), <a href='/7/systemd.special'>systemd.special</a>(7), <a href='/8/systemd-oomd.service'>systemd-oomd.service</a>(8), The documentation for control groups and specific controllers in the Linux kernel: <strong>Control Groups v2</strong>[2].</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>New Control Group Interfaces</p>
+<p><a href="https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/">https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/</a></p></li>
+<li><p>Control Groups v2</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html</a></p></li>
+<li><p>Control Groups version 1</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/</a></p></li>
+<li><p>CFS Scheduler</p>
+<p><a href="https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html">https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html</a></p></li>
+<li><p>sched-bwc.txt</p>
+<p><a href="https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt">https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt</a></p></li>
+<li><p>Memory Interface Files</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory-interface-files">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory-interface-files</a></p></li>
+<li><p>Process Number Controller</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/pids.html">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/pids.html</a></p></li>
+<li><p>IO Interface Files</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#io-interface-files">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#io-interface-files</a></p></li>
+<li><p>Device Whitelist Controller</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/devices.html">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/devices.html</a></p></li>
+</ul>
+<ol start="10" type="1">
+<li><p>Control Group APIs and Delegation</p>
+<p><a href="https://systemd.io/CGROUP_DELEGATION">https://systemd.io/CGROUP_DELEGATION</a></p></li>
+<li><p>Memory Resource Controller</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/memory.html">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/memory.html</a></p></li>
+<li><p>Block IO Controller</p>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/blkio-controller.html">https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/blkio-controller.html</a></p></li>
+</ol></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

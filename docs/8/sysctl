@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sysctl - configure kernel parameters at runtime</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>sysctl</strong> [<code>options</code>] [<code>variable</code>[<strong>=</strong><code>value</code>]] [...]<br/>
+<strong>sysctl -p</strong> [<code>file</code> or <code>regexp</code>] [...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>sysctl</strong> is used to modify kernel parameters at runtime. The parameters available are those listed under /proc/sys/. Procfs is required for <strong>sysctl</strong> support in Linux. You can use <strong>sysctl</strong> to both read and write sysctl data.</p>
+</div></div><h1 id='parameters'><a href='#parameters'>PARAMETERS</a></h1><div data-for='parameters' data-hide><div class='section' data-for='parameters'><div data-more>
+<dl>
+<dt><code>variable</code></dt>
+<dd><p>The name of a key to read from. An example is kernel.ostype. The '/' separator is also accepted in place of a '.'.</p>
+</dd>
+<dt><code>variable</code>=<code>value</code></dt>
+<dd><p>To set a key, use the form <code>variable</code>=<code>value</code> where <code>variable</code> is the key and <code>value</code> is the value to set it to. If the value contains quotes or characters which are parsed by the shell, you may need to enclose the value in double quotes.</p>
+</dd>
+<dt><strong>-n</strong>, <strong>--values</strong></dt>
+<dd><p>Use this option to disable printing of the key name when printing values.</p>
+</dd>
+<dt><strong>-e</strong>, <strong>--ignore</strong></dt>
+<dd><p>Use this option to ignore errors about unknown keys.</p>
+</dd>
+<dt><strong>-N</strong>, <strong>--names</strong></dt>
+<dd><p>Use this option to only print the names. It may be useful with shells that have programmable completion.</p>
+</dd>
+<dt><strong>-q</strong>, <strong>--quiet</strong></dt>
+<dd><p>Use this option to not display the values set to stdout.</p>
+</dd>
+<dt><strong>-w</strong>, <strong>--write</strong></dt>
+<dd><p>Use this option when all arguments prescribe a key to be set.</p>
+</dd>
+<dt><strong>-p</strong>[<code>FILE</code>], <strong>--load</strong>[=<code>FILE</code>]</dt>
+<dd><p>Load in sysctl settings from the file specified or /etc/sysctl.conf if none given. Specifying - as filename means reading data from standard input. Using this option will mean arguments to <strong>sysctl</strong> are files, which are read in the order they are specified. The file argument may be specified as regular expression.</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--all</strong></dt>
+<dd><p>Display all values currently available.</p>
+</dd>
+<dt><strong>--deprecated</strong></dt>
+<dd><p>Include deprecated parameters to <strong>--all</strong> values listing.</p>
+</dd>
+<dt><strong>-b</strong>, <strong>--binary</strong></dt>
+<dd><p>Print value without new line.</p>
+</dd>
+<dt><strong>--system</strong></dt>
+<dd><p>Load settings from all system configuration files. Files are read from directories in the following list in given order from top to bottom. Once a file of a given filename is loaded, any file of the same name in subsequent directories is ignored.<br/>
+/etc/sysctl.d/*.conf<br/>
+/run/sysctl.d/*.conf<br/>
+/usr/local/lib/sysctl.d/*.conf<br/>
+/usr/lib/sysctl.d/*.conf<br/>
+/lib/sysctl.d/*.conf<br/>
+/etc/sysctl.conf</p>
+</dd>
+<dt><strong>-r</strong>, <strong>--pattern</strong> <code>pattern</code></dt>
+<dd><p>Only apply settings that match <code>pattern</code>. The <code>pattern</code> uses extended regular expression syntax.</p>
+</dd>
+<dt><strong>-A</strong></dt>
+<dd><p>Alias of <strong>-a</strong></p>
+</dd>
+<dt><strong>-d</strong></dt>
+<dd><p>Alias of <strong>-h</strong></p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Alias of <strong>-p</strong></p>
+</dd>
+<dt><strong>-X</strong></dt>
+<dd><p>Alias of <strong>-a</strong></p>
+</dd>
+<dt><strong>-o</strong></dt>
+<dd><p>Does nothing, exists for BSD compatibility.</p>
+</dd>
+<dt><strong>-x</strong></dt>
+<dd><p>Does nothing, exists for BSD compatibility.</p>
+</dd>
+<dt><strong>-h</strong>, <strong>--help</strong></dt>
+<dd><p>Display help text and exit.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Display version information and exit.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>/sbin/sysctl -a<br/>
+/sbin/sysctl -n kernel.hostname<br/>
+/sbin/sysctl -w kernel.domainname="<a href="http://example.com">example.com</a>"<br/>
+/sbin/sysctl -p/etc/sysctl.conf<br/>
+/sbin/sysctl -a --pattern forward<br/>
+/sbin/sysctl -a --pattern forward$<br/>
+/sbin/sysctl -a --pattern 'net.ipv4.conf.(eth|wlan)0.arp'<br/>
+/sbin/sysctl --system --pattern '^net.ipv6'</p>
+</div></div><h1 id='deprecated-parameters'><a href='#deprecated-parameters'>DEPRECATED PARAMETERS</a></h1><div data-for='deprecated-parameters' data-hide><div class='section' data-for='deprecated-parameters'><div data-more>
+<p>The <strong>base_reachable_time</strong> and <strong>retrans_time</strong> are deprecated. The <strong>sysctl</strong> command does not allow changing values of these parameters. Users who insist to use deprecated kernel interfaces should push values to /proc file system by other means. For example:</p>
+<p>echo 256 &gt; /proc/sys/net/ipv6/neigh/eth0/base_reachable_time</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/proc/sys</code><br/>
+<code>/etc/sysctl.d/*.conf</code><br/>
+<code>/run/sysctl.d/*.conf</code><br/>
+<code>/usr/local/lib/sysctl.d/*.conf</code><br/>
+<code>/usr/lib/sysctl.d/*.conf</code><br/>
+<code>/lib/sysctl.d/*.conf</code><br/>
+<code>/etc/sysctl.conf</code></p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/sysctl.conf'>sysctl.conf</a>(5) <a href='/7/regex'>regex</a>(7)</p>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p><a href="<a href="mailto:staikos@0wned.org">staikos@0wned.org</a>">George Staikos</a></p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>Please send bug reports to <a href="<a href="mailto:procps@freelists.org">procps@freelists.org</a>"></a></p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

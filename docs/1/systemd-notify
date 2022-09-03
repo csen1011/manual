@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-notify - Notify service manager about start-up completion and other daemon status changes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>systemd-notify [OPTIONS...] [VARIABLE=VALUE...]</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-notify</strong> may be called by daemon scripts to notify the init system about status changes. It can be used to send arbitrary information, encoded in an environment-block-like list of strings. Most importantly, it can be used for start-up completion notification.</p>
+<p>This is mostly just a wrapper around <strong>sd_notify()</strong> and makes this functionality available to shell scripts. For details see <a href='/3/sd_notify'>sd_notify</a>(3).</p>
+<p>The command line may carry a list of environment variables to send as part of the status update.</p>
+<p>Note that systemd will refuse reception of status updates from this command unless <code>NotifyAccess=</code> is set for the service unit this command is called from.</p>
+<p>Note that <strong>sd_notify()</strong> notifications may be attributed to units correctly only if either the sending process is still around at the time PID 1 processes the message, or if the sending process is explicitly runtime-tracked by the service manager. The latter is the case if the service manager originally forked off the process, i.e. on all processes that match <code>NotifyAccess=</code><strong>main</strong> or <code>NotifyAccess=</code><strong>exec</strong>. Conversely, if an auxiliary process of the unit sends an <strong>sd_notify()</strong> message and immediately exits, the service manager might not be able to properly attribute the message to the unit, and thus will ignore it, even if <code>NotifyAccess=</code><strong>all </strong> is set for it. When <strong>--no-block</strong> is used, all synchronization for reception of notifications is disabled, and hence the aforementioned race may occur if the invoking process is not the service manager or spawned by the service manager.</p>
+<p>Hence, <strong>systemd-notify</strong> will first attempt to invoke <strong>sd_notify()</strong> pretending to have the PID of the invoking process. This will only succeed when invoked with sufficient privileges. On failure, it will then fall back to invoking it under its own PID. This behaviour is useful in order that when the tool is invoked from a shell script the shell process — and not the <strong>systemd-notify</strong> process — appears as sender of the message, which in turn is helpful if the shell process is the main process of a service, due to the limitations of <code>NotifyAccess=</code><strong>all</strong>. Use the <strong>--pid=</strong> switch to tweak this behaviour.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The following options are understood:</p>
+<p><strong>--ready</strong></p>
+<blockquote>
+<p>Inform the init system about service start-up completion. This is equivalent to <strong>systemd-notify READY=1</strong>. For details about the semantics of this option see <a href='/3/sd_notify'>sd_notify</a>(3).</p>
+</blockquote>
+<p><strong>--pid=</strong></p>
+<blockquote>
+<p>Inform the service manager about the main PID of the daemon. Takes a PID as argument. If the argument is specified as "auto" or omitted, the PID of the process that invoked <strong>systemd-notify</strong> is used, except if thats the service manager. If the argument is specified as "self", the PID of the <strong>systemd-notify</strong> command itself is used, and if "parent" is specified the calling process PID is used — even if it is the service manager. This is equivalent to <strong>systemd-notify MAINPID=$PID</strong>. For details about the semantics of this option see <a href='/3/sd_notify'>sd_notify</a>(3).</p>
+</blockquote>
+<p><strong>--uid=</strong><code>USER</code></p>
+<blockquote>
+<p>Set the user ID to send the notification from. Takes a UNIX user name or numeric UID. When specified the notification message will be sent with the specified UID as sender, in place of the user the command was invoked as. This option requires sufficient privileges in order to be able manipulate the user identity of the process.</p>
+</blockquote>
+<p><strong>--status=</strong></p>
+<blockquote>
+<p>Send a free-form status string for the daemon to the init systemd. This option takes the status string as argument. This is equivalent to <strong>systemd-notify STATUS=...</strong>. For details about the semantics of this option see <a href='/3/sd_notify'>sd_notify</a>(3).</p>
+</blockquote>
+<p><strong>--booted</strong></p>
+<blockquote>
+<p>Returns 0 if the system was booted up with systemd, non-zero otherwise. If this option is passed, no message is sent. This option is hence unrelated to the other options. For details about the semantics of this option, see <a href='/3/sd_booted'>sd_booted</a>(3). An alternate way to check for this state is to call <a href='/1/systemctl'>systemctl</a>(1) with the <strong>is-system-running</strong> command. It will return "offline" if the system was not booted with systemd.</p>
+</blockquote>
+<p><strong>--no-block</strong></p>
+<blockquote>
+<p>Do not synchronously wait for the requested operation to finish. Use of this option is only recommended when <strong>systemd-notify</strong> is spawned by the service manager, or when the invoking process is directly spawned by the service manager and has enough privileges to allow <strong>systemd-notify</strong> to send the notification on its behalf. Sending notifications with this option set is prone to race conditions in all other cases.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Print a short help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Print a short version string and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>On success, 0 is returned, a non-zero failure code otherwise.</p>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p><strong>Example 1. Start-up Notification and Status Updates</strong></p>
+<p>A simple shell daemon that sends start-up notifications after having set up its communication channel. During runtime it sends further status updates to the init system:</p>
+<p>.RS 4</p>
+<pre><code>#!/bin/bash
+
+mkfifo /tmp/waldo
+systemd-notify --ready --status="Waiting for data..."
+
+while : ; do
+        read a &lt; /tmp/waldo
+        systemd-notify --status="Processing $a"
+
+        # Do something with $a ...
+
+        systemd-notify --status="Waiting for data..."
+done</code></pre>
+<p>.RE</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemctl'>systemctl</a>(1), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/3/sd_notify'>sd_notify</a>(3), <a href='/3/sd_booted'>sd_booted</a>(3)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

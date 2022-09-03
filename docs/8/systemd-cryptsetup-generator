@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-cryptsetup-generator - Unit generator for /etc/crypttab</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>/lib/systemd/system-generators/systemd-cryptsetup-generator</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>systemd-cryptsetup-generator is a generator that translates /etc/crypttab into native systemd units early at boot and when configuration of the system manager is reloaded. This will create <a href='/8/systemd-cryptsetup@.service'>systemd-cryptsetup@.service</a>(8) units as necessary.</p>
+<p>systemd-cryptsetup-generator implements <a href='/7/systemd.generator'>systemd.generator</a>(7).</p>
+</div></div><h1 id='kernel-command-line'><a href='#kernel-command-line'>KERNEL COMMAND LINE</a></h1><div data-for='kernel-command-line' data-hide><div class='section' data-for='kernel-command-line'><div data-more>
+<p>systemd-cryptsetup-generator understands the following kernel command line parameters:</p>
+<p><code>luks=</code>, <code>rd.luks=</code></p>
+<blockquote>
+<p>Takes a boolean argument. Defaults to "yes". If "no", disables the generator entirely. <code>rd.luks=</code> is honored only by initial RAM disk (initrd) while <code>luks=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>luks.crypttab=</code>, <code>rd.luks.crypttab=</code></p>
+<blockquote>
+<p>Takes a boolean argument. Defaults to "yes". If "no", causes the generator to ignore any devices configured in /etc/crypttab (<code>luks.uuid=</code> will still work however). <code>rd.luks.crypttab=</code> is honored only by initial RAM disk (initrd) while <code>luks.crypttab=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>luks.uuid=</code>, <code>rd.luks.uuid=</code></p>
+<blockquote>
+<p>Takes a LUKS superblock UUID as argument. This will activate the specified device as part of the boot process as if it was listed in /etc/crypttab. This option may be specified more than once in order to set up multiple devices. <code>rd.luks.uuid=</code> is honored only by initial RAM disk (initrd) while <code>luks.uuid=</code> is honored by both the main system and the initrd.</p>
+<p>If /etc/crypttab contains entries with the same UUID, then the name, keyfile and options specified there will be used. Otherwise, the device will have the name "luks-UUID".</p>
+<p>If /etc/crypttab exists, only those UUIDs specified on the kernel command line will be activated in the initrd or the real root.</p>
+</blockquote>
+<p><code><a href="http://luks.name">luks.name</a>=</code>, <code><a href="http://rd.luks.name">rd.luks.name</a>=</code></p>
+<blockquote>
+<p>Takes a LUKS super block UUID followed by an "=" and a name. This implies <code>rd.luks.uuid=</code> or <code>luks.uuid=</code> and will additionally make the LUKS device given by the UUID appear under the provided name.</p>
+<p>This parameter is the analogue of the first <a href='/5/crypttab'>crypttab</a>(5) field <code>volume-name</code>.</p>
+<p><code><a href="http://rd.luks.name">rd.luks.name</a>=</code> is honored only by initial RAM disk (initrd) while <code><a href="http://luks.name">luks.name</a>=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>luks.data=</code>, <code>rd.luks.data=</code></p>
+<blockquote>
+<p>Takes a LUKS super block UUID followed by a "=" and a block device specification for device hosting encrypted data.</p>
+<p>For those entries specified with <code>rd.luks.uuid=</code> or <code>luks.uuid=</code>, the data device will be set to the one specified by <code>rd.luks.data=</code> or <code>luks.data=</code> of the corresponding UUID.</p>
+<p>LUKS data device parameter is useful for specifying encrypted data devices with detached headers specified in <code>luks.options</code> entry containing "header=" argument. For example, <code>rd.luks.uuid=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40 <code>rd.luks.options=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40=header=/path/to/luks.hdr <code>rd.luks.data=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40=/dev/sdx. Hence, in this case, we will attempt to unlock LUKS device assembled from data device "/dev/sdx" and LUKS header (metadata) put in "/path/to/luks.hdr" file. This syntax is for now only supported on a per-device basis, i.e. you have to specify LUKS device UUID.</p>
+<p>This parameter is the analogue of the second <a href='/5/crypttab'>crypttab</a>(5) field <code>encrypted-device</code>.</p>
+<p><code>rd.luks.data=</code> is honored only by initial RAM disk (initrd) while <code>luks.data=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>luks.key=</code>, <code>rd.luks.key=</code></p>
+<blockquote>
+<p>Takes a password file name as argument or a LUKS super block UUID followed by a "=" and a password file name.</p>
+<p>For those entries specified with <code>rd.luks.uuid=</code> or <code>luks.uuid=</code>, the password file will be set to the one specified by <code>rd.luks.key=</code> or <code>luks.key=</code> of the corresponding UUID, or the password file that was specified without a UUID.</p>
+<p>It is also possible to specify an external device which should be mounted before we attempt to unlock the LUKS device. systemd-cryptsetup will use password file stored on that device. Device containing password file is specified by appending colon and a device identifier to the password file path. For example, <code>rd.luks.uuid=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40 <code>rd.luks.key=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40=/keyfile:LABEL=keydev. Hence, in this case, we will attempt to mount file system residing on the block device with label "keydev". This syntax is for now only supported on a per-device basis, i.e. you have to specify LUKS device UUID.</p>
+<p>This parameter is the analogue of the third <a href='/5/crypttab'>crypttab</a>(5) field <code>key-file</code>.</p>
+<p><code>rd.luks.key=</code> is honored only by initial RAM disk (initrd) while <code>luks.key=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>luks.options=</code>, <code>rd.luks.options=</code></p>
+<blockquote>
+<p>Takes a LUKS super block UUID followed by an "=" and a string of options separated by commas as argument. This will override the options for the given UUID.</p>
+<p>If only a list of options, without an UUID, is specified, they apply to any UUIDs not specified elsewhere, and without an entry in /etc/crypttab.</p>
+<p>This parameter is the analogue of the fourth <a href='/5/crypttab'>crypttab</a>(5) field <code>options</code>.</p>
+<p>It is possible to specify an external device which should be mounted before we attempt to unlock the LUKS device. systemd-cryptsetup will assemble LUKS device by combining data device specified in <code>luks.data</code> with detached LUKS header found in "header=" argument. For example, <code>rd.luks.uuid=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40 <code>rd.luks.options=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40=header=/luks.hdr:LABEL=hdrdev <code>rd.luks.data=</code>b40f1abf-2a53-400a-889a-2eccc27eaa40=/dev/sdx. Hence, in this case, we will attempt to mount file system residing on the block device with label "hdrdev", and look for "luks.hdr" on that file system. Said header will be used to unlock (decrypt) encrypted data stored on /dev/sdx. This syntax is for now only supported on a per-device basis, i.e. you have to specify LUKS device UUID.</p>
+<p><code>rd.luks.options=</code> is honored only by initial RAM disk (initrd) while <code>luks.options=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/5/crypttab'>crypttab</a>(5), <a href='/8/systemd-cryptsetup@.service'>systemd-cryptsetup@.service</a>(8), <a href='/1/systemd-cryptenroll'>systemd-cryptenroll</a>(1), <a href='/8/cryptsetup'>cryptsetup</a>(8), <a href='/8/systemd-fstab-generator'>systemd-fstab-generator</a>(8)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

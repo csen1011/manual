@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>objdump - display information from object files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>objdump [<strong>-a</strong>|<strong>--archive-headers</strong>] [<strong>-b</strong> <code>bfdname</code>|<strong>--target=</strong><code>bfdname</code>] [<strong>-C</strong>|<strong>--demangle</strong>[=<code>style</code>] ] [<strong>-d</strong>|<strong>--disassemble</strong>[=<code>symbol</code>]] [<strong>-D</strong>|<strong>--disassemble-all</strong>] [<strong>-z</strong>|<strong>--disassemble-zeroes</strong>] [<strong>-EB</strong>|<strong>-EL</strong>|<strong>--endian=</strong>{big | little }] [<strong>-f</strong>|<strong>--file-headers</strong>] [<strong>-F</strong>|<strong>--file-offsets</strong>] [<strong>--file-start-context</strong>] [<strong>-g</strong>|<strong>--debugging</strong>] [<strong>-e</strong>|<strong>--debugging-tags</strong>] [<strong>-h</strong>|<strong>--section-headers</strong>|<strong>--headers</strong>] [<strong>-i</strong>|<strong>--info</strong>] [<strong>-j</strong> <code>section</code>|<strong>--section=</strong><code>section</code>] [<strong>-l</strong>|<strong>--line-numbers</strong>] [<strong>-S</strong>|<strong>--source</strong>] [<strong>--source-comment</strong>[=<code>text</code>]] [<strong>-m</strong> <code>machine</code>|<strong>--architecture=</strong><code>machine</code>] [<strong>-M</strong> <code>options</code>|<strong>--disassembler-options=</strong><code>options</code>] [<strong>-p</strong>|<strong>--private-headers</strong>] [<strong>-P</strong> <code>options</code>|<strong>--private=</strong><code>options</code>] [<strong>-r</strong>|<strong>--reloc</strong>] [<strong>-R</strong>|<strong>--dynamic-reloc</strong>] [<strong>-s</strong>|<strong>--full-contents</strong>] [<strong>-W[lLiaprmfFsoORtUuTgAck]</strong>| <strong>--dwarf</strong>[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links]] [<strong>-WK</strong>|<strong>--dwarf=follow-links</strong>] [<strong>-WN</strong>|<strong>--dwarf=no-follow-links</strong>] [<strong>-L</strong>|<strong>--process-links</strong>] [<strong>--ctf=</strong><code>section</code>] [<strong>-G</strong>|<strong>--stabs</strong>] [<strong>-t</strong>|<strong>--syms</strong>] [<strong>-T</strong>|<strong>--dynamic-syms</strong>] [<strong>-x</strong>|<strong>--all-headers</strong>] [<strong>-w</strong>|<strong>--wide</strong>] [<strong>--start-address=</strong><code>address</code>] [<strong>--stop-address=</strong><code>address</code>] [<strong>--no-addresses</strong>] [<strong>--prefix-addresses</strong>] [<strong>--[no-]show-raw-insn</strong>] [<strong>--adjust-vma=</strong><code>offset</code>] [<strong>--dwarf-depth=</strong><code>n</code>] [<strong>--dwarf-start=</strong><code>n</code>] [<strong>--ctf-parent=</strong><code>section</code>] [<strong>--no-recurse-limit</strong>|<strong>--recurse-limit</strong>] [<strong>--special-syms</strong>] [<strong>--prefix=</strong><code>prefix</code>] [<strong>--prefix-strip=</strong><code>level</code>] [<strong>--insn-width=</strong><code>width</code>] [<strong>--visualize-jumps[=color|=extended-color|=off]</strong> [<strong>-U</strong> <code>method</code>] [<strong>--unicode=</strong><code>method</code>] [<strong>-V</strong>|<strong>--version</strong>] [<strong>-H</strong>|<strong>--help</strong>] <code>objfile</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>objdump</strong> displays information about one or more object files. The options control what particular information to display. This information is mostly useful to programmers who are working on the compilation tools, as opposed to programmers who just want their program to compile and work.</p>
+<p><code>objfile</code>... are the object files to be examined. When you specify archives, <strong>objdump</strong> shows information on each of the member object files.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The long and short forms of options, shown here as alternatives, are equivalent. At least one option from the list <strong>-a,-d,-D,-e,-f,-g,-G,-h,-H,-p,-P,-r,-R,-s,-S,-t,-T,-V,-x</strong> must be given.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>If any of the <code>objfile</code> files are archives, display the archive header information (in a format similar to <strong>ls -l</strong>). Besides the information you could list with <strong>ar tv</strong>, <strong>objdump -a</strong> shows the object file format of each archive member.</p>
+<ul>
+<li><p>When dumping information, first add <code>offset</code> to all the section addresses. This is useful if the section addresses do not correspond to the symbol table, which can happen when putting sections at particular addresses when using a format which can not represent section addresses, such as a.out.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Specify that the object-code format for the object files is <code>bfdname</code>. This option may not be necessary; <code>objdump</code> can automatically recognize many formats. For example, objdump -b oasys -m vax -h fu.o displays summary information from the section headers (<strong>-h</strong>) of <code>fu.o</code>, which is explicitly identified (<strong>-m</strong>) as a VAX object file in the format produced by Oasys compilers. You can list the formats available with the <strong>-i</strong> option.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Decode (<code>demangle</code>) low-level symbol names into user-level names. Besides removing any initial underscore prepended by the system, this makes C++ function names readable. Different compilers have different mangling styles. The optional demangling style argument can be used to choose an appropriate demangling style for your compiler.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<p>Enables or disables a limit on the amount of recursion performed whilst demangling strings. Since the name mangling formats allow for an infinite level of recursion it is possible to create strings whose decoding will exhaust the amount of stack space available on the host machine, triggering a memory fault. The limit tries to prevent this from happening by restricting recursion to 2048 levels of nesting. The default is for this limit to be enabled, but disabling it may be necessary in order to demangle truly complicated names. Note however that if the recursion limit is disabled then stack exhaustion is possible and any bug reports about such an event will be rejected.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display debugging information. This attempts to parse STABS debugging format information stored in the file and print it out using a C like syntax. If no STABS debugging was found this option falls back on the <strong>-W</strong> option to print any DWARF information in the file.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Like <strong>-g</strong>, but the information is generated in a format compatible with ctags tool.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Display the assembler mnemonics for the machine instructions from the input file. This option only disassembles those sections which are expected to contain instructions. If the optional <code>symbol</code> argument is given, then display the assembler mnemonics starting at <code>symbol</code>. If <code>symbol</code> is a function name then disassembly will stop at the end of the function, otherwise it will stop when the next symbol is encountered. If there are no matches for <code>symbol</code> then nothing will be displayed. Note if the <strong>--dwarf=follow-links</strong> option is enabled then any symbol tables in linked debug info files will be read in and used when disassembling.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Like <strong>-d</strong>, but disassemble the contents of all sections, not just those expected to contain instructions. This option also has a subtle effect on the disassembly of instructions in code sections. When option <strong>-d</strong> is in effect objdump will assume that any symbols present in a code section occur on the boundary between instructions and it will refuse to disassemble across such a boundary. When option <strong>-D</strong> is in effect however this assumption is supressed. This means that it is possible for the output of <strong>-d</strong> and <strong>-D</strong> to differ if, for example, data is stored in code sections. If the target is an ARM architecture this switch also has the effect of forcing the disassembler to decode pieces of data found in code sections as if they were instructions. Note if the <strong>--dwarf=follow-links</strong> option is enabled then any symbol tables in linked debug info files will be read in and used when disassembling.</p>
+<ul>
+<li><p>When disassembling, don't print addresses on each line or for symbols and relocation offsets. In combination with <strong>--no-show-raw-insn</strong> this may be useful for comparing compiler output.</p></li>
+<li><p>When disassembling, print the complete address on each line. This is the older disassembly format.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Specify the endianness of the object files. This only affects disassembly. This can be useful when disassembling a file format which does not describe endianness information, such as S-records.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display summary information from the overall header of each of the <code>objfile</code> files.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>When disassembling sections, whenever a symbol is displayed, also display the file offset of the region of data that is about to be dumped. If zeroes are being skipped, then when disassembly resumes, tell the user how many zeroes were skipped and the file offset of the location from where the disassembly resumes. When dumping sections, display the file offset of the location from where the dump starts.</p>
+<ul>
+<li><p>Specify that when displaying interlisted source code/disassembly (assumes <strong>-S</strong>) from a file that has not yet been displayed, extend the context to the start of the file.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Display summary information from the section headers of the object file. File segments may be relocated to nonstandard addresses, for example by using the <strong>-Ttext</strong>, <strong>-Tdata</strong>, or <strong>-Tbss</strong> options to <strong>ld</strong>. However, some object file formats, such as a.out, do not store the starting address of the file segments. In those situations, although <strong>ld</strong> relocates the sections correctly, using <strong>objdump</strong> -h to list the file section headers cannot show the correct addresses. Instead, it shows the usual addresses, which are implicit for the target. Note, in some cases it is possible for a section to have both the READONLY and the NOREAD attributes set. In such cases the NOREAD attribute takes precedence, but <strong>objdump</strong> will report both since the exact setting of the flag bits might be important.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print a summary of the options to <strong>objdump</strong> and exit.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display a list showing all architectures and object formats available for specification with <strong>-b</strong> or <strong>-m</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display information only for section <code>name</code>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the contents of non-debug sections found in separate debuginfo files that are linked to the main file. This option automatically implies the <strong>-WK</strong> option, and only sections requested by other command line options will be displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Label the display (using debugging information) with the filename and source line numbers corresponding to the object code or relocs shown. Only useful with <strong>-d</strong>, <strong>-D</strong>, or <strong>-r</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Specify the architecture to use when disassembling object files. This can be useful when disassembling object files which do not describe architecture information, such as S-records. You can list the available architectures with the <strong>-i</strong> option. If the target is an ARM architecture then this switch has an additional effect. It restricts the disassembly to only those instructions supported by the architecture specified by <code>machine</code>. If it is necessary to use this switch because the input file does not contain any architecture information, but it is also desired to disassemble all the instructions use <strong>-marm</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Pass target specific information to the disassembler. Only supported on some targets. If it is necessary to specify more than one disassembler option then multiple <strong>-M</strong> options can be used or can be placed together into a comma separated list. For ARC, <strong>dsp</strong> controls the printing of DSP instructions, <strong>spfp</strong> selects the printing of FPX single precision FP instructions, <strong>dpfp</strong> selects the printing of FPX double precision FP instructions, <strong>quarkse_em</strong> selects the printing of special QuarkSE-EM instructions, <strong>fpuda</strong> selects the printing of double precision assist instructions, <strong>fpus</strong> selects the printing of FPU single precision FP instructions, while <strong>fpud</strong> selects the printing of FPU double precision FP instructions. Additionally, one can choose to have all the immediates printed in hexadecimal using <strong>hex</strong>. By default, the short immediates are printed using the decimal representation, while the long immediate values are printed as hexadecimal. <strong>cpu=...</strong> allows one to enforce a particular ISA when disassembling instructions, overriding the <strong>-m</strong> value or whatever is in the ELF file. This might be useful to select ARC EM or HS ISA, because architecture is same for those and disassembler relies on private ELF header data to decide if code is for EM or HS. This option might be specified multiple times - only the latest value will be used. Valid values are same as for the assembler <strong>-mcpu=...</strong> option. If the target is an ARM architecture then this switch can be used to select which register name set is used during disassembler. Specifying <strong>-M reg-names-std</strong> (the default) will select the register names as used in ARM's instruction set documentation, but with register 13 called 'sp', register 14 called 'lr' and register 15 called 'pc'. Specifying <strong>-M reg-names-apcs</strong> will select the name set used by the ARM Procedure Call Standard, whilst specifying <strong>-M reg-names-raw</strong> will just use <strong>r</strong> followed by the register number. There are also two variants on the APCS register naming scheme enabled by <strong>-M reg-names-atpcs</strong> and <strong>-M reg-names-special-atpcs</strong> which use the ARM/Thumb Procedure Call Standard naming conventions. (Either with the normal register names or the special register names). This option can also be used for ARM architectures to force the disassembler to interpret all instructions as Thumb instructions by using the switch <strong>--disassembler-options=force-thumb</strong>. This can be useful when attempting to disassemble thumb code produced by other compilers. For AArch64 targets this switch can be used to set whether instructions are disassembled as the most general instruction using the <strong>-M no-aliases</strong> option or whether instruction notes should be generated as comments in the disasssembly using <strong>-M notes</strong>. For the x86, some of the options duplicate functions of the <strong>-m</strong> switch, but allow finer grained control.</p>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Select disassembly for the given architecture.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Select between intel syntax mode and AT&amp;T syntax mode.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Select between AMD64 ISA and Intel64 ISA.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Select between intel mnemonic mode and AT&amp;T mnemonic mode. Note: <code>intel-mnemonic</code> implies <code>intel</code> and <code>att-mnemonic</code> implies <code>att</code>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<p>Specify the default address size and operand size. These five options will be overridden if <code>x86-64</code>, <code>i386</code> or <code>i8086</code> appear later in the option string.</p>
+<ul>
+<li><p>When in AT&amp;T mode and also for a limited set of instructions when in Intel mode, instructs the disassembler to print a mnemonic suffix even when the suffix could be inferred by the operands or, for certain instructions, the execution mode's defaults.</p></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>For PowerPC, the <strong>-M</strong> argument <strong>raw</strong> selects disasssembly of hardware insns rather than aliases. For example, you will see <code>rlwinm</code> rather than <code>clrlwi</code>, and <code>addi</code> rather than <code>li</code>. All of the <strong>-m</strong> arguments for <strong>gas</strong> that select a CPU are supported. These are: <strong>403</strong>, <strong>405</strong>, <strong>440</strong>, <strong>464</strong>, <strong>476</strong>, <strong>601</strong>, <strong>603</strong>, <strong>604</strong>, <strong>620</strong>, <strong>7400</strong>, <strong>7410</strong>, <strong>7450</strong>, <strong>7455</strong>, <strong>750cl</strong>, <strong>821</strong>, <strong>850</strong>, <strong>860</strong>, <strong>a2</strong>, <strong>booke</strong>, <strong>booke32</strong>, <strong>cell</strong>, <strong>com</strong>, <strong>e200z4</strong>, <strong>e300</strong>, <strong>e500</strong>, <strong>e500mc</strong>, <strong>e500mc64</strong>, <strong>e500x2</strong>, <strong>e5500</strong>, <strong>e6500</strong>, <strong>efs</strong>, <strong>power4</strong>, <strong>power5</strong>, <strong>power6</strong>, <strong>power7</strong>, <strong>power8</strong>, <strong>power9</strong>, <strong>power10</strong>, <strong>ppc</strong>, <strong>ppc32</strong>, <strong>ppc64</strong>, <strong>ppc64bridge</strong>, <strong>ppcps</strong>, <strong>pwr</strong>, <strong>pwr2</strong>, <strong>pwr4</strong>, <strong>pwr5</strong>, <strong>pwr5x</strong>, <strong>pwr6</strong>, <strong>pwr7</strong>, <strong>pwr8</strong>, <strong>pwr9</strong>, <strong>pwr10</strong>, <strong>pwrx</strong>, <strong>titan</strong>, and <strong>vle</strong>. <strong>32</strong> and <strong>64</strong> modify the default or a prior CPU selection, disabling and enabling 64-bit insns respectively. In addition, <strong>altivec</strong>, <strong>any</strong>, <strong>htm</strong>, <strong>vsx</strong>, and <strong>spe</strong> add capabilities to a previous <code>or later</code> CPU selection. <strong>any</strong> will disassemble any opcode known to binutils, but in cases where an opcode has two different meanings or different arguments, you may not see the disassembly you expect. If you disassemble without giving a CPU selection, a default will be chosen from information gleaned by BFD from the object files headers, but the result again may not be as you expect. For MIPS, this option controls the printing of instruction mnemonic names and register names in disassembled instructions. Multiple selections from the following may be specified as a comma separated string, and invalid options are ignored:</p>
+<ul>
+<li><p>Print the 'raw' instruction mnemonic instead of some pseudo instruction mnemonic. I.e., print 'daddu' or 'or' instead of 'move', 'sll' instead of 'nop', etc.</p></li>
+<li><p>Disassemble MSA instructions.</p></li>
+<li><p>Disassemble the virtualization ASE instructions.</p></li>
+<li><p>Disassemble the eXtended Physical Address (XPA) ASE instructions.</p></li>
+<li><p>Print GPR (general-purpose register) names as appropriate for the specified ABI. By default, GPR names are selected according to the ABI of the binary being disassembled.</p></li>
+<li><p>Print FPR (floating-point register) names as appropriate for the specified ABI. By default, FPR numbers are printed rather than names.</p></li>
+<li><p>Print CP0 (system control coprocessor; coprocessor 0) register names as appropriate for the CPU or architecture specified by <code>ARCH</code>. By default, CP0 register names are selected according to the architecture and CPU of the binary being disassembled.</p></li>
+<li><p>Print HWR (hardware register, used by the <code>rdhwr</code> instruction) names as appropriate for the CPU or architecture specified by <code>ARCH</code>. By default, HWR names are selected according to the architecture and CPU of the binary being disassembled.</p></li>
+<li><p>Print GPR and FPR names as appropriate for the selected ABI.</p></li>
+<li><p>Print CPU-specific register names (CP0 register and HWR names) as appropriate for the selected CPU or architecture.</p></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>For any of the options listed above, <code>ABI</code> or <code>ARCH</code> may be specified as <strong>numeric</strong> to have numbers printed rather than names, for the selected types of registers. You can list the available values of <code>ABI</code> and <code>ARCH</code> using the <strong>--help</strong> option. For VAX, you can specify function entry addresses with <strong>-M</strong> entry:0xf00ba. You can use this multiple times to properly disassemble VAX binary files that don't contain symbol tables (like ROM dumps). In these cases, the function entry mask would otherwise be decoded as VAX instructions, which would probably lead the rest of the function being wrongly disassembled.</p>
+</blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print information that is specific to the object file format. The exact information printed depends upon the object file format. For some object file formats, no additional information is printed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print information that is specific to the object file format. The argument <code>options</code> is a comma separated list that depends on the format (the lists of options is displayed with the help). For XCOFF, the available options are:</p>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>Not all object formats support this option. In particular the ELF format does not use it.</p>
+</blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the relocation entries of the file. If used with <strong>-d</strong> or <strong>-D</strong>, the relocations are printed interspersed with the disassembly.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the dynamic relocation entries of the file. This is only meaningful for dynamic objects, such as certain types of shared libraries. As for <strong>-r</strong>, if used with <strong>-d</strong> or <strong>-D</strong>, the relocations are printed interspersed with the disassembly.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the full contents of any sections requested. By default all non-empty sections are displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display source code intermixed with disassembly, if possible. Implies <strong>-d</strong>.</p>
+<ul>
+<li><p>Like the <strong>-S</strong> option, but all source code lines are displayed with a prefix of <code>txt</code>. Typically <code>txt</code> will be a comment string which can be used to distinguish the assembler code from the source code. If <code>txt</code> is not provided then a default string of <code>``# ''</code> (hash followed by a space), will be used.</p></li>
+<li><p>Specify <code>prefix</code> to add to the absolute paths when used with <strong>-S</strong>.</p></li>
+<li><p>Indicate how many initial directory names to strip off the hardwired absolute paths. It has no effect without <strong>--prefix=</strong><code>prefix</code>.</p></li>
+<li><p>When disassembling instructions, print the instruction in hex as well as in symbolic form. This is the default except when <strong>--prefix-addresses</strong> is used.</p></li>
+<li><p>When disassembling instructions, do not print the instruction bytes. This is the default when <strong>--prefix-addresses</strong> is used.</p></li>
+<li><p>Display <code>width</code> bytes on a single line when disassembling instructions.</p></li>
+<li><p>Visualize jumps that stay inside a function by drawing ASCII art between the start and target addresses. The optional <strong>=color</strong> argument adds color to the output using simple terminal colors. Alternatively the <strong>=extended-color</strong> argument will add color using 8bit colors, but these might not work on all terminals. If it is necessary to disable the <strong>visualize-jumps</strong> option after it has previously been enabled then use <strong>visualize-jumps=off</strong>.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the DWARF debug sections in the file, if any are present. Compressed debug sections are automatically decompressed (temporarily) before they are displayed. If one or more of the optional letters or words follows the switch then only those type(s) of data will be dumped. The letters and words refer to the following information:</p>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_abbrev</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_addr</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_cu_index</strong> and/or <strong>.debug_tu_index</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the raw contents of a <strong>.debug_frame</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the interpreted contents of a <strong>.debug_frame</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.gdb_index</strong> and/or <strong>.debug_names</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_info</strong> section. Note: the output from this option can also be restricted by the use of the <strong>--dwarf-depth</strong> and <strong>--dwarf-start</strong> options.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.gnu_debuglink</strong>, <strong>.gnu_debugaltlink</strong> and <strong>.debug_sup</strong> sections, if any of them are present. Also displays any links to separate dwarf object files (dwo), if they are specified by the DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the <strong>.debug_info</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the contents of any selected debug sections that are found in linked, separate debug info file(s). This can result in multiple versions of the same debug section being displayed if it exists in more than one file. In addition, when displaying DWARF attributes, if a form is found that references the separate debug info file, then the referenced contents will also be displayed. Note - in some distributions this option is enabled by default. It can be disabled via the <strong>N</strong> debug option. The default can be chosen when configuring the binutils via the <strong>--enable-follow-debug-links=yes</strong> or <strong>--enable-follow-debug-links=no</strong> options. If these are not used then the default is to enable the following of debug links.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Disables the following of links to separate debug info files.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_line</strong> section in a raw format.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the interpreted contents of the <strong>.debug_line</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_macro</strong> and/or <strong>.debug_macinfo</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_loc</strong> and/or <strong>.debug_loclists</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_str_offsets</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_pubnames</strong> and/or <strong>.debug_gnu_pubnames</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_aranges</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_ranges</strong> and/or <strong>.debug_rnglists</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_str</strong>, <strong>.debug_line_str</strong> and/or <strong>.debug_str_offsets</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_pubtypes</strong> and/or <strong>.debug_gnu_pubtypes</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_aranges</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_abbrev</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_info</strong> section.</p>
+</blockquote>
+<blockquote>
+<p>Note: displaying the contents of <strong>.debug_static_funcs</strong>, <strong>.debug_static_vars</strong> and <strong>debug_weaknames</strong> sections is not currently supported.</p>
+</blockquote>
+<ul>
+<li><p>Limit the dump of the <code>.debug_info</code> section to <code>n</code> children. This is only useful with <strong>--debug-dump=info</strong>. The default is to print all DIEs; the special value 0 for <code>n</code> will also have this effect. With a non-zero value for <code>n</code>, DIEs at or deeper than <code>n</code> levels will not be printed. The range for <code>n</code> is zero-based.</p></li>
+<li><p>Print only DIEs beginning with the DIE numbered <code>n</code>. This is only useful with <strong>--debug-dump=info</strong>. If specified, this option will suppress printing of any header information and all DIEs before the DIE numbered <code>n</code>. Only siblings and children of the specified DIE will be printed. This can be used in conjunction with <strong>--dwarf-depth</strong>.</p></li>
+<li><p>Enable additional checks for consistency of Dwarf information.</p></li>
+<li><p>Display the contents of the specified CTF section. CTF sections themselves contain many subsections, all of which are displayed in order. By default, display the name of the section named <code>.ctf</code>, which is the name emitted by <strong>ld</strong>.</p></li>
+<li><p>If the CTF section contains ambiguously-defined types, it will consist of an archive of many CTF dictionaries, all inheriting from one dictionary containing unambiguous types. This member is by default named <code>.ctf</code>, like the section containing it, but it is possible to change this name using the <code>ctf_link_set_memb_name_changer</code> function at link time. When looking at CTF archives that have been created by a linker that uses the name changer to rename the parent archive member, <strong>--ctf-parent</strong> can be used to specify the name used for the parent.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the full contents of any sections requested. Display the contents of the .stab and .stab.index and .stab.excl sections from an ELF file. This is only useful on systems (such as Solaris 2.0) in which <code>.stab</code> debugging symbol-table entries are carried in an ELF section. In most other file formats, debugging symbol-table entries are interleaved with linkage symbols, and are visible in the <strong>--syms</strong> output.</p>
+<ul>
+<li><p>Start displaying data at the specified address. This affects the output of the <strong>-d</strong>, <strong>-r</strong> and <strong>-s</strong> options.</p></li>
+<li><p>Stop displaying data at the specified address. This affects the output of the <strong>-d</strong>, <strong>-r</strong> and <strong>-s</strong> options.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the symbol table entries of the file. This is similar to the information provided by the <strong>nm</strong> program, although the display format is different. The format of the output depends upon the format of the file being dumped, but there are two main types. One looks like this: [ 4](sec 3)(fl 0x00)(ty 0)(scl 3) (nx 1) 0x00000000 .bss [ 6](sec 1)(fl 0x00)(ty 0)(scl 2) (nx 0) 0x00000000 fred where the number inside the square brackets is the number of the entry in the symbol table, the <code>sec</code> number is the section number, the <code>fl</code> value are the symbol's flag bits, the <code>ty</code> number is the symbol's type, the <code>scl</code> number is the symbol's storage class and the <code>nx</code> value is the number of auxiliary entries associated with the symbol. The last two fields are the symbol's value and its name. The other common output format, usually seen with ELF based files, looks like this: 00000000 l d .bss 00000000 .bss 00000000 g .text 00000000 fred Here the first number is the symbol's value (sometimes referred to as its address). The next field is actually a set of characters and spaces indicating the flag bits that are set on the symbol. These characters are described below. Next is the section with which the symbol is associated or <code>*ABS*</code> if the section is absolute (ie not connected with any section), or <code>*UND*</code> if the section is referenced in the file being dumped, but not defined there. After the section name comes another field, a number, which for common symbols is the alignment and for other symbol is the size. Finally the symbol's name is displayed. The flag characters are divided into 7 groups as follows:</p>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<p>The symbol is a local (l), global (g), unique global (u), neither global nor local (a space) or both global and local (!). A symbol can be neither local or global for a variety of reasons, e.g., because it is used for debugging, but it is probably an indication of a bug if it is ever both local and global. Unique global symbols are a GNU extension to the standard set of ELF symbol bindings. For such a symbol the dynamic linker will make sure that in the entire process there is just one symbol with this name and type in use.</p>
+<ul>
+<li><p>The symbol is weak (w) or strong (a space).</p></li>
+<li><p>The symbol denotes a constructor (C) or an ordinary symbol (a space).</p></li>
+<li><p>The symbol is a warning (W) or a normal symbol (a space). A warning symbol's name is a message to be displayed if the symbol following the warning symbol is ever referenced.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>The symbol is an indirect reference to another symbol (I), a function to be evaluated during reloc processing (i) or a normal symbol (a space).</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>The symbol is a debugging symbol (d) or a dynamic symbol (D) or a normal symbol (a space).</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>The symbol is the name of a function (F) or a file (f) or an object (O) or just a normal symbol (a space).</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the dynamic symbol table entries of the file. This is only meaningful for dynamic objects, such as certain types of shared libraries. This is similar to the information provided by the <strong>nm</strong> program when given the <strong>-D</strong> (<strong>--dynamic</strong>) option. The output format is similar to that produced by the <strong>--syms</strong> option, except that an extra field is inserted before the symbol's name, giving the version information associated with the symbol. If the version is the default version to be used when resolving unversioned references to the symbol then it's displayed as is, otherwise it's put into parentheses.</p>
+<ul>
+<li><p>When displaying symbols include those which the target considers to be special in some way and which would not normally be of interest to the user.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Controls the display of UTF-8 encoded multibyte characters in strings. The default (<strong>--unicode=default</strong>) is to give them no special treatment. The <strong>--unicode=locale</strong> option displays the sequence in the current locale, which may or may not support them. The options <strong>--unicode=hex</strong> and <strong>--unicode=invalid</strong> display them as hex byte sequences enclosed by either angle brackets or curly braces. The <strong>--unicode=escape</strong> option displays them as escape sequences (<code>\uxxxx</code>) and the <strong>--unicode=highlight</strong> option displays them as escape sequences highlighted in red (if supported by the output device). The colouring is intended to draw attention to the presence of unicode sequences where they might not be expected.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the version number of <strong>objdump</strong> and exit.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display all available header information, including the symbol table and relocation entries. Using <strong>-x</strong> is equivalent to specifying all of <strong>-a -f -h -p -r -t</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Format some lines for output devices that have more than 80 columns. Also do not truncate symbol names when they are displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Normally the disassembly output will skip blocks of zeroes. This option directs the disassembler to disassemble those blocks, just like any other data.</p>
+<ol class="example" type="1">
+<li><p>Read command-line options from <code>file</code>. The options read are inserted in place of the original @<code>file</code> option. If <code>file</code> does not exist, or cannot be read, then the option will be treated literally, and not removed. Options in <code>file</code> are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The <code>file</code> may itself contain additional @<code>file</code> options; any such options will be processed recursively.</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>nm</strong> (1), <strong>readelf</strong> (1), and the Info entries for <code>binutils</code>.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1991-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License''.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

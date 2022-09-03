@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>mkfifo, mkfifoat - make a FIFO special file (a named pipe)</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+
+int mkfifo(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, mode_t mode);
+
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a> /* Definition of AT_* constants */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+
+int mkfifoat(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, mode_t mode);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='mkfifoat'>mkfifoat</a>():</p>
+<blockquote>
+<dl>
+<dt>Since glibc 2.10:</dt>
+<dd><p>_POSIX_C_SOURCE &gt;= 200809L</p>
+</dd>
+<dt>Before glibc 2.10:</dt>
+<dd><p>_ATFILE_SOURCE</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='mkfifo'>mkfifo</a>() makes a FIFO special file with name <code>pathname</code>. <code>mode</code> specifies the FIFO's permissions. It is modified by the process's <strong>umask</strong> in the usual way: the permissions of the created file are <strong>(</strong><code>mode</code><strong> &amp; ~umask)</strong>.</p>
+<p>A FIFO special file is similar to a pipe, except that it is created in a different way. Instead of being an anonymous communications channel, a FIFO special file is entered into the filesystem by calling <a href='mkfifo'>mkfifo</a>().</p>
+<p>Once you have created a FIFO special file in this way, any process can open it for reading or writing, in the same way as an ordinary file. However, it has to be open at both ends simultaneously before you can proceed to do any input or output operations on it. Opening a FIFO for reading normally blocks until some other process opens the same FIFO for writing, and vice versa. See <a href='/7/fifo'>fifo</a>(7) for nonblocking handling of FIFO special files.</p>
+<h2>mkfifoat()</h2>
+<p>The <a href='mkfifoat'>mkfifoat</a>() function operates in exactly the same way as <a href='mkfifo'>mkfifo</a>(), except for the differences described here.</p>
+<p>If the pathname given in <code>pathname</code> is relative, then it is interpreted relative to the directory referred to by the file descriptor <code>dirfd</code> (rather than relative to the current working directory of the calling process, as is done by <a href='mkfifo'>mkfifo</a>() for a relative pathname).</p>
+<p>If <code>pathname</code> is relative and <code>dirfd</code> is the special value <strong>AT_FDCWD</strong>, then <code>pathname</code> is interpreted relative to the current working directory of the calling process (like <a href='mkfifo'>mkfifo</a>()).</p>
+<p>If <code>pathname</code> is absolute, then <code>dirfd</code> is ignored.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success <a href='mkfifo'>mkfifo</a>() and <a href='mkfifoat'>mkfifoat</a>() return 0. In the case of an error, -1 is returned (in which case, <code>errno</code> is set appropriately).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>One of the directories in <code>pathname</code> did not allow search (execute) permission.</p>
+</dd>
+<dt><strong>EDQUOT</strong></dt>
+<dd><p>The user's quota of disk blocks or inodes on the filesystem has been exhausted.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p><code>pathname</code> already exists. This includes the case where <code>pathname</code> is a symbolic link, dangling or not.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p>Either the total length of <code>pathname</code> is greater than <strong>PATH_MAX</strong>, or an individual filename component has a length greater than <strong>NAME_MAX</strong>. In the GNU system, there is no imposed limit on overall filename length, but some filesystems may place limits on the length of a component.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>A directory component in <code>pathname</code> does not exist or is a dangling symbolic link.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>The directory or filesystem has no room for the new file.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>A component used as a directory in <code>pathname</code> is not, in fact, a directory.</p>
+</dd>
+<dt><strong>EROFS</strong></dt>
+<dd><p><code>pathname</code> refers to a read-only filesystem.</p>
+</dd>
+</dl>
+<p>The following additional errors can occur for <a href='mkfifoat'>mkfifoat</a>():</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>dirfd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p><code>pathname</code> is a relative path and <code>dirfd</code> is a file descriptor referring to a file other than a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='mkfifoat'>mkfifoat</a>() was added to glibc in version 2.4. It is implemented using <a href='/2/mknodat'>mknodat</a>(2), available on Linux since kernel 2.6.16.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='mkfifo'>mkfifo</a>(), <a href='mkfifoat'>mkfifoat</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='mkfifo'>mkfifo</a>(): POSIX.1-2001, POSIX.1-2008.</p>
+<p><a href='mkfifoat'>mkfifoat</a>(): POSIX.1-2008.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/mkfifo'>mkfifo</a>(1), <a href='/2/close'>close</a>(2), <a href='/2/open'>open</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/stat'>stat</a>(2), <a href='/2/umask'>umask</a>(2), <a href='/2/write'>write</a>(2), <a href='/7/fifo'>fifo</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

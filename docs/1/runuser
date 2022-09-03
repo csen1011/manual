@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>runuser - run a command with substitute user and group ID</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>runuser</strong> [options] <strong>-u</strong> <code>user</code> [[--] <code>command</code> [<code>argument</code>...]]</p>
+<p><strong>runuser</strong> [options] [<strong>-</strong>] [<code>user</code> [<code>argument</code>...]]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>runuser</strong> can be used to run commands with a substitute user and group ID. If the option <strong>-u</strong> is not given, <strong>runuser</strong> falls back to <strong>su</strong>-compatible semantics and a shell is executed. The difference between the commands <strong>runuser</strong> and <strong>su</strong> is that <strong>runuser</strong> does not ask for a password (because it may be executed by the root user only) and it uses a different PAM configuration. The command <strong>runuser</strong> does not have to be installed with set-user-ID permissions.</p>
+<p>If the PAM session is not required, then the recommended solution is to use the <a href='/1/setpriv'>setpriv</a>(1) command.</p>
+<p>When called without arguments, <strong>runuser</strong> defaults to running an interactive shell as <code>root</code>.</p>
+<p>For backward compatibility, <strong>runuser</strong> defaults to not changing the current directory and to setting only the environment variables <strong>HOME</strong> and <strong>SHELL</strong> (plus <strong>USER</strong> and <strong>LOGNAME</strong> if the target <code>user</code> is not root). This version of <strong>runuser</strong> uses PAM for session management.</p>
+<p>Note that <strong>runuser</strong> in all cases use PAM (pam_getenvlist()) to do the final environment modification. Command-line options such as <strong>--login</strong> and <strong>--preserve-environment</strong> affect the environment before it is modified by PAM.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-c</strong>, <strong>--command</strong>=<code>command</code></p>
+<blockquote>
+<p>Pass <code>command</code> to the shell with the <strong>-c</strong> option.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--fast</strong></p>
+<blockquote>
+<p>Pass <strong>-f</strong> to the shell, which may or may not be useful, depending on the shell.</p>
+</blockquote>
+<p><strong>-g</strong>, <strong>--group</strong>=<code>group</code></p>
+<blockquote>
+<p>The primary group to be used. This option is allowed for the root user only.</p>
+</blockquote>
+<p><strong>-G</strong>, <strong>--supp-group</strong>=<code>group</code></p>
+<blockquote>
+<p>Specify a supplementary group. This option is available to the root user only. The first specified supplementary group is also used as a primary group if the option <strong>--group</strong> is not specified.</p>
+</blockquote>
+<p><strong>-</strong>, <strong>-l</strong>, <strong>--login</strong></p>
+<blockquote>
+<p>Start the shell as a login shell with an environment similar to a real login:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>clears all the environment variables except for <strong>TERM</strong> and variables specified by <strong>--whitelist-environment</strong></p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>initializes the environment variables <strong>HOME</strong>, <strong>SHELL</strong>, <strong>USER</strong>, <strong>LOGNAME</strong>, and <strong>PATH</strong></p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>changes to the target user’s home directory</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>sets argv[0] of the shell to '<strong>-</strong>' in order to make the shell a login shell</p>
+</blockquote>
+</blockquote>
+<p><strong>-P</strong>, <strong>--pty</strong></p>
+<blockquote>
+<p>Create a pseudo-terminal for the session. The independent terminal provides better security as the user does not share a terminal with the original session. This can be used to avoid TIOCSTI ioctl terminal injection and other security attacks against terminal file descriptors. The entire session can also be moved to the background (e.g., <strong>runuser --pty -u username — command &amp;</strong>). If the pseudo-terminal is enabled, then <strong>runuser</strong> works as a proxy between the sessions (copy stdin and stdout).</p>
+<p>This feature is mostly designed for interactive sessions. If the standard input is not a terminal, but for example a pipe (e.g., <strong>echo "date" | runuser --pty -u user</strong>), then the ECHO flag for the pseudo-terminal is disabled to avoid messy output.</p>
+</blockquote>
+<p><strong>-m</strong>, <strong>-p</strong>, <strong>--preserve-environment</strong></p>
+<blockquote>
+<p>Preserve the entire environment, i.e., do not set <strong>HOME</strong>, <strong>SHELL</strong>, <strong>USER</strong> or <strong>LOGNAME</strong>. The option is ignored if the option <strong>--login</strong> is specified.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--shell</strong>=<code>shell</code></p>
+<blockquote>
+<p>Run the specified <code>shell</code> instead of the default. The shell to run is selected according to the following rules, in order:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>the shell specified with <strong>--shell</strong></p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>the shell specified in the environment variable <strong>SHELL</strong> if the <strong>--preserve-environment</strong> option is used</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>the shell listed in the passwd entry of the target user</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>/bin/sh</p>
+<p>If the target user has a restricted shell (i.e., not listed in <code>/etc/shells</code>), then the <strong>--shell</strong> option and the <strong>SHELL</strong> environment variables are ignored unless the calling user is root.</p>
+</blockquote>
+</blockquote>
+<p><strong>--session-command=</strong><code>command</code></p>
+<blockquote>
+<p>Same as <strong>-c</strong>, but do not create a new session. (Discouraged.)</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--whitelist-environment</strong>=<code>list</code></p>
+<blockquote>
+<p>Don’t reset the environment variables specified in the comma-separated <code>list</code> when clearing the environment for <strong>--login</strong>. The whitelist is ignored for the environment variables <strong>HOME</strong>, <strong>SHELL</strong>, <strong>USER</strong>, <strong>LOGNAME</strong>, and <strong>PATH</strong>.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='config-files'><a href='#config-files'>CONFIG FILES</a></h1><div data-for='config-files' data-hide><div class='section' data-for='config-files'><div data-more>
+<p><strong>runuser</strong> reads the <code>/etc/default/runuser</code> and <code>/etc/login.defs</code> configuration files. The following configuration items are relevant for <strong>runuser</strong>:</p>
+<p><strong>ENV_PATH</strong> (string)</p>
+<blockquote>
+<p>Defines the PATH environment variable for a regular user. The default value is <code>/usr/local/bin:/bin:/usr/bin</code>.</p>
+</blockquote>
+<p><strong>ENV_ROOTPATH</strong> (string), <strong>ENV_SUPATH</strong> (string)</p>
+<blockquote>
+<p>Defines the <strong>PATH</strong> environment variable for root. <strong>ENV_SUPATH</strong> takes precedence. The default value is <code>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</code>.</p>
+</blockquote>
+<p><strong>ALWAYS_SET_PATH</strong> (boolean)</p>
+<blockquote>
+<p>If set to <code>yes</code> and --login and --preserve-environment were not specified <strong>runuser</strong> initializes <strong>PATH</strong>.</p>
+</blockquote>
+<p>The environment variable <strong>PATH</strong> may be different on systems where <code>/bin</code> and <code>/sbin</code> are merged into <code>/usr</code>; this variable is also affected by the <strong>--login</strong> command-line option and the PAM system setting (e.g., <a href='/8/pam_env'>pam_env</a>(8)).</p>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p><strong>runuser</strong> normally returns the exit status of the command it executed. If the command was killed by a signal, <strong>runuser</strong> returns the number of the signal plus 128.</p>
+<p>Exit status generated by <strong>runuser</strong> itself:</p>
+<p>1</p>
+<blockquote>
+<p>Generic error before executing the requested command</p>
+</blockquote>
+<p>126</p>
+<blockquote>
+<p>The requested command could not be executed</p>
+</blockquote>
+<p>127</p>
+<blockquote>
+<p>The requested command was not found</p>
+</blockquote>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/etc/pam.d/runuser</code></p>
+<blockquote>
+<p>default PAM configuration file</p>
+</blockquote>
+<p><code>/etc/pam.d/runuser-l</code></p>
+<blockquote>
+<p>PAM configuration file if <strong>--login</strong> is specified</p>
+</blockquote>
+<p><code>/etc/default/runuser</code></p>
+<blockquote>
+<p>runuser specific logindef config file</p>
+</blockquote>
+<p><code>/etc/login.defs</code></p>
+<blockquote>
+<p>global logindef config file</p>
+</blockquote>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>This <strong>runuser</strong> command was derived from coreutils' <strong>su</strong>, which was based on an implementation by David MacKenzie, and the Fedora <strong>runuser</strong> command by Dan Walsh.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/setpriv'>setpriv</a>(1), <a href='/1/su'>su</a>(1), <a href='/5/login.defs'>login.defs</a>(5), <a href='/5/shells'>shells</a>(5), <a href='/8/pam'>pam</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>runuser</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

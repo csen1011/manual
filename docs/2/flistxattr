@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>listxattr, llistxattr, flistxattr - list extended attribute names</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/xattr.h&gt;</a>
+
+ssize_t listxattr(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>path, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>list, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size);
+ssize_t llistxattr(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>path, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>list, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size);
+ssize_t flistxattr(int fd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>list, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Extended attributes are <code>name</code>:<code>value</code> pairs associated with inodes (files, directories, symbolic links, etc.). They are extensions to the normal attributes which are associated with all inodes in the system (i.e., the <a href='/2/stat'>stat</a>(2) data). A complete overview of extended attributes concepts can be found in <a href='/7/xattr'>xattr</a>(7).</p>
+<p><a href='listxattr'>listxattr</a>() retrieves the list of extended attribute names associated with the given <code>path</code> in the filesystem. The retrieved list is placed in <code>list</code>, a caller-allocated buffer whose size (in bytes) is specified in the argument <code>size</code>. The list is the set of (null-terminated) names, one after the other. Names of extended attributes to which the calling process does not have access may be omitted from the list. The length of the attribute name <code>list</code> is returned.</p>
+<p><a href='llistxattr'>llistxattr</a>() is identical to <a href='listxattr'>listxattr</a>(), except in the case of a symbolic link, where the list of names of extended attributes associated with the link itself is retrieved, not the file that it refers to.</p>
+<p><a href='flistxattr'>flistxattr</a>() is identical to <a href='listxattr'>listxattr</a>(), only the open file referred to by <code>fd</code> (as returned by <a href='/2/open'>open</a>(2)) is interrogated in place of <code>path</code>.</p>
+<p>A single extended attribute <code>name</code> is a null-terminated string. The name includes a namespace prefix; there may be several, disjoint namespaces associated with an individual inode.</p>
+<p>If <code>size</code> is specified as zero, these calls return the current size of the list of extended attribute names (and leave <code>list</code> unchanged). This can be used to determine the size of the buffer that should be supplied in a subsequent call. (But, bear in mind that there is a possibility that the set of extended attributes may change between the two calls, so that it is still necessary to check the return status from the second call.)</p>
+<h2>Example</h2>
+<p>The <code>list</code> of names is returned as an unordered array of null-terminated character strings (attribute names are separated by null bytes ('\0')), like this:</p>
+<pre><code>user.name1\0system.name1\0user.name2\0</code></pre>
+<p>Filesystems that implement POSIX ACLs using extended attributes might return a <code>list</code> like this:</p>
+<pre><code>system.posix_acl_access\0system.posix_acl_default\0</code></pre>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, a nonnegative number is returned indicating the size of the extended attribute name list. On failure, -1 is returned and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program demonstrates the usage of <a href='listxattr'>listxattr</a>() and <a href='/2/getxattr'>getxattr</a>(2). For the file whose pathname is provided as a command-line argument, it lists all extended file attributes and their values.</p>
+<p>To keep the code simple, the program assumes that attribute keys and values are constant during the execution of the program. A production program should expect and handle changes during execution of the program. For example, the number of bytes required for attribute keys might increase between the two calls to <a href='listxattr'>listxattr</a>(). An application could handle this possibility using a loop that retries the call (perhaps up to a predetermined maximum number of attempts) with a larger buffer each time it fails with the error <strong>ERANGE</strong>. Calls to <a href='/2/getxattr'>getxattr</a>(2) could be handled similarly.</p>
+<p>The following output was recorded by first creating a file, setting some extended file attributes, and then listing the attributes with the example program.</p>
+<h2>Example output</h2>
+<pre><code>$ touch /tmp/foo
+$ setfattr -n user.fred -v chocolate /tmp/foo
+$ setfattr -n user.frieda -v bar /tmp/foo
+$ setfattr -n user.empty /tmp/foo
+$ ./listxattr /tmp/foo
+user.fred: chocolate
+user.frieda: bar
+user.empty: &lt;no value&gt;</code></pre>
+<h2>Program source (listxattr.c)</h2>
+<pre><code>#include &lt;malloc.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/xattr.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    ssize_t buflen, keylen, vallen;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, *key, *val;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s path\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Determine the length of the buffer needed.
+     */
+    buflen = listxattr(argv[1], NULL, 0);
+    if (buflen == -1) {
+        perror("listxattr");
+        exit(EXIT_FAILURE);
+    }
+    if (buflen == 0) {
+        printf("%s has no attributes.\n", argv[1]);
+        exit(EXIT_SUCCESS);
+    }
+
+    /*
+     * Allocate the buffer.
+     */
+    buf = malloc(buflen);
+    if (buf == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Copy the list of attribute keys to the buffer.
+     */
+    buflen = listxattr(argv[1], buf, buflen);
+    if (buflen == -1) {
+        perror("listxattr");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Loop over the list of zero terminated strings with the
+     * attribute keys. Use the remaining buffer length to determine
+     * the end of the list.
+     */
+    key = buf;
+    while (buflen &gt; 0) {
+
+        /*
+         * Output attribute key.
+         */
+        printf("%s: ", key);
+
+        /*
+         * Determine length of the value.
+         */
+        vallen = getxattr(argv[1], key, NULL, 0);
+        if (vallen == -1)
+            perror("getxattr");
+
+        if (vallen &gt; 0) {
+
+            /*
+             * Allocate value buffer.
+             * One extra byte is needed to append 0x00.
+             */
+            val = malloc(vallen + 1);
+            if (val == NULL) {
+                perror("malloc");
+                exit(EXIT_FAILURE);
+            }
+
+            /*
+             * Copy value to buffer.
+             */
+            vallen = getxattr(argv[1], key, val, vallen);
+            if (vallen == -1)
+                perror("getxattr");
+            else {
+                /*
+                 * Output attribute value.
+                 */
+                val[vallen] = 0;
+                printf("%s", val);
+            }
+
+            free(val);
+        } else if (vallen == 0)
+            printf("&lt;no value&gt;");
+
+        printf("\n");
+
+        /*
+         * Forward to next attribute key.
+         */
+        keylen = strlen(key) + 1;
+        buflen -= keylen;
+        key += keylen;
+    }
+
+    free(buf);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>The size of the list of extended attribute names is larger than the maximum size allowed; the list cannot be retrieved. This can happen on filesystems that support an unlimited number of extended attributes per file such as XFS, for example. See <a href='#bugs'>BUGS</a>.</p>
+</dd>
+<dt><strong>ENOTSUP</strong></dt>
+<dd><p>Extended attributes are not supported by the filesystem, or are disabled.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>The <code>size</code> of the <code>list</code> buffer is too small to hold the result.</p>
+</dd>
+</dl>
+<p>In addition, the errors documented in <a href='/2/stat'>stat</a>(2) can also occur.</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These system calls have been available on Linux since kernel 2.4; glibc support is provided since version 2.3.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These system calls are Linux-specific.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>As noted in <a href='/7/xattr'>xattr</a>(7), the VFS imposes a limit of 64 kB on the size of the extended attribute name list returned by <a href='/7/listxattr'>listxattr</a>(7). If the total size of attribute names attached to a file exceeds this limit, it is no longer possible to retrieve the list of attribute names.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/getfattr'>getfattr</a>(1), <a href='/1/setfattr'>setfattr</a>(1), <a href='/2/getxattr'>getxattr</a>(2), <a href='/2/open'>open</a>(2), <a href='/2/removexattr'>removexattr</a>(2), <a href='/2/setxattr'>setxattr</a>(2), <a href='/2/stat'>stat</a>(2), <a href='/7/symlink'>symlink</a>(7), <a href='/7/xattr'>xattr</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

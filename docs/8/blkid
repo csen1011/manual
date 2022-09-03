@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>blkid - locate/print block device attributes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>blkid</strong> <strong>--label</strong> <code>label</code> | <strong>--uuid</strong> <code>uuid</code></p>
+<p><strong>blkid</strong> [<strong>--no-encoding</strong> <strong>--garbage-collect</strong> <strong>--list-one</strong> <strong>--cache-file</strong> <code>file</code>] [<strong>--output</strong> <code>format</code>] [<strong>--match-tag</strong> <code>tag</code>] [<strong>--match-token</strong> <code>NAME=value</code>] [<code>device</code>...]</p>
+<p><strong>blkid</strong> <strong>--probe</strong> [<strong>--offset</strong> <code>offset</code>] [<strong>--output</strong> <code>format</code>] [<strong>--size</strong> <code>size</code>] [<strong>--match-tag</strong> <code>tag</code>] [<strong>--match-types</strong> <code>list</code>] [<strong>--usages</strong> <code>list</code>] [<strong>--no-part-details</strong>] <code>device</code>...</p>
+<p><strong>blkid</strong> <strong>--info</strong> [<strong>--output format</strong>] [<strong>--match-tag</strong> <code>tag</code>] <code>device</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>blkid</strong> program is the command-line interface to working with the <a href='/3/libblkid'>libblkid</a>(3) library. It can determine the type of content (e.g., filesystem or swap) that a block device holds, and also the attributes (tokens, NAME=value pairs) from the content metadata (e.g., LABEL or UUID fields).</p>
+<p><strong>It is recommended to use</strong> <a href='/8/lsblk'>lsblk</a>(8) <strong>command to get information about block devices, or lsblk --fs to get an overview of filesystems, or</strong> <a href='/8/findmnt'>findmnt</a>(8) <strong>to search in already mounted filesystems.</strong></p>
+<blockquote>
+<p><a href='/8/lsblk'>lsblk</a>(8) provides more information, better control on output formatting, easy to use in scripts and it does not require root permissions to get actual information. <strong>blkid</strong> reads information directly from devices and for non-root users it returns cached unverified information. <strong>blkid</strong> is mostly designed for system services and to test <a href='/3/libblkid'>libblkid</a>(3) functionality.<br/>
+</p>
+</blockquote>
+<p>When <code>device</code> is specified, tokens from only this device are displayed. It is possible to specify multiple <code>device</code> arguments on the command line. If none is given, all partitions or unpartitioned devices which appear in <code>/proc/partitions</code> are shown, if they are recognized.</p>
+<p><strong>blkid</strong> has two main forms of operation: either searching for a device with a specific NAME=value pair, or displaying NAME=value pairs for one or more specified devices.</p>
+<p>For security reasons <strong>blkid</strong> silently ignores all devices where the probing result is ambivalent (multiple colliding filesystems are detected). The low-level probing mode (<strong>-p</strong>) provides more information and extra exit status in this case. It’s recommended to use <a href='/8/wipefs'>wipefs</a>(8) to get a detailed overview and to erase obsolete stuff (magic strings) from the device.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The <code>size</code> and <code>offset</code> arguments may be followed by the multiplicative suffixes like KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.</p>
+<p><strong>-c</strong>, <strong>--cache-file</strong> <code>cachefile</code></p>
+<blockquote>
+<p>Read from <code>cachefile</code> instead of reading from the default cache file (see the CONFIGURATION FILE section for more details). If you want to start with a clean cache (i.e., don’t report devices previously scanned but not necessarily available at this time), specify <code>/dev/null</code>.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--no-encoding</strong></p>
+<blockquote>
+<p>Don’t encode non-printing characters. The non-printing characters are encoded by ^ and M- notation by default. Note that the <strong>--output udev</strong> output format uses a different encoding which cannot be disabled.</p>
+</blockquote>
+<p><strong>-D</strong>, <strong>--no-part-details</strong></p>
+<blockquote>
+<p>Don’t print information (PART_ENTRY_* tags) from partition table in low-level probing mode.</p>
+</blockquote>
+<p><strong>-g</strong>, <strong>--garbage-collect</strong></p>
+<blockquote>
+<p>Perform a garbage collection pass on the blkid cache to remove devices which no longer exist.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display a usage message and exit.</p>
+</blockquote>
+<p><strong>-H</strong>, <strong>--hint</strong> <code>setting</code></p>
+<blockquote>
+<p>Set probing hint. The hints are optional way how to force probing functions to check for example another location. The currently supported is "session_offset=<code>number</code>" to set session offset on multi-session UDF.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--info</strong></p>
+<blockquote>
+<p>Display information about I/O Limits (aka I/O topology). The 'export' output format is automatically enabled. This option can be used together with the <strong>--probe</strong> option.</p>
+</blockquote>
+<p><strong>-k</strong>, <strong>--list-filesystems</strong></p>
+<blockquote>
+<p>List all known filesystems and RAIDs and exit.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--list-one</strong></p>
+<blockquote>
+<p>Look up only one device that matches the search parameter specified with the <strong>--match-token</strong> option. If there are multiple devices that match the specified search parameter, then the device with the highest priority is returned, and/or the first device found at a given priority (but see below note about udev). Device types in order of decreasing priority are: Device Mapper, EVMS, LVM, MD, and finally regular block devices. If this option is not specified, <strong>blkid</strong> will print all of the devices that match the search parameter.</p>
+<p>This option forces <strong>blkid</strong> to use udev when used for LABEL or UUID tokens in <strong>--match-token</strong>. The goal is to provide output consistent with other utils (like <a href='/8/mount'>mount</a>(8), etc.) on systems where the same tag is used for multiple devices.</p>
+</blockquote>
+<p><strong>-L</strong>, <strong>--label</strong> <code>label</code></p>
+<blockquote>
+<p>Look up the device that uses this filesystem <code>label</code>; this is equal to <strong>--list-one --output device --match-token LABEL=</strong><code>label</code>. This lookup method is able to reliably use /dev/disk/by-label udev symlinks (dependent on a setting in <code>/etc/blkid.conf</code>). Avoid using the symlinks directly; it is not reliable to use the symlinks without verification. The <strong>--label</strong> option works on systems with and without udev.</p>
+<p>Unfortunately, the original <a href='/8/blkid'>blkid</a>(8) from e2fsprogs uses the <strong>-L</strong> option as a synonym for <strong>-o list</strong>. For better portability, use <strong>-l -o device -t LABEL=</strong><code>label</code> and <strong>-o list</strong> in your scripts rather than the <strong>-L</strong> option.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--match-types</strong> <code>list</code></p>
+<blockquote>
+<p>Restrict the probing functions to the specified (comma-separated) <code>list</code> of superblock types (names). The list items may be prefixed with "no" to specify the types which should be ignored. For example:</p>
+<p><strong>blkid --probe --match-types vfat,ext3,ext4 /dev/sda1</strong></p>
+<p>probes for vfat, ext3 and ext4 filesystems, and</p>
+<p><strong>blkid --probe --match-types nominix /dev/sda1</strong></p>
+<p>probes for all supported formats except minix filesystems. This option is only useful together with <strong>--probe</strong>.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--output</strong> <code>format</code></p>
+<blockquote>
+<p>Use the specified output format. Note that the order of variables and devices is not fixed. See also option <strong>-s</strong>. The <code>format</code> parameter may be:</p>
+<p><strong>full</strong></p>
+<blockquote>
+<p>print all tags (the default)</p>
+</blockquote>
+<p><strong>value</strong></p>
+<blockquote>
+<p>print the value of the tags</p>
+</blockquote>
+<p><strong>list</strong></p>
+<blockquote>
+<p>print the devices in a user-friendly format; this output format is unsupported for low-level probing (<strong>--probe</strong> or <strong>--info</strong>).</p>
+<p>This output format is <strong>DEPRECATED</strong> in favour of the <a href='/8/lsblk'>lsblk</a>(8) command.</p>
+</blockquote>
+<p><strong>device</strong></p>
+<blockquote>
+<p>print the device name only; this output format is always enabled for the <strong>--label</strong> and <strong>--uuid</strong> options</p>
+</blockquote>
+<p><strong>udev</strong></p>
+<blockquote>
+<p>print key="value" pairs for easy import into the udev environment; the keys are prefixed by ID_FS_ or ID_PART_ prefixes. The value may be modified to be safe for udev environment; allowed is plain ASCII, hex-escaping and valid UTF-8, everything else (including whitespaces) is replaced with '_'. The keys with <code>_ENC</code> postfix use hex-escaping for unsafe chars.</p>
+<p>The udev output returns the ID_FS_AMBIVALENT tag if more superblocks are detected, and ID_PART_ENTRY_* tags are always returned for all partitions including empty partitions.</p>
+<p>This output format is <strong>DEPRECATED</strong>.</p>
+</blockquote>
+<p><strong>export</strong></p>
+<blockquote>
+<p>print key=value pairs for easy import into the environment; this output format is automatically enabled when I/O Limits (<strong>--info</strong> option) are requested.</p>
+<p>The non-printing characters are encoded by ^ and M- notation and all potentially unsafe characters are escaped.</p>
+</blockquote>
+</blockquote>
+<p><strong>-O</strong>, <strong>--offset</strong> <code>offset</code></p>
+<blockquote>
+<p>Probe at the given <code>offset</code> (only useful with <strong>--probe</strong>). This option can be used together with the <strong>--info</strong> option.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--probe</strong></p>
+<blockquote>
+<p>Switch to low-level superblock probing mode (bypassing the cache).</p>
+<p>Note that low-level probing also returns information about partition table type (PTTYPE tag) and partitions (PART_ENTRY_* tags). The tag names produced by low-level probing are based on names used internally by libblkid and it may be different than when executed without <strong>--probe</strong> (for example PART_ENTRY_UUID= vs PARTUUID=). See also <strong>--no-part-details</strong>.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--match-tag</strong> <code>tag</code></p>
+<blockquote>
+<p>For each (specified) device, show only the tags that match <code>tag</code>. It is possible to specify multiple <strong>--match-tag</strong> options. If no tag is specified, then all tokens are shown for all (specified) devices. In order to just refresh the cache without showing any tokens, use <strong>--match-tag none</strong> with no other options.</p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--size</strong> <code>size</code></p>
+<blockquote>
+<p>Override the size of device/file (only useful with <strong>--probe</strong>).</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--match-token</strong> <code>NAME=value</code></p>
+<blockquote>
+<p>Search for block devices with tokens named <code>NAME</code> that have the value <code>value</code>, and display any devices which are found. Common values for <code>NAME</code> include <strong>TYPE</strong>, <strong>LABEL</strong>, and <strong>UUID</strong>. If there are no devices specified on the command line, all block devices will be searched; otherwise only the specified devices are searched.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--usages</strong> <code>list</code></p>
+<blockquote>
+<p>Restrict the probing functions to the specified (comma-separated) <code>list</code> of "usage" types. Supported usage types are: filesystem, raid, crypto and other. The list items may be prefixed with "no" to specify the usage types which should be ignored. For example:</p>
+<p><strong>blkid --probe --usages filesystem,other /dev/sda1</strong></p>
+<p>probes for all filesystem and other (e.g., swap) formats, and</p>
+<p><strong>blkid --probe --usages noraid /dev/sda1</strong></p>
+<p>probes for all supported formats except RAIDs. This option is only useful together with <strong>--probe</strong>.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--uuid</strong> <code>uuid</code></p>
+<blockquote>
+<p>Look up the device that uses this filesystem <code>uuid</code>. For more details see the <strong>--label</strong> option.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version number and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>If the specified device or device addressed by specified token (option <strong>--match-token</strong>) was found and it’s possible to gather any information about the device, an exit status 0 is returned. Note the option <strong>--match-tag</strong> filters output tags, but it does not affect exit status.</p>
+<p>If the specified token was not found, or no (specified) devices could be identified, or it is impossible to gather any information about the device identifiers or device content an exit status of 2 is returned.</p>
+<p>For usage or other errors, an exit status of 4 is returned.</p>
+<p>If an ambivalent probing result was detected by low-level probing mode (<strong>-p</strong>), an exit status of 8 is returned.</p>
+</div></div></div><h1 id='configuration-file'><a href='#configuration-file'>CONFIGURATION FILE</a></h1><div data-for='configuration-file' data-hide><div class='section' data-for='configuration-file'><div data-more>
+<p>The standard location of the <code>/etc/blkid.conf</code> config file can be overridden by the environment variable BLKID_CONF. The following options control the libblkid library:</p>
+<p><code>SEND_UEVENT=&lt;yes|not&gt;</code></p>
+<blockquote>
+<p>Sends uevent when <code>/dev/disk/by-{label,uuid,partuuid,partlabel}/</code> symlink does not match with LABEL, UUID, PARTUUID or PARTLABEL on the device. Default is "yes".</p>
+</blockquote>
+<p><code>CACHE_FILE=&lt;path&gt;</code></p>
+<blockquote>
+<p>Overrides the standard location of the cache file. This setting can be overridden by the environment variable <strong>BLKID_FILE</strong>. Default is <code>/run/blkid/blkid.tab</code>, or <code>/etc/blkid.tab</code> on systems without a <code>/run</code> directory.</p>
+</blockquote>
+<p><code>EVALUATE=&lt;methods&gt;</code></p>
+<blockquote>
+<p>Defines LABEL and UUID evaluation method(s). Currently, the libblkid library supports the "udev" and "scan" methods. More than one method may be specified in a comma-separated list. Default is "udev,scan". The "udev" method uses udev <code>/dev/disk/by-*</code> symlinks and the "scan" method scans all block devices from the <code>/proc/partitions</code> file.</p>
+</blockquote>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>Setting <code>LIBBLKID_DEBUG=all</code> enables debug output.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p><strong>blkid</strong> was written by Andreas Dilger for libblkid and improved by Theodore Ts’o and Karel Zak.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/libblkid'>libblkid</a>(3), <a href='/8/findfs'>findfs</a>(8), <a href='/8/lsblk'>lsblk</a>(8), <a href='/8/wipefs'>wipefs</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>blkid</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

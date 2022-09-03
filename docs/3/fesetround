@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>feclearexcept, fegetexceptflag, feraiseexcept, fesetexceptflag, fetestexcept, fegetenv, fegetround, feholdexcept, <a data-bs-content='This is the man page for &lt;code&gt;fesetround&lt;/code&gt; and 13 related functions.' data-bs-toggle='popover' tabindex='0'>fesetround</a>, fesetenv, feupdateenv, feenableexcept, fedisableexcept, fegetexcept - floating-point rounding and exception handling</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fenv.h&gt;</a>
+
+int feclearexcept(int excepts);
+int fegetexceptflag(fexcept_t *flagp, int excepts);
+int feraiseexcept(int excepts);
+int fesetexceptflag(const fexcept_t *flagp, int excepts);
+int fetestexcept(int excepts);
+
+int fegetround(void);
+int fesetround(int rounding_mode);
+
+int fegetenv(fenv_t *envp);
+int feholdexcept(fenv_t *envp);
+int fesetenv(const fenv_t *envp);
+int feupdateenv(const fenv_t *envp);</code></pre>
+<p>Link with <code>-lm</code>.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These eleven functions were defined in C99, and describe the handling of floating-point rounding and exceptions (overflow, zero-divide, etc.).</p>
+<h2>Exceptions</h2>
+<p>The <code>divide-by-zero</code> exception occurs when an operation on finite numbers produces infinity as exact answer.</p>
+<p>The <code>overflow</code> exception occurs when a result has to be represented as a floating-point number, but has (much) larger absolute value than the largest (finite) floating-point number that is representable.</p>
+<p>The <code>underflow</code> exception occurs when a result has to be represented as a floating-point number, but has smaller absolute value than the smallest positive normalized floating-point number (and would lose much accuracy when represented as a denormalized number).</p>
+<p>The <code>inexact</code> exception occurs when the rounded result of an operation is not equal to the infinite precision result. It may occur whenever <code>overflow</code> or <code>underflow</code> occurs.</p>
+<p>The <code>invalid</code> exception occurs when there is no well-defined result for an operation, as for 0/0 or infinity - infinity or sqrt(-1).</p>
+<h2>Exception handling</h2>
+<p>Exceptions are represented in two ways: as a single bit (exception present/absent), and these bits correspond in some implementation-defined way with bit positions in an integer, and also as an opaque structure that may contain more information about the exception (perhaps the code address where it occurred).</p>
+<p>Each of the macros <strong>FE_DIVBYZERO</strong>, <strong>FE_INEXACT</strong>, <strong>FE_INVALID</strong>, <strong>FE_OVERFLOW</strong>, <strong>FE_UNDERFLOW</strong> is defined when the implementation supports handling of the corresponding exception, and if so then defines the corresponding bit(s), so that one can call exception handling functions, for example, using the integer argument <strong>FE_OVERFLOW</strong>|<strong>FE_UNDERFLOW</strong>. Other exceptions may be supported. The macro <strong>FE_ALL_EXCEPT</strong> is the bitwise OR of all bits corresponding to supported exceptions.</p>
+<p>The <a href='feclearexcept'>feclearexcept</a>() function clears the supported exceptions represented by the bits in its argument.</p>
+<p>The <a href='fegetexceptflag'>fegetexceptflag</a>() function stores a representation of the state of the exception flags represented by the argument <code>excepts</code> in the opaque object <code>*flagp</code>.</p>
+<p>The <a href='feraiseexcept'>feraiseexcept</a>() function raises the supported exceptions represented by the bits in <code>excepts</code>.</p>
+<p>The <a href='fesetexceptflag'>fesetexceptflag</a>() function sets the complete status for the exceptions represented by <code>excepts</code> to the value <code>*flagp</code>. This value must have been obtained by an earlier call of <a href='fegetexceptflag'>fegetexceptflag</a>() with a last argument that contained all bits in <code>excepts</code>.</p>
+<p>The <a href='fetestexcept'>fetestexcept</a>() function returns a word in which the bits are set that were set in the argument <code>excepts</code> and for which the corresponding exception is currently set.</p>
+<h2>Rounding mode</h2>
+<p>The rounding mode determines how the result of floating-point operations is treated when the result cannot be exactly represented in the significand. Various rounding modes may be provided: round to nearest (the default), round up (toward positive infinity), round down (toward negative infinity), and round toward zero.</p>
+<p>Each of the macros <strong>FE_TONEAREST</strong>, <strong>FE_UPWARD</strong>, <strong>FE_DOWNWARD</strong>, and <strong>FE_TOWARDZERO</strong> is defined when the implementation supports getting and setting the corresponding rounding direction.</p>
+<p>The <a href='fegetround'>fegetround</a>() function returns the macro corresponding to the current rounding mode.</p>
+<p>The <a href='fesetround'>fesetround</a>() function sets the rounding mode as specified by its argument and returns zero when it was successful.</p>
+<p>C99 and POSIX.1-2008 specify an identifier, <strong>FLT_ROUNDS</strong>, defined in <code>&lt;float.h&gt;</code>, which indicates the implementation-defined rounding behavior for floating-point addition. This identifier has one of the following values:</p>
+<ul>
+<li><p>The rounding mode is not determinable.</p></li>
+</ul>
+<ol start="0" type="1">
+<li><p>Rounding is toward 0.</p></li>
+<li><p>Rounding is toward nearest number.</p></li>
+<li><p>Rounding is toward positive infinity.</p></li>
+<li><p>Rounding is toward negative infinity.</p></li>
+</ol>
+<p>Other values represent machine-dependent, nonstandard rounding modes.</p>
+<p>The value of <strong>FLT_ROUNDS</strong> should reflect the current rounding mode as set by <a href='fesetround'>fesetround</a>() (but see BUGS).</p>
+<h2>Floating-point environment</h2>
+<p>The entire floating-point environment, including control modes and status flags, can be handled as one opaque object, of type <code>fenv_t</code>. The default environment is denoted by <strong>FE_DFL_ENV</strong> (of type <code>const fenv_t *</code>). This is the environment setup at program start and it is defined by ISO C to have round to nearest, all exceptions cleared and a nonstop (continue on exceptions) mode.</p>
+<p>The <a href='fegetenv'>fegetenv</a>() function saves the current floating-point environment in the object <code>*envp</code>.</p>
+<p>The <a href='feholdexcept'>feholdexcept</a>() function does the same, then clears all exception flags, and sets a nonstop (continue on exceptions) mode, if available. It returns zero when successful.</p>
+<p>The <a href='fesetenv'>fesetenv</a>() function restores the floating-point environment from the object <code>*envp</code>. This object must be known to be valid, for example, the result of a call to <a href='fegetenv'>fegetenv</a>() or <a href='feholdexcept'>feholdexcept</a>() or equal to <strong>FE_DFL_ENV</strong>. This call does not raise exceptions.</p>
+<p>The <a href='feupdateenv'>feupdateenv</a>() function installs the floating-point environment represented by the object <code>*envp</code>, except that currently raised exceptions are not cleared. After calling this function, the raised exceptions will be a bitwise OR of those previously set with those in <code>*envp</code>. As before, the object <code>*envp</code> must be known to be valid.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>These functions return zero on success and nonzero if an error occurred.</p>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These functions first appeared in glibc in version 2.1.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='feclearexcept'>feclearexcept</a>(), <a href='fegetexceptflag'>fegetexceptflag</a>(), <a href='feraiseexcept'>feraiseexcept</a>(), <a href='fesetexceptflag'>fesetexceptflag</a>(), <a href='fetestexcept'>fetestexcept</a>(), <a href='fegetround'>fegetround</a>(), <a href='fesetround'>fesetround</a>(), <a href='fegetenv'>fegetenv</a>(), <a href='feholdexcept'>feholdexcept</a>(), <a href='fesetenv'>fesetenv</a>(), <a href='feupdateenv'>feupdateenv</a>(), <a href='feenableexcept'>feenableexcept</a>(), <a href='fedisableexcept'>fedisableexcept</a>(), <a href='fegetexcept'>fegetexcept</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>IEC 60559 (IEC 559:1989), ANSI/IEEE 854, C99, POSIX.1-2001.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Glibc notes</h2>
+<p>If possible, the GNU C Library defines a macro <strong>FE_NOMASK_ENV</strong> which represents an environment where every exception raised causes a trap to occur. You can test for this macro using <strong>#ifdef</strong>. It is defined only if <strong>_GNU_SOURCE</strong> is defined. The C99 standard does not define a way to set individual bits in the floating-point mask, for example, to trap on specific flags. Since version 2.2, glibc supports the functions <a href='feenableexcept'>feenableexcept</a>() and <a href='fedisableexcept'>fedisableexcept</a>() to set individual floating-point traps, and <a href='fegetexcept'>fegetexcept</a>() to query the state.</p>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+#include &lt;fenv.h&gt;
+
+int feenableexcept(int excepts);
+int fedisableexcept(int excepts);
+int fegetexcept(void);</code></pre>
+<p>The <a href='feenableexcept'>feenableexcept</a>() and <a href='fedisableexcept'>fedisableexcept</a>() functions enable (disable) traps for each of the exceptions represented by <code>excepts</code> and return the previous set of enabled exceptions when successful, and -1 otherwise. The <a href='fegetexcept'>fegetexcept</a>() function returns the set of all currently enabled exceptions.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>C99 specifies that the value of <strong>FLT_ROUNDS</strong> should reflect changes to the current rounding mode, as set by <a href='fesetround'>fesetround</a>(). Currently, this does not occur: <strong>FLT_ROUNDS</strong> always has the value 1.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/7/math_error'>math_error</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

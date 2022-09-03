@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getrandom - obtain a series of random bytes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/random.h&gt;</strong></p>
+<p><strong>ssize_t getrandom(void *</strong><code>buf</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> </strong><code>buflen</code><strong>, unsigned int </strong><code>flags</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getrandom'>getrandom</a>() system call fills the buffer pointed to by <code>buf</code> with up to <code>buflen</code> random bytes. These bytes can be used to seed user-space random number generators or for cryptographic purposes.</p>
+<p>By default, <a href='getrandom'>getrandom</a>() draws entropy from the <code>urandom</code> source (i.e., the same source as the <code>/dev/urandom</code> device). This behavior can be changed via the <code>flags</code> argument.</p>
+<p>If the <code>urandom</code> source has been initialized, reads of up to 256 bytes will always return as many bytes as requested and will not be interrupted by signals. No such guarantees apply for larger buffer sizes. For example, if the call is interrupted by a signal handler, it may return a partially filled buffer, or fail with the error <strong>EINTR</strong>.</p>
+<p>If the <code>urandom</code> source has not yet been initialized, then <a href='getrandom'>getrandom</a>() will block, unless <strong>GRND_NONBLOCK</strong> is specified in <code>flags</code>.</p>
+<p>The <code>flags</code> argument is a bit mask that can contain zero or more of the following values ORed together:</p>
+<dl>
+<dt><strong>GRND_RANDOM</strong></dt>
+<dd><p>If this bit is set, then random bytes are drawn from the <code>random</code> source (i.e., the same source as the <code>/dev/random</code> device) instead of the <code>urandom</code> source. The <code>random</code> source is limited based on the entropy that can be obtained from environmental noise. If the number of available bytes in the <code>random</code> source is less than requested in <code>buflen</code>, the call returns just the available random bytes. If no random bytes are available, the behavior depends on the presence of <strong>GRND_NONBLOCK</strong> in the <code>flags</code> argument.</p>
+</dd>
+<dt><strong>GRND_NONBLOCK</strong></dt>
+<dd><p>By default, when reading from the <code>random</code> source, <a href='getrandom'>getrandom</a>() blocks if no random bytes are available, and when reading from the <code>urandom</code> source, it blocks if the entropy pool has not yet been initialized. If the <strong>GRND_NONBLOCK</strong> flag is set, then <a href='getrandom'>getrandom</a>() does not block in these cases, but instead immediately returns -1 with <code>errno</code> set to <strong>EAGAIN</strong>.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='getrandom'>getrandom</a>() returns the number of bytes that were copied to the buffer <code>buf</code>. This may be less than the number of bytes requested via <code>buflen</code> if either <strong>GRND_RANDOM</strong> was specified in <code>flags</code> and insufficient entropy was present in the <code>random</code> source or the system call was interrupted by a signal.</p>
+<p>On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The requested entropy was not available, and <a href='getrandom'>getrandom</a>() would have blocked if the <strong>GRND_NONBLOCK</strong> flag was not set.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The address referred to by <code>buf</code> is outside the accessible address space.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The call was interrupted by a signal handler; see the description of how interrupted <a href='/2/read'>read</a>(2) calls on "slow" devices are handled with and without the <strong>SA_RESTART</strong> flag in the <a href='/7/signal'>signal</a>(7) man page.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid flag was specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>The glibc wrapper function for <a href='getrandom'>getrandom</a>() determined that the underlying kernel does not implement this system call.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='getrandom'>getrandom</a>() was introduced in version 3.17 of the Linux kernel. Support was added to glibc in version 2.25.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This system call is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For an overview and comparison of the various interfaces that can be used to obtain randomness, see <a href='/7/random'>random</a>(7).</p>
+<p>Unlike <code>/dev/random</code> and <code>/dev/urandom</code>, <a href='getrandom'>getrandom</a>() does not involve the use of pathnames or file descriptors. Thus, <a href='getrandom'>getrandom</a>() can be useful in cases where <a href='/2/chroot'>chroot</a>(2) makes <code>/dev</code> pathnames invisible, and where an application (e.g., a daemon during start-up) closes a file descriptor for one of these files that was opened by a library. As of Linux 3.19 the following limits apply:</p>
+<ul>
+<li><p>When reading from the <code>urandom</code> source, a maximum of 33554431 bytes is returned by a single call to <a href='getrandom'>getrandom</a>() on systems where <code>int</code> has a size of 32 bits.</p></li>
+<li><p>When reading from the <code>random</code> source, a maximum of 512 bytes is returned.</p></li>
+</ul>
+<h2>Interruption by a signal handler</h2>
+<p>When reading from the <code>urandom</code> source (<strong>GRND_RANDOM</strong> is not set), <a href='getrandom'>getrandom</a>() will block until the entropy pool has been initialized (unless the <strong>GRND_NONBLOCK</strong> flag was specified). If a request is made to read a large number of bytes (more than 256), <a href='getrandom'>getrandom</a>() will block until those bytes have been generated and transferred from kernel memory to <code>buf</code>. When reading from the <code>random</code> source (<strong>GRND_RANDOM</strong> is set), <a href='getrandom'>getrandom</a>() will block until some random bytes become available (unless the <strong>GRND_NONBLOCK</strong> flag was specified).</p>
+<p>The behavior when a call to <a href='getrandom'>getrandom</a>() that is blocked while reading from the <code>urandom</code> source is interrupted by a signal handler depends on the initialization state of the entropy buffer and on the request size, <code>buflen</code>. If the entropy is not yet initialized, then the call fails with the <strong>EINTR</strong> error. If the entropy pool has been initialized and the request size is large (<code>buflen</code> &gt; 256), the call either succeeds, returning a partially filled buffer, or fails with the error <strong>EINTR</strong>. If the entropy pool has been initialized and the request size is small (<code>buflen</code> &lt;= 256), then <a href='getrandom'>getrandom</a>() will not fail with <strong>EINTR</strong>. Instead, it will return all of the bytes that have been requested.</p>
+<p>When reading from the <code>random</code> source, blocking requests of any size can be interrupted by a signal handler (the call fails with the error <strong>EINTR</strong>).</p>
+<p>Using <a href='getrandom'>getrandom</a>() to read small buffers (&lt;= 256 bytes) from the <code>urandom</code> source is the preferred mode of usage.</p>
+<p>The special treatment of small values of <code>buflen</code> was designed for compatibility with OpenBSD's <a href='/3/getentropy'>getentropy</a>(3), which is nowadays supported by glibc.</p>
+<p>The user of <a href='getrandom'>getrandom</a>() <code>must</code> always check the return value, to determine whether either an error occurred or fewer bytes than requested were returned. In the case where <strong>GRND_RANDOM</strong> is not specified and <code>buflen</code> is less than or equal to 256, a return of fewer bytes than requested should never happen, but the careful programmer will check for this anyway!</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>As of Linux 3.19, the following bug exists:</p>
+<ul>
+<li><p>Depending on CPU load, <a href='getrandom'>getrandom</a>() does not react to interrupts before reading all bytes requested.</p></li>
+</ul>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getentropy'>getentropy</a>(3), <a href='/4/random'>random</a>(4), <a href='/4/urandom'>urandom</a>(4), <a href='/7/random'>random</a>(7), <a href='/7/signal'>signal</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

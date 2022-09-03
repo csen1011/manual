@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ioctl_fideduperange - share some the data of one file with another file</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/ioctl.h&gt;</strong><br/>
+<strong>#include &lt;linux/fs.h&gt;</strong></p>
+<p><strong>int ioctl(int </strong><code>src_fd</code><strong>, FIDEDUPERANGE, struct file_dedupe_range *</strong><code>arg</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>If a filesystem supports files sharing physical storage between multiple files, this <a href='/2/ioctl'>ioctl</a>(2) operation can be used to make some of the data in the <strong>src_fd</strong> file appear in the <strong>dest_fd</strong> file by sharing the underlying storage if the file data is identical ("deduplication"). Both files must reside within the same filesystem. This reduces storage consumption by allowing the filesystem to store one shared copy of the data. If a file write should occur to a shared region, the filesystem must ensure that the changes remain private to the file being written. This behavior is commonly referred to as "copy on write".</p>
+<p>This ioctl performs the "compare and share if identical" operation on up to <code>src_length</code> bytes from file descriptor <code>src_fd</code> at offset <code>src_offset</code>. This information is conveyed in a structure of the following form:</p>
+<pre><code>struct file_dedupe_range {
+    __u64 src_offset;
+    __u64 src_length;
+    __u16 dest_count;
+    __u16 reserved1;
+    __u32 reserved2;
+    struct file_dedupe_range_info info[0];
+};</code></pre>
+<p>Deduplication is atomic with regards to concurrent writes, so no locks need to be taken to obtain a consistent deduplicated copy.</p>
+<p>The fields <code>reserved1</code> and <code>reserved2</code> must be zero.</p>
+<p>Destinations for the deduplication operation are conveyed in the array at the end of the structure. The number of destinations is given in <code>dest_count</code>, and the destination information is conveyed in the following form:</p>
+<pre><code>struct file_dedupe_range_info {
+    __s64 dest_fd;
+    __u64 dest_offset;
+    __u64 bytes_deduped;
+    __s32 status;
+    __u32 reserved;
+};</code></pre>
+<p>Each deduplication operation targets <code>src_length</code> bytes in file descriptor <code>dest_fd</code> at offset <code>dest_offset</code>. The field <code>reserved</code> must be zero. During the call, <code>src_fd</code> must be open for reading and <code>dest_fd</code> must be open for writing. The combined size of the struct <code>file_dedupe_range</code> and the struct <code>file_dedupe_range_info</code> array must not exceed the system page size. The maximum size of <code>src_length</code> is filesystem dependent and is typically 16 MiB. This limit will be enforced silently by the filesystem. By convention, the storage used by <code>src_fd</code> is mapped into <code>dest_fd</code> and the previous contents in <code>dest_fd</code> are freed.</p>
+<p>Upon successful completion of this ioctl, the number of bytes successfully deduplicated is returned in <code>bytes_deduped</code> and a status code for the deduplication operation is returned in <code>status</code>. If even a single byte in the range does not match, the deduplication request will be ignored and <code>status</code> set to <strong>FILE_DEDUPE_RANGE_DIFFERS</strong>. The <code>status</code> code is set to <strong>FILE_DEDUPE_RANGE_SAME</strong> for success, a negative error code in case of error, or <strong>FILE_DEDUPE_RANGE_DIFFERS</strong> if the data did not match.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On error, -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>Error codes can be one of, but are not limited to, the following:</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>src_fd</code> is not open for reading; <code>dest_fd</code> is not open for writing or is open for append-only writes; or the filesystem which <code>src_fd</code> resides on does not support deduplication.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The filesystem does not support deduplicating the ranges of the given files. This error can also appear if either file descriptor represents a device, FIFO, or socket. Disk filesystems generally require the offset and length arguments to be aligned to the fundamental block size. Neither Btrfs nor XFS support overlapping deduplication ranges in the same file.</p>
+</dd>
+<dt><strong>EISDIR</strong></dt>
+<dd><p>One of the files is a directory and the filesystem does not support shared regions in directories.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>The kernel was unable to allocate sufficient memory to perform the operation or <code>dest_count</code> is so large that the input argument description spans more than a single page of memory.</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>This can appear if the filesystem does not support deduplicating either file descriptor, or if either file descriptor refers to special inodes.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p><code>dest_fd</code> is immutable.</p>
+</dd>
+<dt><strong>ETXTBSY</strong></dt>
+<dd><p>One of the files is a swap file. Swap files cannot share storage.</p>
+</dd>
+<dt><strong>EXDEV</strong></dt>
+<dd><p><code>dest_fd</code> and <code>src_fd</code> are not on the same mounted filesystem.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>This ioctl operation first appeared in Linux 4.5. It was previously known as <strong>BTRFS_IOC_FILE_EXTENT_SAME</strong> and was private to Btrfs.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This API is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Because a copy-on-write operation requires the allocation of new storage, the <a href='/2/fallocate'>fallocate</a>(2) operation may unshare shared blocks to guarantee that subsequent writes will not fail because of lack of disk space.</p>
+<p>Some filesystems may limit the amount of data that can be deduplicated in a single call.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/ioctl'>ioctl</a>(2)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

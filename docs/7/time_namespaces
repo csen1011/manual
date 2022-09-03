@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>time_namespaces - overview of Linux time namespaces</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Time namespaces virtualize the values of two system clocks:</p>
+<ul>
+<li><p><strong>CLOCK_MONOTONIC</strong> (and likewise <strong>CLOCK_MONOTONIC_COARSE</strong> and <strong>CLOCK_MONOTONIC_RAW</strong>), a nonsettable clock that represents monotonic time since—as described by POSIX—"some unspecified point in the past".</p></li>
+<li><p><strong>CLOCK_BOOTTIME</strong> (and likewise <strong>CLOCK_BOOTTIME_ALARM</strong>), a nonsettable clock that is identical to <strong>CLOCK_MONOTONIC</strong>, except that it also includes any time that the system is suspended.</p></li>
+</ul>
+<p>Thus, the processes in a time namespace share per-namespace values for these clocks. This affects various APIs that measure against these clocks, including: <a href='/2/clock_gettime'>clock_gettime</a>(2), <a href='/2/clock_nanosleep'>clock_nanosleep</a>(2), <a href='/2/nanosleep'>nanosleep</a>(2), <a href='/2/timer_settime'>timer_settime</a>(2), <a href='/2/timerfd_settime'>timerfd_settime</a>(2), and <code>/proc/uptime</code>.</p>
+<p>Currently, the only way to create a time namespace is by calling <a href='/2/unshare'>unshare</a>(2) with the <strong>CLONE_NEWTIME</strong> flag. This call creates a new time namespace but does <code>not</code> place the calling process in the new namespace. Instead, the calling process's subsequently created children are placed in the new namespace. This allows clock offsets (see below) for the new namespace to be set before the first process is placed in the namespace. The <code>/proc/[pid]/ns/time_for_children</code> symbolic link shows the time namespace in which the children of a process will be created. (A process can use a file descriptor opened on this symbolic link in a call to <a href='/2/setns'>setns</a>(2) in order to move into the namespace.) Associated with each time namespace are offsets, expressed with respect to the initial time namespace, that define the values of the monotonic and boot-time clocks in that namespace. These offsets are exposed via the file <code>/proc/PID/timens_offsets</code>. Within this file, the offsets are expressed as lines consisting of three space-delimited fields:</p>
+<pre><code>&lt;clock-id&gt; &lt;offset-secs&gt; &lt;offset-nanosecs&gt;</code></pre>
+<p>The <code>clock-id</code> is a string that identifies the clock whose offsets are being shown. This field is either <code>monotonic</code>, for <strong>CLOCK_MONOTONIC</strong>, or <code>boottime</code>, for <strong>CLOCK_BOOTTIME</strong>. The remaining fields express the offset (seconds plus nanoseconds) for the clock in this time namespace. These offsets are expressed relative to the clock values in the initial time namespace. The <code>offset-secs</code> value can be negative, subject to restrictions noted below; <code>offset-nanosecs</code> is an unsigned value.</p>
+<p>In the initial time namespace, the contents of the <code>timens_offsets</code> file are as follows:</p>
+<pre><code>$ cat /proc/self/timens_offsets
+monotonic           0         0
+boottime            0         0</code></pre>
+<p>In a new time namespace that has had no member processes, the clock offsets can be modified by writing newline-terminated records of the same form to the <code>timens_offsets</code> file. The file can be written to multiple times, but after the first process has been created in or has entered the namespace, <a href='/2/write'>write</a>(2)s on this file fail with the error <strong>EACCES</strong>. In order to write to the <code>timens_offsets</code> file, a process must have the <strong>CAP_SYS_TIME</strong> capability in the user namespace that owns the time namespace.</p>
+<p>Writes to the <code>timens_offsets</code> file can fail with the following errors:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An <code>offset-nanosecs</code> value is greater than 999,999,999.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>A <code>clock-id</code> value is not valid.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller does not have the <strong>CAP_SYS_TIME</strong> capability.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>An <code>offset-secs</code> value is out of range. In particular;</p>
+<ul>
+<li><p><code>offset-secs</code> can't be set to a value which would make the current time on the corresponding clock inside the namespace a negative value; and</p></li>
+<li><p><code>offset-secs</code> can't be set to a value such that the time on the corresponding clock inside the namespace would exceed half of the value of the kernel constant <strong>KTIME_SEC_MAX</strong> (this limits the clock value to a maximum of approximately 146 years).</p></li>
+</ul>
+</dd>
+</dl>
+<p>In a new time namespace created by <a href='/2/unshare'>unshare</a>(2), the contents of the <code>timens_offsets</code> file are inherited from the time namespace of the creating process.</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Use of time namespaces requires a kernel that is configured with the <strong>CONFIG_TIME_NS</strong> option.</p>
+<p>Note that time namespaces do not virtualize the <strong>CLOCK_REALTIME</strong> clock. Virtualization of this clock was avoided for reasons of complexity and overhead within the kernel.</p>
+<p>For compatibility with the initial implementation, when writing a <code>clock-id</code> to the <code>/proc/[pid]/timens_offsets</code> file, the numerical values of the IDs can be written instead of the symbolic names show above; i.e., 1 instead of <code>monotonic</code>, and 7 instead of <code>boottime</code>. For redability, the use of the symbolic names over the numbers is preferred.</p>
+<p>The motivation for adding time namespaces was to allow the monotonic and boot-time clocks to maintain consistent values during container migration and checkpoint/restore.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following shell session demonstrates the operation of time namespaces. We begin by displaying the inode number of the time namespace of a shell in the initial time namespace:</p>
+<pre><code>$ readlink /proc/$$/ns/time
+time:[4026531834]</code></pre>
+<p>Continuing in the initial time namespace, we display the system uptime using <a href='/1/uptime'>uptime</a>(1) and use the <code>clock_times</code> example program shown in <a href='/2/clock_getres'>clock_getres</a>(2) to display the values of various clocks:</p>
+<pre><code>$ uptime --pretty
+up 21 hours, 17 minutes
+$ ./clock_times
+CLOCK_REALTIME : 1585989401.971 (18356 days +  8h 36m 41s)
+CLOCK_TAI      : 1585989438.972 (18356 days +  8h 37m 18s)
+CLOCK_MONOTONIC:      56338.247 (15h 38m 58s)
+CLOCK_BOOTTIME :      76633.544 (21h 17m 13s)</code></pre>
+<p>We then use <a href='/1/unshare'>unshare</a>(1) to create a time namespace and execute a <a href='/1/bash'>bash</a>(1) shell. From the new shell, we use the built-in <strong>echo</strong> command to write records to the <code>timens_offsets</code> file adjusting the offset for the <strong>CLOCK_MONOTONIC</strong> clock forward 2 days and the offset for the <strong>CLOCK_BOOTTIME</strong> clock forward 7 days:</p>
+<pre><code>$ PS1="ns2# " sudo unshare -T -- bash --norc
+ns2# echo "monotonic $((2*24*60*60)) 0" &gt; /proc/$$/timens_offsets
+ns2# echo "boottime  $((7*24*60*60)) 0" &gt; /proc/$$/timens_offsets</code></pre>
+<p>Above, we started the <a href='/1/bash'>bash</a>(1) shell with the <strong>--norc</strong> options so that no start-up scripts were executed. This ensures that no child processes are created from the shell before we have a chance to update the <code>timens_offsets</code> file.</p>
+<p>We then use <a href='/1/cat'>cat</a>(1) to display the contents of the <code>timens_offsets</code> file. The execution of <a href='/1/cat'>cat</a>(1) creates the first process in the new time namespace, after which further attempts to update the <code>timens_offsets</code> file produce an error.</p>
+<pre><code>ns2# cat /proc/$$/timens_offsets
+monotonic      172800         0
+boottime       604800         0
+ns2# echo "boottime $((9*24*60*60)) 0" &gt; /proc/$$/timens_offsets
+bash: echo: write error: Permission denied</code></pre>
+<p>Continuing in the new namespace, we execute <a href='/1/uptime'>uptime</a>(1) and the <code>clock_times</code> example program:</p>
+<pre><code>ns2# uptime --pretty
+up 1 week, 21 hours, 18 minutes
+ns2# ./clock_times
+CLOCK_REALTIME : 1585989457.056 (18356 days +  8h 37m 37s)
+CLOCK_TAI      : 1585989494.057 (18356 days +  8h 38m 14s)
+CLOCK_MONOTONIC:     229193.332 (2 days + 15h 39m 53s)
+CLOCK_BOOTTIME :     681488.629 (7 days + 21h 18m  8s)</code></pre>
+<p>From the above output, we can see that the monotonic and boot-time clocks have different values in the new time namespace.</p>
+<p>Examining the <code>/proc/[pid]/ns/time</code> and <code>/proc/[pid]/ns/time_for_children</code> symbolic links, we see that the shell is a member of the initial time namespace, but its children are created in the new namespace.</p>
+<pre><code>ns2# readlink /proc/$$/ns/time
+time:[4026531834]
+ns2# readlink /proc/$$/ns/time_for_children
+time:[4026532900]
+ns2# readlink /proc/self/ns/time   # Creates a child process
+time:[4026532900]</code></pre>
+<p>Returning to the shell in the initial time namespace, we see that the monotonic and boot-time clocks are unaffected by the <code>timens_offsets</code> changes that were made in the other time namespace:</p>
+<pre><code>$ uptime --pretty
+up 21 hours, 19 minutes
+$ ./clock_times
+CLOCK_REALTIME : 1585989401.971 (18356 days +  8h 38m 51s)
+CLOCK_TAI      : 1585989438.972 (18356 days +  8h 39m 28s)
+CLOCK_MONOTONIC:      56338.247 (15h 41m  8s)
+CLOCK_BOOTTIME :      76633.544 (21h 19m 23s)</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/nsenter'>nsenter</a>(1), <a href='/1/unshare'>unshare</a>(1), <a href='/2/clock_settime'>clock_settime</a>(2), <a href='/2/setns'>setns</a>(2), <a href='/2/unshare'>unshare</a>(2), <a href='/7/namespaces'>namespaces</a>(7), <a href='/7/time'>time</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.device - Device unit configuration</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>device</code>.device</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A unit configuration file whose name ends in ".device" encodes information about a device unit as exposed in the sysfs/<a href='/7/udev'>udev</a>(7) device tree. This may be used to define dependencies between devices and other units.</p>
+<p>This unit type has no specific options. See <a href='/5/systemd.unit'>systemd.unit</a>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. A separate [Device] section does not exist, since no device-specific options may be configured.</p>
+<p>systemd will dynamically create device units for all kernel devices that are marked with the "systemd" udev tag (by default all block and network devices, and a few others). Note that <code>if systemd-udev.service is not running, no device units will be available (for example in a typical container)</code>.</p>
+<p>Device units are named after the /sys/ and /dev/ paths they control. Example: the device /dev/sda5 is exposed in systemd as dev-sda5.device. For details about the escaping logic used to convert a file system path to a unit name see <a href='/5/systemd.unit'>systemd.unit</a>(5).</p>
+<p>To tag a udev device, use "TAG+="systemd"" in the udev rules file, see <a href='/7/udev'>udev</a>(7) for details.</p>
+<p>Device units will be reloaded by systemd whenever the corresponding device generates a "changed" event. Other units can use <code>ReloadPropagatedFrom=</code> to react to that event.</p>
+</div></div><h1 id='automatic-dependencies'><a href='#automatic-dependencies'>AUTOMATIC DEPENDENCIES</a></h1><div data-for='automatic-dependencies' data-hide><div class='section' data-for='automatic-dependencies'><div data-more>
+<h2>Implicit Dependencies</h2>
+<p>Many unit types automatically acquire dependencies on device units of devices they require. For example, .socket unit acquire dependencies on the device units of the network interface specified in <code>BindToDevice=</code>. Similar, swap and mount units acquire dependencies on the units encapsulating their backing block devices.</p>
+<h2>Default Dependencies</h2>
+<p>There are no default dependencies for device units.</p>
+</div></div></div><h1 id='the-udev-database'><a href='#the-udev-database'>THE UDEV DATABASE</a></h1><div data-for='the-udev-database' data-hide><div class='section' data-for='the-udev-database'><div data-more>
+<p>Unit settings of device units may either be configured via unit files, or directly from the udev database. The following udev device properties are understood by the service manager:</p>
+<p><code>SYSTEMD_WANTS=</code>, <code>SYSTEMD_USER_WANTS=</code></p>
+<blockquote>
+<p>Adds dependencies of type <code>Wants=</code> from the device unit to the specified units. <code>SYSTEMD_WANTS=</code> is read by the system service manager, <code>SYSTEMD_USER_WANTS=</code> by user service manager instances. These properties may be used to activate arbitrary units when a specific device becomes available.</p>
+<p>Note that this and the other udev device properties are not taken into account unless the device is tagged with the "systemd" tag in the udev database, because otherwise the device is not exposed as a systemd unit (see above).</p>
+<p>Note that systemd will only act on <code>Wants=</code> dependencies when a device first becomes active. It will not act on them if they are added to devices that are already active. Use <code>SYSTEMD_READY=</code> (see below) to configure when a udev device shall be considered active, and thus when to trigger the dependencies.</p>
+<p>The specified property value should be a space-separated list of valid unit names. If a unit template name is specified (that is, a unit name containing an "@" character indicating a unit name to use for multiple instantiation, but with an empty instance name following the "@"), it will be automatically instantiated by the devices "sysfs" path (that is: the path is escaped and inserted as instance name into the template unit name). This is useful in order to instantiate a specific template unit once for each device that appears and matches specific properties.</p>
+</blockquote>
+<p><code>SYSTEMD_ALIAS=</code></p>
+<blockquote>
+<p>Adds an additional alias name to the device unit. This must be an absolute path that is automatically transformed into a unit name. (See above.)</p>
+</blockquote>
+<p><code>SYSTEMD_READY=</code></p>
+<blockquote>
+<p>If set to 0, systemd will consider this device unplugged even if it shows up in the udev tree. If this property is unset or set to 1, the device will be considered plugged if it is visible in the udev tree.</p>
+<p>This option is useful for devices that initially show up in an uninitialized state in the tree, and for which a "changed" event is generated the moment they are fully set up. Note that <code>SYSTEMD_WANTS=</code> (see above) is not acted on as long as <code>SYSTEMD_READY=0</code> is set for a device.</p>
+</blockquote>
+<p><code>ID_MODEL_FROM_DATABASE=</code>, <code>ID_MODEL=</code></p>
+<blockquote>
+<p>If set, this property is used as description string for the device unit.</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemctl'>systemctl</a>(1), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/7/udev'>udev</a>(7), <a href='/7/systemd.directives'>systemd.directives</a>(7)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

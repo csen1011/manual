@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sysconf - get configuration information at run time</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+long sysconf(int name);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>POSIX allows an application to test at compile or run time whether certain options are supported, or what the value is of certain configurable constants or limits.</p>
+<p>At compile time this is done by including <code>&lt;unistd.h&gt;</code> and/or <code>&lt;limits.h&gt;</code> and testing the value of certain macros.</p>
+<p>At run time, one can ask for numerical values using the present function <a href='sysconf'>sysconf</a>(). One can ask for numerical values that may depend on the filesystem in which a file resides using <a href='/3/fpathconf'>fpathconf</a>(3) and <a href='/3/pathconf'>pathconf</a>(3). One can ask for string values using <a href='/3/confstr'>confstr</a>(3).</p>
+<p>The values obtained from these functions are system configuration constants. They do not change during the lifetime of a process.</p>
+<p>For options, typically, there is a constant <strong>_POSIX_FOO</strong> that may be defined in <code>&lt;unistd.h&gt;</code>. If it is undefined, one should ask at run time. If it is defined to -1, then the option is not supported. If it is defined to 0, then relevant functions and headers exist, but one has to ask at run time what degree of support is available. If it is defined to a value other than -1 or 0, then the option is supported. Usually the value (such as 200112L) indicates the year and month of the POSIX revision describing the option. Glibc uses the value 1 to indicate support as long as the POSIX revision has not been published yet. The <a href='sysconf'>sysconf</a>() argument will be <strong>_SC_FOO</strong>. For a list of options, see <a href='/7/posixoptions'>posixoptions</a>(7).</p>
+<p>For variables or limits, typically, there is a constant <strong>_FOO</strong>, maybe defined in <code>&lt;limits.h&gt;</code>, or <strong>_POSIX_FOO</strong>, maybe defined in <code>&lt;unistd.h&gt;</code>. The constant will not be defined if the limit is unspecified. If the constant is defined, it gives a guaranteed value, and a greater value might actually be supported. If an application wants to take advantage of values which may change between systems, a call to <a href='sysconf'>sysconf</a>() can be made. The <a href='sysconf'>sysconf</a>() argument will be <strong>_SC_FOO</strong>.</p>
+<h2>POSIX.1 variables</h2>
+<p>We give the name of the variable, the name of the <a href='sysconf'>sysconf</a>() argument used to inquire about its value, and a short description.</p>
+<p>First, the POSIX.1 compatible values.</p>
+<dl>
+<dt><strong>ARG_MAX</strong> - <strong>_SC_ARG_MAX</strong></dt>
+<dd><p>The maximum length of the arguments to the <a href='/3/exec'>exec</a>(3) family of functions. Must not be less than <strong>_POSIX_ARG_MAX</strong> (4096).</p>
+</dd>
+<dt><strong>CHILD_MAX</strong> - <strong>_SC_CHILD_MAX</strong></dt>
+<dd><p>The maximum number of simultaneous processes per user ID. Must not be less than <strong>_POSIX_CHILD_MAX</strong> (25).</p>
+</dd>
+<dt><strong>HOST_NAME_MAX</strong> - <strong>_SC_HOST_NAME_MAX</strong></dt>
+<dd><p>Maximum length of a hostname, not including the terminating null byte, as returned by <a href='/2/gethostname'>gethostname</a>(2). Must not be less than <strong>_POSIX_HOST_NAME_MAX</strong> (255).</p>
+</dd>
+<dt><strong>LOGIN_NAME_MAX</strong> - <strong>_SC_LOGIN_NAME_MAX</strong></dt>
+<dd><p>Maximum length of a login name, including the terminating null byte. Must not be less than <strong>_POSIX_LOGIN_NAME_MAX</strong> (9).</p>
+</dd>
+<dt><strong>NGROUPS_MAX</strong> - <strong>_SC_NGROUPS_MAX</strong></dt>
+<dd><p>Maximum number of supplementary group IDs.</p>
+</dd>
+<dt><strong></strong>clock ticks - <strong>_SC_CLK_TCK</strong></dt>
+<dd><p>The number of clock ticks per second. The corresponding variable is obsolete. It was of course called <strong>CLK_TCK</strong>. (Note: the macro <strong>CLOCKS_PER_SEC</strong> does not give information: it must equal 1000000.)</p>
+</dd>
+<dt><strong>OPEN_MAX</strong> - <strong>_SC_OPEN_MAX</strong></dt>
+<dd><p>The maximum number of files that a process can have open at any time. Must not be less than <strong>_POSIX_OPEN_MAX</strong> (20).</p>
+</dd>
+<dt><strong>PAGESIZE</strong> - <strong>_SC_PAGESIZE</strong></dt>
+<dd><p>Size of a page in bytes. Must not be less than 1.</p>
+</dd>
+<dt><strong>PAGE_SIZE</strong> - <strong>_SC_PAGE_SIZE</strong></dt>
+<dd><p>A synonym for <strong>PAGESIZE</strong>/<strong>_SC_PAGESIZE</strong>. (Both <strong>PAGESIZE</strong> and <strong>PAGE_SIZE</strong> are specified in POSIX.)</p>
+</dd>
+<dt><strong>RE_DUP_MAX</strong> - <strong>_SC_RE_DUP_MAX</strong></dt>
+<dd><p>The number of repeated occurrences of a BRE permitted by <a href='/3/regexec'>regexec</a>(3) and <a href='/3/regcomp'>regcomp</a>(3). Must not be less than <strong>_POSIX2_RE_DUP_MAX</strong> (255).</p>
+</dd>
+<dt><strong>STREAM_MAX</strong> - <strong>_SC_STREAM_MAX</strong></dt>
+<dd><p>The maximum number of streams that a process can have open at any time. If defined, it has the same value as the standard C macro <strong>FOPEN_MAX</strong>. Must not be less than <strong>_POSIX_STREAM_MAX</strong> (8).</p>
+</dd>
+<dt><strong>SYMLOOP_MAX</strong> - <strong>_SC_SYMLOOP_MAX</strong></dt>
+<dd><p>The maximum number of symbolic links seen in a pathname before resolution returns <strong>ELOOP</strong>. Must not be less than <strong>_POSIX_SYMLOOP_MAX</strong> (8).</p>
+</dd>
+<dt><strong>TTY_NAME_MAX</strong> - <strong>_SC_TTY_NAME_MAX</strong></dt>
+<dd><p>The maximum length of terminal device name, including the terminating null byte. Must not be less than <strong>_POSIX_TTY_NAME_MAX</strong> (9).</p>
+</dd>
+<dt><strong>TZNAME_MAX</strong> - <strong>_SC_TZNAME_MAX</strong></dt>
+<dd><p>The maximum number of bytes in a timezone name. Must not be less than <strong>_POSIX_TZNAME_MAX</strong> (6).</p>
+</dd>
+<dt><strong>_POSIX_VERSION</strong> - <strong>_SC_VERSION</strong></dt>
+<dd><p>indicates the year and month the POSIX.1 standard was approved in the format <strong>YYYYMML</strong>; the value <strong>199009L</strong> indicates the Sept. 1990 revision.</p>
+</dd>
+</dl>
+<h2>POSIX.2 variables</h2>
+<p>Next, the POSIX.2 values, giving limits for utilities.</p>
+<dl>
+<dt><strong>BC_BASE_MAX</strong> - <strong>_SC_BC_BASE_MAX</strong></dt>
+<dd><p>indicates the maximum <code>obase</code> value accepted by the <a href='/1/bc'>bc</a>(1) utility.</p>
+</dd>
+<dt><strong>BC_DIM_MAX</strong> - <strong>_SC_BC_DIM_MAX</strong></dt>
+<dd><p>indicates the maximum value of elements permitted in an array by <a href='/1/bc'>bc</a>(1).</p>
+</dd>
+<dt><strong>BC_SCALE_MAX</strong> - <strong>_SC_BC_SCALE_MAX</strong></dt>
+<dd><p>indicates the maximum <code>scale</code> value allowed by <a href='/1/bc'>bc</a>(1).</p>
+</dd>
+<dt><strong>BC_STRING_MAX</strong> - <strong>_SC_BC_STRING_MAX</strong></dt>
+<dd><p>indicates the maximum length of a string accepted by <a href='/1/bc'>bc</a>(1).</p>
+</dd>
+<dt><strong>COLL_WEIGHTS_MAX</strong> - <strong>_SC_COLL_WEIGHTS_MAX</strong></dt>
+<dd><p>indicates the maximum numbers of weights that can be assigned to an entry of the <strong>LC_COLLATE order</strong> keyword in the locale definition file.</p>
+</dd>
+<dt><strong>EXPR_NEST_MAX</strong> - <strong>_SC_EXPR_NEST_MAX</strong></dt>
+<dd><p>is the maximum number of expressions which can be nested within parentheses by <a href='/1/expr'>expr</a>(1).</p>
+</dd>
+<dt><strong>LINE_MAX</strong> - <strong>_SC_LINE_MAX</strong></dt>
+<dd><p>The maximum length of a utility's input line, either from standard input or from a file. This includes space for a trailing newline.</p>
+</dd>
+<dt><strong>RE_DUP_MAX</strong> - <strong>_SC_RE_DUP_MAX</strong></dt>
+<dd><p>The maximum number of repeated occurrences of a regular expression when the interval notation <strong>\{m,n\}</strong> is used.</p>
+</dd>
+<dt><strong>POSIX2_VERSION</strong> - <strong>_SC_2_VERSION</strong></dt>
+<dd><p>indicates the version of the POSIX.2 standard in the format of YYYYMML.</p>
+</dd>
+<dt><strong>POSIX2_C_DEV</strong> - <strong>_SC_2_C_DEV</strong></dt>
+<dd><p>indicates whether the POSIX.2 C language development facilities are supported.</p>
+</dd>
+<dt><strong>POSIX2_FORT_DEV</strong> - <strong>_SC_2_FORT_DEV</strong></dt>
+<dd><p>indicates whether the POSIX.2 FORTRAN development utilities are supported.</p>
+</dd>
+<dt><strong>POSIX2_FORT_RUN</strong> - <strong>_SC_2_FORT_RUN</strong></dt>
+<dd><p>indicates whether the POSIX.2 FORTRAN run-time utilities are supported.</p>
+</dd>
+<dt><strong>_POSIX2_LOCALEDEF</strong> - <strong>_SC_2_LOCALEDEF</strong></dt>
+<dd><p>indicates whether the POSIX.2 creation of locales via <a href='/1/localedef'>localedef</a>(1) is supported.</p>
+</dd>
+<dt><strong>POSIX2_SW_DEV</strong> - <strong>_SC_2_SW_DEV</strong></dt>
+<dd><p>indicates whether the POSIX.2 software development utilities option is supported.</p>
+</dd>
+</dl>
+<p>These values also exist, but may not be standard.</p>
+<dl>
+<dt><strong></strong> - <strong>_SC_PHYS_PAGES</strong></dt>
+<dd><p>The number of pages of physical memory. Note that it is possible for the product of this value and the value of <strong>_SC_PAGESIZE</strong> to overflow.</p>
+</dd>
+<dt><strong></strong> - <strong>_SC_AVPHYS_PAGES</strong></dt>
+<dd><p>The number of currently available pages of physical memory.</p>
+</dd>
+<dt><strong></strong> - <strong>_SC_NPROCESSORS_CONF</strong></dt>
+<dd><p>The number of processors configured. See also <a href='/3/get_nprocs_conf'>get_nprocs_conf</a>(3).</p>
+</dd>
+<dt><strong></strong> - <strong>_SC_NPROCESSORS_ONLN</strong></dt>
+<dd><p>The number of processors currently online (available). See also <a href='/3/get_nprocs_conf'>get_nprocs_conf</a>(3).</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The return value of <a href='sysconf'>sysconf</a>() is one of the following:</p>
+<ul>
+<li><p>On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error (for example, <strong>EINVAL</strong>, indicating that <code>name</code> is invalid).</p></li>
+<li><p>If <code>name</code> corresponds to a maximum or minimum limit, and that limit is indeterminate, -1 is returned and <code>errno</code> is not changed. (To distinguish an indeterminate limit from an error, set <code>errno</code> to zero before the call, and then check whether <code>errno</code> is nonzero when -1 is returned.)</p></li>
+<li><p>If <code>name</code> corresponds to an option, a positive value is returned if the option is supported, and -1 is returned if the option is not supported.</p></li>
+<li><p>Otherwise, the current value of the option or limit is returned. This value will not be more restrictive than the corresponding value that was described to the application in <code>&lt;unistd.h&gt;</code> or <code>&lt;limits.h&gt;</code> when the application was compiled.</p></li>
+</ul>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>name</code> is invalid.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='sysconf'>sysconf</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe env</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>It is difficult to use <strong>ARG_MAX</strong> because it is not specified how much of the argument space for <a href='/3/exec'>exec</a>(3) is consumed by the user's environment variables.</p>
+<p>Some returned values may be huge; they are not suitable for allocating memory.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/bc'>bc</a>(1), <a href='/1/expr'>expr</a>(1), <a href='/1/getconf'>getconf</a>(1), <a href='/1/locale'>locale</a>(1), <a href='/3/confstr'>confstr</a>(3), <a href='/3/fpathconf'>fpathconf</a>(3), <a href='/3/pathconf'>pathconf</a>(3), <a href='/7/posixoptions'>posixoptions</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

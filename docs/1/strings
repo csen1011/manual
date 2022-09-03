@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>strings - print the sequences of printable characters in files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>strings [<strong>-afovV</strong>] [<strong>-</strong><code>min-len</code>] [<strong>-n</strong> <code>min-len</code>] [<strong>--bytes=</strong><code>min-len</code>] [<strong>-t</strong> <code>radix</code>] [<strong>--radix=</strong><code>radix</code>] [<strong>-e</strong> <code>encoding</code>] [<strong>--encoding=</strong><code>encoding</code>] [<strong>-U</strong> <code>method</code>] [<strong>--unicode=</strong><code>method</code>] [<strong>-</strong>] [<strong>--all</strong>] [<strong>--print-file-name</strong>] [<strong>-T</strong> <code>bfdname</code>] [<strong>--target=</strong><code>bfdname</code>] [<strong>-w</strong>] [<strong>--include-all-whitespace</strong>] [<strong>-s</strong>] [<strong>--output-separator</strong> <code>sep_string</code>] [<strong>--help</strong>] [<strong>--version</strong>] <code>file</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>For each <code>file</code> given, GNU <strong>strings</strong> prints the printable character sequences that are at least 4 characters long (or the number given with the options below) and are followed by an unprintable character.</p>
+<p>Depending upon how the strings program was configured it will default to either displaying all the printable sequences that it can find in each file, or only those sequences that are in loadable, initialized data sections. If the file type is unrecognizable, or if strings is reading from stdin then it will always display all of the printable sequences that it can find.</p>
+<p>For backwards compatibility any file that occurs after a command-line option of just <strong>-</strong> will also be scanned in full, regardless of the presence of any <strong>-d</strong> option.</p>
+<p><strong>strings</strong> is mainly useful for determining the contents of non-text files.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Scan the whole file, regardless of what sections it contains or whether those sections are loaded or initialized. Normally this is the default behaviour, but strings can be configured so that the <strong>-d</strong> is the default instead. The <strong>-</strong> option is position dependent and forces strings to perform full scans of any file that is mentioned after the <strong>-</strong> on the command line, even if the <strong>-d</strong> option has been specified.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Only print strings from initialized, loaded data sections in the file. This may reduce the amount of garbage in the output, but it also exposes the strings program to any security flaws that may be present in the BFD library used to scan and load sections. Strings can be configured so that this option is the default behaviour. In such cases the <strong>-a</strong> option can be used to avoid using the BFD library and instead just print all of the strings found in the file.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the name of the file before each string.</p>
+<ul>
+<li><p>Print a summary of the program usage on the standard output and exit.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Print sequences of displayable characters that are at least <code>min-len</code> characters long. If not specified a default minimum length of 4 is used. The distinction between displayable and non-displayable characters depends upon the setting of the <strong>-e</strong> and <strong>-U</strong> options. Sequences are always terminated at control characters such as new-line and carriage-return, but not the tab character.</p>
+<ul>
+<li><p>Like <strong>-t o</strong>. Some other versions of <strong>strings</strong> have <strong>-o</strong> act like <strong>-t d</strong> instead. Since we can not be compatible with both ways, we simply chose one.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Print the offset within the file before each string. The single character argument specifies the radix of the offset---<strong>o</strong> for octal, <strong>x</strong> for hexadecimal, or <strong>d</strong> for decimal.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Select the character encoding of the strings that are to be found. Possible values for <code>encoding</code> are: <strong>s</strong> = single-7-bit-byte characters (ASCII, ISO 8859, etc., default), <strong>S</strong> = single-8-bit-byte characters, <strong>b</strong> = 16-bit bigendian, <strong>l</strong> = 16-bit littleendian, <strong>B</strong> = 32-bit bigendian, <strong>L</strong> = 32-bit littleendian. Useful for finding wide character strings. (<strong>l</strong> and <strong>b</strong> apply to, for example, Unicode UTF-16/UCS-2 encodings).</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Controls the display of UTF-8 encoded multibyte characters in strings. The default (<strong>--unicode=default</strong>) is to give them no special treatment, and instead rely upon the setting of the <strong>--encoding</strong> option. The other values for this option automatically enable <strong>--encoding=S</strong>. The <strong>--unicode=invalid</strong> option treats them as non-graphic characters and hence not part of a valid string. All the remaining options treat them as valid string characters. The <strong>--unicode=locale</strong> option displays them in the current locale, which may or may not support UTF-8 encoding. The <strong>--unicode=hex</strong> option displays them as hex byte sequences enclosed between <code>&lt;&gt;</code> characters. The <strong>--unicode=escape</strong> option displays them as escape sequences (<code>\uxxxx</code>) and the <strong>--unicode=highlight</strong> option displays them as escape sequences highlighted in red (if supported by the output device). The colouring is intended to draw attention to the presence of unicode sequences where they might not be expected.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Specify an object code format other than your system's default format.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Print the program version number on the standard output and exit.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>By default tab and space characters are included in the strings that are displayed, but other whitespace characters, such a newlines and carriage returns, are not. The <strong>-w</strong> option changes this so that all whitespace characters are considered to be part of a string.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>By default, output strings are delimited by a new-line. This option allows you to supply any string to be used as the output record separator. Useful with --include-all-whitespace where strings may contain new-lines internally.</p>
+<ol class="example" type="1">
+<li><p>Read command-line options from <code>file</code>. The options read are inserted in place of the original @<code>file</code> option. If <code>file</code> does not exist, or cannot be read, then the option will be treated literally, and not removed. Options in <code>file</code> are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The <code>file</code> may itself contain additional @<code>file</code> options; any such options will be processed recursively.</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>ar</strong> (1), <strong>nm</strong> (1), <strong>objdump</strong> (1), <strong>ranlib</strong> (1), <strong>readelf</strong> (1) and the Info entries for <code>binutils</code>.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1991-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License''.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

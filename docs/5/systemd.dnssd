@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.dnssd - DNS-SD configuration</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>network_service</code>.dnssd</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>DNS-SD setup is performed by <a href='/8/systemd-resolved'>systemd-resolved</a>(8).</p>
+<p>The main network service file must have the extension .dnssd; other extensions are ignored.</p>
+<p>The .dnssd files are read from the files located in the system network directories /usr/lib/systemd/dnssd and /usr/local/lib/systemd/dnssd, the volatile runtime network directory /run/systemd/dnssd and the local administration network directory /etc/systemd/dnssd. All configuration files are collectively sorted and processed in lexical order, regardless of the directories in which they live. However, files with identical filenames replace each other. Files in /etc/ have the highest priority, files in /run/ take precedence over files with the same name in /lib/. This can be used to override a system-supplied configuration file with a local file if needed.</p>
+<p>Along with the network service file foo.dnssd, a "drop-in" directory foo.dnssd.d/ may exist. All files with the suffix ".conf" from this directory will be parsed after the file itself is parsed. This is useful to alter or add configuration settings, without having to modify the main configuration file. Each drop-in file must have appropriate section headers.</p>
+<p>In addition to /etc/systemd/dnssd, drop-in ".d" directories can be placed in /usr/lib/systemd/dnssd or /run/systemd/dnssd directories. Drop-in files in /etc/ take precedence over those in /run/ which in turn take precedence over those in /usr/lib/ or /usr/local/lib. Drop-in files under any of these directories take precedence over the main network service file wherever located.</p>
+</div></div><h1 id='service-section-options'><a href='#service-section-options'>[SERVICE] SECTION OPTIONS</a></h1><div data-for='service-section-options' data-hide><div class='section' data-for='service-section-options'><div data-more>
+<p>The network service file contains a [Service] section, which specifies a discoverable network service announced in a local network with Multicast DNS broadcasts.</p>
+<p><code>Name=</code></p>
+<blockquote>
+<p>An instance name of the network service as defined in the section 4.1.1 of <strong>RFC 6763</strong>[1], e.g. "webserver".</p>
+<p>The option supports simple specifier expansion. The following expansions are understood:</p>
+<p><br/>
+<strong>Table 1. Specifiers available</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Specifier</td>
+<td style="text-align: left;">Meaning</td>
+<td style="text-align: left;">Details</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%a"</td>
+<td style="text-align: left;">Architecture</td>
+<td style="text-align: left;">A short string identifying the architecture of the local system. A string such as <strong>x86</strong>, <strong>x86-64</strong> or <strong>arm64</strong>. See the architectures defined for <code>ConditionArchitecture=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for a full list.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%A"</td>
+<td style="text-align: left;">Operating system image version</td>
+<td style="text-align: left;">The operating system image version identifier of the running system, as read from the <code>IMAGE_VERSION=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%b"</td>
+<td style="text-align: left;">Boot ID</td>
+<td style="text-align: left;">The boot ID of the running system, formatted as string. See <a href='/4/random'>random</a>(4) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%B"</td>
+<td style="text-align: left;">Operating system build ID</td>
+<td style="text-align: left;">The operating system build identifier of the running system, as read from the <code>BUILD_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%H"</td>
+<td style="text-align: left;">Host name</td>
+<td style="text-align: left;">The hostname of the running system.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%m"</td>
+<td style="text-align: left;">Machine ID</td>
+<td style="text-align: left;">The machine ID of the running system, formatted as string. See <a href='/5/machine-id'>machine-id</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%M"</td>
+<td style="text-align: left;">Operating system image identifier</td>
+<td style="text-align: left;">The operating system image identifier of the running system, as read from the <code>IMAGE_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%o"</td>
+<td style="text-align: left;">Operating system ID</td>
+<td style="text-align: left;">The operating system identifier of the running system, as read from the <code>ID=</code> field of /etc/os-release. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%v"</td>
+<td style="text-align: left;">Kernel release</td>
+<td style="text-align: left;">Identical to <strong>uname -r</strong> output.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%w"</td>
+<td style="text-align: left;">Operating system version ID</td>
+<td style="text-align: left;">The operating system version identifier of the running system, as read from the <code>VERSION_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%W"</td>
+<td style="text-align: left;">Operating system variant ID</td>
+<td style="text-align: left;">The operating system variant identifier of the running system, as read from the <code>VARIANT_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%%"</td>
+<td style="text-align: left;">Single percent sign</td>
+<td style="text-align: left;">Use "%%" in place of "%" to specify a single percent sign.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p><code>Type=</code></p>
+<blockquote>
+<p>A type of the network service as defined in the section 4.1.2 of <strong>RFC 6763</strong>[1], e.g. "_http._tcp".</p>
+</blockquote>
+<p><code>Port=</code></p>
+<blockquote>
+<p>An IP port number of the network service.</p>
+</blockquote>
+<p><code>Priority=</code></p>
+<blockquote>
+<p>A priority number set in <strong>SRV</strong> resource records corresponding to the network service.</p>
+</blockquote>
+<p><code>Weight=</code></p>
+<blockquote>
+<p>A weight number set in <strong>SRV</strong> resource records corresponding to the network service.</p>
+</blockquote>
+<p><code>TxtText=</code></p>
+<blockquote>
+<p>A whitespace-separated list of arbitrary key/value pairs conveying additional information about the named service in the corresponding TXT resource record, e.g. "path=/portal/index.html". Keys and values can contain C-style escape sequences which get translated upon reading configuration files.</p>
+<p>This option together with <code>TxtData=</code> may be specified more than once, in which case multiple TXT resource records will be created for the service. If the empty string is assigned to this option, the list is reset and all prior assignments will have no effect.</p>
+</blockquote>
+<p><code>TxtData=</code></p>
+<blockquote>
+<p>A whitespace-separated list of arbitrary key/value pairs conveying additional information about the named service in the corresponding TXT resource record where values are base64-encoded string representing any binary data, e.g. "data=YW55IGJpbmFyeSBkYXRhCg==". Keys can contain C-style escape sequences which get translated upon reading configuration files.</p>
+<p>This option together with <code>TxtText=</code> may be specified more than once, in which case multiple TXT resource records will be created for the service. If the empty string is assigned to this option, the list is reset and all prior assignments will have no effect.</p>
+</blockquote>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. HTTP service</strong></p>
+<p>.RS 4</p>
+<pre><code># /etc/systemd/dnssd/http.dnssd
+[Service]
+Name=%H
+Type=_http._tcp
+Port=80
+TxtText=path=/stats/index.html t=temperature_sensor</code></pre>
+<p>.RE</p>
+<p>This makes the http server running on the host discoverable in the local network given MulticastDNS is enabled on the network interface.</p>
+<p>Now the utility "resolvectl" should be able to resolve the service to the hosts name:</p>
+<p>.RS 4</p>
+<pre><code>$ resolvectl service meteo._http._tcp.local
+meteo._http._tcp.local: meteo.local:80 [priority=0, weight=0]
+                        169.254.208.106%senp0s21f0u2u4
+                        fe80::213:3bff:fe49:8aa%senp0s21f0u2u4
+                        path=/stats/index.html
+                        t=temperature_sensor
+                        (meteo/_http._tcp/local)
+
+-- Information acquired via protocol mDNS/IPv6 in 4.0ms.
+-- Data is authenticated: yes</code></pre>
+<p>.RE</p>
+<p>"Avahi" running on a different host in the same local network should see the service as well:</p>
+<p>.RS 4</p>
+<pre><code>$ avahi-browse -a -r
++ enp3s0 IPv6 meteo                                         Web Site             local
++ enp3s0 IPv4 meteo                                         Web Site             local
+= enp3s0 IPv6 meteo                                         Web Site             local
+   hostname = [meteo.local]
+   address = [fe80::213:3bff:fe49:8aa]
+   port = [80]
+   txt = ["path=/stats/index.html" "t=temperature_sensor"]
+= enp3s0 IPv4 meteo                                         Web Site             local
+   hostname = [meteo.local]
+   address = [169.254.208.106]
+   port = [80]
+   txt = ["path=/stats/index.html" "t=temperature_sensor"]</code></pre>
+<p>.RE</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/8/systemd-resolved.service'>systemd-resolved.service</a>(8), <a href='/1/resolvectl'>resolvectl</a>(1)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>RFC 6763</p>
+<p><a href="https://tools.ietf.org/html/rfc6763">https://tools.ietf.org/html/rfc6763</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

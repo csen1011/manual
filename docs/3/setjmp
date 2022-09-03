@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;setjmp&lt;/code&gt; and 3 related functions.' data-bs-toggle='popover' tabindex='0'>setjmp</a>, sigsetjmp, longjmp, siglongjmp - performing a nonlocal goto</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;setjmp.h&gt;</a>
+
+int setjmp(jmp_buf env);
+int sigsetjmp(sigjmp_buf env, int savesigs);
+
+void longjmp(jmp_buf env, int val);
+void siglongjmp(sigjmp_buf env, int val);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='setjmp'>setjmp</a>(): see NOTES.</p>
+<p><a href='sigsetjmp'>sigsetjmp</a>(): _POSIX_C_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The functions described on this page are used for performing "nonlocal gotos": transferring execution from one function to a predetermined location in another function. The <a href='setjmp'>setjmp</a>() function dynamically establishes the target to which control will later be transferred, and <a href='longjmp'>longjmp</a>() performs the transfer of execution.</p>
+<p>The <a href='setjmp'>setjmp</a>() function saves various information about the calling environment (typically, the stack pointer, the instruction pointer, possibly the values of other registers and the signal mask) in the buffer <code>env</code> for later use by <a href='longjmp'>longjmp</a>(). In this case, <a href='setjmp'>setjmp</a>() returns 0.</p>
+<p>The <a href='longjmp'>longjmp</a>() function uses the information saved in <code>env</code> to transfer control back to the point where <a href='setjmp'>setjmp</a>() was called and to restore ("rewind") the stack to its state at the time of the <a href='setjmp'>setjmp</a>() call. In addition, and depending on the implementation (see NOTES), the values of some other registers and the process signal mask may be restored to their state at the time of the <a href='setjmp'>setjmp</a>() call.</p>
+<p>Following a successful <a href='longjmp'>longjmp</a>(), execution continues as if <a href='setjmp'>setjmp</a>() had returned for a second time. This "fake" return can be distinguished from a true <a href='setjmp'>setjmp</a>() call because the "fake" return returns the value provided in <code>val</code>. If the programmer mistakenly passes the value 0 in <code>val</code>, the "fake" return will instead return 1.</p>
+<h2>sigsetjmp() and siglongjmp()</h2>
+<p><a href='sigsetjmp'>sigsetjmp</a>() and <a href='siglongjmp'>siglongjmp</a>() also perform nonlocal gotos, but provide predictable handling of the process signal mask.</p>
+<p>If, and only if, the <code>savesigs</code> argument provided to <a href='sigsetjmp'>sigsetjmp</a>() is nonzero, the process's current signal mask is saved in <code>env</code> and will be restored if a <a href='siglongjmp'>siglongjmp</a>() is later performed with this <code>env</code>.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='setjmp'>setjmp</a>() and <a href='sigsetjmp'>sigsetjmp</a>() return 0 when called directly; on the "fake" return that occurs after <a href='longjmp'>longjmp</a>() or <a href='siglongjmp'>siglongjmp</a>(), the nonzero value specified in <code>val</code> is returned.</p>
+<p>The <a href='longjmp'>longjmp</a>() or <a href='siglongjmp'>siglongjmp</a>() functions do not return.</p>
+</div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='setjmp'>setjmp</a>(), <a href='sigsetjmp'>sigsetjmp</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='longjmp'>longjmp</a>(), <a href='siglongjmp'>siglongjmp</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='setjmp'>setjmp</a>(), <a href='longjmp'>longjmp</a>(): POSIX.1-2001, POSIX.1-2008, C89, C99.</p>
+<p><a href='sigsetjmp'>sigsetjmp</a>(), <a href='siglongjmp'>siglongjmp</a>(): POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>POSIX does not specify whether <a href='setjmp'>setjmp</a>() will save the signal mask (to be later restored during <a href='longjmp'>longjmp</a>()). In System V it will not. In 4.3BSD it will, and there is a function <a href='_setjmp'>_setjmp</a>() that will not. The behavior under Linux depends on the glibc version and the setting of feature test macros. On Linux with glibc versions before 2.19, <a href='setjmp'>setjmp</a>() follows the System V behavior by default, but the BSD behavior is provided if the <strong>_BSD_SOURCE</strong> feature test macro is explicitly defined and none of <strong>_POSIX_SOURCE</strong>, <strong>_POSIX_C_SOURCE</strong>, <strong>_XOPEN_SOURCE</strong>, <strong>_GNU_SOURCE</strong>, or <strong>_SVID_SOURCE</strong> is defined. Since glibc 2.19, <code>&lt;setjmp.h&gt;</code> exposes only the System V version of <a href='setjmp'>setjmp</a>(). Programs that need the BSD semantics should replace calls to <a href='setjmp'>setjmp</a>() with calls to <a href='sigsetjmp'>sigsetjmp</a>() with a nonzero <code>savesigs</code> argument.</p>
+<p><a href='setjmp'>setjmp</a>() and <a href='longjmp'>longjmp</a>() can be useful for dealing with errors inside deeply nested function calls or to allow a signal handler to pass control to a specific point in the program, rather than returning to the point where the handler interrupted the main program. In the latter case, if you want to portably save and restore signal masks, use <a href='sigsetjmp'>sigsetjmp</a>() and <a href='siglongjmp'>siglongjmp</a>(). See also the discussion of program readability below.</p>
+<p>The compiler may optimize variables into registers, and <a href='longjmp'>longjmp</a>() may restore the values of other registers in addition to the stack pointer and program counter. Consequently, the values of automatic variables are unspecified after a call to <a href='longjmp'>longjmp</a>() if they meet all the following criteria:</p>
+<ul>
+<li><p>they are local to the function that made the corresponding <a href='setjmp'>setjmp</a>() call;</p></li>
+<li><p>their values are changed between the calls to <a href='setjmp'>setjmp</a>() and <a href='longjmp'>longjmp</a>(); and</p></li>
+<li><p>they are not declared as <code>volatile</code>.</p></li>
+</ul>
+<p>Analogous remarks apply for <a href='siglongjmp'>siglongjmp</a>(). While it can be abused, the traditional C "goto" statement at least has the benefit that lexical cues (the goto statement and the target label) allow the programmer to easily perceive the flow of control. Nonlocal gotos provide no such cues: multiple <a href='setjmp'>setjmp</a>() calls might employ the same <code>jmp_buf</code> variable so that the content of the variable may change over the lifetime of the application. Consequently, the programmer may be forced to perform detailed reading of the code to determine the dynamic target of a particular <a href='longjmp'>longjmp</a>() call. (To make the programmer's life easier, each <a href='setjmp'>setjmp</a>() call should employ a unique <code>jmp_buf</code> variable.)</p>
+<p>Adding further difficulty, the <a href='setjmp'>setjmp</a>() and <a href='longjmp'>longjmp</a>() calls may not even be in the same source code module.</p>
+<p>In summary, nonlocal gotos can make programs harder to understand and maintain, and an alternative should be used if possible. If the function which called <a href='setjmp'>setjmp</a>() returns before <a href='longjmp'>longjmp</a>() is called, the behavior is undefined. Some kind of subtle or unsubtle chaos is sure to result.</p>
+<p>If, in a multithreaded program, a <a href='longjmp'>longjmp</a>() call employs an <code>env</code> buffer that was initialized by a call to <a href='setjmp'>setjmp</a>() in a different thread, the behavior is undefined.</p>
+<p>POSIX.1-2008 Technical Corrigendum 2 adds <a href='longjmp'>longjmp</a>() and <a href='siglongjmp'>siglongjmp</a>() to the list of async-signal-safe functions. However, the standard recommends avoiding the use of these functions from signal handlers and goes on to point out that if these functions are called from a signal handler that interrupted a call to a non-async-signal-safe function (or some equivalent, such as the steps equivalent to <a href='/3/exit'>exit</a>(3) that occur upon a return from the initial call to <code>main</code>()), the behavior is undefined if the program subsequently makes a call to a non-async-signal-safe function. The only way of avoiding undefined behavior is to ensure one of the following:</p>
+<ul>
+<li><p>After long jumping from the signal handler, the program does not call any non-async-signal-safe functions and does not return from the initial call to <code>main</code>().</p></li>
+<li><p>Any signal whose handler performs a long jump must be blocked during <code>every</code> call to a non-async-signal-safe function and no non-async-signal-safe functions are called after returning from the initial call to <code>main</code>().</p></li>
+</ul>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/7/signal'>signal</a>(7), <a href='/7/signal-safety'>signal-safety</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

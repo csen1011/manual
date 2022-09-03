@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>perfmonctl - interface to IA-64 performance monitoring unit</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;syscall.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;perfmon.h&gt;</a>
+
+long perfmonctl(int fd, int cmd, void *arg, int narg);</code></pre>
+<p><code>Note</code>: There is no glibc wrapper for this system call; see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The IA-64-specific <a href='perfmonctl'>perfmonctl</a>() system call provides an interface to the PMU (performance monitoring unit). The PMU consists of PMD (performance monitoring data) registers and PMC (performance monitoring control) registers, which gather hardware statistics.</p>
+<p><a href='perfmonctl'>perfmonctl</a>() applies the operation <code>cmd</code> to the input arguments specified by <code>arg</code>. The number of arguments is defined by <code>narg</code>. The <code>fd</code> argument specifies the perfmon context to operate on.</p>
+<p>Supported values for <code>cmd</code> are:</p>
+<dl>
+<dt><strong>PFM_CREATE_CONTEXT</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_CREATE_CONTEXT, pfarg_context_t *ctxt, 1);</code></pre>
+<p>Set up a context.</p>
+<blockquote>
+<p>The <code>fd</code> parameter is ignored. A new perfmon context is created as specified in <code>ctxt</code> and its file descriptor is returned in <code>ctxt-&gt;ctx_fd</code>.</p>
+<p>The file descriptor can be used in subsequent calls to <a href='perfmonctl'>perfmonctl</a>() and can be used to read event notifications (type <code>pfm_msg_t</code>) using <a href='/2/read'>read</a>(2). The file descriptor is pollable using <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), and <a href='/7/epoll'>epoll</a>(7).</p>
+<p>The context can be destroyed by calling <a href='/2/close'>close</a>(2) on the file descriptor.</p>
+</blockquote>
+<dl>
+<dt><strong>PFM_WRITE_PMCS</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_WRITE_PMCS, pfarg_reg_t *pmcs, n);</code></pre>
+<p>Set PMC registers.</p>
+<dl>
+<dt><strong>PFM_WRITE_PMDS</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_WRITE_PMDS, pfarg_reg_t *pmds, n);</code></pre>
+<p>Set PMD registers.</p>
+<dl>
+<dt><strong>PFM_READ_PMDS</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_READ_PMDS, pfarg_reg_t *pmds, n);</code></pre>
+<p>Read PMD registers.</p>
+<dl>
+<dt><strong>PFM_START</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_START, NULL, 0);</code></pre>
+<p>Start monitoring.</p>
+<dl>
+<dt><strong>PFM_STOP</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_STOP, NULL, 0);</code></pre>
+<p>Stop monitoring.</p>
+<dl>
+<dt><strong>PFM_LOAD_CONTEXT</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_LOAD_CONTEXT, pfarg_load_t *largs, 1);</code></pre>
+<p>Attach the context to a thread.</p>
+<dl>
+<dt><strong>PFM_UNLOAD_CONTEXT</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_UNLOAD_CONTEXT, NULL, 0);</code></pre>
+<p>Detach the context from a thread.</p>
+<dl>
+<dt><strong>PFM_RESTART</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_RESTART, NULL, 0);</code></pre>
+<p>Restart monitoring after receiving an overflow notification.</p>
+<dl>
+<dt><strong>PFM_GET_FEATURES</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_GET_FEATURES, pfarg_features_t *arg, 1);</code></pre>
+<dl>
+<dt><strong>PFM_DEBUG</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_DEBUG, val, 0);</code></pre>
+<p>If <code>val</code> is nonzero, enable debugging mode, otherwise disable.</p>
+<dl>
+<dt><strong>PFM_GET_PMC_RESET_VAL</strong></dt>
+<dd>
+</dd>
+</dl>
+<pre><code>perfmonctl(int fd, PFM_GET_PMC_RESET_VAL, pfarg_reg_t *req, n);</code></pre>
+<p>Reset PMC registers to default values.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='perfmonctl'>perfmonctl</a>() returns zero when the operation is successful. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error.</p>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='perfmonctl'>perfmonctl</a>() is available since Linux 2.4.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='perfmonctl'>perfmonctl</a>() is Linux-specific and is available only on the IA-64 architecture.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Glibc does not provide a wrapper for this system call; call it using <a href='/2/syscall'>syscall</a>(2).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/gprof'>gprof</a>(1)</p>
+<p>The perfmon2 interface specification</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

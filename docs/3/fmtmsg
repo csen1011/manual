@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fmtmsg - print formatted error messages</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fmtmsg.h&gt;</a>
+
+int fmtmsg(long classification, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>label,
+ int severity, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>text,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>action, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>tag);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This function displays a message described by its arguments on the device(s) specified in the <code>classification</code> argument. For messages written to <code>stderr</code>, the format depends on the <strong>MSGVERB</strong> environment variable.</p>
+<p>The <code>label</code> argument identifies the source of the message. The string must consist of two colon separated parts where the first part has not more than 10 and the second part not more than 14 characters.</p>
+<p>The <code>text</code> argument describes the condition of the error.</p>
+<p>The <code>action</code> argument describes possible steps to recover from the error. If it is printed, it is prefixed by "TO FIX: ".</p>
+<p>The <code>tag</code> argument is a reference to the online documentation where more information can be found. It should contain the <code>label</code> value and a unique identification number.</p>
+<h2>Dummy arguments</h2>
+<p>Each of the arguments can have a dummy value. The dummy classification value <strong>MM_NULLMC</strong> (0L) does not specify any output, so nothing is printed. The dummy severity value <strong>NO_SEV</strong> (0) says that no severity is supplied. The values <strong>MM_NULLLBL</strong>, <strong>MM_NULLTXT</strong>, <strong>MM_NULLACT</strong>, <strong>MM_NULLTAG</strong> are synonyms for <code>((<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>) 0)</code>, the empty string, and <strong>MM_NULLSEV</strong> is a synonym for <strong>NO_SEV</strong>.</p>
+<h2>The classification argument</h2>
+<p>The <code>classification</code> argument is the sum of values describing 4 types of information.</p>
+<p>The first value defines the output channel.</p>
+<dl>
+<dt><strong>MM_PRINT</strong></dt>
+<dd><p>Output to <code>stderr</code>.</p>
+</dd>
+<dt><strong>MM_CONSOLE</strong></dt>
+<dd><p>Output to the system console.</p>
+</dd>
+<dt><strong>MM_PRINT | MM_CONSOLE</strong></dt>
+<dd><p>Output to both.</p>
+</dd>
+</dl>
+<p>The second value is the source of the error:</p>
+<dl>
+<dt><strong>MM_HARD</strong></dt>
+<dd><p>A hardware error occurred.</p>
+</dd>
+<dt><strong>MM_FIRM</strong></dt>
+<dd><p>A firmware error occurred.</p>
+</dd>
+<dt><strong>MM_SOFT</strong></dt>
+<dd><p>A software error occurred.</p>
+</dd>
+</dl>
+<p>The third value encodes the detector of the problem:</p>
+<dl>
+<dt><strong>MM_APPL</strong></dt>
+<dd><p>It is detected by an application.</p>
+</dd>
+<dt><strong>MM_UTIL</strong></dt>
+<dd><p>It is detected by a utility.</p>
+</dd>
+<dt><strong>MM_OPSYS</strong></dt>
+<dd><p>It is detected by the operating system.</p>
+</dd>
+</dl>
+<p>The fourth value shows the severity of the incident:</p>
+<dl>
+<dt><strong>MM_RECOVER</strong></dt>
+<dd><p>It is a recoverable error.</p>
+</dd>
+<dt><strong>MM_NRECOV</strong></dt>
+<dd><p>It is a nonrecoverable error.</p>
+</dd>
+</dl>
+<h2>The severity argument</h2>
+<p>The <code>severity</code> argument can take one of the following values:</p>
+<dl>
+<dt><strong>MM_NOSEV</strong></dt>
+<dd><p>No severity is printed.</p>
+</dd>
+<dt><strong>MM_HALT</strong></dt>
+<dd><p>This value is printed as HALT.</p>
+</dd>
+<dt><strong>MM_ERROR</strong></dt>
+<dd><p>This value is printed as ERROR.</p>
+</dd>
+<dt><strong>MM_WARNING</strong></dt>
+<dd><p>This value is printed as WARNING.</p>
+</dd>
+<dt><strong>MM_INFO</strong></dt>
+<dd><p>This value is printed as INFO.</p>
+</dd>
+</dl>
+<p>The numeric values are between 0 and 4. Using <a href='/3/addseverity'>addseverity</a>(3) or the environment variable <strong>SEV_LEVEL</strong> you can add more levels and strings to print.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The function can return 4 values:</p>
+<dl>
+<dt><strong>MM_OK</strong></dt>
+<dd><p>Everything went smooth.</p>
+</dd>
+<dt><strong>MM_NOTOK</strong></dt>
+<dd><p>Complete failure.</p>
+</dd>
+<dt><strong>MM_NOMSG</strong></dt>
+<dd><p>Error writing to <code>stderr</code>.</p>
+</dd>
+<dt><strong>MM_NOCON</strong></dt>
+<dd><p>Error writing to the console.</p>
+</dd>
+</dl>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;fmtmsg.h&gt;
+
+int
+main(void)
+{
+    long class = MM_PRINT | MM_SOFT | MM_OPSYS | MM_RECOVER;
+    int err;
+
+    err = fmtmsg(class, "util-linux:mount", MM_ERROR,
+                "unknown mount option", "See mount(8).",
+                "util-linux:mount:017");
+    switch (err) {
+    case MM_OK:
+        break;
+    case MM_NOTOK:
+        printf("Nothing printed\n");
+        break;
+    case MM_NOMSG:
+        printf("Nothing printed to stderr\n");
+        break;
+    case MM_NOCON:
+        printf("No console output\n");
+        break;
+    default:
+        printf("Unknown error from fmtmsg()\n");
+    }
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>The output should be:</p>
+<pre><code>util-linux:mount: ERROR: unknown mount option
+TO FIX: See mount(8).  util-linux:mount:017</code></pre>
+<p>and after</p>
+<pre><code>MSGVERB=text:action; export MSGVERB</code></pre>
+<p>the output becomes:</p>
+<pre><code>unknown mount option
+TO FIX: See mount(8).</code></pre>
+</div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>The environment variable <strong>MSGVERB</strong> ("message verbosity") can be used to suppress parts of the output to <code>stderr</code>. (It does not influence output to the console.) When this variable is defined, is non-NULL, and is a colon-separated list of valid keywords, then only the parts of the message corresponding to these keywords is printed. Valid keywords are "label", "severity", "text", "action" and "tag".</p>
+<p>The environment variable <strong>SEV_LEVEL</strong> can be used to introduce new severity levels. By default, only the five severity levels described above are available. Any other numeric value would make <a href='fmtmsg'>fmtmsg</a>() print nothing. If the user puts <strong>SEV_LEVEL</strong> with a format like</p>
+<blockquote>
+<p>SEV_LEVEL=[description[:description[:...]]]</p>
+</blockquote>
+<p>in the environment of the process before the first call to <a href='fmtmsg'>fmtmsg</a>(), where each description is of the form</p>
+<blockquote>
+<p>severity-keyword,level,printstring</p>
+</blockquote>
+<p>then <a href='fmtmsg'>fmtmsg</a>() will also accept the indicated values for the level (in addition to the standard levels 0–4), and use the indicated printstring when such a level occurs.</p>
+<p>The severity-keyword part is not used by <a href='fmtmsg'>fmtmsg</a>() but it has to be present. The level part is a string representation of a number. The numeric value must be a number greater than 4. This value must be used in the severity argument of <a href='fmtmsg'>fmtmsg</a>() to select this class. It is not possible to overwrite any of the predefined classes. The printstring is the string printed when a message of this class is processed by <a href='fmtmsg'>fmtmsg</a>().</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='fmtmsg'>fmtmsg</a>() is provided in glibc since version 2.1.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='fmtmsg'>fmtmsg</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">glibc &gt;= 2.16: MT-Safe<br/>
+glibc &lt; 2.16: MT-Unsafe</td>
+</tr>
+</tbody>
+</table>
+<p>Before glibc 2.16, the <a href='fmtmsg'>fmtmsg</a>() function uses a static variable that is not protected, so it is not thread-safe.</p>
+<p>Since glibc 2.16, the <a href='fmtmsg'>fmtmsg</a>() function uses a lock to protect the static variable, so it is thread-safe.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The functions <a href='fmtmsg'>fmtmsg</a>() and <a href='/3/addseverity'>addseverity</a>(3), and environment variables <strong>MSGVERB</strong> and <strong>SEV_LEVEL</strong> come from System V.</p>
+<p>The function <a href='fmtmsg'>fmtmsg</a>() and the environment variable <strong>MSGVERB</strong> are described in POSIX.1-2001 and POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>System V and UnixWare man pages tell us that these functions have been replaced by "pfmt() and addsev()" or by "pfmt(), vpfmt(), lfmt(), and vlfmt()", and will be removed later.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/addseverity'>addseverity</a>(3), <a href='/3/perror'>perror</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

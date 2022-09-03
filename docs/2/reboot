@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>reboot - reboot or enable/disable Ctrl-Alt-Del</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>/* Since kernel version 2.1.30 there are symbolic names LINUX_REBOOT_* for the constants and a fourth argument to the call: */</p>
+<p><strong>#include &lt;unistd.h&gt;</strong><br/>
+<strong>#include &lt;linux/reboot.h&gt;</strong></p>
+<p><strong>int reboot(int </strong><code>magic</code><strong>, int </strong><code>magic2</code><strong>, int </strong><code>cmd</code><strong>, void *</strong><code>arg</code><strong>);</strong></p>
+<p>/* Under glibc and most alternative libc's (including uclibc, dietlibc, musl and a few others), some of the constants involved have gotten symbolic names RB_*, and the library call is a 1-argument wrapper around the system call: */</p>
+<p><strong>#include &lt;unistd.h&gt;</strong><br/>
+<strong>#include &lt;sys/reboot.h&gt;</strong></p>
+<p><strong>int reboot(int </strong><code>cmd</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='reboot'>reboot</a>() call reboots the system, or enables/disables the reboot keystroke (abbreviated CAD, since the default is Ctrl-Alt-Delete; it can be changed using <a href='/1/loadkeys'>loadkeys</a>(1)).</p>
+<p>This system call fails (with the error <strong>EINVAL</strong>) unless <code>magic</code> equals <strong>LINUX_REBOOT_MAGIC1</strong> (that is, 0xfee1dead) and <code>magic2</code> equals <strong>LINUX_REBOOT_MAGIC2</strong> (that is, 672274793). However, since 2.1.17 also <strong>LINUX_REBOOT_MAGIC2A</strong> (that is, 85072278) and since 2.1.97 also <strong>LINUX_REBOOT_MAGIC2B</strong> (that is, 369367448) and since 2.5.71 also <strong>LINUX_REBOOT_MAGIC2C</strong> (that is, 537993216) are permitted as values for <code>magic2</code>. (The hexadecimal values of these constants are meaningful.)</p>
+<p>The <code>cmd</code> argument can have the following values:</p>
+<dl>
+<dt><strong>LINUX_REBOOT_CMD_CAD_OFF</strong></dt>
+<dd><p>(<strong>RB_DISABLE_CAD</strong>, 0). CAD is disabled. This means that the CAD keystroke will cause a <strong>SIGINT</strong> signal to be sent to init (process 1), whereupon this process may decide upon a proper action (maybe: kill all processes, sync, reboot).</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_CAD_ON</strong></dt>
+<dd><p>(<strong>RB_ENABLE_CAD</strong>, 0x89abcdef). CAD is enabled. This means that the CAD keystroke will immediately cause the action associated with <strong>LINUX_REBOOT_CMD_RESTART</strong>.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_HALT</strong></dt>
+<dd><p>(<strong>RB_HALT_SYSTEM</strong>, 0xcdef0123; since Linux 1.1.76). The message "System halted." is printed, and the system is halted. Control is given to the ROM monitor, if there is one. If not preceded by a <a href='/2/sync'>sync</a>(2), data will be lost.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_KEXEC</strong></dt>
+<dd><p>(<strong>RB_KEXEC</strong>, 0x45584543, since Linux 2.6.13). Execute a kernel that has been loaded earlier with <a href='/2/kexec_load'>kexec_load</a>(2). This option is available only if the kernel was configured with <strong>CONFIG_KEXEC</strong>.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_POWER_OFF</strong></dt>
+<dd><p>(<strong>RB_POWER_OFF</strong>, 0x4321fedc; since Linux 2.1.30). The message "Power down." is printed, the system is stopped, and all power is removed from the system, if possible. If not preceded by a <a href='/2/sync'>sync</a>(2), data will be lost.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_RESTART</strong></dt>
+<dd><p>(<strong>RB_AUTOBOOT</strong>, 0x1234567). The message "Restarting system." is printed, and a default restart is performed immediately. If not preceded by a <a href='/2/sync'>sync</a>(2), data will be lost.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_RESTART2</strong></dt>
+<dd><p>(0xa1b2c3d4; since Linux 2.1.30). The message "Restarting system with command '%s'" is printed, and a restart (using the command string given in <code>arg</code>) is performed immediately. If not preceded by a <a href='/2/sync'>sync</a>(2), data will be lost.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_SW_SUSPEND</strong></dt>
+<dd><p>(<strong>RB_SW_SUSPEND</strong>, 0xd000fce1; since Linux 2.5.18). The system is suspended (hibernated) to disk. This option is available only if the kernel was configured with <strong>CONFIG_HIBERNATION</strong>.</p>
+</dd>
+</dl>
+<p>Only the superuser may call <a href='reboot'>reboot</a>().</p>
+<p>The precise effect of the above actions depends on the architecture. For the i386 architecture, the additional argument does not do anything at present (2.1.122), but the type of reboot can be determined by kernel command-line arguments ("reboot=...") to be either warm or cold, and either hard or through the BIOS. Since Linux 3.4, if <a href='reboot'>reboot</a>() is called from a PID namespace other than the initial PID namespace with one of the <code>cmd</code> values listed below, it performs a "reboot" of that namespace: the "init" process of the PID namespace is immediately terminated, with the effects described in <a href='/7/pid_namespaces'>pid_namespaces</a>(7).</p>
+<p>The values that can be supplied in <code>cmd</code> when calling <a href='reboot'>reboot</a>() in this case are as follows:</p>
+<dl>
+<dt><strong>LINUX_REBOOT_CMD_RESTART</strong>, <strong>LINUX_REBOOT_CMD_RESTART2</strong></dt>
+<dd><p>The "init" process is terminated, and <a href='/2/wait'>wait</a>(2) in the parent process reports that the child was killed with a <strong>SIGHUP</strong> signal.</p>
+</dd>
+<dt><strong>LINUX_REBOOT_CMD_POWER_OFF</strong>, <strong>LINUX_REBOOT_CMD_HALT</strong></dt>
+<dd><p>The "init" process is terminated, and <a href='/2/wait'>wait</a>(2) in the parent process reports that the child was killed with a <strong>SIGINT</strong> signal.</p>
+</dd>
+</dl>
+<p>For the other <code>cmd</code> values, <a href='reboot'>reboot</a>() returns -1 and <code>errno</code> is set to <strong>EINVAL</strong>.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>For the values of <code>cmd</code> that stop or restart the system, a successful call to <a href='reboot'>reboot</a>() does not return. For the other <code>cmd</code> values, zero is returned on success. In all cases, -1 is returned on failure, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>Problem with getting user-space data under <strong>LINUX_REBOOT_CMD_RESTART2</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Bad magic numbers or <code>cmd</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The calling process has insufficient privilege to call <a href='reboot'>reboot</a>(); the caller must have the <strong>CAP_SYS_BOOT</strong> inside its user namespace.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='reboot'>reboot</a>() is Linux-specific, and should not be used in programs intended to be portable.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemctl'>systemctl</a>(1), <a href='/1/systemd'>systemd</a>(1), <a href='/2/kexec_load'>kexec_load</a>(2), <a href='/2/sync'>sync</a>(2), <a href='/7/bootparam'>bootparam</a>(7), <a href='/7/capabilities'>capabilities</a>(7), <a href='/8/ctrlaltdel'>ctrlaltdel</a>(8), <a href='/8/halt'>halt</a>(8), <a href='/8/shutdown'>shutdown</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

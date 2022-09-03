@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>services - Internet network services list</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>services</strong> is a plain ASCII file providing a mapping between human-friendly textual names for internet services, and their underlying assigned port numbers and protocol types. Every networking program should look into this file to get the port number (and protocol) for its service. The C library routines <a href='/3/getservent'>getservent</a>(3), <a href='/3/getservbyname'>getservbyname</a>(3), <a href='/3/getservbyport'>getservbyport</a>(3), <a href='/3/setservent'>setservent</a>(3), and <a href='/3/endservent'>endservent</a>(3) support querying this file from programs.</p>
+<p>Port numbers are assigned by the IANA (Internet Assigned Numbers Authority), and their current policy is to assign both TCP and UDP protocols when assigning a port number. Therefore, most entries will have two entries, even for TCP-only services.</p>
+<p>Port numbers below 1024 (so-called "low numbered" ports) can be bound to only by root (see <a href='/2/bind'>bind</a>(2), <a href='/7/tcp'>tcp</a>(7), and <a href='/7/udp'>udp</a>(7)). This is so clients connecting to low numbered ports can trust that the service running on the port is the standard implementation, and not a rogue service run by a user of the machine. Well-known port numbers specified by the IANA are normally located in this root-only space.</p>
+<p>The presence of an entry for a service in the <strong>services</strong> file does not necessarily mean that the service is currently running on the machine. See <a href='/5/inetd.conf'>inetd.conf</a>(5) for the configuration of Internet services offered. Note that not all networking services are started by <a href='/8/inetd'>inetd</a>(8), and so won't appear in <a href='/5/inetd.conf'>inetd.conf</a>(5). In particular, news (NNTP) and mail (SMTP) servers are often initialized from the system boot scripts.</p>
+<p>The location of the <strong>services</strong> file is defined by <strong>_PATH_SERVICES</strong> in <code>&lt;netdb.h&gt;</code>. This is usually set to <code>/etc/services</code>.</p>
+<p>Each line describes one service, and is of the form:</p>
+<blockquote>
+<p>service-name port/protocol [aliases ...]</p>
+</blockquote>
+<dl>
+<dt>where:</dt>
+<dd>
+</dd>
+<dt><code>service-name</code></dt>
+<dd><p>is the friendly name the service is known by and looked up under. It is case sensitive. Often, the client program is named after the <code>service-name</code>.</p>
+</dd>
+<dt><code>port</code></dt>
+<dd><p>is the port number (in decimal) to use for this service.</p>
+</dd>
+<dt><code>protocol</code></dt>
+<dd><p>is the type of protocol to be used. This field should match an entry in the <a href='/5/protocols'>protocols</a>(5) file. Typical values include <strong>tcp</strong> and <strong>udp</strong>.</p>
+</dd>
+<dt><code>aliases</code></dt>
+<dd><p>is an optional space or tab separated list of other names for this service. Again, the names are case sensitive.</p>
+</dd>
+</dl>
+<p>Either spaces or tabs may be used to separate the fields.</p>
+<p>Comments are started by the hash sign (#) and continue until the end of the line. Blank lines are skipped.</p>
+<p>The <code>service-name</code> should begin in the first column of the file, since leading spaces are not stripped. <code>service-names</code> can be any printable characters excluding space and tab. However, a conservative choice of characters should be used to minimize compatibility problems. For example, a-z, 0-9, and hyphen (-) would seem a sensible choice.</p>
+<p>Lines not matching this format should not be present in the file. (Currently, they are silently skipped by <a href='/3/getservent'>getservent</a>(3), <a href='/3/getservbyname'>getservbyname</a>(3), and <a href='/3/getservbyport'>getservbyport</a>(3). However, this behavior should not be relied on.)</p>
+<p>naming service like Yellow Pages/NIS or BIND/Hesiod.</p>
+<p>A sample <strong>services</strong> file might look like this:</p>
+<pre><code>netstat         15/tcp
+qotd            17/tcp          quote
+msp             18/tcp          # message send protocol
+msp             18/udp          # message send protocol
+chargen         19/tcp          ttytst source
+chargen         19/udp          ttytst source
+ftp             21/tcp
+# 22 - unassigned
+telnet          23/tcp</code></pre>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/services</code></dt>
+<dd><p>The Internet network services list</p>
+</dd>
+<dt><code>&lt;netdb.h&gt;</code></dt>
+<dd><p>Definition of <strong>_PATH_SERVICES</strong></p>
+</dd>
+</dl>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/listen'>listen</a>(2), <a href='/3/endservent'>endservent</a>(3), <a href='/3/getservbyname'>getservbyname</a>(3), <a href='/3/getservbyport'>getservbyport</a>(3), <a href='/3/getservent'>getservent</a>(3), <a href='/3/setservent'>setservent</a>(3), <a href='/5/inetd.conf'>inetd.conf</a>(5), <a href='/5/protocols'>protocols</a>(5), <a href='/8/inetd'>inetd</a>(8)</p>
+<p>Assigned Numbers RFC, most recently RFC 1700, (AKA STD0002).</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

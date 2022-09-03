@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>lseek - reposition read/write file offset</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/types.h&gt;</strong><br/>
+<strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong>off_t lseek(int </strong><code>fd</code><strong>, off_t </strong><code>offset</code><strong>, int </strong><code>whence</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='lseek'>lseek</a>() repositions the file offset of the open file description associated with the file descriptor <code>fd</code> to the argument <code>offset</code> according to the directive <code>whence</code> as follows:</p>
+<dl>
+<dt><strong>SEEK_SET</strong></dt>
+<dd><p>The file offset is set to <code>offset</code> bytes.</p>
+</dd>
+<dt><strong>SEEK_CUR</strong></dt>
+<dd><p>The file offset is set to its current location plus <code>offset</code> bytes.</p>
+</dd>
+<dt><strong>SEEK_END</strong></dt>
+<dd><p>The file offset is set to the size of the file plus <code>offset</code> bytes.</p>
+</dd>
+</dl>
+<p><a href='lseek'>lseek</a>() allows the file offset to be set beyond the end of the file (but this does not change the size of the file). If data is later written at this point, subsequent reads of the data in the gap (a "hole") return null bytes ('\0') until data is actually written into the gap.</p>
+<h2>Seeking file data and holes</h2>
+<p>Since version 3.1, Linux supports the following additional values for <code>whence</code>:</p>
+<dl>
+<dt><strong>SEEK_DATA</strong></dt>
+<dd><p>Adjust the file offset to the next location in the file greater than or equal to <code>offset</code> containing data. If <code>offset</code> points to data, then the file offset is set to <code>offset</code>.</p>
+</dd>
+<dt><strong>SEEK_HOLE</strong></dt>
+<dd><p>Adjust the file offset to the next hole in the file greater than or equal to <code>offset</code>. If <code>offset</code> points into the middle of a hole, then the file offset is set to <code>offset</code>. If there is no hole past <code>offset</code>, then the file offset is adjusted to the end of the file (i.e., there is an implicit hole at the end of any file).</p>
+</dd>
+</dl>
+<p>In both of the above cases, <a href='lseek'>lseek</a>() fails if <code>offset</code> points past the end of the file.</p>
+<p>These operations allow applications to map holes in a sparsely allocated file. This can be useful for applications such as file backup tools, which can save space when creating backups and preserve holes, if they have a mechanism for discovering holes.</p>
+<p>For the purposes of these operations, a hole is a sequence of zeros that (normally) has not been allocated in the underlying file storage. However, a filesystem is not obliged to report holes, so these operations are not a guaranteed mechanism for mapping the storage space actually allocated to a file. (Furthermore, a sequence of zeros that actually has been written to the underlying storage may not be reported as a hole.) In the simplest implementation, a filesystem can support the operations by making <strong>SEEK_HOLE</strong> always return the offset of the end of the file, and making <strong>SEEK_DATA</strong> always return <code>offset</code> (i.e., even if the location referred to by <code>offset</code> is a hole, it can be considered to consist of data that is a sequence of zeros).</p>
+<p>The <strong>_GNU_SOURCE</strong> feature test macro must be defined in order to obtain the definitions of <strong>SEEK_DATA</strong> and <strong>SEEK_HOLE</strong> from <code>&lt;unistd.h&gt;</code>.</p>
+<p>The <strong>SEEK_HOLE</strong> and <strong>SEEK_DATA</strong> operations are supported for the following filesystems:</p>
+<ul>
+<li><p>Btrfs (since Linux 3.1)</p></li>
+<li><p>OCFS (since Linux 3.2)</p></li>
+<li><p>XFS (since Linux 3.5)</p></li>
+<li><p>ext4 (since Linux 3.8)</p></li>
+<li><p><a href='/5/tmpfs'>tmpfs</a>(5) (since Linux 3.8)</p></li>
+<li><p>NFS (since Linux 3.18)</p></li>
+<li><p>FUSE (since Linux 4.5)</p></li>
+<li><p>GFS2 (since Linux 4.15)</p></li>
+</ul>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>Upon successful completion, <a href='lseek'>lseek</a>() returns the resulting offset location as measured in bytes from the beginning of the file. On error, the value <code>(off_t) -1</code> is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not an open file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>whence</code> is not valid. Or: the resulting file offset would be negative, or beyond the end of a seekable device.</p>
+</dd>
+<dt><strong>ENXIO</strong></dt>
+<dd><p><code>whence</code> is <strong>SEEK_DATA</strong> or <strong>SEEK_HOLE</strong>, and <code>offset</code> is beyond the end of the file, or <code>whence</code> is <strong>SEEK_DATA</strong> and <code>offset</code> is within a hole at the end of the file.</p>
+</dd>
+<dt><strong>EOVERFLOW</strong></dt>
+<dd><p>The resulting file offset cannot be represented in an <code>off_t</code>.</p>
+</dd>
+<dt><strong>ESPIPE</strong></dt>
+<dd><p><code>fd</code> is associated with a pipe, socket, or FIFO.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.</p>
+<p><strong>SEEK_DATA</strong> and <strong>SEEK_HOLE</strong> are nonstandard extensions also present in Solaris, FreeBSD, and DragonFly BSD; they are proposed for inclusion in the next POSIX revision (Issue 8).</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>See <a href='/2/open'>open</a>(2) for a discussion of the relationship between file descriptors, open file descriptions, and files.</p>
+<p>If the <strong>O_APPEND</strong> file status flag is set on the open file description, then a <a href='/2/write'>write</a>(2) <code>always</code> moves the file offset to the end of the file, regardless of the use of <a href='lseek'>lseek</a>().</p>
+<p>The <code>off_t</code> data type is a signed integer data type specified by POSIX.1.</p>
+<p>Some devices are incapable of seeking and POSIX does not specify which devices must support <a href='lseek'>lseek</a>().</p>
+<p>On Linux, using <a href='lseek'>lseek</a>() on a terminal device fails with the error <strong>ESPIPE</strong>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/dup'>dup</a>(2), <a href='/2/fallocate'>fallocate</a>(2), <a href='/2/fork'>fork</a>(2), <a href='/2/open'>open</a>(2), <a href='/3/fseek'>fseek</a>(3), <a href='/3/lseek64'>lseek64</a>(3), <a href='/3/posix_fallocate'>posix_fallocate</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

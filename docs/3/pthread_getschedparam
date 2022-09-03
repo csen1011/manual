@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>pthread_setschedparam, pthread_getschedparam - set/get scheduling policy and parameters of a thread</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;pthread.h&gt;</a>
+
+int pthread_setschedparam(pthread_t thread, int policy,
+ const struct sched_param *param);
+int pthread_getschedparam(pthread_t thread, int *policy,
+ struct sched_param *param);
+
+Compile and link with -pthread.</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='pthread_setschedparam'>pthread_setschedparam</a>() function sets the scheduling policy and parameters of the thread <code>thread</code>.</p>
+<p><code>policy</code> specifies the new scheduling policy for <code>thread</code>. The supported values for <code>policy</code>, and their semantics, are described in <a href='/7/sched'>sched</a>(7).</p>
+<p>The structure pointed to by <code>param</code> specifies the new scheduling parameters for <code>thread</code>. Scheduling parameters are maintained in the following structure:</p>
+<pre><code>struct sched_param {
+    int sched_priority;     /* Scheduling priority */
+};</code></pre>
+<p>As can be seen, only one scheduling parameter is supported. For details of the permitted ranges for scheduling priorities in each scheduling policy, see <a href='/7/sched'>sched</a>(7).</p>
+<p>The <a href='pthread_getschedparam'>pthread_getschedparam</a>() function returns the scheduling policy and parameters of the thread <code>thread</code>, in the buffers pointed to by <code>policy</code> and <code>param</code>, respectively. The returned priority value is that set by the most recent <a href='pthread_setschedparam'>pthread_setschedparam</a>(), <a href='/3/pthread_setschedprio'>pthread_setschedprio</a>(3), or <a href='/3/pthread_create'>pthread_create</a>(3) call that affected <code>thread</code>. The returned priority does not reflect any temporary priority adjustments as a result of calls to any priority inheritance or priority ceiling functions (see, for example, <a href='/3/pthread_mutexattr_setprioceiling'>pthread_mutexattr_setprioceiling</a>(3) and <a href='/3/pthread_mutexattr_setprotocol'>pthread_mutexattr_setprotocol</a>(3)).</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, these functions return 0; on error, they return a nonzero error number. If <a href='pthread_setschedparam'>pthread_setschedparam</a>() fails, the scheduling policy and parameters of <code>thread</code> are not changed.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below demonstrates the use of <a href='pthread_setschedparam'>pthread_setschedparam</a>() and <a href='pthread_getschedparam'>pthread_getschedparam</a>(), as well as the use of a number of other scheduling-related pthreads functions.</p>
+<p>In the following run, the main thread sets its scheduling policy to <strong>SCHED_FIFO</strong> with a priority of 10, and initializes a thread attributes object with a scheduling policy attribute of <strong>SCHED_RR</strong> and a scheduling priority attribute of 20. The program then sets (using <a href='/3/pthread_attr_setinheritsched'>pthread_attr_setinheritsched</a>(3)) the inherit scheduler attribute of the thread attributes object to <strong>PTHREAD_EXPLICIT_SCHED</strong>, meaning that threads created using this attributes object should take their scheduling attributes from the thread attributes object. The program then creates a thread using the thread attributes object, and that thread displays its scheduling policy and priority.</p>
+<pre><code>$ su      # Need privilege to set real-time scheduling policies
+Password:
+# ./a.out -mf10 -ar20 -i e
+Scheduler settings of main thread
+    policy=SCHED_FIFO, priority=10
+
+Scheduler settings in 'attr'
+    policy=SCHED_RR, priority=20
+    inheritsched is EXPLICIT
+
+Scheduler attributes of new thread
+    policy=SCHED_RR, priority=20</code></pre>
+<p>In the above output, one can see that the scheduling policy and priority were taken from the values specified in the thread attributes object.</p>
+<p>The next run is the same as the previous, except that the inherit scheduler attribute is set to <strong>PTHREAD_INHERIT_SCHED</strong>, meaning that threads created using the thread attributes object should ignore the scheduling attributes specified in the attributes object and instead take their scheduling attributes from the creating thread.</p>
+<pre><code># ./a.out -mf10 -ar20 -i i
+Scheduler settings of main thread
+    policy=SCHED_FIFO, priority=10
+
+Scheduler settings in 'attr'
+    policy=SCHED_RR, priority=20
+    inheritsched is INHERIT
+
+Scheduler attributes of new thread
+    policy=SCHED_FIFO, priority=10</code></pre>
+<p>In the above output, one can see that the scheduling policy and priority were taken from the creating thread, rather than the thread attributes object.</p>
+<p>Note that if we had omitted the <code>-i i</code> option, the output would have been the same, since <strong>PTHREAD_INHERIT_SCHED</strong> is the default for the inherit scheduler attribute.</p>
+<h2>Program source</h2>
+<pre><code>/* pthreads_sched_test.c */
+
+#include &lt;pthread.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+
+#define handle_error_en(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+usage(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>prog_name, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>msg)
+{
+    if (msg != NULL)
+        fputs(msg, stderr);
+
+    fprintf(stderr, "Usage: %s [options]\n", prog_name);
+    fprintf(stderr, "Options are:\n");
+#define fpe(msg) fprintf(stderr, "\t%s", msg);          /* Shorter */
+    fpe("-a&lt;policy&gt;&lt;prio&gt; Set scheduling policy and priority in\n");
+    fpe("                 thread attributes object\n");
+    fpe("                 &lt;policy&gt; can be\n");
+    fpe("                     f  SCHED_FIFO\n");
+    fpe("                     r  SCHED_RR\n");
+    fpe("                     o  SCHED_OTHER\n");
+    fpe("-A               Use default thread attributes object\n");
+    fpe("-i {e|i}         Set inherit scheduler attribute to\n");
+    fpe("                 'explicit' or 'inherit'\n");
+    fpe("-m&lt;policy&gt;&lt;prio&gt; Set scheduling policy and priority on\n");
+    fpe("                 main thread before pthread_create() call\n");
+    exit(EXIT_FAILURE);
+}
+
+static int
+get_policy(char p, int *policy)
+{
+    switch (p) {
+    case 'f': *policy = SCHED_FIFO;     return 1;
+    case 'r': *policy = SCHED_RR;       return 1;
+    case 'o': *policy = SCHED_OTHER;    return 1;
+    default:  return 0;
+    }
+}
+
+static void
+display_sched_attr(int policy, struct sched_param *param)
+{
+    printf("    policy=%s, priority=%d\n",
+            (policy == SCHED_FIFO)  ? "SCHED_FIFO" :
+            (policy == SCHED_RR)    ? "SCHED_RR" :
+            (policy == SCHED_OTHER) ? "SCHED_OTHER" :
+            "???",
+            param-&gt;sched_priority);
+}
+
+static void
+display_thread_sched_attr(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>msg)
+{
+    int policy, s;
+    struct sched_param param;
+
+    s = pthread_getschedparam(pthread_self(), &amp;policy, &amp;param);
+    if (s != 0)
+        handle_error_en(s, "pthread_getschedparam");
+
+    printf("%s\n", msg);
+    display_sched_attr(policy, &amp;param);
+}
+
+static void *
+thread_start(void *arg)
+{
+    display_thread_sched_attr("Scheduler attributes of new thread");
+
+    return NULL;
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int s, opt, inheritsched, use_null_attrib, policy;
+    pthread_t thread;
+    pthread_attr_t attr;
+    pthread_attr_t *attrp;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>attr_sched_str, *main_sched_str, *inheritsched_str;
+    struct sched_param param;
+
+    /* Process command-line options */
+
+    use_null_attrib = 0;
+    attr_sched_str = NULL;
+    main_sched_str = NULL;
+    inheritsched_str = NULL;
+
+    while ((opt = getopt(argc, argv, "a:Ai:m:")) != -1) {
+        switch (opt) {
+        case 'a': attr_sched_str = optarg;      break;
+        case 'A': use_null_attrib = 1;          break;
+        case 'i': inheritsched_str = optarg;    break;
+        case 'm': main_sched_str = optarg;      break;
+        default:  usage(argv[0], "Unrecognized option\n");
+        }
+    }
+
+    if (use_null_attrib &amp;&amp;
+            (inheritsched_str != NULL || attr_sched_str != NULL))
+        usage(argv[0], "Can't specify -A with -i or -a\n");
+
+    /* Optionally set scheduling attributes of main thread,
+       and display the attributes */
+
+    if (main_sched_str != NULL) {
+        if (!get_policy(main_sched_str[0], &amp;policy))
+            usage(argv[0], "Bad policy for main thread (-m)\n");
+        param.sched_priority = strtol(&amp;main_sched_str[1], NULL, 0);
+
+        s = pthread_setschedparam(pthread_self(), policy, &amp;param);
+        if (s != 0)
+            handle_error_en(s, "pthread_setschedparam");
+    }
+
+    display_thread_sched_attr("Scheduler settings of main thread");
+    printf("\n");
+
+    /* Initialize thread attributes object according to options */
+
+    attrp = NULL;
+
+    if (!use_null_attrib) {
+        s = pthread_attr_init(&amp;attr);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_init");
+        attrp = &amp;attr;
+    }
+
+    if (inheritsched_str != NULL) {
+        if (inheritsched_str[0] == 'e')
+            inheritsched = PTHREAD_EXPLICIT_SCHED;
+        else if (inheritsched_str[0] == 'i')
+            inheritsched = PTHREAD_INHERIT_SCHED;
+        else
+            usage(argv[0], "Value for -i must be 'e' or 'i'\n");
+
+        s = pthread_attr_setinheritsched(&amp;attr, inheritsched);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_setinheritsched");
+    }
+
+    if (attr_sched_str != NULL) {
+        if (!get_policy(attr_sched_str[0], &amp;policy))
+            usage(argv[0],
+                    "Bad policy for 'attr' (-a)\n");
+        param.sched_priority = strtol(&amp;attr_sched_str[1], NULL, 0);
+
+        s = pthread_attr_setschedpolicy(&amp;attr, policy);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_setschedpolicy");
+        s = pthread_attr_setschedparam(&amp;attr, &amp;param);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_setschedparam");
+    }
+
+    /* If we initialized a thread attributes object, display
+       the scheduling attributes that were set in the object */
+
+    if (attrp != NULL) {
+        s = pthread_attr_getschedparam(&amp;attr, &amp;param);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_getschedparam");
+        s = pthread_attr_getschedpolicy(&amp;attr, &amp;policy);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_getschedpolicy");
+
+        printf("Scheduler settings in 'attr'\n");
+        display_sched_attr(policy, &amp;param);
+
+        s = pthread_attr_getinheritsched(&amp;attr, &amp;inheritsched);
+        printf("    inheritsched is %s\n",
+                (inheritsched == PTHREAD_INHERIT_SCHED)  ? "INHERIT" :
+                (inheritsched == PTHREAD_EXPLICIT_SCHED) ? "EXPLICIT" :
+                "???");
+        printf("\n");
+    }
+
+    /* Create a thread that will display its scheduling attributes */
+
+    s = pthread_create(&amp;thread, attrp, &amp;thread_start, NULL);
+    if (s != 0)
+        handle_error_en(s, "pthread_create");
+
+    /* Destroy unneeded thread attributes object */
+
+    if (!use_null_attrib) {
+      s = pthread_attr_destroy(&amp;attr);
+      if (s != 0)
+          handle_error_en(s, "pthread_attr_destroy");
+    }
+
+    s = pthread_join(thread, NULL);
+    if (s != 0)
+        handle_error_en(s, "pthread_join");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>Both of these functions can fail with the following error:</p>
+<dl>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>No thread with the ID <code>thread</code> could be found.</p>
+</dd>
+</dl>
+<p><a href='pthread_setschedparam'>pthread_setschedparam</a>() may additionally fail with the following errors:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>policy</code> is not a recognized policy, or <code>param</code> does not make sense for the <code>policy</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller does not have appropriate privileges to set the specified scheduling policy and parameters.</p>
+</dd>
+</dl>
+<p>POSIX.1 also documents an <strong>ENOTSUP</strong> ("attempt was made to set the policy or scheduling parameters to an unsupported value") error for <a href='pthread_setschedparam'>pthread_setschedparam</a>().</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='pthread_setschedparam'>pthread_setschedparam</a>(), <a href='pthread_getschedparam'>pthread_getschedparam</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For a description of the permissions required to, and the effect of, changing a thread's scheduling policy and priority, and details of the permitted ranges for priorities in each scheduling policy, see <a href='/7/sched'>sched</a>(7).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/getrlimit'>getrlimit</a>(2), <a href='/2/sched_get_priority_min'>sched_get_priority_min</a>(2), <a href='/3/pthread_attr_init'>pthread_attr_init</a>(3), <a href='/3/pthread_attr_setinheritsched'>pthread_attr_setinheritsched</a>(3), <a href='/3/pthread_attr_setschedparam'>pthread_attr_setschedparam</a>(3), <a href='/3/pthread_attr_setschedpolicy'>pthread_attr_setschedpolicy</a>(3), <a href='/3/pthread_create'>pthread_create</a>(3), <a href='/3/pthread_self'>pthread_self</a>(3), <a href='/3/pthread_setschedprio'>pthread_setschedprio</a>(3), <a href='/7/pthreads'>pthreads</a>(7), <a href='/7/sched'>sched</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

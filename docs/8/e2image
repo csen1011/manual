@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>e2image - Save critical ext2/ext3/ext4 file system metadata to a file</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>e2image</strong> [<strong>-r</strong>|<strong>-Q</strong> [<strong>-af</strong>]] [ <strong>-b</strong> <code>superblock</code> ] [ <strong>-B</strong> <code>blocksize</code> ] [ <strong>-cnps</strong> ] [ <strong>-o</strong> <code>src_offset</code> ] [ <strong>-O</strong> <code>dest_offset</code> ] <code>device</code> <code>image-file</code><br/>
+<strong>e2image</strong> <strong>-I</strong> <code>device</code> <code>image-file</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>e2image</strong> program will save critical ext2, ext3, or ext4 file system metadata located on <code>device</code> to a file specified by <code>image-file</code>. The image file may be examined by <strong>dumpe2fs</strong> and <strong>debugfs</strong>, by using the <strong>-i</strong> option to those programs. This can assist an expert in recovering catastrophically corrupted file systems.</p>
+<p>It is a very good idea to create image files for all file systems on a system and save the partition layout (which can be generated using the <strong>fdisk -l</strong> command) at regular intervals --- at boot time, and/or every week or so. The image file should be stored on some file system other than the file system whose data it contains, to ensure that this data is accessible in the case where the file system has been badly damaged.</p>
+<p>To save disk space, <strong>e2image</strong> creates the image file as a sparse file, or in QCOW2 format. Hence, if the sparse image file needs to be copied to another location, it should either be compressed first or copied using the <strong>--sparse=always</strong> option to the GNU version of <a href='/1/cp'>cp</a>(1). This does not apply to the QCOW2 image, which is not sparse.</p>
+<p>The size of an ext2 image file depends primarily on the size of the file systems and how many inodes are in use. For a typical 10 Gigabyte file system, with 200,000 inodes in use out of 1.2 million inodes, the image file will be approximately 35 Megabytes; a 4 Gigabyte file system with 15,000 inodes in use out of 550,000 inodes will result in a 3 Megabyte image file. Image files tend to be quite compressible; an image file taking up 32 Megabytes of space on disk will generally compress down to 3 or 4 Megabytes.</p>
+<p>If <code>image-file</code> is <strong>-</strong>, then the output of <strong>e2image</strong> will be sent to standard output, so that the output can be piped to another program, such as <a href='/1/gzip'>gzip</a>(1). (Note that this is currently only supported when creating a raw image file using the <strong>-r</strong> option, since the process of creating a normal image file, or QCOW2 image currently requires random access to the file, which cannot be done using a pipe.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-a</strong></dt>
+<dd><p>Include file data in the image file. Normally <strong>e2image</strong> only includes fs metadata, not regular file data. This option will produce an image that is suitable to use to clone the entire FS or for backup purposes. Note that this option only works with the raw (<code>-r</code>) or QCOW2 (<code>-Q</code>) formats. In conjunction with the <strong>-r</strong> option it is possible to clone all and only the used blocks of one file system to another device/image file.</p>
+</dd>
+<dt><strong>-b</strong><code> superblock</code></dt>
+<dd><p>Get image from partition with broken primary superblock by using the superblock located at file system block number <code>superblock</code>. The partition is copied as-is including broken primary superblock.</p>
+</dd>
+<dt><strong>-B</strong><code> blocksize</code></dt>
+<dd><p>Set the file system blocksize in bytes. Normally, <strong>e2image</strong> will search for the superblock at various different block sizes in an attempt to find the appropriate blocksize. This search can be fooled in some cases. This option forces e2fsck to only try locating the superblock with a particular blocksize. If the superblock is not found, e2image will terminate with a fatal error.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>Compare each block to be copied from the source <code>device</code> to the corresponding block in the target <code>image-file</code>. If both are already the same, the write will be skipped. This is useful if the file system is being cloned to a flash-based storage device (where reads are very fast and where it is desirable to avoid unnecessary writes to reduce write wear on the device).</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Override the read-only requirement for the source file system when saving the image file using the <strong>-r</strong> and <strong>-Q</strong> options. Normally, if the source file system is in use, the resulting image file is very likely not going to be useful. In some cases where the source file system is in constant use this may be better than no image at all.</p>
+</dd>
+<dt><strong>-I</strong></dt>
+<dd><p>install the metadata stored in the image file back to the device. It can be used to restore the file system metadata back to the device in emergency situations.</p>
+</dd>
+</dl>
+<p><strong>WARNING!!!!</strong> The <strong>-I</strong> option should only be used as a desperation measure when other alternatives have failed. If the file system has changed since the image file was created, data <strong>will</strong> be lost. In general, you should make another full image backup of the file system first, in case you wish to try other recovery strategies afterward.</p>
+<dl>
+<dt><strong>-n</strong></dt>
+<dd><p>Cause all image writes to be skipped, and instead only print the block numbers that would have been written.</p>
+</dd>
+<dt><strong>-o</strong><code> src_offset</code></dt>
+<dd><p>Specify offset of the image to be read from the start of the source <code>device</code> in bytes. See <strong>OFFSETS</strong> for more details.</p>
+</dd>
+<dt><strong>-O</strong><code> tgt_offset</code></dt>
+<dd><p>Specify offset of the image to be written from the start of the target <code>image-file</code> in bytes. See <strong>OFFSETS</strong> for more details.</p>
+</dd>
+<dt><strong>-p</strong></dt>
+<dd><p>Show progress of image-file creation.</p>
+</dd>
+<dt><strong>-Q</strong></dt>
+<dd><p>Create a QCOW2-format image file instead of a normal image file, suitable for use by virtual machine images, and other tools that can use the <strong>.qcow</strong> image format. See <strong>QCOW2 IMAGE FILES</strong> below for details.</p>
+</dd>
+<dt><strong>-r</strong></dt>
+<dd><p>Create a raw image file instead of a normal image file. See <strong>RAW IMAGE FILES</strong> below for details.</p>
+</dd>
+<dt><strong>-s</strong></dt>
+<dd><p>Scramble directory entries and zero out unused portions of the directory blocks in the written image file to avoid revealing information about the contents of the file system. However, this will prevent analysis of problems related to hash-tree indexed directories.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='raw-image-files'><a href='#raw-image-files'>RAW IMAGE FILES</a></h1><div data-for='raw-image-files' data-hide><div class='section' data-for='raw-image-files'><div data-more>
+<p>The <strong>-r</strong> option will create a raw image file, which differs from a normal image file in two ways. First, the file system metadata is placed in the same relative offset within <code>image-file</code> as it is in the <code>device</code> so that <a href='/8/debugfs'>debugfs</a>(8), <a href='/8/dumpe2fs'>dumpe2fs</a>(8), <a href='/8/e2fsck'>e2fsck</a>(8), <a href='/8/losetup'>losetup</a>(8), etc. and can be run directly on the raw image file. In order to minimize the amount of disk space consumed by the raw image file, it is created as a sparse file. (Beware of copying or compressing/decompressing this file with utilities that don't understand how to create sparse files; the file will become as large as the file system itself!) Secondly, the raw image file also includes indirect blocks and directory blocks, which the standard image file does not have.</p>
+<p>Raw image files are sometimes used when sending file systems to the maintainer as part of bug reports to e2fsprogs. When used in this capacity, the recommended command is as follows (replace <strong>hda1</strong> with the appropriate device for your system):</p>
+<p><br/>
+<strong>e2image -r /dev/hda1 - | bzip2 &gt; hda1.e2i.bz2</strong></p>
+<p>This will only send the metadata information, without any data blocks. However, the filenames in the directory blocks can still reveal information about the contents of the file system that the bug reporter may wish to keep confidential. To address this concern, the <strong>-s</strong> option can be specified to scramble the filenames in the image.</p>
+<p>Note that this will work even if you substitute <strong>/dev/hda1</strong> for another raw disk image, or QCOW2 image previously created by <strong>e2image</strong>.</p>
+</div></div></div><h1 id='qcow2-image-files'><a href='#qcow2-image-files'>QCOW2 IMAGE FILES</a></h1><div data-for='qcow2-image-files' data-hide><div class='section' data-for='qcow2-image-files'><div data-more>
+<p>The <strong>-Q</strong> option will create a QCOW2 image file instead of a normal, or raw image file. A QCOW2 image contains all the information the raw image does, however unlike the raw image it is not sparse. The QCOW2 image minimize the amount of space used by the image by storing it in special format which packs data closely together, hence avoiding holes while still minimizing size.</p>
+<p>In order to send file system to the maintainer as a part of bug report to e2fsprogs, use following commands (replace <strong>hda1</strong> with the appropriate device for your system):</p>
+<p><br/>
+<strong>e2image -Q /dev/hda1 hda1.qcow2</strong><br/>
+<strong>bzip2 -z hda1.qcow2</strong></p>
+<p>This will only send the metadata information, without any data blocks. As described for <strong>RAW IMAGE FILES</strong> the <strong>-s</strong> option can be specified to scramble the file system names in the image.</p>
+<p>Note that the QCOW2 image created by <strong>e2image</strong> is a regular QCOW2 image and can be processed by tools aware of QCOW2 format such as for example <strong>qemu-img</strong>.</p>
+<p>You can convert a .qcow2 image into a raw image with:</p>
+<p><br/>
+<strong>e2image -r hda1.qcow2 hda1.raw</strong><br/>
+</p>
+<p>This can be useful to write a QCOW2 image containing all data to a sparse image file where it can be loop mounted, or to a disk partition. Note that this may not work with QCOW2 images not generated by e2image.</p>
+</div></div></div><h1 id='offsets'><a href='#offsets'>OFFSETS</a></h1><div data-for='offsets' data-hide><div class='section' data-for='offsets'><div data-more>
+<p>Normally a file system starts at the beginning of a partition, and <strong>e2image</strong> is run on the partition. When working with image files, you don't have the option of using the partition device, so you can specify the offset where the file system starts directly with the <strong>-o</strong> option. Similarly the <strong>-O</strong> option specifies the offset that should be seeked to in the destination before writing the file system.</p>
+<p>For example, if you have a <strong>dd</strong> image of a whole hard drive that contains an ext2 fs in a partition starting at 1 MiB, you can clone that image to a block device with:</p>
+<p><br/>
+<strong>e2image -aro 1048576 img /dev/sda1</strong><br/>
+</p>
+<p>Or you can clone a file system from a block device into an image file, leaving room in the first MiB for a partition table with:</p>
+<p><br/>
+<strong>e2image -arO 1048576 /dev/sda1 img</strong><br/>
+</p>
+<p>If you specify at least one offset, and only one file, an in-place move will be performed, allowing you to safely move the file system from one offset to another.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p><strong>e2image</strong> was written by Theodore Ts'o (<a href="mailto:tytso@mit.edu">tytso@mit.edu</a>).</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p><strong>e2image</strong> is part of the e2fsprogs package and is available from <a href="http://e2fsprogs.sourceforge.net">http://e2fsprogs.sourceforge.net</a>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/8/dumpe2fs'>dumpe2fs</a>(8), <a href='/8/debugfs'>debugfs</a>(8) <a href='/8/e2fsck'>e2fsck</a>(8)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

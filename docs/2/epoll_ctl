@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>epoll_ctl - control interface for an epoll file descriptor</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/epoll.h&gt;</strong></p>
+<p><strong>int epoll_ctl(int </strong><code>epfd</code><strong>, int </strong><code>op</code><strong>, int </strong><code>fd</code><strong>, struct epoll_event *</strong><code>event</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This system call is used to add, modify, or remove entries in the interest list of the <a href='/7/epoll'>epoll</a>(7) instance referred to by the file descriptor <code>epfd</code>. It requests that the operation <code>op</code> be performed for the target file descriptor, <code>fd</code>.</p>
+<p>Valid values for the <code>op</code> argument are:</p>
+<dl>
+<dt><strong>EPOLL_CTL_ADD</strong></dt>
+<dd><p>Add an entry to the interest list of the epoll file descriptor, <code>epfd</code>. The entry includes the file descriptor, <code>fd</code>, a reference to the corresponding open file description (see <a href='/7/epoll'>epoll</a>(7) and <a href='/2/open'>open</a>(2)), and the settings specified in <code>event</code>.</p>
+</dd>
+<dt><strong>EPOLL_CTL_MOD</strong></dt>
+<dd><p>Change the settings associated with <code>fd</code> in the interest list to the new settings specified in <code>event</code>.</p>
+</dd>
+<dt><strong>EPOLL_CTL_DEL</strong></dt>
+<dd><p>Remove (deregister) the target file descriptor <code>fd</code> from the interest list. The <code>event</code> argument is ignored and can be NULL (but see BUGS below).</p>
+</dd>
+</dl>
+<p>The <code>event</code> argument describes the object linked to the file descriptor <code>fd</code>. The <code>struct epoll_event</code> is defined as:</p>
+<pre><code>typedef union epoll_data {
+    void        *ptr;
+    int          fd;
+    uint32_t     u32;
+    uint64_t     u64;
+} epoll_data_t;
+
+struct epoll_event {
+    uint32_t     events;      /* Epoll events */
+    epoll_data_t data;        /* User data variable */
+};</code></pre>
+<p>The <code>data</code> member of the <code>epoll_event</code> structure specifies data that the kernel should save and then return (via <a href='/2/epoll_wait'>epoll_wait</a>(2)) when this file descriptor becomes ready.</p>
+<p>The <code>events</code> member of the <code>epoll_event</code> structure is a bit mask composed by ORing together zero or more of the following available event types:</p>
+<dl>
+<dt><strong>EPOLLIN</strong></dt>
+<dd><p>The associated file is available for <a href='/2/read'>read</a>(2) operations.</p>
+</dd>
+<dt><strong>EPOLLOUT</strong></dt>
+<dd><p>The associated file is available for <a href='/2/write'>write</a>(2) operations.</p>
+</dd>
+<dt><strong>EPOLLRDHUP</strong> (since Linux 2.6.17)</dt>
+<dd><p>Stream socket peer closed connection, or shut down writing half of connection. (This flag is especially useful for writing simple code to detect peer shutdown when using edge-triggered monitoring.)</p>
+</dd>
+<dt><strong>EPOLLPRI</strong></dt>
+<dd><p>There is an exceptional condition on the file descriptor. See the discussion of <strong>POLLPRI</strong> in <a href='/2/poll'>poll</a>(2).</p>
+</dd>
+<dt><strong>EPOLLERR</strong></dt>
+<dd><p>Error condition happened on the associated file descriptor. This event is also reported for the write end of a pipe when the read end has been closed.</p>
+<p><a href='/2/epoll_wait'>epoll_wait</a>(2) will always report for this event; it is not necessary to set it in <code>events</code> when calling <a href='epoll_ctl'>epoll_ctl</a>().</p>
+</dd>
+<dt><strong>EPOLLHUP</strong></dt>
+<dd><p>Hang up happened on the associated file descriptor.</p>
+<p><a href='/2/epoll_wait'>epoll_wait</a>(2) will always wait for this event; it is not necessary to set it in <code>events</code> when calling <a href='epoll_ctl'>epoll_ctl</a>().</p>
+<p>Note that when reading from a channel such as a pipe or a stream socket, this event merely indicates that the peer closed its end of the channel. Subsequent reads from the channel will return 0 (end of file) only after all outstanding data in the channel has been consumed.</p>
+</dd>
+<dt><strong>EPOLLET</strong></dt>
+<dd><p>Requests edge-triggered notification for the associated file descriptor. The default behavior for <strong>epoll</strong> is level-triggered. See <a href='/7/epoll'>epoll</a>(7) for more detailed information about edge-triggered and level-triggered notification.</p>
+<p>This flag is an input flag for the <code>event.events</code> field when calling <a href='epoll_ctl'>epoll_ctl</a>(); it is never returned by <a href='/2/epoll_wait'>epoll_wait</a>(2).</p>
+</dd>
+<dt><strong>EPOLLONESHOT</strong> (since Linux 2.6.2)</dt>
+<dd><p>Requests one-shot notification for the associated file descriptor. This means that after an event notified for the file descriptor by <a href='/2/epoll_wait'>epoll_wait</a>(2), the file descriptor is disabled in the interest list and no other events will be reported by the <strong>epoll</strong> interface. The user must call <a href='epoll_ctl'>epoll_ctl</a>() with <strong>EPOLL_CTL_MOD</strong> to rearm the file descriptor with a new event mask.</p>
+<p>This flag is an input flag for the <code>event.events</code> field when calling <a href='epoll_ctl'>epoll_ctl</a>(); it is never returned by <a href='/2/epoll_wait'>epoll_wait</a>(2).</p>
+</dd>
+<dt><strong>EPOLLWAKEUP</strong> (since Linux 3.5)</dt>
+<dd><p>If <strong>EPOLLONESHOT</strong> and <strong>EPOLLET</strong> are clear and the process has the <strong>CAP_BLOCK_SUSPEND</strong> capability, ensure that the system does not enter "suspend" or "hibernate" while this event is pending or being processed. The event is considered as being "processed" from the time when it is returned by a call to <a href='/2/epoll_wait'>epoll_wait</a>(2) until the next call to <a href='/2/epoll_wait'>epoll_wait</a>(2) on the same <a href='/7/epoll'>epoll</a>(7) file descriptor, the closure of that file descriptor, the removal of the event file descriptor with <strong>EPOLL_CTL_DEL</strong>, or the clearing of <strong>EPOLLWAKEUP</strong> for the event file descriptor with <strong>EPOLL_CTL_MOD</strong>. See also BUGS.</p>
+<p>This flag is an input flag for the <code>event.events</code> field when calling <a href='epoll_ctl'>epoll_ctl</a>(); it is never returned by <a href='/2/epoll_wait'>epoll_wait</a>(2).</p>
+</dd>
+<dt><strong>EPOLLEXCLUSIVE</strong> (since Linux 4.5)</dt>
+<dd><p>Sets an exclusive wakeup mode for the epoll file descriptor that is being attached to the target file descriptor, <code>fd</code>. When a wakeup event occurs and multiple epoll file descriptors are attached to the same target file using <strong>EPOLLEXCLUSIVE</strong>, one or more of the epoll file descriptors will receive an event with <a href='/2/epoll_wait'>epoll_wait</a>(2). The default in this scenario (when <strong>EPOLLEXCLUSIVE</strong> is not set) is for all epoll file descriptors to receive an event. <strong>EPOLLEXCLUSIVE</strong> is thus useful for avoiding thundering herd problems in certain scenarios.</p>
+<p>If the same file descriptor is in multiple epoll instances, some with the <strong>EPOLLEXCLUSIVE</strong> flag, and others without, then events will be provided to all epoll instances that did not specify <strong>EPOLLEXCLUSIVE</strong>, and at least one of the epoll instances that did specify <strong>EPOLLEXCLUSIVE</strong>.</p>
+<p>The following values may be specified in conjunction with <strong>EPOLLEXCLUSIVE</strong>: <strong>EPOLLIN</strong>, <strong>EPOLLOUT</strong>, <strong>EPOLLWAKEUP</strong>, and <strong>EPOLLET</strong>. <strong>EPOLLHUP</strong> and <strong>EPOLLERR</strong> can also be specified, but this is not required: as usual, these events are always reported if they occur, regardless of whether they are specified in <code>events</code>. Attempts to specify other values in <code>events</code> yield the error <strong>EINVAL</strong>.</p>
+<p><strong>EPOLLEXCLUSIVE</strong> may be used only in an <strong>EPOLL_CTL_ADD</strong> operation; attempts to employ it with <strong>EPOLL_CTL_MOD</strong> yield an error. If <strong>EPOLLEXCLUSIVE</strong> has been set using <a href='epoll_ctl'>epoll_ctl</a>(), then a subsequent <strong>EPOLL_CTL_MOD</strong> on the same <code>epfd</code>, <code>fd</code> pair yields an error. A call to <a href='epoll_ctl'>epoll_ctl</a>() that specifies <strong>EPOLLEXCLUSIVE</strong> in <code>events</code> and specifies the target file descriptor <code>fd</code> as an epoll instance will likewise fail. The error in all of these cases is <strong>EINVAL</strong>.</p>
+<p>The <strong>EPOLLEXCLUSIVE</strong> flag is an input flag for the <code>event.events</code> field when calling <a href='epoll_ctl'>epoll_ctl</a>(); it is never returned by <a href='/2/epoll_wait'>epoll_wait</a>(2).</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>When successful, <a href='epoll_ctl'>epoll_ctl</a>() returns zero. When an error occurs, <a href='epoll_ctl'>epoll_ctl</a>() returns -1 and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>epfd</code> or <code>fd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p><code>op</code> was <strong>EPOLL_CTL_ADD</strong>, and the supplied file descriptor <code>fd</code> is already registered with this epoll instance.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>epfd</code> is not an <strong>epoll</strong> file descriptor, or <code>fd</code> is the same as <code>epfd</code>, or the requested operation <code>op</code> is not supported by this interface.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid event type was specified along with <strong>EPOLLEXCLUSIVE</strong> in <code>events</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>op</code> was <strong>EPOLL_CTL_MOD</strong> and <code>events</code> included <strong>EPOLLEXCLUSIVE</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>op</code> was <strong>EPOLL_CTL_MOD</strong> and the <strong>EPOLLEXCLUSIVE</strong> flag has previously been applied to this <code>epfd</code>, <code>fd</code> pair.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><strong>EPOLLEXCLUSIVE</strong> was specified in <code>event</code> and <code>fd</code> refers to an epoll instance.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p><code>fd</code> refers to an epoll instance and this <strong>EPOLL_CTL_ADD</strong> operation would result in a circular loop of epoll instances monitoring one another or a nesting depth of epoll instances greater than 5.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p><code>op</code> was <strong>EPOLL_CTL_MOD</strong> or <strong>EPOLL_CTL_DEL</strong>, and <code>fd</code> is not registered with this epoll instance.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>There was insufficient memory to handle the requested <code>op</code> control operation.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>The limit imposed by <code>/proc/sys/fs/epoll/max_user_watches</code> was encountered while trying to register (<strong>EPOLL_CTL_ADD</strong>) a new file descriptor on an epoll instance. See <a href='/7/epoll'>epoll</a>(7) for further details.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The target file <code>fd</code> does not support <strong>epoll</strong>. This error can occur if <code>fd</code> refers to, for example, a regular file or a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='epoll_ctl'>epoll_ctl</a>() was added to the kernel in version 2.6. Library support is provided in glibc starting with version 2.3.2.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='epoll_ctl'>epoll_ctl</a>() is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The <strong>epoll</strong> interface supports all file descriptors that support <a href='/2/poll'>poll</a>(2).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In kernel versions before 2.6.9, the <strong>EPOLL_CTL_DEL</strong> operation required a non-null pointer in <code>event</code>, even though this argument is ignored. Since Linux 2.6.9, <code>event</code> can be specified as NULL when using <strong>EPOLL_CTL_DEL</strong>. Applications that need to be portable to kernels before 2.6.9 should specify a non-null pointer in <code>event</code>.</p>
+<p>If <strong>EPOLLWAKEUP</strong> is specified in <code>flags</code>, but the caller does not have the <strong>CAP_BLOCK_SUSPEND</strong> capability, then the <strong>EPOLLWAKEUP</strong> flag is <code>silently ignored</code>. This unfortunate behavior is necessary because no validity checks were performed on the <code>flags</code> argument in the original implementation, and the addition of the <strong>EPOLLWAKEUP</strong> with a check that caused the call to fail if the caller did not have the <strong>CAP_BLOCK_SUSPEND</strong> capability caused a breakage in at least one existing user-space application that happened to randomly (and uselessly) specify this bit. A robust application should therefore double check that it has the <strong>CAP_BLOCK_SUSPEND</strong> capability if attempting to use the <strong>EPOLLWAKEUP</strong> flag.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/epoll_create'>epoll_create</a>(2), <a href='/2/epoll_wait'>epoll_wait</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/7/epoll'>epoll</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

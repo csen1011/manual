@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>badblocks - search a device for bad blocks</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>badblocks</strong> [ <strong>-svwnfBX</strong> ] [ <strong>-b</strong> <code>block_size</code> ] [ <strong>-c</strong> <code>blocks_at_once</code> ] [ <strong>-d</strong> <code>read_delay_factor</code> ] [ <strong>-e</strong> <code>max_bad_blocks</code> ] [ <strong>-i</strong> <code>input_file</code> ] [ <strong>-o</strong> <code>output_file</code> ] [ <strong>-p</strong> <code>num_passes</code> ] [ <strong>-t</strong> <code>test_pattern</code> ] <code>device</code> [ <code>last_block</code> ] [ <code>first_block</code> ]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>badblocks</strong> is used to search for bad blocks on a device (usually a disk partition). <code>device</code> is the special file corresponding to the device (e.g <code>/dev/hdc1</code>). <code>last_block</code> is the last block to be checked; if it is not specified, the last block on the device is used as a default. <code>first_block</code> is an optional parameter specifying the starting block number for the test, which allows the testing to start in the middle of the disk. If it is not specified the first block on the disk is used as a default.</p>
+<p><strong>Important note:</strong> If the output of <strong>badblocks</strong> is going to be fed to the <strong>e2fsck</strong> or <strong>mke2fs</strong> programs, it is important that the block size is properly specified, since the block numbers which are generated are very dependent on the block size in use by the file system. For this reason, it is strongly recommended that users <strong>not</strong> run <strong>badblocks</strong> directly, but rather use the <strong>-c</strong> option of the <strong>e2fsck</strong> and <strong>mke2fs</strong> programs.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-b</strong><code> block_size</code></dt>
+<dd><p>Specify the size of blocks in bytes. The default is 1024.</p>
+</dd>
+<dt><strong>-c</strong><code> number of blocks</code></dt>
+<dd><p>is the number of blocks which are tested at a time. The default is 64.</p>
+</dd>
+<dt><strong>-d</strong><code> read delay factor</code></dt>
+<dd><p>This parameter, if passed and non-zero, will cause bad blocks to sleep between reads if there were no errors encountered in the read operation; the delay will be calculated as a percentage of the time it took for the read operation to be performed. In other words, a value of 100 will cause each read to be delayed by the amount the previous read took, and a value of 200 by twice the amount.</p>
+</dd>
+<dt><strong>-e</strong><code> max bad block count</code></dt>
+<dd><p>Specify a maximum number of bad blocks before aborting the test. The default is 0, meaning the test will continue until the end of the test range is reached.</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Normally, badblocks will refuse to do a read/write or a non-destructive test on a device which is mounted, since either can cause the system to potentially crash and/or damage the file system even if it is mounted read-only. This can be overridden using the <strong>-f</strong> flag, but should almost never be used --- if you think you're smarter than the <strong>badblocks</strong> program, you almost certainly aren't. The only time when this option might be safe to use is if the /etc/mtab file is incorrect, and the device really isn't mounted.</p>
+</dd>
+<dt><strong>-i</strong><code> input_file</code></dt>
+<dd><p>Read a list of already existing known bad blocks. <strong>Badblocks</strong> will skip testing these blocks since they are known to be bad. If <code>input_file</code> is specified as "-", the list will be read from the standard input. Blocks listed in this list will be omitted from the list of <code>new</code> bad blocks produced on the standard output or in the output file. The <strong>-b</strong> option of <a href='/8/dumpe2fs'>dumpe2fs</a>(8) can be used to retrieve the list of blocks currently marked bad on an existing file system, in a format suitable for use with this option.</p>
+</dd>
+<dt><strong>-n</strong></dt>
+<dd><p>Use non-destructive read-write mode. By default only a non-destructive read-only test is done. This option must not be combined with the <strong>-w</strong> option, as they are mutually exclusive.</p>
+</dd>
+<dt><strong>-o</strong><code> output_file</code></dt>
+<dd><p>Write the list of bad blocks to the specified file. Without this option, <strong>badblocks</strong> displays the list on its standard output. The format of this file is suitable for use by the <strong>-l</strong> option in <a href='/8/e2fsck'>e2fsck</a>(8) or <a href='/8/mke2fs'>mke2fs</a>(8).</p>
+</dd>
+<dt><strong>-p</strong><code> num_passes</code></dt>
+<dd><p>Repeat scanning the disk until there are no new blocks discovered in num_passes consecutive scans of the disk. Default is 0, meaning <strong>badblocks</strong> will exit after the first pass.</p>
+</dd>
+<dt><strong>-s</strong></dt>
+<dd><p>Show the progress of the scan by writing out rough percentage completion of the current badblocks pass over the disk. Note that badblocks may do multiple test passes over the disk, in particular if the <strong>-p</strong> or <strong>-w</strong> option is requested by the user.</p>
+</dd>
+<dt><strong>-t</strong><code> test_pattern</code></dt>
+<dd><p>Specify a test pattern to be read (and written) to disk blocks. The <code>test_pattern</code> may either be a numeric value between 0 and ULONG_MAX-1 inclusive, or the word "random", which specifies that the block should be filled with a random bit pattern. For read/write (<strong>-w</strong>) and non-destructive (<strong>-n</strong>) modes, one or more test patterns may be specified by specifying the <strong>-t</strong> option for each test pattern desired. For read-only mode only a single pattern may be specified and it may not be "random". Read-only testing with a pattern assumes that the specified pattern has previously been written to the disk - if not, large numbers of blocks will fail verification. If multiple patterns are specified then all blocks will be tested with one pattern before proceeding to the next pattern.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Verbose mode. Will write the number of read errors, write errors and data- corruptions to stderr.</p>
+</dd>
+<dt><strong>-w</strong></dt>
+<dd><p>Use write-mode test. With this option, <strong>badblocks</strong> scans for bad blocks by writing some patterns (0xaa, 0x55, 0xff, 0x00) on every block of the device, reading every block and comparing the contents. This option may not be combined with the <strong>-n</strong> option, as they are mutually exclusive.</p>
+</dd>
+<dt><strong>-B</strong></dt>
+<dd><p>Use buffered I/O and do not use Direct I/O, even if it is available.</p>
+</dd>
+<dt><strong>-X</strong></dt>
+<dd><p>Internal flag only to be used by <a href='/8/e2fsck'>e2fsck</a>(8) and <a href='/8/mke2fs'>mke2fs</a>(8). It bypasses the exclusive mode in-use device safety check.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='warning'><a href='#warning'>WARNING</a></h1><div data-for='warning' data-hide><div class='section' data-for='warning'><div data-more>
+<p>Never use the <strong>-w</strong> option on a device containing an existing file system. This option erases data! If you want to do write-mode testing on an existing file system, use the <strong>-n</strong> option instead. It is slower, but it will preserve your data.</p>
+<p>The <strong>-e</strong> option will cause badblocks to output a possibly incomplete list of bad blocks. Therefore it is recommended to use it only when one wants to know if there are any bad blocks at all on the device, and not when the list of bad blocks is wanted.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p><strong>badblocks</strong> was written by Remy Card &lt;<a href="mailto:Remy.Card@linux.org">Remy.Card@linux.org</a>&gt;. Current maintainer is Theodore Ts'o &lt;<a href="mailto:tytso@alum.mit.edu">tytso@alum.mit.edu</a>&gt;. Non-destructive read/write test implemented by David Beattie &lt;<a href="mailto:dbeattie@softhome.net">dbeattie@softhome.net</a>&gt;.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p><strong>badblocks</strong> is part of the e2fsprogs package and is available from <a href="http://e2fsprogs.sourceforge.net">http://e2fsprogs.sourceforge.net</a>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/8/e2fsck'>e2fsck</a>(8), <a href='/8/mke2fs'>mke2fs</a>(8)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

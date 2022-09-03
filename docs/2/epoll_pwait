@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>epoll_wait, epoll_pwait - wait for an I/O event on an epoll file descriptor</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/epoll.h&gt;</a>
+
+int epoll_wait(int epfd, struct epoll_event *events,
+ int maxevents, int timeout);
+int epoll_pwait(int epfd, struct epoll_event *events,
+ int maxevents, int timeout,
+ const sigset_t *sigmask);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='epoll_wait'>epoll_wait</a>() system call waits for events on the <a href='/7/epoll'>epoll</a>(7) instance referred to by the file descriptor <code>epfd</code>. The buffer pointed to by <code>events</code> is used to return information from the ready list about file descriptors in the interest list that have some events available. Up to <code>maxevents</code> are returned by <a href='epoll_wait'>epoll_wait</a>(). The <code>maxevents</code> argument must be greater than zero.</p>
+<p>The <code>timeout</code> argument specifies the number of milliseconds that <a href='epoll_wait'>epoll_wait</a>() will block. Time is measured against the <strong>CLOCK_MONOTONIC</strong> clock.</p>
+<p>A call to <a href='epoll_wait'>epoll_wait</a>() will block until either:</p>
+<ul>
+<li><p>a file descriptor delivers an event;</p></li>
+<li><p>the call is interrupted by a signal handler; or</p></li>
+<li><p>the timeout expires.</p></li>
+</ul>
+<p>Note that the <code>timeout</code> interval will be rounded up to the system clock granularity, and kernel scheduling delays mean that the blocking interval may overrun by a small amount. Specifying a <code>timeout</code> of -1 causes <a href='epoll_wait'>epoll_wait</a>() to block indefinitely, while specifying a <code>timeout</code> equal to zero cause <a href='epoll_wait'>epoll_wait</a>() to return immediately, even if no events are available.</p>
+<p>The <code>struct epoll_event</code> is defined as:</p>
+<pre><code>typedef union epoll_data {
+    void    *ptr;
+    int      fd;
+    uint32_t u32;
+    uint64_t u64;
+} epoll_data_t;
+
+struct epoll_event {
+    uint32_t     events;    /* Epoll events */
+    epoll_data_t data;      /* User data variable */
+};</code></pre>
+<p>The <code>data</code> field of each returned <code>epoll_event</code> structure contains the same data as was specified in the most recent call to <a href='/2/epoll_ctl'>epoll_ctl</a>(2) (<strong>EPOLL_CTL_ADD</strong>, <strong>EPOLL_CTL_MOD</strong>) for the corresponding open file descriptor.</p>
+<p>The <code>events</code> field is a bit mask that indicates the events that have occurred for the corresponding open file description. See <a href='/2/epoll_ctl'>epoll_ctl</a>(2) for a list of the bits that may appear in this mask. The relationship between <a href='epoll_wait'>epoll_wait</a>() and <a href='epoll_pwait'>epoll_pwait</a>() is analogous to the relationship between <a href='/2/select'>select</a>(2) and <a href='/2/pselect'>pselect</a>(2): like <a href='/2/pselect'>pselect</a>(2), <a href='epoll_pwait'>epoll_pwait</a>() allows an application to safely wait until either a file descriptor becomes ready or until a signal is caught.</p>
+<p>The following <a href='epoll_pwait'>epoll_pwait</a>() call:</p>
+<pre><code>ready = epoll_pwait(epfd, &amp;events, maxevents, timeout, &amp;sigmask);</code></pre>
+<p>is equivalent to <code>atomically</code> executing the following calls:</p>
+<pre><code>sigset_t origmask;
+
+pthread_sigmask(SIG_SETMASK, &amp;sigmask, &amp;origmask);
+ready = epoll_wait(epfd, &amp;events, maxevents, timeout);
+pthread_sigmask(SIG_SETMASK, &amp;origmask, NULL);</code></pre>
+<p>The <code>sigmask</code> argument may be specified as NULL, in which case <a href='epoll_pwait'>epoll_pwait</a>() is equivalent to <a href='epoll_wait'>epoll_wait</a>().</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>When successful, <a href='epoll_wait'>epoll_wait</a>() returns the number of file descriptors ready for the requested I/O, or zero if no file descriptor became ready during the requested <code>timeout</code> milliseconds. When an error occurs, <a href='epoll_wait'>epoll_wait</a>() returns -1 and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>epfd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The memory area pointed to by <code>events</code> is not accessible with write permissions.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The call was interrupted by a signal handler before either (1) any of the requested events occurred or (2) the <code>timeout</code> expired; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>epfd</code> is not an <strong>epoll</strong> file descriptor, or <code>maxevents</code> is less than or equal to zero.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='epoll_wait'>epoll_wait</a>() was added to the kernel in version 2.6. Library support is provided in glibc starting with version 2.3.2.</p>
+<p><a href='epoll_pwait'>epoll_pwait</a>() was added to Linux in kernel 2.6.19. Library support is provided in glibc starting with version 2.6.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='epoll_wait'>epoll_wait</a>() is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>While one thread is blocked in a call to <a href='epoll_wait'>epoll_wait</a>(), it is possible for another thread to add a file descriptor to the waited-upon <strong>epoll</strong> instance. If the new file descriptor becomes ready, it will cause the <a href='epoll_wait'>epoll_wait</a>() call to unblock.</p>
+<p>If more than <code>maxevents</code> file descriptors are ready when <a href='epoll_wait'>epoll_wait</a>() is called, then successive <a href='epoll_wait'>epoll_wait</a>() calls will round robin through the set of ready file descriptors. This behavior helps avoid starvation scenarios, where a process fails to notice that additional file descriptors are ready because it focuses on a set of file descriptors that are already known to be ready.</p>
+<p>Note that it is possible to call <a href='epoll_wait'>epoll_wait</a>() on an <strong>epoll</strong> instance whose interest list is currently empty (or whose interest list becomes empty because file descriptors are closed or removed from the interest in another thread). The call will block until some file descriptor is later added to the interest list (in another thread) and that file descriptor becomes ready.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In kernels before 2.6.37, a <code>timeout</code> value larger than approximately <code>LONG_MAX / HZ</code> milliseconds is treated as -1 (i.e., infinity). Thus, for example, on a system where <code>sizeof(long)</code> is 4 and the kernel <code>HZ</code> value is 1000, this means that timeouts greater than 35.79 minutes are treated as infinity.</p>
+<h2>C library/kernel differences</h2>
+<p>The raw <a href='epoll_pwait'>epoll_pwait</a>() system call has a sixth argument, <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> sigsetsize</code>, which specifies the size in bytes of the <code>sigmask</code> argument. The glibc <a href='epoll_pwait'>epoll_pwait</a>() wrapper function specifies this argument as a fixed value (equal to <code>sizeof(sigset_t)</code>).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/epoll_create'>epoll_create</a>(2), <a href='/2/epoll_ctl'>epoll_ctl</a>(2), <a href='/7/epoll'>epoll</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>zic - timezone compiler</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>zic</strong> [ <code>option</code> ... ] [ <code>filename</code> ... ]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>zic</strong> program reads text from the file(s) named on the command line and creates the time conversion information files specified in this input. If a <code>filename</code> is “-”, standard input is read.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>--version</strong></dt>
+<dd><p>Output version information and exit.</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>Output short usage message and exit.</p>
+</dd>
+<dt><strong>-b </strong><code>bloat</code></dt>
+<dd><p>Output backward-compatibility data as specified by <code>bloat</code>. If <code>bloat</code> is <strong>fat</strong>, generate additional data entries that work around potential bugs or incompatibilities in older software, such as software that mishandles the 64-bit generated data. If <code>bloat</code> is <strong>slim</strong>, keep the output files small; this can help check for the bugs and incompatibilities. Although the default is currently <strong>fat</strong>, this is intended to change in future <strong>zic</strong> versions, as software that mishandles the 64-bit data typically mishandles timestamps after the year 2038 anyway. Also see the <strong>-r</strong> option for another way to shrink output size.</p>
+</dd>
+<dt><strong>-d </strong><code>directory</code></dt>
+<dd><p>Create time conversion information files in the named directory rather than in the standard directory named below.</p>
+</dd>
+<dt><strong>-l </strong><code>timezone</code></dt>
+<dd><p>Use <code>timezone</code> as local time. <strong>zic</strong> will act as if the input contained a link line of the form</p>
+</dd>
+</dl>
+<p>Link <code>timezone</code> localtime</p>
+<dl>
+<dt><strong>-L </strong><code>leapsecondfilename</code></dt>
+<dd><p>Read leap second information from the file with the given name. If this option is not used, no leap second information appears in output files.</p>
+</dd>
+<dt><strong>-p </strong><code>timezone</code></dt>
+<dd><p>Use <code>timezone</code>'s rules when handling nonstandard TZ strings like "EET-2EEST" that lack transition rules. <strong>zic</strong> will act as if the input contained a link line of the form</p>
+</dd>
+</dl>
+<p>Link <code>timezone</code> posixrules</p>
+<p>This feature is obsolete and poorly supported. Among other things it should not be used for timestamps after the year 2037, and it should not be combined with <strong>-b slim</strong> if <code>timezone</code>'s transitions are at standard time or Universal Time (UT) instead of local time.</p>
+<dl>
+<dt><strong>-r </strong>[<strong>@</strong><code>lo</code>][<strong>/@</strong><code>hi</code>]</dt>
+<dd><p>Reduce the size of output files by limiting their applicability to timestamps in the range from <code>lo</code> (inclusive) to <code>hi</code> (exclusive), where <code>lo</code> and <code>hi</code> are possibly-signed decimal counts of seconds since the Epoch (1970-01-01 00:00:00 UTC). Omitted counts default to extreme values. For example, “zic -r @0” omits data intended for negative timestamps (i.e., before the Epoch), and “zic -r @0/@2147483648” outputs data intended only for nonnegative timestamps that fit into 31-bit signed integers. On platforms with GNU <strong>date</strong>, “zic -r @$(date +%s)” omits data intended for past timestamps. Also see the <strong>-b slim</strong> option for another way to shrink output size.</p>
+</dd>
+<dt><strong>-t </strong><code>file</code></dt>
+<dd><p>When creating local time information, put the configuration link in the named file rather than in the standard location.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Be more verbose, and complain about the following situations:</p>
+<p>The input specifies a link to a link.</p>
+<p>A year that appears in a data file is outside the range of representable years.</p>
+<p>A time of 24:00 or more appears in the input. Pre-1998 versions of <strong>zic</strong> prohibit 24:00, and pre-2007 versions prohibit times greater than 24:00.</p>
+<p>A rule goes past the start or end of the month. Pre-2004 versions of <strong>zic</strong> prohibit this.</p>
+<p>A time zone abbreviation uses a <strong>%z</strong> format. Pre-2015 versions of <strong>zic</strong> do not support this.</p>
+<p>A timestamp contains fractional seconds. Pre-2018 versions of <strong>zic</strong> do not support this.</p>
+<p>The input contains abbreviations that are mishandled by pre-2018 versions of <strong>zic</strong> due to a longstanding coding bug. These abbreviations include “L” for “Link”, “mi” for “min”, “Sa” for “Sat”, and “Su” for “Sun”.</p>
+<p>The output file does not contain all the information about the long-term future of a timezone, because the future cannot be summarized as an extended POSIX TZ string. For example, as of 2019 this problem occurs for Iran's daylight-saving rules for the predicted future, as these rules are based on the Iranian calendar, which cannot be represented.</p>
+<p>The output contains data that may not be handled properly by client code designed for older <strong>zic</strong> output formats. These compatibility issues affect only timestamps before 1970 or after the start of 2038.</p>
+<p>The output file contains more than 1200 transitions, which may be mishandled by some clients. The current reference client supports at most 2000 transitions; pre-2014 versions of the reference client support at most 1200 transitions.</p>
+<p>A time zone abbreviation has fewer than 3 or more than 6 characters. POSIX requires at least 3, and requires implementations to support at least 6.</p>
+<p>An output file name contains a byte that is not an ASCII letter, “-”, “/”, or “_”; or it contains a file name component that contains more than 14 bytes or that starts with “-”.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/localtime</code></dt>
+<dd><p>Default local timezone file.</p>
+</dd>
+<dt><code>/usr/share/zoneinfo</code></dt>
+<dd><p>Default timezone information directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='extended-example'><a href='#extended-example'>EXTENDED EXAMPLE</a></h1><div data-for='extended-example' data-hide><div class='section' data-for='extended-example'><div data-more>
+<p>Here is an extended example of <strong>zic</strong> input, intended to illustrate many of its features. In this example, the EU rules are for the European Union and for its predecessor organization, the European Communities.<br/>
+</p>
+<pre><code>
+# Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
+Rule	Swiss	1941	1942	-	May	Mon&gt;=1	1:00	1:00	S
+Rule	Swiss	1941	1942	-	Oct	Mon&gt;=1	2:00	0	-
+
+Rule	EU	1977	1980	-	Apr	Sun&gt;=1	1:00u	1:00	S
+Rule	EU	1977	only	-	Sep	lastSun	1:00u	0	-
+Rule	EU	1978	only	-	Oct	 1	1:00u	0	-
+Rule	EU	1979	1995	-	Sep	lastSun	1:00u	0	-
+Rule	EU	1981	max	-	Mar	lastSun	1:00u	1:00	S
+Rule	EU	1996	max	-	Oct	lastSun	1:00u	0	-
+
+# Zone	NAME	STDOFF	RULES	FORMAT	[UNTIL]
+Zone	Europe/Zurich	0:34:08	-	LMT	1853 Jul 16
+		0:29:45.50	-	BMT	1894 Jun
+		1:00	Swiss	CE%sT	1981
+		1:00	EU	CE%sT
+
+Link	Europe/Zurich	Europe/Vaduz
+</code></pre>
+<p>In this example, the timezone is named Europe/Zurich but it has an alias as Europe/Vaduz. This example says that Zurich was 34 minutes and 8 seconds east of UT until 1853-07-16 at 00:00, when the legal offset was changed to 7 degrees 26 minutes 22.50 seconds, which works out to 0:29:45.50; <strong>zic</strong> treats this by rounding it to 0:29:46. After 1894-06-01 at 00:00 the UT offset became one hour and Swiss daylight saving rules (defined with lines beginning with “Rule Swiss”) apply. From 1981 to the present, EU daylight saving rules have applied, and the UTC offset has remained at one hour.</p>
+<p>In 1941 and 1942, daylight saving time applied from the first Monday in May at 01:00 to the first Monday in October at 02:00. The pre-1981 EU daylight-saving rules have no effect here, but are included for completeness. Since 1981, daylight saving has begun on the last Sunday in March at 01:00 UTC. Until 1995 it ended the last Sunday in September at 01:00 UTC, but this changed to the last Sunday in October starting in 1996.</p>
+<p>For purposes of display, “LMT” and “BMT” were initially used, respectively. Since Swiss rules and later EU rules were applied, the time zone abbreviation has been CET for standard time and CEST for daylight saving time.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For areas with more than two types of local time, you may need to use local standard time in the <strong>AT</strong> field of the earliest transition time's rule to ensure that the earliest transition time recorded in the compiled file is correct.</p>
+<p>If, for a particular timezone, a clock advance caused by the start of daylight saving coincides with and is equal to a clock retreat caused by a change in UT offset, <strong>zic</strong> produces a single transition to daylight saving at the new UT offset without any change in local (wall clock) time. To get separate transitions use multiple zone continuation lines specifying transition instants using universal time.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/tzfile'>tzfile</a>(5), <a href='/8/zdump'>zdump</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

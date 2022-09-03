@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>hostnamectl - Control the system hostname</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>hostnamectl</strong> [OPTIONS...] {COMMAND}</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>hostnamectl</strong> may be used to query and change the system hostname and related settings.</p>
+<p><a href='/8/systemd-hostnamed.service'>systemd-hostnamed.service</a>(8) and this tool distinguish three different hostnames: the high-level "pretty" hostname which might include all kinds of special characters (e.g. "Lennarts Laptop"), the "static" hostname which is the user-configured hostname (e.g. "lennarts-laptop"), and the transient hostname which is a fallback value received from network configuration (e.g. "node12345678"). If a static hostname is set to a valid value, then the transient hostname is not used.</p>
+<p>Note that the pretty hostname has little restrictions on the characters and length used, while the static and transient hostnames are limited to the usually accepted characters of Internet domain names, and 64 characters at maximum (the latter being a Linux limitation).</p>
+<p>Use <a href='/1/systemd-firstboot'>systemd-firstboot</a>(1) to initialize the system hostname for mounted (but not booted) system images.</p>
+</div></div><h1 id='commands'><a href='#commands'>COMMANDS</a></h1><div data-for='commands' data-hide><div class='section' data-for='commands'><div data-more>
+<p>The following commands are understood:</p>
+<p><strong>status</strong></p>
+<blockquote>
+<p>Show system hostname and related information. If no command is specified, this is the implied default.</p>
+</blockquote>
+<p><strong>hostname</strong> [<code>NAME</code>]</p>
+<blockquote>
+<p>If no argument is given, print the system hostname. If an optional argument <code>NAME</code> is provided then the command changes the system hostname to <code>NAME</code>. By default, this will alter the pretty, the static, and the transient hostname alike; however, if one or more of <strong>--static</strong>, <strong>--transient</strong>, <strong>--pretty</strong> are used, only the selected hostnames are changed. If the pretty hostname is being set, and static or transient are being set as well, the specified hostname will be simplified in regards to the character set used before the latter are updated. This is done by removing special characters and spaces. This ensures that the pretty and the static hostname are always closely related while still following the validity rules of the specific name. This simplification of the hostname string is not done if only the transient and/or static hostnames are set, and the pretty hostname is left untouched.</p>
+<p>The static and transient hostnames must each be either a single DNS label (a string composed of 7-bit ASCII lower-case characters and no spaces or dots, limited to the format allowed for DNS domain name labels), or a sequence of such labels separated by single dots that forms a valid DNS FQDN. The hostname must be at most 64 characters, which is a Linux limitation (DNS allows longer names).</p>
+</blockquote>
+<p><strong>icon-name</strong> [<code>NAME</code>]</p>
+<blockquote>
+<p>If no argument is given, print the icon name of the system. If an optional argument <code>NAME</code> is provided then the command changes the icon name to <code>NAME</code>. The icon name is used by some graphical applications to visualize this host. The icon name should follow the <strong>Icon Naming Specification</strong>[1].</p>
+</blockquote>
+<p><strong>chassis</strong> [<code>TYPE</code>]</p>
+<blockquote>
+<p>If no argument is given, print the chassis type. If an optional argument <code>TYPE</code> is provided then the command changes the chassis type to <code>TYPE</code>. The chassis type is used by some graphical applications to visualize the host or alter user interaction. Currently, the following chassis types are defined: "desktop", "laptop", "convertible", "server", "tablet", "handset", "watch", "embedded", as well as the special chassis types "vm" and "container" for virtualized systems that lack an immediate physical chassis.</p>
+</blockquote>
+<p><strong>deployment</strong> [<code>ENVIRONMENT</code>]</p>
+<blockquote>
+<p>If no argument is given, print the deployment environment. If an optional argument <code>ENVIRONMENT</code> is provided then the command changes the deployment environment to <code>ENVIRONMENT</code>. Argument <code>ENVIRONMENT</code> must be a single word without any control characters. One of the following is suggested: "development", "integration", "staging", "production".</p>
+</blockquote>
+<p><strong>location</strong> [<code>LOCATION</code>]</p>
+<blockquote>
+<p>If no argument is given, print the location string for the system. If an optional argument <code>LOCATION</code> is provided then the command changes the location string for the system to <code>LOCATION</code>. Argument <code>LOCATION</code> should be a human-friendly, free-form string describing the physical location of the system, if it is known and applicable. This may be as generic as "Berlin, Germany" or as specific as "Left Rack, 2nd Shelf".</p>
+</blockquote>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The following options are understood:</p>
+<p><strong>--no-ask-password</strong></p>
+<blockquote>
+<p>Do not query the user for authentication for privileged operations.</p>
+</blockquote>
+<p><strong>--static</strong>, <strong>--transient</strong>, <strong>--pretty</strong></p>
+<blockquote>
+<p>If <strong>status</strong> is invoked (or no explicit command is given) and one of these switches is specified, <strong>hostnamectl</strong> will print out just this selected hostname.</p>
+<p>If used with <strong>set-hostname</strong>, only the selected hostname(s) will be updated. When more than one of these switches are specified, all the specified hostnames will be updated.</p>
+</blockquote>
+<p><strong>-H</strong>, <strong>--host=</strong></p>
+<blockquote>
+<p>Execute the operation remotely. Specify a hostname, or a username and hostname separated by "@", to connect to. The hostname may optionally be suffixed by a port ssh is listening on, separated by ":", and then a container name, separated by "/", which connects directly to a specific container on the specified host. This will use SSH to talk to the remote machine manager instance. Container names may be enumerated with <strong>machinectl -H </strong><code>HOST</code>. Put IPv6 addresses in brackets.</p>
+</blockquote>
+<p><strong>-M</strong>, <strong>--machine=</strong></p>
+<blockquote>
+<p>Execute operation on a local container. Specify a container name to connect to, optionally prefixed by a user name to connect as and a separating "@" character. If the special string ".host" is used in place of the container name, a connection to the local system is made (which is useful to connect to a specific users user bus: "--user --machine=lennart@.host"). If the "@" syntax is not used, the connection is made as root user. If the "@" syntax is used either the left hand side or the right hand side may be omitted (but not both) in which case the local user name and ".host" are implied.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Print a short help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Print a short version string and exit.</p>
+</blockquote>
+<p><strong>--json=</strong><code>MODE</code></p>
+<blockquote>
+<p>Shows output formatted as JSON. Expects one of "short" (for the shortest possible output without any redundant whitespace or line breaks), "pretty" (for a pretty version of the same, with indentation and line breaks) or "off" (to turn off JSON output, the default).</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>On success, 0 is returned, a non-zero failure code otherwise.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/hostname'>hostname</a>(1), <a href='/5/hostname'>hostname</a>(5), <a href='/5/machine-info'>machine-info</a>(5), <a href='/1/systemctl'>systemctl</a>(1), <a href='/8/systemd-hostnamed.service'>systemd-hostnamed.service</a>(8), <a href='/1/systemd-firstboot'>systemd-firstboot</a>(1)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>Icon Naming Specification</p>
+<p><a href="http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html">http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

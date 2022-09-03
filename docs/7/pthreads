@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>pthreads - POSIX threads</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>POSIX.1 specifies a set of interfaces (functions, header files) for threaded programming commonly known as POSIX threads, or Pthreads. A single process can contain multiple threads, all of which are executing the same program. These threads share the same global memory (data and heap segments), but each thread has its own stack (automatic variables).</p>
+<p>POSIX.1 also requires that threads share a range of other attributes (i.e., these attributes are process-wide rather than per-thread):</p>
+<ul>
+<li><p>process ID</p></li>
+<li><p>parent process ID</p></li>
+<li><p>process group ID and session ID</p></li>
+<li><p>controlling terminal</p></li>
+<li><p>user and group IDs</p></li>
+<li><p>open file descriptors</p></li>
+<li><p>record locks (see <a href='/2/fcntl'>fcntl</a>(2))</p></li>
+<li><p>signal dispositions</p></li>
+<li><p>file mode creation mask (<a href='/2/umask'>umask</a>(2))</p></li>
+<li><p>current directory (<a href='/2/chdir'>chdir</a>(2)) and root directory (<a href='/2/chroot'>chroot</a>(2))</p></li>
+<li><p>interval timers (<a href='/2/setitimer'>setitimer</a>(2)) and POSIX timers (<a href='/2/timer_create'>timer_create</a>(2))</p></li>
+<li><p>nice value (<a href='/2/setpriority'>setpriority</a>(2))</p></li>
+<li><p>resource limits (<a href='/2/setrlimit'>setrlimit</a>(2))</p></li>
+<li><p>measurements of the consumption of CPU time (<a href='/2/times'>times</a>(2)) and resources (<a href='/2/getrusage'>getrusage</a>(2))</p></li>
+</ul>
+<p>As well as the stack, POSIX.1 specifies that various other attributes are distinct for each thread, including:</p>
+<ul>
+<li><p>thread ID (the <code>pthread_t</code> data type)</p></li>
+<li><p>signal mask (<a href='/3/pthread_sigmask'>pthread_sigmask</a>(3))</p></li>
+<li><p>the <code>errno</code> variable</p></li>
+<li><p>alternate signal stack (<a href='/2/sigaltstack'>sigaltstack</a>(2))</p></li>
+<li><p>real-time scheduling policy and priority (<a href='/7/sched'>sched</a>(7))</p></li>
+</ul>
+<p>The following Linux-specific features are also per-thread:</p>
+<ul>
+<li><p>capabilities (see <a href='/7/capabilities'>capabilities</a>(7))</p></li>
+<li><p>CPU affinity (<a href='/2/sched_setaffinity'>sched_setaffinity</a>(2))</p></li>
+</ul>
+<h2>Pthreads function return values</h2>
+<p>Most pthreads functions return 0 on success, and an error number on failure. The error numbers that can be returned have the same meaning as the error numbers returned in <code>errno</code> by conventional system calls and C library functions. Note that the pthreads functions do not set <code>errno</code>. For each of the pthreads functions that can return an error, POSIX.1-2001 specifies that the function can never fail with the error <strong>EINTR</strong>.</p>
+<h2>Thread IDs</h2>
+<p>Each of the threads in a process has a unique thread identifier (stored in the type <code>pthread_t</code>). This identifier is returned to the caller of <a href='/3/pthread_create'>pthread_create</a>(3), and a thread can obtain its own thread identifier using <a href='/3/pthread_self'>pthread_self</a>(3).</p>
+<p>Thread IDs are guaranteed to be unique only within a process. (In all pthreads functions that accept a thread ID as an argument, that ID by definition refers to a thread in the same process as the caller.)</p>
+<p>The system may reuse a thread ID after a terminated thread has been joined, or a detached thread has terminated. POSIX says: "If an application attempts to use a thread ID whose lifetime has ended, the behavior is undefined."</p>
+<h2>Thread-safe functions</h2>
+<p>A thread-safe function is one that can be safely (i.e., it will deliver the same results regardless of whether it is) called from multiple threads at the same time.</p>
+<p>POSIX.1-2001 and POSIX.1-2008 require that all functions specified in the standard shall be thread-safe, except for the following functions:</p>
+<pre><code>asctime()
+basename()
+catgets()
+crypt()
+ctermid() if passed a non-NULL argument
+ctime()
+dbm_clearerr()
+dbm_close()
+dbm_delete()
+dbm_error()
+dbm_fetch()
+dbm_firstkey()
+dbm_nextkey()
+dbm_open()
+dbm_store()
+dirname()
+dlerror()
+drand48()
+ecvt() [POSIX.1-2001 only (function removed in POSIX.1-2008)]
+encrypt()
+endgrent()
+endpwent()
+endutxent()
+fcvt() [POSIX.1-2001 only (function removed in POSIX.1-2008)]
+ftw()
+gcvt() [POSIX.1-2001 only (function removed in POSIX.1-2008)]
+getc_unlocked()
+getchar_unlocked()
+getdate()
+getenv()
+getgrent()
+getgrgid()
+getgrnam()
+gethostbyaddr() [POSIX.1-2001 only (function removed in
+                 POSIX.1-2008)]
+gethostbyname() [POSIX.1-2001 only (function removed in
+                 POSIX.1-2008)]
+gethostent()
+getlogin()
+getnetbyaddr()
+getnetbyname()
+getnetent()
+getopt()
+getprotobyname()
+getprotobynumber()
+getprotoent()
+getpwent()
+getpwnam()
+getpwuid()
+getservbyname()
+getservbyport()
+getservent()
+getutxent()
+getutxid()
+getutxline()
+gmtime()
+hcreate()
+hdestroy()
+hsearch()
+inet_ntoa()
+l64a()
+lgamma()
+lgammaf()
+lgammal()
+localeconv()
+localtime()
+lrand48()
+mrand48()
+nftw()
+nl_langinfo()
+ptsname()
+putc_unlocked()
+putchar_unlocked()
+putenv()
+pututxline()
+rand()
+readdir()
+setenv()
+setgrent()
+setkey()
+setpwent()
+setutxent()
+strerror()
+strsignal() [Added in POSIX.1-2008]
+strtok()
+system() [Added in POSIX.1-2008]
+tmpnam() if passed a non-NULL argument
+ttyname()
+unsetenv()
+wcrtomb() if its final argument is NULL
+wcsrtombs() if its final argument is NULL
+wcstombs()
+wctomb()</code></pre>
+<h2>Async-cancel-safe functions</h2>
+<p>An async-cancel-safe function is one that can be safely called in an application where asynchronous cancelability is enabled (see <a href='/3/pthread_setcancelstate'>pthread_setcancelstate</a>(3)).</p>
+<p>Only the following functions are required to be async-cancel-safe by POSIX.1-2001 and POSIX.1-2008:</p>
+<pre><code>pthread_cancel()
+pthread_setcancelstate()
+pthread_setcanceltype()</code></pre>
+<h2>Cancellation points</h2>
+<p>POSIX.1 specifies that certain functions must, and certain other functions may, be cancellation points. If a thread is cancelable, its cancelability type is deferred, and a cancellation request is pending for the thread, then the thread is canceled when it calls a function that is a cancellation point.</p>
+<p>The following functions are required to be cancellation points by POSIX.1-2001 and/or POSIX.1-2008:</p>
+<pre><code>accept()
+aio_suspend()
+clock_nanosleep()
+close()
+connect()
+creat()
+fcntl() F_SETLKW
+fdatasync()
+fsync()
+getmsg()
+getpmsg()
+lockf() F_LOCK
+mq_receive()
+mq_send()
+mq_timedreceive()
+mq_timedsend()
+msgrcv()
+msgsnd()
+msync()
+nanosleep()
+open()
+openat() [Added in POSIX.1-2008]
+pause()
+poll()
+pread()
+pselect()
+pthread_cond_timedwait()
+pthread_cond_wait()
+pthread_join()
+pthread_testcancel()
+putmsg()
+putpmsg()
+pwrite()
+read()
+readv()
+recv()
+recvfrom()
+recvmsg()
+select()
+sem_timedwait()
+sem_wait()
+send()
+sendmsg()
+sendto()
+sigpause() [POSIX.1-2001 only (moves to "may" list in POSIX.1-2008)]
+sigsuspend()
+sigtimedwait()
+sigwait()
+sigwaitinfo()
+sleep()
+system()
+tcdrain()
+usleep() [POSIX.1-2001 only (function removed in POSIX.1-2008)]
+wait()
+waitid()
+waitpid()
+write()
+writev()</code></pre>
+<p>The following functions may be cancellation points according to POSIX.1-2001 and/or POSIX.1-2008:</p>
+<pre><code>access()
+asctime()
+asctime_r()
+catclose()
+catgets()
+catopen()
+chmod() [Added in POSIX.1-2008]
+chown() [Added in POSIX.1-2008]
+closedir()
+closelog()
+ctermid()
+ctime()
+ctime_r()
+dbm_close()
+dbm_delete()
+dbm_fetch()
+dbm_nextkey()
+dbm_open()
+dbm_store()
+dlclose()
+dlopen()
+dprintf() [Added in POSIX.1-2008]
+endgrent()
+endhostent()
+endnetent()
+endprotoent()
+endpwent()
+endservent()
+endutxent()
+faccessat() [Added in POSIX.1-2008]
+fchmod() [Added in POSIX.1-2008]
+fchmodat() [Added in POSIX.1-2008]
+fchown() [Added in POSIX.1-2008]
+fchownat() [Added in POSIX.1-2008]
+fclose()
+fcntl() (for any value of cmd argument)
+fflush()
+fgetc()
+fgetpos()
+fgets()
+fgetwc()
+fgetws()
+fmtmsg()
+fopen()
+fpathconf()
+fprintf()
+fputc()
+fputs()
+fputwc()
+fputws()
+fread()
+freopen()
+fscanf()
+fseek()
+fseeko()
+fsetpos()
+fstat()
+fstatat() [Added in POSIX.1-2008]
+ftell()
+ftello()
+ftw()
+futimens() [Added in POSIX.1-2008]
+fwprintf()
+fwrite()
+fwscanf()
+getaddrinfo()
+getc()
+getc_unlocked()
+getchar()
+getchar_unlocked()
+getcwd()
+getdate()
+getdelim() [Added in POSIX.1-2008]
+getgrent()
+getgrgid()
+getgrgid_r()
+getgrnam()
+getgrnam_r()
+gethostbyaddr() [POSIX.1-2001 only (function removed in
+                 POSIX.1-2008)]
+gethostbyname() [POSIX.1-2001 only (function removed in
+                 POSIX.1-2008)]
+gethostent()
+gethostid()
+gethostname()
+getline() [Added in POSIX.1-2008]
+getlogin()
+getlogin_r()
+getnameinfo()
+getnetbyaddr()
+getnetbyname()
+getnetent()
+getopt() (if opterr is nonzero)
+getprotobyname()
+getprotobynumber()
+getprotoent()
+getpwent()
+getpwnam()
+getpwnam_r()
+getpwuid()
+getpwuid_r()
+gets()
+getservbyname()
+getservbyport()
+getservent()
+getutxent()
+getutxid()
+getutxline()
+getwc()
+getwchar()
+getwd() [POSIX.1-2001 only (function removed in POSIX.1-2008)]
+glob()
+iconv_close()
+iconv_open()
+ioctl()
+link()
+linkat() [Added in POSIX.1-2008]
+lio_listio() [Added in POSIX.1-2008]
+localtime()
+localtime_r()
+lockf() [Added in POSIX.1-2008]
+lseek()
+lstat()
+mkdir() [Added in POSIX.1-2008]
+mkdirat() [Added in POSIX.1-2008]
+mkdtemp() [Added in POSIX.1-2008]
+mkfifo() [Added in POSIX.1-2008]
+mkfifoat() [Added in POSIX.1-2008]
+mknod() [Added in POSIX.1-2008]
+mknodat() [Added in POSIX.1-2008]
+mkstemp()
+mktime()
+nftw()
+opendir()
+openlog()
+pathconf()
+pclose()
+perror()
+popen()
+posix_fadvise()
+posix_fallocate()
+posix_madvise()
+posix_openpt()
+posix_spawn()
+posix_spawnp()
+posix_trace_clear()
+posix_trace_close()
+posix_trace_create()
+posix_trace_create_withlog()
+posix_trace_eventtypelist_getnext_id()
+posix_trace_eventtypelist_rewind()
+posix_trace_flush()
+posix_trace_get_attr()
+posix_trace_get_filter()
+posix_trace_get_status()
+posix_trace_getnext_event()
+posix_trace_open()
+posix_trace_rewind()
+posix_trace_set_filter()
+posix_trace_shutdown()
+posix_trace_timedgetnext_event()
+posix_typed_mem_open()
+printf()
+psiginfo() [Added in POSIX.1-2008]
+psignal() [Added in POSIX.1-2008]
+pthread_rwlock_rdlock()
+pthread_rwlock_timedrdlock()
+pthread_rwlock_timedwrlock()
+pthread_rwlock_wrlock()
+putc()
+putc_unlocked()
+putchar()
+putchar_unlocked()
+puts()
+pututxline()
+putwc()
+putwchar()
+readdir()
+readdir_r()
+readlink() [Added in POSIX.1-2008]
+readlinkat() [Added in POSIX.1-2008]
+remove()
+rename()
+renameat() [Added in POSIX.1-2008]
+rewind()
+rewinddir()
+scandir() [Added in POSIX.1-2008]
+scanf()
+seekdir()
+semop()
+setgrent()
+sethostent()
+setnetent()
+setprotoent()
+setpwent()
+setservent()
+setutxent()
+sigpause() [Added in POSIX.1-2008]
+stat()
+strerror()
+strerror_r()
+strftime()
+symlink()
+symlinkat() [Added in POSIX.1-2008]
+sync()
+syslog()
+tmpfile()
+tmpnam()
+ttyname()
+ttyname_r()
+tzset()
+ungetc()
+ungetwc()
+unlink()
+unlinkat() [Added in POSIX.1-2008]
+utime() [Added in POSIX.1-2008]
+utimensat() [Added in POSIX.1-2008]
+utimes() [Added in POSIX.1-2008]
+vdprintf() [Added in POSIX.1-2008]
+vfprintf()
+vfwprintf()
+vprintf()
+vwprintf()
+wcsftime()
+wordexp()
+wprintf()
+wscanf()</code></pre>
+<p>An implementation may also mark other functions not specified in the standard as cancellation points. In particular, an implementation is likely to mark any nonstandard function that may block as a cancellation point. (This includes most functions that can touch files.)</p>
+<p>It should be noted that even if an application is not using asynchronous cancellation, that calling a function from the above list from an asynchronous signal handler may cause the equivalent of asynchronous cancellation. The underlying user code may not expect asynchronous cancellation and the state of the user data may become inconsistent. Therefore signals should be used with caution when entering a region of deferred cancellation.</p>
+<h2>Compiling on Linux</h2>
+<p>On Linux, programs that use the Pthreads API should be compiled using <code>cc -pthread</code>.</p>
+<h2>Linux implementations of POSIX threads</h2>
+<p>Over time, two threading implementations have been provided by the GNU C library on Linux:</p>
+<dl>
+<dt><strong>LinuxThreads</strong></dt>
+<dd><p>This is the original Pthreads implementation. Since glibc 2.4, this implementation is no longer supported.</p>
+</dd>
+<dt><strong>NPTL</strong> (Native POSIX Threads Library)</dt>
+<dd><p>This is the modern Pthreads implementation. By comparison with LinuxThreads, NPTL provides closer conformance to the requirements of the POSIX.1 specification and better performance when creating large numbers of threads. NPTL is available since glibc 2.3.2, and requires features that are present in the Linux 2.6 kernel.</p>
+</dd>
+</dl>
+<p>Both of these are so-called 1:1 implementations, meaning that each thread maps to a kernel scheduling entity. Both threading implementations employ the Linux <a href='/2/clone'>clone</a>(2) system call. In NPTL, thread synchronization primitives (mutexes, thread joining, and so on) are implemented using the Linux <a href='/2/futex'>futex</a>(2) system call.</p>
+<h2>LinuxThreads</h2>
+<p>The notable features of this implementation are the following:</p>
+<ul>
+<li><p>In addition to the main (initial) thread, and the threads that the program creates using <a href='/3/pthread_create'>pthread_create</a>(3), the implementation creates a "manager" thread. This thread handles thread creation and termination. (Problems can result if this thread is inadvertently killed.)</p></li>
+<li><p>Signals are used internally by the implementation. On Linux 2.2 and later, the first three real-time signals are used (see also <a href='/7/signal'>signal</a>(7)). On older Linux kernels, <strong>SIGUSR1</strong> and <strong>SIGUSR2</strong> are used. Applications must avoid the use of whichever set of signals is employed by the implementation.</p></li>
+<li><p>Threads do not share process IDs. (In effect, LinuxThreads threads are implemented as processes which share more information than usual, but which do not share a common process ID.) LinuxThreads threads (including the manager thread) are visible as separate processes using <a href='/1/ps'>ps</a>(1).</p></li>
+</ul>
+<p>The LinuxThreads implementation deviates from the POSIX.1 specification in a number of ways, including the following:</p>
+<ul>
+<li><p>Calls to <a href='/2/getpid'>getpid</a>(2) return a different value in each thread.</p></li>
+<li><p>Calls to <a href='/2/getppid'>getppid</a>(2) in threads other than the main thread return the process ID of the manager thread; instead <a href='/2/getppid'>getppid</a>(2) in these threads should return the same value as <a href='/2/getppid'>getppid</a>(2) in the main thread.</p></li>
+<li><p>When one thread creates a new child process using <a href='/2/fork'>fork</a>(2), any thread should be able to <a href='/2/wait'>wait</a>(2) on the child. However, the implementation allows only the thread that created the child to <a href='/2/wait'>wait</a>(2) on it.</p></li>
+<li><p>When a thread calls <a href='/2/execve'>execve</a>(2), all other threads are terminated (as required by POSIX.1). However, the resulting process has the same PID as the thread that called <a href='/2/execve'>execve</a>(2): it should have the same PID as the main thread.</p></li>
+<li><p>Threads do not share user and group IDs. This can cause complications with set-user-ID programs and can cause failures in Pthreads functions if an application changes its credentials using <a href='/2/seteuid'>seteuid</a>(2) or similar.</p></li>
+<li><p>Threads do not share a common session ID and process group ID.</p></li>
+<li><p>Threads do not share record locks created using <a href='/2/fcntl'>fcntl</a>(2).</p></li>
+<li><p>The information returned by <a href='/2/times'>times</a>(2) and <a href='/2/getrusage'>getrusage</a>(2) is per-thread rather than process-wide.</p></li>
+<li><p>Threads do not share semaphore undo values (see <a href='/2/semop'>semop</a>(2)).</p></li>
+<li><p>Threads do not share interval timers.</p></li>
+<li><p>Threads do not share a common nice value.</p></li>
+<li><p>POSIX.1 distinguishes the notions of signals that are directed to the process as a whole and signals that are directed to individual threads. According to POSIX.1, a process-directed signal (sent using <a href='/2/kill'>kill</a>(2), for example) should be handled by a single, arbitrarily selected thread within the process. LinuxThreads does not support the notion of process-directed signals: signals may be sent only to specific threads.</p></li>
+<li><p>Threads have distinct alternate signal stack settings. However, a new thread's alternate signal stack settings are copied from the thread that created it, so that the threads initially share an alternate signal stack. (A new thread should start with no alternate signal stack defined. If two threads handle signals on their shared alternate signal stack at the same time, unpredictable program failures are likely to occur.)</p></li>
+</ul>
+<h2>NPTL</h2>
+<p>With NPTL, all of the threads in a process are placed in the same thread group; all members of a thread group share the same PID. NPTL does not employ a manager thread.</p>
+<p>NPTL makes internal use of the first two real-time signals; these signals cannot be used in applications. See <a href='/7/nptl'>nptl</a>(7) for further details.</p>
+<p>NPTL still has at least one nonconformance with POSIX.1:</p>
+<ul>
+<li><p>Threads do not share a common nice value.</p></li>
+</ul>
+<p>Some NPTL nonconformances occur only with older kernels:</p>
+<ul>
+<li><p>The information returned by <a href='/2/times'>times</a>(2) and <a href='/2/getrusage'>getrusage</a>(2) is per-thread rather than process-wide (fixed in kernel 2.6.9).</p></li>
+<li><p>Threads do not share resource limits (fixed in kernel 2.6.10).</p></li>
+<li><p>Threads do not share interval timers (fixed in kernel 2.6.12).</p></li>
+<li><p>Only the main thread is permitted to start a new session using <a href='/2/setsid'>setsid</a>(2) (fixed in kernel 2.6.16).</p></li>
+<li><p>Only the main thread is permitted to make the process into a process group leader using <a href='/2/setpgid'>setpgid</a>(2) (fixed in kernel 2.6.16).</p></li>
+<li><p>Threads have distinct alternate signal stack settings. However, a new thread's alternate signal stack settings are copied from the thread that created it, so that the threads initially share an alternate signal stack (fixed in kernel 2.6.16).</p></li>
+</ul>
+<p>Note the following further points about the NPTL implementation:</p>
+<ul>
+<li><p>If the stack size soft resource limit (see the description of <strong>RLIMIT_STACK</strong> in <a href='/2/setrlimit'>setrlimit</a>(2)) is set to a value other than <code>unlimited</code>, then this value defines the default stack size for new threads. To be effective, this limit must be set before the program is executed, perhaps using the <code>ulimit -s</code> shell built-in command (<code>limit stacksize</code> in the C shell).</p></li>
+</ul>
+<h2>Determining the threading implementation</h2>
+<p>Since glibc 2.3.2, the <a href='/1/getconf'>getconf</a>(1) command can be used to determine the system's threading implementation, for example:</p>
+<pre><code>bash$ getconf GNU_LIBPTHREAD_VERSION
+NPTL 2.3.4</code></pre>
+<p>With older glibc versions, a command such as the following should be sufficient to determine the default threading implementation:</p>
+<pre><code>bash$ $( ldd /bin/ls | grep <a href="http://libc.so">libc.so</a> | awk '{print $3}' ) | \
+                egrep -i 'threads|nptl'
+        Native POSIX Threads Library by Ulrich Drepper et al</code></pre>
+<h2>Selecting the threading implementation: LD_ASSUME_KERNEL</h2>
+<p>On systems with a glibc that supports both LinuxThreads and NPTL (i.e., glibc 2.3.<code>x</code>), the <strong>LD_ASSUME_KERNEL</strong> environment variable can be used to override the dynamic linker's default choice of threading implementation. This variable tells the dynamic linker to assume that it is running on top of a particular kernel version. By specifying a kernel version that does not provide the support required by NPTL, we can force the use of LinuxThreads. (The most likely reason for doing this is to run a (broken) application that depends on some nonconformant behavior in LinuxThreads.) For example:</p>
+<pre><code>bash$ $( LD_ASSUME_KERNEL=2.2.5 ldd /bin/ls | grep <a href="http://libc.so">libc.so</a> | \
+                awk '{print $3}' ) | egrep -i 'threads|nptl'
+        linuxthreads-0.10 by Xavier Leroy</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clone'>clone</a>(2), <a href='/2/fork'>fork</a>(2), <a href='/2/futex'>futex</a>(2), <a href='/2/gettid'>gettid</a>(2), <a href='/5/proc'>proc</a>(5), <a href='/7/attributes'>attributes</a>(7), <a href='/7/futex'>futex</a>(7), <a href='/7/nptl'>nptl</a>(7), <a href='/7/sigevent'>sigevent</a>(7), <a href='/7/signal'>signal</a>(7)</p>
+<p>Various Pthreads manual pages, for example: <a href='/3/pthread_atfork'>pthread_atfork</a>(3), <a href='/3/pthread_attr_init'>pthread_attr_init</a>(3), <a href='/3/pthread_cancel'>pthread_cancel</a>(3), <a href='/3/pthread_cleanup_push'>pthread_cleanup_push</a>(3), <a href='/3/pthread_cond_signal'>pthread_cond_signal</a>(3), <a href='/3/pthread_cond_wait'>pthread_cond_wait</a>(3), <a href='/3/pthread_create'>pthread_create</a>(3), <a href='/3/pthread_detach'>pthread_detach</a>(3), <a href='/3/pthread_equal'>pthread_equal</a>(3), <a href='/3/pthread_exit'>pthread_exit</a>(3), <a href='/3/pthread_key_create'>pthread_key_create</a>(3), <a href='/3/pthread_kill'>pthread_kill</a>(3), <a href='/3/pthread_mutex_lock'>pthread_mutex_lock</a>(3), <a href='/3/pthread_mutex_unlock'>pthread_mutex_unlock</a>(3), <a href='/3/pthread_mutexattr_destroy'>pthread_mutexattr_destroy</a>(3), <a href='/3/pthread_mutexattr_init'>pthread_mutexattr_init</a>(3), <a href='/3/pthread_once'>pthread_once</a>(3), <a href='/3/pthread_spin_init'>pthread_spin_init</a>(3), <a href='/3/pthread_spin_lock'>pthread_spin_lock</a>(3), <a href='/3/pthread_rwlockattr_setkind_np'>pthread_rwlockattr_setkind_np</a>(3), <a href='/3/pthread_setcancelstate'>pthread_setcancelstate</a>(3), <a href='/3/pthread_setcanceltype'>pthread_setcanceltype</a>(3), <a href='/3/pthread_setspecific'>pthread_setspecific</a>(3), <a href='/3/pthread_sigmask'>pthread_sigmask</a>(3), <a href='/3/pthread_sigqueue'>pthread_sigqueue</a>(3), and <a href='/3/pthread_testcancel'>pthread_testcancel</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

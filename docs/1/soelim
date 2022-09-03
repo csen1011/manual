@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>soelim - interpret .so requests in groff input</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>soelim</strong> [ <strong>-Crtv</strong> ] [ <strong>-I</strong> dir ] [<code>file</code> . . .]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>soelim</strong> reads <code>files</code> and replaces lines of the form</p>
+<blockquote>
+<p><strong>.so </strong><code>file</code></p>
+</blockquote>
+<p>by the contents of <code>file</code>. It is useful if files included with <strong>.so</strong> need to be preprocessed. Normally, <strong>soelim</strong> should be invoked with the <strong>-s</strong> option of <strong>groff</strong>.</p>
+<p>To embed ‘\’ in the file name, write ‘\\’ or ‘\e’. To embed a space, write ‘\ ’. Any other escape sequence in <code>file</code> makes <strong>soelim</strong> ignore the whole line.</p>
+<p>Note that there must be no whitespace between the leading dot and the two characters ‘s’ and ‘o’. Otherwise, only <strong>groff</strong> interprets the <strong>.so</strong> request (and <strong>soelim</strong> ignores it).</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Whitespace is permitted between a command-line option and its argument.</p>
+<dl>
+<dt><strong>-C</strong></dt>
+<dd><p>Recognize <strong>.so</strong> even when followed by a character other than space or newline.</p>
+</dd>
+<dt><strong>-I</strong><code>dir</code></dt>
+<dd><p>This option may be used to add a directory to the search path for files (both those on the command line and those named in <strong>.so</strong> requests). The search path is initialized with the current directory. This option may be specified more than once; the directories are then searched in the order specified (but before the current directory). If you want to make the current directory be read before other directories, add <strong>-I.</strong> at the appropriate place.</p>
+<p>No directory search is performed for files with an absolute file name.</p>
+</dd>
+<dt><strong>-r</strong></dt>
+<dd><p>Do not add <strong>.lf</strong> requests (for general use, with non-groff files).</p>
+</dd>
+<dt><strong>-t</strong></dt>
+<dd><p>Don't emit <strong>.lf</strong> requests but TeX comment lines (starting with ‘%’) giving the current file and line number.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Print the version number.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='usage'><a href='#usage'>USAGE</a></h1><div data-for='usage' data-hide><div class='section' data-for='usage'><div data-more>
+<p>The normal processing sequence of groff is this:</p>
+<p>box invisible width 0.5 height 0.4 "input" "file"; move to last box .bottom; down; arrow 0.3; box invisible width 0.8 height 0.2 "preprocessor"; move to last box .right right; arrow 0.3; A: box invisible width 0.35 height 0.2 "troff"; move to last box .top; up; move 0.3; box invisible width 0.6 height 0.4 "sourced" "file"; line &lt;- up 0.3 from A.top; move to A.right; right; arrow 0.3; box invisible width 0.85 height 0.2 "postprocessor"; move to last box .bottom; down; arrow 0.3; box invisible width 0.5 height 0.4 "output" "file"</p>
+<p>.nf input sourced file file | | v v preprocessor -&gt; troff -&gt; postprocessor | v output file</p>
+<p>That is, files sourced with <strong>.so</strong> are normally read <code>only</code> by <strong>troff</strong> (the actual formatter). <strong>soelim</strong> is <code>not</code> required for <strong>troff</strong> to source files.</p>
+<p>If a file to be sourced should also be preprocessed, it must already be read <code>before</code> the input file passes through the preprocessor. This is handled by <strong>soelim</strong>:</p>
+<p>box invisible width 0.5 height 0.4 "input" "file"; move to last box .bottom; down; arrow 0.3; A: box invisible width 0.5 height 0.2 "soelim"; line &lt;- 0.3; box invisible width 0.5 height 0.4 "sourced" "file"; move to A.right; right; arrow 0.3; box invisible width 0.8 height 0.2 "preprocessor"; arrow 0.3; box invisible width 0.35 height 0.2 "troff"; arrow 0.3 box invisible width 0.85 height 0.2 "postprocessor"; move to last box .bottom; down; arrow 0.3; box invisible width 0.5 height 0.4 "output" "file"</p>
+<p>.nf input file | v soelim -&gt; preprocessor -&gt; troff -&gt; postprocessor ^ | | v sourced output file file</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/groff'>groff</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

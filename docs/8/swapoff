@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>swapon, swapoff - enable/disable devices and files for paging and swapping</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>swapon</strong> [options] [<code>specialfile</code>...]</p>
+<p><strong>swapoff</strong> [<strong>-va</strong>] [<code>specialfile</code>...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>swapon</strong> is used to specify devices on which paging and swapping are to take place.</p>
+<p>The device or file used is given by the <code>specialfile</code> parameter. It may be of the form <strong>-L</strong> <code>label</code> or <strong>-U</strong> <code>uuid</code> to indicate a device by label or uuid.</p>
+<p>Calls to <strong>swapon</strong> normally occur in the system boot scripts making all swap devices available, so that the paging and swapping activity is interleaved across several devices and files.</p>
+<p><strong>swapoff</strong> disables swapping on the specified devices and files. When the <strong>-a</strong> flag is given, swapping is disabled on all known swap devices and files (as found in <code>/proc/swaps</code> or <code>/etc/fstab</code>).</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-a</strong>, <strong>--all</strong></p>
+<blockquote>
+<p>All devices marked as "swap" in <code>/etc/fstab</code> are made available, except for those with the "noauto" option. Devices that are already being used as swap are silently skipped.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--discard</strong>[<strong>=</strong><code>policy</code>]</p>
+<blockquote>
+<p>Enable swap discards, if the swap backing device supports the discard or trim operation. This may improve performance on some Solid State Devices, but often it does not. The option allows one to select between two available swap discard policies:</p>
+<p><strong>--discard=once</strong></p>
+<blockquote>
+<p>to perform a single-time discard operation for the whole swap area at swapon; or</p>
+</blockquote>
+<p><strong>--discard=pages</strong></p>
+<blockquote>
+<p>to asynchronously discard freed swap pages before they are available for reuse.</p>
+</blockquote>
+<p>If no policy is selected, the default behavior is to enable both discard types. The <code>/etc/fstab</code> mount options <strong>discard</strong>, <strong>discard=once</strong>, or <strong>discard=pages</strong> may also be used to enable discard flags.</p>
+</blockquote>
+<p><strong>-e</strong>, <strong>--ifexists</strong></p>
+<blockquote>
+<p>Silently skip devices that do not exist. The <code>/etc/fstab</code> mount option <strong>nofail</strong> may also be used to skip non-existing device.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--fixpgsz</strong></p>
+<blockquote>
+<p>Reinitialize (exec mkswap) the swap space if its page size does not match that of the current running kernel. <a href='/8/mkswap'>mkswap</a>(8) initializes the whole device and does not check for bad blocks.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+<p><strong>-L</strong> <code>label</code></p>
+<blockquote>
+<p>Use the partition that has the specified <code>label</code>. (For this, access to <code>/proc/partitions</code> is needed.)</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--options</strong> <code>opts</code></p>
+<blockquote>
+<p>Specify swap options by an fstab-compatible comma-separated string. For example:</p>
+<p><strong>swapon -o pri=1,discard=pages,nofail /dev/sda2</strong></p>
+<p>The <code>opts</code> string is evaluated last and overrides all other command line options.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--priority</strong> <code>priority</code></p>
+<blockquote>
+<p>Specify the priority of the swap device. <code>priority</code> is a value between -1 and 32767. Higher numbers indicate higher priority. See <a href='/2/swapon'>swapon</a>(2) for a full description of swap priorities. Add <strong>pri=</strong><code>value</code> to the option field of <code>/etc/fstab</code> for use with <strong>swapon -a</strong>. When no priority is defined, it defaults to -1.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--summary</strong></p>
+<blockquote>
+<p>Display swap usage summary by device. Equivalent to <strong>cat /proc/swaps</strong>. This output format is DEPRECATED in favour of <strong>--show</strong> that provides better control on output data.</p>
+</blockquote>
+<p><strong>--show</strong>[<strong>=</strong><code>column</code>...]</p>
+<blockquote>
+<p>Display a definable table of swap areas. See the <strong>--help</strong> output for a list of available columns.</p>
+</blockquote>
+<p><strong>--output-all</strong></p>
+<blockquote>
+<p>Output all available columns.</p>
+</blockquote>
+<p><strong>--noheadings</strong></p>
+<blockquote>
+<p>Do not print headings when displaying <strong>--show</strong> output.</p>
+</blockquote>
+<p><strong>--raw</strong></p>
+<blockquote>
+<p>Display <strong>--show</strong> output without aligning table columns.</p>
+</blockquote>
+<p><strong>--bytes</strong></p>
+<blockquote>
+<p>Display swap size in bytes in <strong>--show</strong> output instead of in user-friendly units.</p>
+</blockquote>
+<p><strong>-U</strong> <code>uuid</code></p>
+<blockquote>
+<p>Use the partition that has the specified <code>uuid</code>.</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--verbose</strong></p>
+<blockquote>
+<p>Be verbose.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p><strong>swapoff</strong> has the following exit status values since v2.36:</p>
+<p><strong>0</strong></p>
+<blockquote>
+<p>success</p>
+</blockquote>
+<p><strong>2</strong></p>
+<blockquote>
+<p>system has insufficient memory to stop swapping (OOM)</p>
+</blockquote>
+<p><strong>4</strong></p>
+<blockquote>
+<p>swapoff syscall failed for another reason</p>
+</blockquote>
+<p><strong>8</strong></p>
+<blockquote>
+<p>non-swapoff syscall system error (out of memory, ...)</p>
+</blockquote>
+<p><strong>16</strong></p>
+<blockquote>
+<p>usage or syntax error</p>
+</blockquote>
+<p><strong>32</strong></p>
+<blockquote>
+<p>all swapoff failed on <strong>--all</strong></p>
+</blockquote>
+<p><strong>64</strong></p>
+<blockquote>
+<p>some swapoff succeeded on <strong>--all</strong></p>
+</blockquote>
+<p>The command <strong>swapoff --all</strong> returns 0 (all succeeded), 32 (all failed), or 64 (some failed, some succeeded).</p>
+<p>+ The old versions before v2.36 has no documented exit status, 0 means success in all versions.</p>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>LIBMOUNT_DEBUG=all</p>
+<blockquote>
+<p>enables <strong>libmount</strong> debug output.</p>
+</blockquote>
+<p>LIBBLKID_DEBUG=all</p>
+<blockquote>
+<p>enables <strong>libblkid</strong> debug output.</p>
+</blockquote>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/dev/sd??</code></p>
+<blockquote>
+<p>standard paging devices</p>
+</blockquote>
+<p><code>/etc/fstab</code></p>
+<blockquote>
+<p>ascii filesystem description table</p>
+</blockquote>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Files with holes</h2>
+<p>The swap file implementation in the kernel expects to be able to write to the file directly, without the assistance of the filesystem. This is a problem on files with holes or on copy-on-write files on filesystems like Btrfs.</p>
+<p>Commands like <a href='/1/cp'>cp</a>(1) or <a href='/1/truncate'>truncate</a>(1) create files with holes. These files will be rejected by <strong>swapon</strong>.</p>
+<p>Preallocated files created by <a href='/1/fallocate'>fallocate</a>(1) may be interpreted as files with holes too depending of the filesystem. Preallocated swap files are supported on XFS since Linux 4.18.</p>
+<p>The most portable solution to create a swap file is to use <a href='/1/dd'>dd</a>(1) and <code>/dev/zero</code>.</p>
+<h2>Btrfs</h2>
+<p>Swap files on Btrfs are supported since Linux 5.0 on files with nocow attribute. See the <a href='/5/btrfs'>btrfs</a>(5) manual page for more details.</p>
+<h2>NFS</h2>
+<p>Swap over <strong>NFS</strong> may not work.</p>
+<h2>Suspend</h2>
+<p><strong>swapon</strong> automatically detects and rewrites a swap space signature with old software suspend data (e.g., S1SUSPEND, S2SUSPEND, ...). The problem is that if we don’t do it, then we get data corruption the next time an attempt at unsuspending is made.</p>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>The <strong>swapon</strong> command appeared in 4.0BSD.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/swapoff'>swapoff</a>(2), <a href='/2/swapon'>swapon</a>(2), <a href='/5/fstab'>fstab</a>(5), <a href='/8/init'>init</a>(8), <a href='/1/fallocate'>fallocate</a>(1), <a href='/8/mkswap'>mkswap</a>(8), <a href='/8/mount'>mount</a>(8), <a href='/8/rc'>rc</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>swapon</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

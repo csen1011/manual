@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>openat2 - open and possibly create a file (extended)</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;linux/openat2.h&gt;</a>
+
+long openat2(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname,
+ struct open_how *how, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size);</code></pre>
+<p><code>Note</code>: There is no glibc wrapper for this system call; see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='openat2'>openat2</a>() system call is an extension of <a href='/2/openat'>openat</a>(2) and provides a superset of its functionality.</p>
+<p>The <a href='openat2'>openat2</a>() system call opens the file specified by <code>pathname</code>. If the specified file does not exist, it may optionally (if <strong>O_CREAT</strong> is specified in <code>how.flags</code>) be created.</p>
+<p>As with <a href='/2/openat'>openat</a>(2), if <code>pathname</code> is a relative pathname, then it is interpreted relative to the directory referred to by the file descriptor <code>dirfd</code> (or the current working directory of the calling process, if <code>dirfd</code> is the special value <strong>AT_FDCWD</strong>). If <code>pathname</code> is an absolute pathname, then <code>dirfd</code> is ignored (unless <code>how.resolve</code> contains <strong>RESOLVE_IN_ROOT</strong>, in which case <code>pathname</code> is resolved relative to <code>dirfd</code>).</p>
+<p>Rather than taking a single <code>flags</code> argument, an extensible structure (<code>how</code>) is passed to allow for future extensions. The <code>size</code> argument must be specified as <code>sizeof(struct open_how)</code>. The <code>how</code> argument specifies how <code>pathname</code> should be opened, and acts as a superset of the <code>flags</code> and <code>mode</code> arguments to <a href='/2/openat'>openat</a>(2). This argument is a pointer to a structure of the following form:</p>
+<pre><code>struct open_how {
+    u64 flags;    /* O_* flags */
+    u64 mode;     /* Mode for O_{CREAT,TMPFILE} */
+    u64 resolve;  /* RESOLVE_* flags */
+    /* ... */
+};</code></pre>
+<p>Any future extensions to <a href='openat2'>openat2</a>() will be implemented as new fields appended to the above structure, with a zero value in a new field resulting in the kernel behaving as though that extension field was not present. Therefore, the caller <code>must</code> zero-fill this structure on initialization. (See the "Extensibility" section of the <strong>NOTES</strong> for more detail on why this is necessary.)</p>
+<p>The fields of the <code>open_how</code> structure are as follows:</p>
+<dl>
+<dt><code>flags</code></dt>
+<dd><p>This field specifies the file creation and file status flags to use when opening the file. All of the <strong>O_*</strong> flags defined for <a href='/2/openat'>openat</a>(2) are valid <a href='openat2'>openat2</a>() flag values.</p>
+<p>Whereas <a href='/2/openat'>openat</a>(2) ignores unknown bits in its <code>flags</code> argument, <a href='openat2'>openat2</a>() returns an error if unknown or conflicting flags are specified in <code>how.flags</code>.</p>
+</dd>
+<dt><code>mode</code></dt>
+<dd><p>This field specifies the mode for the new file, with identical semantics to the <code>mode</code> argument of <a href='/2/openat'>openat</a>(2).</p>
+<p>Whereas <a href='/2/openat'>openat</a>(2) ignores bits other than those in the range <code>07777</code> in its <code>mode</code> argument, <a href='openat2'>openat2</a>() returns an error if <code>how.mode</code> contains bits other than <code>07777</code>. Similarly, an error is returned if <a href='openat2'>openat2</a>() is called with a nonzero <code>how.mode</code> and <code>how.flags</code> does not contain <strong>O_CREAT</strong> or <strong>O_TMPFILE</strong>.</p>
+</dd>
+<dt><code>resolve</code></dt>
+<dd><p>This is a bit-mask of flags that modify the way in which <strong>all</strong> components of <code>pathname</code> will be resolved. (See <a href='/7/path_resolution'>path_resolution</a>(7) for background information.)</p>
+<p>The primary use case for these flags is to allow trusted programs to restrict how untrusted paths (or paths inside untrusted directories) are resolved. The full list of <code>resolve</code> flags is as follows:</p>
+<dl>
+<dt><strong>RESOLVE_BENEATH</strong></dt>
+<dd><p>Do not permit the path resolution to succeed if any component of the resolution is not a descendant of the directory indicated by <code>dirfd</code>. This causes absolute symbolic links (and absolute values of <code>pathname</code>) to be rejected.</p>
+<p>Currently, this flag also disables magic-link resolution (see below). However, this may change in the future. Therefore, to ensure that magic links are not resolved, the caller should explicitly specify <strong>RESOLVE_NO_MAGICLINKS</strong>.</p>
+</dd>
+<dt><strong>RESOLVE_IN_ROOT</strong></dt>
+<dd><p>Treat the directory referred to by <code>dirfd</code> as the root directory while resolving <code>pathname</code>. Absolute symbolic links are interpreted relative to <code>dirfd</code>. If a prefix component of <code>pathname</code> equates to <code>dirfd</code>, then an immediately following <code>..</code> component likewise equates to <code>dirfd</code> (just as <code>/..</code> is traditionally equivalent to <code>/</code>). If <code>pathname</code> is an absolute path, it is also interpreted relative to <code>dirfd</code>.</p>
+<p>The effect of this flag is as though the calling process had used <a href='/2/chroot'>chroot</a>(2) to (temporarily) modify its root directory (to the directory referred to by <code>dirfd</code>). However, unlike <a href='/2/chroot'>chroot</a>(2) (which changes the filesystem root permanently for a process), <strong>RESOLVE_IN_ROOT</strong> allows a program to efficiently restrict path resolution on a per-open basis.</p>
+<p>Currently, this flag also disables magic-link resolution. However, this may change in the future. Therefore, to ensure that magic links are not resolved, the caller should explicitly specify <strong>RESOLVE_NO_MAGICLINKS</strong>.</p>
+</dd>
+<dt><strong>RESOLVE_NO_MAGICLINKS</strong></dt>
+<dd><p>Disallow all magic-link resolution during path resolution.</p>
+<p>Magic links are symbolic link-like objects that are most notably found in <a href='/5/proc'>proc</a>(5); examples include <code>/proc/[pid]/exe</code> and <code>/proc/[pid]/fd/*</code>. (See <a href='/7/symlink'>symlink</a>(7) for more details.)</p>
+<p>Unknowingly opening magic links can be risky for some applications. Examples of such risks include the following:</p>
+<ul>
+<li><p>If the process opening a pathname is a controlling process that currently has no controlling terminal (see <a href='/7/credentials'>credentials</a>(7)), then opening a magic link inside <code>/proc/[pid]/fd</code> that happens to refer to a terminal would cause the process to acquire a controlling terminal.</p></li>
+<li><p>In a containerized environment, a magic link inside <code>/proc</code> may refer to an object outside the container, and thus may provide a means to escape from the container.</p></li>
+</ul>
+<p>Because of such risks, an application may prefer to disable magic link resolution using the <strong>RESOLVE_NO_MAGICLINKS</strong> flag.</p>
+<p>If the trailing component (i.e., basename) of <code>pathname</code> is a magic link, <code>how.resolve</code> contains <strong>RESOLVE_NO_MAGICLINKS</strong>, and <code>how.flags</code> contains both <strong>O_PATH</strong> and <strong>O_NOFOLLOW</strong>, then an <strong>O_PATH</strong> file descriptor referencing the magic link will be returned.</p>
+</dd>
+<dt><strong>RESOLVE_NO_SYMLINKS</strong></dt>
+<dd><p>Disallow resolution of symbolic links during path resolution. This option implies <strong>RESOLVE_NO_MAGICLINKS</strong>.</p>
+<p>If the trailing component (i.e., basename) of <code>pathname</code> is a symbolic link, <code>how.resolve</code> contains <strong>RESOLVE_NO_SYMLINKS</strong>, and <code>how.flags</code> contains both <strong>O_PATH</strong> and <strong>O_NOFOLLOW</strong>, then an <strong>O_PATH</strong> file descriptor referencing the symbolic link will be returned.</p>
+<p>Note that the effect of the <strong>RESOLVE_NO_SYMLINKS</strong> flag, which affects the treatment of symbolic links in all of the components of <code>pathname</code>, differs from the effect of the <strong>O_NOFOLLOW</strong> file creation flag (in <code>how.flags</code>), which affects the handling of symbolic links only in the final component of <code>pathname</code>.</p>
+<p>Applications that employ the <strong>RESOLVE_NO_SYMLINKS</strong> flag are encouraged to make its use configurable (unless it is used for a specific security purpose), as symbolic links are very widely used by end-users. Setting this flag indiscriminately—i.e., for purposes not specifically related to security—for all uses of <a href='openat2'>openat2</a>() may result in spurious errors on previously functional systems. This may occur if, for example, a system pathname that is used by an application is modified (e.g., in a new distribution release) so that a pathname component (now) contains a symbolic link.</p>
+</dd>
+<dt><strong>RESOLVE_NO_XDEV</strong></dt>
+<dd><p>Disallow traversal of mount points during path resolution (including all bind mounts). Consequently, <code>pathname</code> must either be on the same mount as the directory referred to by <code>dirfd</code>, or on the same mount as the current working directory if <code>dirfd</code> is specified as <strong>AT_FDCWD</strong>.</p>
+<p>Applications that employ the <strong>RESOLVE_NO_XDEV</strong> flag are encouraged to make its use configurable (unless it is used for a specific security purpose), as bind mounts are widely used by end-users. Setting this flag indiscriminately—i.e., for purposes not specifically related to security—for all uses of <a href='openat2'>openat2</a>() may result in spurious errors on previously functional systems. This may occur if, for example, a system pathname that is used by an application is modified (e.g., in a new distribution release) so that a pathname component (now) contains a bind mount.</p>
+</dd>
+</dl>
+<p>If any bits other than those listed above are set in <code>how.resolve</code>, an error is returned.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, a new file descriptor is returned. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>The set of errors returned by <a href='openat2'>openat2</a>() includes all of the errors returned by <a href='/2/openat'>openat</a>(2), as well as the following additional errors:</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>An extension that this kernel does not support was specified in <code>how</code>. (See the "Extensibility" section of <strong>NOTES</strong> for more detail on how extensions are handled.)</p>
+</dd>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p><code>how.resolve</code> contains either <strong>RESOLVE_IN_ROOT</strong> or <strong>RESOLVE_BENEATH</strong>, and the kernel could not ensure that a ".." component didn't escape (due to a race condition or potential attack). The caller may choose to retry the <a href='openat2'>openat2</a>() call.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An unknown flag or invalid value was specified in <code>how</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> is nonzero, but <code>how.flags</code> does not contain <strong>O_CREAT</strong> or <strong>O_TMPFILE</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>size</code> was smaller than any known version of <code>struct open_how</code>.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p><code>how.resolve</code> contains <strong>RESOLVE_NO_SYMLINKS</strong>, and one of the path components was a symbolic link (or magic link).</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p><code>how.resolve</code> contains <strong>RESOLVE_NO_MAGICLINKS</strong>, and one of the path components was a magic link.</p>
+</dd>
+<dt><strong>EXDEV</strong></dt>
+<dd><p><code>how.resolve</code> contains either <strong>RESOLVE_IN_ROOT</strong> or <strong>RESOLVE_BENEATH</strong>, and an escape from the root during path resolution was detected.</p>
+</dd>
+<dt><strong>EXDEV</strong></dt>
+<dd><p><code>how.resolve</code> contains <strong>RESOLVE_NO_XDEV</strong>, and a path component crosses a mount point.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='openat2'>openat2</a>() first appeared in Linux 5.6.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This system call is Linux-specific.</p>
+<p>The semantics of <strong>RESOLVE_BENEATH</strong> were modeled after FreeBSD's <strong>O_BENEATH</strong>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Glibc does not provide a wrapper for this system call; call it using <a href='/2/syscall'>syscall</a>(2). In order to allow for future extensibility, <a href='openat2'>openat2</a>() requires the user-space application to specify the size of the <code>open_how</code> structure that it is passing. By providing this information, it is possible for <a href='openat2'>openat2</a>() to provide both forwards- and backwards-compatibility, with <code>size</code> acting as an implicit version number. (Because new extension fields will always be appended, the structure size will always increase.) This extensibility design is very similar to other system calls such as <a href='/2/sched_setattr'>sched_setattr</a>(2), <a href='/2/perf_event_open'>perf_event_open</a>(2), and <a href='/2/clone3'>clone3</a>(2).</p>
+<p>If we let <code>usize</code> be the size of the structure as specified by the user-space application, and <code>ksize</code> be the size of the structure which the kernel supports, then there are three cases to consider:</p>
+<ul>
+<li><p>If <code>ksize</code> equals <code>usize</code>, then there is no version mismatch and <code>how</code> can be used verbatim.</p></li>
+<li><p>If <code>ksize</code> is larger than <code>usize</code>, then there are some extension fields that the kernel supports which the user-space application is unaware of. Because a zero value in any added extension field signifies a no-op, the kernel treats all of the extension fields not provided by the user-space application as having zero values. This provides backwards-compatibility.</p></li>
+<li><p>If <code>ksize</code> is smaller than <code>usize</code>, then there are some extension fields which the user-space application is aware of but which the kernel does not support. Because any extension field must have its zero values signify a no-op, the kernel can safely ignore the unsupported extension fields if they are all-zero. If any unsupported extension fields are nonzero, then -1 is returned and <code>errno</code> is set to <strong>E2BIG</strong>. This provides forwards-compatibility.</p></li>
+</ul>
+<p>Because the definition of <code>struct open_how</code> may change in the future (with new fields being added when system headers are updated), user-space applications should zero-fill <code>struct open_how</code> to ensure that recompiling the program with new headers will not result in spurious errors at runtime. The simplest way is to use a designated initializer:</p>
+<pre><code>struct open_how how = { .flags = O_RDWR,
+                        .resolve = RESOLVE_IN_ROOT };</code></pre>
+<p>or explicitly using <a href='/3/memset'>memset</a>(3) or similar:</p>
+<pre><code>struct open_how how;
+memset(&amp;how, 0, sizeof(how));
+how.flags = O_RDWR;
+how.resolve = RESOLVE_IN_ROOT;</code></pre>
+<p>A user-space application that wishes to determine which extensions the running kernel supports can do so by conducting a binary search on <code>size</code> with a structure which has every byte nonzero (to find the largest value which doesn't produce an error of <strong>E2BIG</strong>).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/openat'>openat</a>(2), <a href='/7/path_resolution'>path_resolution</a>(7), <a href='/7/symlink'>symlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

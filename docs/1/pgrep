@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;pgrep&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>pgrep</a>, pkill, pidwait - look up, signal, or wait for processes based on name and other attributes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>pgrep</strong> [options] pattern<br/>
+<strong>pkill</strong> [options] pattern<br/>
+<strong>pidwait</strong> [options] pattern</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>pgrep</strong> looks through the currently running processes and lists the process IDs which match the selection criteria to stdout. All the criteria have to match. For example,</p>
+<blockquote>
+<p>$ pgrep -u root sshd</p>
+</blockquote>
+<p>will only list the processes called <strong>sshd</strong> AND owned by <strong>root</strong>. On the other hand,</p>
+<blockquote>
+<p>$ pgrep -u root,daemon</p>
+</blockquote>
+<p>will list the processes owned by <strong>root</strong> OR <strong>daemon</strong>.</p>
+<p><strong>pkill</strong> will send the specified signal (by default <strong>SIGTERM</strong>) to each process instead of listing them on stdout.</p>
+<p><strong>pidwait</strong> will wait for each process instead of listing them on stdout.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-</strong><code>signal</code><br/>
+<strong>--signal</strong> <code>signal</code></dt>
+<dd><p>Defines the signal to send to each matched process. Either the numeric or the symbolic signal name can be used. (<strong>pkill</strong> only.)</p>
+</dd>
+<dt><strong>-c</strong>, <strong>--count</strong></dt>
+<dd><p>Suppress normal output; instead print a count of matching processes. When count does not match anything, e.g. returns zero, the command will return non-zero value. Note that for pkill and pidwait, the count is the number of matching processes, not the processes that were successfully signaled or waited for.</p>
+</dd>
+<dt><strong>-d</strong>, <strong>--delimiter</strong> <code>delimiter</code></dt>
+<dd><p>Sets the string used to delimit each process ID in the output (by default a newline). (<strong>pgrep</strong> only.)</p>
+</dd>
+<dt><strong>-e</strong>, <strong>--echo</strong></dt>
+<dd><p>Display name and PID of the process being killed. (<strong>pkill</strong> only.)</p>
+</dd>
+<dt><strong>-f</strong>, <strong>--full</strong></dt>
+<dd><p>The <code>pattern</code> is normally only matched against the process name. When <strong>-f</strong> is set, the full command line is used.</p>
+</dd>
+<dt><strong>-g</strong>, <strong>--pgroup</strong> <code>pgrp</code>,...</dt>
+<dd><p>Only match processes in the process group IDs listed. Process group 0 is translated into <strong>pgrep</strong>'s, <strong>pkill</strong>'s, or <strong>pidwait</strong>'s own process group.</p>
+</dd>
+<dt><strong>-G</strong>, <strong>--group</strong> <code>gid</code>,...</dt>
+<dd><p>Only match processes whose real group ID is listed. Either the numerical or symbolical value may be used.</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--ignore-case</strong></dt>
+<dd><p>Match processes case-insensitively.</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--list-name</strong></dt>
+<dd><p>List the process name as well as the process ID. (<strong>pgrep</strong> only.)</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--list-full</strong></dt>
+<dd><p>List the full command line as well as the process ID. (<strong>pgrep</strong> only.)</p>
+</dd>
+<dt><strong>-n</strong>, <strong>--newest</strong></dt>
+<dd><p>Select only the newest (most recently started) of the matching processes.</p>
+</dd>
+<dt><strong>-o</strong>, <strong>--oldest</strong></dt>
+<dd><p>Select only the oldest (least recently started) of the matching processes.</p>
+</dd>
+<dt><strong>-O</strong>, <strong>--older</strong> <code>secs</code></dt>
+<dd><p>Select processes older than secs.</p>
+</dd>
+<dt><strong>-P</strong>, <strong>--parent</strong> <code>ppid</code>,...</dt>
+<dd><p>Only match processes whose parent process ID is listed.</p>
+</dd>
+<dt><strong>-s</strong>, <strong>--session</strong> <code>sid</code>,...</dt>
+<dd><p>Only match processes whose process session ID is listed. Session ID 0 is translated into <strong>pgrep</strong>'s, <strong>pkill</strong>'s, or <strong>pidwait</strong>'s own session ID.</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--terminal</strong> <code>term</code>,...</dt>
+<dd><p>Only match processes whose controlling terminal is listed. The terminal name should be specified without the "/dev/" prefix.</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--euid</strong> <code>euid</code>,...</dt>
+<dd><p>Only match processes whose effective user ID is listed. Either the numerical or symbolical value may be used.</p>
+</dd>
+<dt><strong>-U</strong>, <strong>--uid</strong> <code>uid</code>,...</dt>
+<dd><p>Only match processes whose real user ID is listed. Either the numerical or symbolical value may be used.</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--inverse</strong></dt>
+<dd><p>Negates the matching. This option is usually used in <strong>pgrep</strong>'s or <strong>pidwait</strong>'s context. In <strong>pkill</strong>'s context the short option is disabled to avoid accidental usage of the option.</p>
+</dd>
+<dt><strong>-w</strong>, <strong>--lightweight</strong></dt>
+<dd><p>Shows all thread ids instead of pids in <strong>pgrep</strong>'s or <strong>pidwait</strong>'s context. In <strong>pkill</strong>'s context this option is disabled.</p>
+</dd>
+<dt><strong>-x</strong>, <strong>--exact</strong></dt>
+<dd><p>Only match processes whose names (or command lines if <strong>-f</strong> is specified) <strong>exactly</strong> match the <code>pattern</code>.</p>
+</dd>
+<dt><strong>-F</strong>, <strong>--pidfile</strong> <code>file</code></dt>
+<dd><p>Read <code>PID</code>s from <code>file</code>. This option is more useful for <strong>pkill</strong>or<strong>pidwait</strong> than <strong>pgrep</strong>.</p>
+</dd>
+<dt><strong>-L</strong>, <strong>--logpidfile</strong></dt>
+<dd><p>Fail if pidfile (see <strong>-F</strong>) not locked.</p>
+</dd>
+<dt><strong>-r</strong>, <strong>--runstates</strong> <code>D,R,S,Z,</code>...</dt>
+<dd><p>Match only processes which match the process state.</p>
+</dd>
+<dt><strong>--ns </strong><code>pid</code></dt>
+<dd><p>Match processes that belong to the same namespaces. Required to run as root to match processes from other users. See <strong>--nslist</strong> for how to limit which namespaces to match.</p>
+</dd>
+<dt><strong>--nslist </strong><code>name</code><strong>,...</strong></dt>
+<dd><p>Match only the provided namespaces. Available namespaces: ipc, mnt, net, pid, user,uts.</p>
+</dd>
+<dt><strong>-q</strong>, <strong>--queue </strong><code>value</code></dt>
+<dd><p>Use <strong>sigqueue(3)</strong> rather than <strong>kill(2)</strong> and the value argument is used to specify an integer to be sent with the signal. If the receiving process has installed a handler for this signal using the SA_SIGINFO flag to <strong>sigaction(2)</strong> , then it can obtain this data via the si_value field of the siginfo_t structure.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Display version information and exit.</p>
+</dd>
+<dt><strong>-h</strong>, <strong>--help</strong></dt>
+<dd><p>Display help and exit.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='operands'><a href='#operands'>OPERANDS</a></h1><div data-for='operands' data-hide><div class='section' data-for='operands'><div data-more>
+<dl>
+<dt><code>pattern</code></dt>
+<dd><p>Specifies an Extended Regular Expression for matching against the process names or command lines.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Example 1: Find the process ID of the <strong>named</strong> daemon:</p>
+<blockquote>
+<p>$ pgrep -u root named</p>
+</blockquote>
+<p>Example 2: Make <strong>syslog</strong> reread its configuration file:</p>
+<blockquote>
+<p>$ pkill -HUP syslogd</p>
+</blockquote>
+<p>Example 3: Give detailed information on all <strong>xterm</strong> processes:</p>
+<blockquote>
+<p>$ ps -fp $(pgrep -d, -x xterm)</p>
+</blockquote>
+<p>Example 4: Make all <strong>chrome</strong> processes run nicer:</p>
+<blockquote>
+<p>$ renice +4 $(pgrep chrome)</p>
+</blockquote>
+</div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<dl>
+<dt>0</dt>
+<dd><p>One or more processes matched the criteria. For pkill and pidwait, one or more processes must also have been successfully signalled or waited for.</p>
+</dd>
+<dt>1</dt>
+<dd><p>No processes matched or none of them could be signalled.</p>
+</dd>
+<dt>2</dt>
+<dd><p>Syntax error in the command line.</p>
+</dd>
+<dt>3</dt>
+<dd><p>Fatal error: out of memory etc.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The process name used for matching is limited to the 15 characters present in the output of /proc/<code>pid</code>/stat. Use the <strong>-f</strong> option to match against the complete command line, /proc/<code>pid</code>/cmdline.</p>
+<p>The running <strong>pgrep</strong>, <strong>pkill</strong>, or <strong>pidwait</strong> process will never report itself as a match.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The options <strong>-n</strong> and <strong>-o</strong> and <strong>-v</strong> can not be combined. Let me know if you need to do this.</p>
+<p>Defunct processes are reported.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ps'>ps</a>(1), <a href='/7/regex'>regex</a>(7), <a href='/7/signal'>signal</a>(7), <a href='/3/sigqueue'>sigqueue</a>(3), <a href='/1/killall'>killall</a>(1), <a href='/1/skill'>skill</a>(1), <a href='/1/kill'>kill</a>(1), <a href='/2/kill'>kill</a>(2)</p>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p><a href="<a href="mailto:kjetilho@ifi.uio.no">kjetilho@ifi.uio.no</a>">Kjetil Torgrim Homme</a></p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>Please send bug reports to <a href="<a href="mailto:procps@freelists.org">procps@freelists.org</a>"></a></p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

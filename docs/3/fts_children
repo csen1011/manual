@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fts, fts_open, fts_read, <a data-bs-content='This is the man page for &lt;code&gt;fts_children&lt;/code&gt; and 5 related functions.' data-bs-toggle='popover' tabindex='0'>fts_children</a>, fts_set, fts_close - traverse a file hierarchy</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fts.h&gt;</a>
+
+FTS *fts_open(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a> const *path_argv, int options,
+ int (*compar)(const FTSENT **, const FTSENT **));
+
+FTSENT *fts_read(FTS *ftsp);
+
+FTSENT *fts_children(FTS *ftsp, int instr);
+
+int fts_set(FTS *ftsp, FTSENT *f, int instr);
+
+int fts_close(FTS *ftsp);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The fts functions are provided for traversing file hierarchies. A simple overview is that the <a href='fts_open'>fts_open</a>() function returns a "handle" (of type <code>FTS *</code>) that refers to a file hierarchy "stream". This handle is then supplied to the other fts functions. The function <a href='fts_read'>fts_read</a>() returns a pointer to a structure describing one of the files in the file hierarchy. The function <a href='fts_children'>fts_children</a>() returns a pointer to a linked list of structures, each of which describes one of the files contained in a directory in the hierarchy.</p>
+<p>In general, directories are visited two distinguishable times; in preorder (before any of their descendants are visited) and in postorder (after all of their descendants have been visited). Files are visited once. It is possible to walk the hierarchy "logically" (visiting the files that symbolic links point to) or physically (visiting the symbolic links themselves), order the walk of the hierarchy or prune and/or revisit portions of the hierarchy.</p>
+<p>Two structures (and associated types) are defined in the include file <code>&lt;fts.h&gt;</code>. The first type is <code>FTS</code>, the structure that represents the file hierarchy itself. The second type is <code>FTSENT</code>, the structure that represents a file in the file hierarchy. Normally, an <code>FTSENT</code> structure is returned for every file in the file hierarchy. In this manual page, "file" and "FTSENT structure" are generally interchangeable.</p>
+<p>The <code>FTSENT</code> structure contains fields describing a file. The structure contains at least the following fields (there are additional fields that should be considered private to the implementation):</p>
+<pre><code>typedef struct _ftsent {
+    unsigned short  fts_info;     /* flags for FTSENT structure */
+    char           *fts_accpath;  /* access path */
+    char           *fts_path;     /* root path */
+    short           fts_pathlen;  /* strlen(fts_path) +
+                                     strlen(fts_name) */
+    char           *fts_name;     /* filename */
+    short           fts_namelen;  /* strlen(fts_name) */
+    short           fts_level;    /* depth (-1 to N) */
+    int             fts_errno;    /* file errno */
+    long            fts_number;   /* local numeric value */
+    void           *fts_pointer;  /* local address value */
+    struct _ftsent *fts_parent;   /* parent directory */
+    struct _ftsent *fts_link;     /* next file structure */
+    struct _ftsent *fts_cycle;    /* cycle structure */
+    struct stat    *fts_statp;    /* stat(2) information */
+} FTSENT;</code></pre>
+<p>These fields are defined as follows:</p>
+<dl>
+<dt><code>fts_info</code></dt>
+<dd><p>One of the following values describing the returned <code>FTSENT</code> structure and the file it represents. With the exception of directories without errors (<strong>FTS_D</strong>), all of these entries are terminal, that is, they will not be revisited, nor will any of their descendants be visited.</p>
+<dl>
+<dt><strong>FTS_D</strong></dt>
+<dd><p>A directory being visited in preorder.</p>
+</dd>
+<dt><strong>FTS_DC</strong></dt>
+<dd><p>A directory that causes a cycle in the tree. (The <code>fts_cycle</code> field of the <code>FTSENT</code> structure will be filled in as well.)</p>
+</dd>
+<dt><strong>FTS_DEFAULT</strong></dt>
+<dd><p>Any <code>FTSENT</code> structure that represents a file type not explicitly described by one of the other <code>fts_info</code> values.</p>
+</dd>
+<dt><strong>FTS_DNR</strong></dt>
+<dd><p>A directory which cannot be read. This is an error return, and the <code>fts_errno</code> field will be set to indicate what caused the error.</p>
+</dd>
+<dt><strong>FTS_DOT</strong></dt>
+<dd><p>A file named "." or ".." which was not specified as a filename to <a href='fts_open'>fts_open</a>() (see <strong>FTS_SEEDOT</strong>).</p>
+</dd>
+<dt><strong>FTS_DP</strong></dt>
+<dd><p>A directory being visited in postorder. The contents of the <code>FTSENT</code> structure will be unchanged from when it was returned in preorder, that is, with the <code>fts_info</code> field set to <strong>FTS_D</strong>.</p>
+</dd>
+<dt><strong>FTS_ERR</strong></dt>
+<dd><p>This is an error return, and the <code>fts_errno</code> field will be set to indicate what caused the error.</p>
+</dd>
+<dt><strong>FTS_F</strong></dt>
+<dd><p>A regular file.</p>
+</dd>
+<dt><strong>FTS_NS</strong></dt>
+<dd><p>A file for which no <a href='/2/stat'>stat</a>(2) information was available. The contents of the <code>fts_statp</code> field are undefined. This is an error return, and the <code>fts_errno</code> field will be set to indicate what caused the error.</p>
+</dd>
+<dt><strong>FTS_NSOK</strong></dt>
+<dd><p>A file for which no <a href='/2/stat'>stat</a>(2) information was requested. The contents of the <code>fts_statp</code> field are undefined.</p>
+</dd>
+<dt><strong>FTS_SL</strong></dt>
+<dd><p>A symbolic link.</p>
+</dd>
+<dt><strong>FTS_SLNONE</strong></dt>
+<dd><p>A symbolic link with a nonexistent target. The contents of the <code>fts_statp</code> field reference the file characteristic information for the symbolic link itself.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>fts_accpath</code></dt>
+<dd><p>A path for accessing the file from the current directory.</p>
+</dd>
+<dt><code>fts_path</code></dt>
+<dd><p>The path for the file relative to the root of the traversal. This path contains the path specified to <a href='fts_open'>fts_open</a>() as a prefix.</p>
+</dd>
+<dt><code>fts_pathlen</code></dt>
+<dd><p>The sum of the lengths of the strings referenced by <code>fts_path</code> and <code>fts_name</code>.</p>
+</dd>
+<dt><code>fts_name</code></dt>
+<dd><p>The name of the file.</p>
+</dd>
+<dt><code>fts_namelen</code></dt>
+<dd><p>The length of the string referenced by <code>fts_name</code>.</p>
+</dd>
+<dt><code>fts_level</code></dt>
+<dd><p>The depth of the traversal, numbered from -1 to N, where this file was found. The <code>FTSENT</code> structure representing the parent of the starting point (or root) of the traversal is numbered -1, and the <code>FTSENT</code> structure for the root itself is numbered 0.</p>
+</dd>
+<dt><code>fts_errno</code></dt>
+<dd><p>If <a href='fts_children'>fts_children</a>() or <a href='fts_read'>fts_read</a>() returns an <code>FTSENT</code> structure whose <code>fts_info</code> field is set to <strong>FTS_DNR</strong>, <strong>FTS_ERR</strong>, or <strong>FTS_NS</strong>, the <code>fts_errno</code> field contains the error number (i.e., the <code>errno</code> value) specifying the cause of the error. Otherwise, the contents of the <code>fts_errno</code> field are undefined.</p>
+</dd>
+<dt><code>fts_number</code></dt>
+<dd><p>This field is provided for the use of the application program and is not modified by the fts functions. It is initialized to 0.</p>
+</dd>
+<dt><code>fts_pointer</code></dt>
+<dd><p>This field is provided for the use of the application program and is not modified by the fts functions. It is initialized to NULL.</p>
+</dd>
+<dt><code>fts_parent</code></dt>
+<dd><p>A pointer to the <code>FTSENT</code> structure referencing the file in the hierarchy immediately above the current file, that is, the directory of which this file is a member. A parent structure for the initial entry point is provided as well, however, only the <code>fts_level</code>, <code>fts_number</code>, and <code>fts_pointer</code> fields are guaranteed to be initialized.</p>
+</dd>
+<dt><code>fts_link</code></dt>
+<dd><p>Upon return from the <a href='fts_children'>fts_children</a>() function, the <code>fts_link</code> field points to the next structure in the NULL-terminated linked list of directory members. Otherwise, the contents of the <code>fts_link</code> field are undefined.</p>
+</dd>
+<dt><code>fts_cycle</code></dt>
+<dd><p>If a directory causes a cycle in the hierarchy (see <strong>FTS_DC</strong>), either because of a hard link between two directories, or a symbolic link pointing to a directory, the <code>fts_cycle</code> field of the structure will point to the <code>FTSENT</code> structure in the hierarchy that references the same file as the current <code>FTSENT</code> structure. Otherwise, the contents of the <code>fts_cycle</code> field are undefined.</p>
+</dd>
+<dt><code>fts_statp</code></dt>
+<dd><p>A pointer to <a href='/2/stat'>stat</a>(2) information for the file.</p>
+</dd>
+</dl>
+<p>A single buffer is used for all of the paths of all of the files in the file hierarchy. Therefore, the <code>fts_path</code> and <code>fts_accpath</code> fields are guaranteed to be null-terminated <code>only</code> for the file most recently returned by <a href='fts_read'>fts_read</a>(). To use these fields to reference any files represented by other <code>FTSENT</code> structures will require that the path buffer be modified using the information contained in that <code>FTSENT</code> structure's <code>fts_pathlen</code> field. Any such modifications should be undone before further calls to <a href='fts_read'>fts_read</a>() are attempted. The <code>fts_name</code> field is always null-terminated.</p>
+<h2>fts_open()</h2>
+<p>The <a href='fts_open'>fts_open</a>() function takes a pointer to an array of character pointers naming one or more paths which make up a logical file hierarchy to be traversed. The array must be terminated by a null pointer.</p>
+<p>There are a number of options, at least one of which (either <strong>FTS_LOGICAL</strong> or <strong>FTS_PHYSICAL</strong>) must be specified. The options are selected by ORing the following values:</p>
+<dl>
+<dt><strong>FTS_COMFOLLOW</strong></dt>
+<dd><p>This option causes any symbolic link specified as a root path to be followed immediately whether or not <strong>FTS_LOGICAL</strong> is also specified.</p>
+</dd>
+<dt><strong>FTS_LOGICAL</strong></dt>
+<dd><p>This option causes the fts routines to return <code>FTSENT</code> structures for the targets of symbolic links instead of the symbolic links themselves. If this option is set, the only symbolic links for which <code>FTSENT</code> structures are returned to the application are those referencing nonexistent files. Either <strong>FTS_LOGICAL</strong> or <strong>FTS_PHYSICAL</strong> <code>must</code> be provided to the <a href='fts_open'>fts_open</a>() function.</p>
+</dd>
+<dt><strong>FTS_NOCHDIR</strong></dt>
+<dd><p>As a performance optimization, the fts functions change directories as they walk the file hierarchy. This has the side-effect that an application cannot rely on being in any particular directory during the traversal. The <strong>FTS_NOCHDIR</strong> option turns off this optimization, and the fts functions will not change the current directory. Note that applications should not themselves change their current directory and try to access files unless <strong>FTS_NOCHDIR</strong> is specified and absolute pathnames were provided as arguments to <a href='fts_open'>fts_open</a>().</p>
+</dd>
+<dt><strong>FTS_NOSTAT</strong></dt>
+<dd><p>By default, returned <code>FTSENT</code> structures reference file characteristic information (the <code>statp</code> field) for each file visited. This option relaxes that requirement as a performance optimization, allowing the fts functions to set the <code>fts_info</code> field to <strong>FTS_NSOK</strong> and leave the contents of the <code>statp</code> field undefined.</p>
+</dd>
+<dt><strong>FTS_PHYSICAL</strong></dt>
+<dd><p>This option causes the fts routines to return <code>FTSENT</code> structures for symbolic links themselves instead of the target files they point to. If this option is set, <code>FTSENT</code> structures for all symbolic links in the hierarchy are returned to the application. Either <strong>FTS_LOGICAL</strong> or <strong>FTS_PHYSICAL</strong> <code>must</code> be provided to the <a href='fts_open'>fts_open</a>() function.</p>
+</dd>
+<dt><strong>FTS_SEEDOT</strong></dt>
+<dd><p>By default, unless they are specified as path arguments to <a href='fts_open'>fts_open</a>(), any files named "." or ".." encountered in the file hierarchy are ignored. This option causes the fts routines to return <code>FTSENT</code> structures for them.</p>
+</dd>
+<dt><strong>FTS_XDEV</strong></dt>
+<dd><p>This option prevents fts from descending into directories that have a different device number than the file from which the descent began.</p>
+</dd>
+</dl>
+<p>The argument <a href='compar'>compar</a>() specifies a user-defined function which may be used to order the traversal of the hierarchy. It takes two pointers to pointers to <code>FTSENT</code> structures as arguments and should return a negative value, zero, or a positive value to indicate if the file referenced by its first argument comes before, in any order with respect to, or after, the file referenced by its second argument. The <code>fts_accpath</code>, <code>fts_path</code>, and <code>fts_pathlen</code> fields of the <code>FTSENT</code> structures may <code>never</code> be used in this comparison. If the <code>fts_info</code> field is set to <strong>FTS_NS</strong> or <strong>FTS_NSOK</strong>, the <code>fts_statp</code> field may not either. If the <a href='compar'>compar</a>() argument is NULL, the directory traversal order is in the order listed in <code>path_argv</code> for the root paths, and in the order listed in the directory for everything else.</p>
+<h2>fts_read()</h2>
+<p>The <a href='fts_read'>fts_read</a>() function returns a pointer to an <code>FTSENT</code> structure describing a file in the hierarchy. Directories (that are readable and do not cause cycles) are visited at least twice, once in preorder and once in postorder. All other files are visited at least once. (Hard links between directories that do not cause cycles or symbolic links to symbolic links may cause files to be visited more than once, or directories more than twice.)</p>
+<p>If all the members of the hierarchy have been returned, <a href='fts_read'>fts_read</a>() returns NULL and sets the external variable <code>errno</code> to 0. If an error unrelated to a file in the hierarchy occurs, <a href='fts_read'>fts_read</a>() returns NULL and sets <code>errno</code> appropriately. If an error related to a returned file occurs, a pointer to an <code>FTSENT</code> structure is returned, and <code>errno</code> may or may not have been set (see <code>fts_info</code>).</p>
+<p>The <code>FTSENT</code> structures returned by <a href='fts_read'>fts_read</a>() may be overwritten after a call to <a href='fts_close'>fts_close</a>() on the same file hierarchy stream, or, after a call to <a href='fts_read'>fts_read</a>() on the same file hierarchy stream unless they represent a file of type directory, in which case they will not be overwritten until after a call to <a href='fts_read'>fts_read</a>() after the <code>FTSENT</code> structure has been returned by the function <a href='fts_read'>fts_read</a>() in postorder.</p>
+<h2>fts_children()</h2>
+<p>The <a href='fts_children'>fts_children</a>() function returns a pointer to an <code>FTSENT</code> structure describing the first entry in a NULL-terminated linked list of the files in the directory represented by the <code>FTSENT</code> structure most recently returned by <a href='fts_read'>fts_read</a>(). The list is linked through the <code>fts_link</code> field of the <code>FTSENT</code> structure, and is ordered by the user-specified comparison function, if any. Repeated calls to <a href='fts_children'>fts_children</a>() will re-create this linked list.</p>
+<p>As a special case, if <a href='fts_read'>fts_read</a>() has not yet been called for a hierarchy, <a href='fts_children'>fts_children</a>() will return a pointer to the files in the logical directory specified to <a href='fts_open'>fts_open</a>(), that is, the arguments specified to <a href='fts_open'>fts_open</a>(). Otherwise, if the <code>FTSENT</code> structure most recently returned by <a href='fts_read'>fts_read</a>() is not a directory being visited in preorder, or the directory does not contain any files, <a href='fts_children'>fts_children</a>() returns NULL and sets <code>errno</code> to zero. If an error occurs, <a href='fts_children'>fts_children</a>() returns NULL and sets <code>errno</code> appropriately.</p>
+<p>The <code>FTSENT</code> structures returned by <a href='fts_children'>fts_children</a>() may be overwritten after a call to <a href='fts_children'>fts_children</a>(), <a href='fts_close'>fts_close</a>(), or <a href='fts_read'>fts_read</a>() on the same file hierarchy stream.</p>
+<p>The <code>instr</code> argument is either zero or the following value:</p>
+<dl>
+<dt><strong>FTS_NAMEONLY</strong></dt>
+<dd><p>Only the names of the files are needed. The contents of all the fields in the returned linked list of structures are undefined with the exception of the <code>fts_name</code> and <code>fts_namelen</code> fields.</p>
+</dd>
+</dl>
+<h2>fts_set()</h2>
+<p>The function <a href='fts_set'>fts_set</a>() allows the user application to determine further processing for the file <code>f</code> of the stream <code>ftsp</code>. The <a href='fts_set'>fts_set</a>() function returns 0 on success, and -1 if an error occurs.</p>
+<p>The <code>instr</code> argument is either 0 (meaning "do nothing") or one of the following values:</p>
+<dl>
+<dt><strong>FTS_AGAIN</strong></dt>
+<dd><p>Revisit the file; any file type may be revisited. The next call to <a href='fts_read'>fts_read</a>() will return the referenced file. The <code>fts_stat</code> and <code>fts_info</code> fields of the structure will be reinitialized at that time, but no other fields will have been changed. This option is meaningful only for the most recently returned file from <a href='fts_read'>fts_read</a>(). Normal use is for postorder directory visits, where it causes the directory to be revisited (in both preorder and postorder) as well as all of its descendants.</p>
+</dd>
+<dt><strong>FTS_FOLLOW</strong></dt>
+<dd><p>The referenced file must be a symbolic link. If the referenced file is the one most recently returned by <a href='fts_read'>fts_read</a>(), the next call to <a href='fts_read'>fts_read</a>() returns the file with the <code>fts_info</code> and <code>fts_statp</code> fields reinitialized to reflect the target of the symbolic link instead of the symbolic link itself. If the file is one of those most recently returned by <a href='fts_children'>fts_children</a>(), the <code>fts_info</code> and <code>fts_statp</code> fields of the structure, when returned by <a href='fts_read'>fts_read</a>(), will reflect the target of the symbolic link instead of the symbolic link itself. In either case, if the target of the symbolic link does not exist, the fields of the returned structure will be unchanged and the <code>fts_info</code> field will be set to <strong>FTS_SLNONE</strong>.</p>
+<p>If the target of the link is a directory, the preorder return, followed by the return of all of its descendants, followed by a postorder return, is done.</p>
+</dd>
+<dt><strong>FTS_SKIP</strong></dt>
+<dd><p>No descendants of this file are visited. The file may be one of those most recently returned by either <a href='fts_children'>fts_children</a>() or <a href='fts_read'>fts_read</a>().</p>
+</dd>
+</dl>
+<h2>fts_close()</h2>
+<p>The <a href='fts_close'>fts_close</a>() function closes the file hierarchy stream referred to by <code>ftsp</code> and restores the current directory to the directory from which <a href='fts_open'>fts_open</a>() was called to open <code>ftsp</code>. The <a href='fts_close'>fts_close</a>() function returns 0 on success, and -1 if an error occurs.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>The function <a href='fts_open'>fts_open</a>() may fail and set <code>errno</code> for any of the errors specified for <a href='/2/open'>open</a>(2) and <a href='/3/malloc'>malloc</a>(3).</p>
+<p>The function <a href='fts_close'>fts_close</a>() may fail and set <code>errno</code> for any of the errors specified for <a href='/2/chdir'>chdir</a>(2) and <a href='/2/close'>close</a>(2).</p>
+<p>The functions <a href='fts_read'>fts_read</a>() and <a href='fts_children'>fts_children</a>() may fail and set <code>errno</code> for any of the errors specified for <a href='/2/chdir'>chdir</a>(2), <a href='/3/malloc'>malloc</a>(3), <a href='/3/opendir'>opendir</a>(3), <a href='/3/readdir'>readdir</a>(3), and <a href='/2/stat'>stat</a>(2).</p>
+<p>In addition, <a href='fts_children'>fts_children</a>(), <a href='fts_open'>fts_open</a>(), and <a href='fts_set'>fts_set</a>() may fail and set <code>errno</code> as follows:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>options</code> or <code>instr</code> was invalid.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These functions are available in Linux since glibc2.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='fts_open'>fts_open</a>(), <a href='fts_set'>fts_set</a>(), <a href='fts_close'>fts_close</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='fts_read'>fts_read</a>(), <a href='fts_children'>fts_children</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>4.4BSD.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In versions of glibc before 2.23, all of the APIs described in this man page are not safe when compiling a program using the LFS APIs (e.g., when compiling with <code>-D_FILE_OFFSET_BITS=64</code>).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/find'>find</a>(1), <a href='/2/chdir'>chdir</a>(2), <a href='/2/stat'>stat</a>(2), <a href='/3/ftw'>ftw</a>(3), <a href='/3/qsort'>qsort</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

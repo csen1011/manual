@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>machine-id - Local machine ID configuration file</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>/etc/machine-id</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The /etc/machine-id file contains the unique machine ID of the local system that is set during installation or boot. The machine ID is a single newline-terminated, hexadecimal, 32-character, lowercase ID. When decoded from hexadecimal, this corresponds to a 16-byte/128-bit value. This ID may not be all zeros.</p>
+<p>The machine ID is usually generated from a random source during system installation or first boot and stays constant for all subsequent boots. Optionally, for stateless systems, it is generated during runtime during early boot if necessary.</p>
+<p>The machine ID may be set, for example when network booting, with the <code>systemd.machine_id=</code> kernel command line parameter or by passing the option <strong>--machine-id=</strong> to systemd. An ID specified in this manner has higher priority and will be used instead of the ID stored in /etc/machine-id.</p>
+<p>The machine ID does not change based on local or network configuration or when hardware is replaced. Due to this and its greater length, it is a more useful replacement for the <a href='/3/gethostid'>gethostid</a>(3) call that POSIX specifies.</p>
+<p>This machine ID adheres to the same format and logic as the D-Bus machine ID.</p>
+<p>This ID uniquely identifies the host. It should be considered "confidential", and must not be exposed in untrusted environments, in particular on the network. If a stable unique identifier that is tied to the machine is needed for some application, the machine ID or any part of it must not be used directly. Instead the machine ID should be hashed with a cryptographic, keyed hash function, using a fixed, application-specific key. That way the ID will be properly unique, and derived in a constant way from the machine ID but there will be no way to retrieve the original machine ID from the application-specific one. The <a href='/3/sd_id128_get_machine_app_specific'>sd_id128_get_machine_app_specific</a>(3) API provides an implementation of such an algorithm.</p>
+</div></div><h1 id='initialization'><a href='#initialization'>INITIALIZATION</a></h1><div data-for='initialization' data-hide><div class='section' data-for='initialization'><div data-more>
+<p>Each machine should have a non-empty ID in normal operation. The ID of each machine should be unique. To achieve those objectives, /etc/machine-id can be initialized in a few different ways.</p>
+<p>For normal operating system installations, where a custom image is created for a specific machine, /etc/machine-id should be populated during installation.</p>
+<p><a href='/1/systemd-machine-id-setup'>systemd-machine-id-setup</a>(1) may be used by installer tools to initialize the machine ID at install time, but /etc/machine-id may also be written using any other means.</p>
+<p>For operating system images which are created once and used on multiple machines, for example for containers or in the cloud, /etc/machine-id should be either missing or an empty file in the generic file system image (the difference between the two options is described under "First Boot Semantics" below). An ID will be generated during boot and saved to this file if possible. Having an empty file in place is useful because it allows a temporary file to be bind-mounted over the real file, in case the image is used read-only.</p>
+<p><a href='/1/systemd-firstboot'>systemd-firstboot</a>(1) may be used to initialize /etc/machine-id on mounted (but not booted) system images.</p>
+<p>When a machine is booted with <a href='/1/systemd'>systemd</a>(1) the ID of the machine will be established. If <code>systemd.machine_id=</code> or <strong>--machine-id=</strong> options (see first section) are specified, this value will be used. Otherwise, the value in /etc/machine-id will be used. If this file is empty or missing, systemd will attempt to use the D-Bus machine ID from /var/lib/dbus/machine-id, the value of the kernel command line option <code>container_uuid</code>, the KVM DMI product_uuid or the devicetree vm,uuid (on KVM systems), and finally a randomly generated UUID.</p>
+<p>After the machine ID is established, <a href='/1/systemd'>systemd</a>(1) will attempt to save it to /etc/machine-id. If this fails, it will attempt to bind-mount a temporary file over /etc/machine-id. It is an error if the file system is read-only and does not contain a (possibly empty) /etc/machine-id file.</p>
+<p><a href='/8/systemd-machine-id-commit.service'>systemd-machine-id-commit.service</a>(8) will attempt to write the machine ID to the file system if /etc/machine-id or /etc/ are read-only during early boot but become writable later on.</p>
+</div></div></div><h1 id='first-boot-semantics'><a href='#first-boot-semantics'>FIRST BOOT SEMANTICS</a></h1><div data-for='first-boot-semantics' data-hide><div class='section' data-for='first-boot-semantics'><div data-more>
+<p>/etc/machine-id is used to decide whether a boot is the first one. The rules are as follows:</p>
+<blockquote>
+<p>1.</p>
+<ul>
+<li></li>
+</ul>
+<p>If /etc/machine-id does not exist, this is a first boot. During early boot, <strong>systemd</strong> will write "uninitialized\n" to this file and overmount a temporary file which contains the actual machine ID. Later (after first-boot-complete.target has been reached), the real machine ID will be written to disk.</p>
+</blockquote>
+<blockquote>
+<p>2.</p>
+<ul>
+<li></li>
+</ul>
+<p>If /etc/machine-id contains the string "uninitialized", a boot is also considered the first boot. The same mechanism as above applies.</p>
+</blockquote>
+<blockquote>
+<p>3.</p>
+<ul>
+<li></li>
+</ul>
+<p>If /etc/machine-id exists and is empty, a boot is <code>not</code> considered the first boot. <strong>systemd</strong> will still bind-mount a file containing the actual machine-id over it and later try to commit it to disk (if /etc/ is writable).</p>
+</blockquote>
+<blockquote>
+<p>4.</p>
+<ul>
+<li></li>
+</ul>
+<p>If /etc/machine-id already contains a valid machine-id, this is not a first boot.</p>
+</blockquote>
+<p>If by any of the above rules, a first boot is detected, units with <code>ConditionFirstBoot=yes</code> will be run.</p>
+</div></div></div><h1 id='relation-to-osf-uuids'><a href='#relation-to-osf-uuids'>RELATION TO OSF UUIDS</a></h1><div data-for='relation-to-osf-uuids' data-hide><div class='section' data-for='relation-to-osf-uuids'><div data-more>
+<p>Note that the machine ID historically is not an OSF UUID as defined by <strong>RFC 4122</strong>[1], nor a Microsoft GUID; however, starting with systemd v30, newly generated machine IDs do qualify as Variant 1 Version 4 UUIDs, as per RFC 4122.</p>
+<p>In order to maintain compatibility with existing installations, an application requiring a strictly RFC 4122 compliant UUID should decode the machine ID, and then (non-reversibly) apply the following operations to turn it into a valid RFC 4122 Variant 1 Version 4 UUID. With "id" being an unsigned character array:</p>
+<p>.RS 4</p>
+<pre><code>/* Set UUID version to 4 --- truly random generation */
+id[6] = (id[6] &amp; 0x0F) | 0x40;
+/* Set the UUID variant to DCE */
+id[8] = (id[8] &amp; 0x3F) | 0x80;</code></pre>
+<p>.RE</p>
+<p>(This code is inspired by "generate_random_uuid()" of drivers/char/random.c from the Linux kernel sources.)</p>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>The simple configuration file format of /etc/machine-id originates in the /var/lib/dbus/machine-id file introduced by D-Bus. In fact, this latter file might be a symlink to /etc/machine-id.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemd-machine-id-setup'>systemd-machine-id-setup</a>(1), <a href='/3/gethostid'>gethostid</a>(3), <a href='/5/hostname'>hostname</a>(5), <a href='/5/machine-info'>machine-info</a>(5), <a href='/5/os-release'>os-release</a>(5), <a href='/3/sd-id128'>sd-id128</a>(3), <a href='/3/sd_id128_get_machine'>sd_id128_get_machine</a>(3), <a href='/1/systemd-firstboot'>systemd-firstboot</a>(1)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>RFC 4122</p>
+<p><a href="https://tools.ietf.org/html/rfc4122">https://tools.ietf.org/html/rfc4122</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;getspnam&lt;/code&gt; and 12 related functions.' data-bs-toggle='popover' tabindex='0'>getspnam</a>, getspnam_r, getspent, getspent_r, setspent, endspent, fgetspent, fgetspent_r, sgetspent, sgetspent_r, putspent, lckpwdf, ulckpwdf - get shadow password file entry</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>/* General shadow password file API */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;shadow.h&gt;</a>
+
+struct spwd *getspnam(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name);
+
+struct spwd *getspent(void);
+
+void setspent(void);
+
+void endspent(void);
+
+struct spwd *fgetspent(FILE *stream);
+
+struct spwd *sgetspent(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>s);
+
+int putspent(const struct spwd *p, FILE *stream);
+
+int lckpwdf(void);
+
+int ulckpwdf(void);
+
+/* GNU extension */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;shadow.h&gt;</a>
+
+int getspent_r(struct spwd *spbuf,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct spwd **spbufp);
+
+int getspnam_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name, struct spwd *spbuf,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct spwd **spbufp);
+
+int fgetspent_r(FILE *stream, struct spwd *spbuf,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct spwd **spbufp);
+
+int sgetspent_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>s, struct spwd *spbuf,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct spwd **spbufp);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getspent_r'>getspent_r</a>(), <a href='getspnam_r'>getspnam_r</a>(), <a href='fgetspent_r'>fgetspent_r</a>(), <a href='sgetspent_r'>sgetspent_r</a>(): Since glibc 2.19: _DEFAULT_SOURCE Glibc 2.19 and earlier: _BSD_SOURCE || _SVID_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Long ago it was considered safe to have encrypted passwords openly visible in the password file. When computers got faster and people got more security-conscious, this was no longer acceptable. Julianne Frances Haugh implemented the shadow password suite that keeps the encrypted passwords in the shadow password database (e.g., the local shadow password file <code>/etc/shadow</code>, NIS, and LDAP), readable only by root.</p>
+<p>The functions described below resemble those for the traditional password database (e.g., see <a href='/3/getpwnam'>getpwnam</a>(3) and <a href='/3/getpwent'>getpwent</a>(3)).</p>
+<p>The <a href='getspnam'>getspnam</a>() function returns a pointer to a structure containing the broken-out fields of the record in the shadow password database that matches the username <code>name</code>.</p>
+<p>The <a href='getspent'>getspent</a>() function returns a pointer to the next entry in the shadow password database. The position in the input stream is initialized by <a href='setspent'>setspent</a>(). When done reading, the program may call <a href='endspent'>endspent</a>() so that resources can be deallocated.</p>
+<p>The <a href='fgetspent'>fgetspent</a>() function is similar to <a href='getspent'>getspent</a>() but uses the supplied stream instead of the one implicitly opened by <a href='setspent'>setspent</a>().</p>
+<p>The <a href='sgetspent'>sgetspent</a>() function parses the supplied string <code>s</code> into a struct <code>spwd</code>.</p>
+<p>The <a href='putspent'>putspent</a>() function writes the contents of the supplied struct <code>spwd</code> <code>*p</code> as a text line in the shadow password file format to <code>stream</code>. String entries with value NULL and numerical entries with value -1 are written as an empty string.</p>
+<p>The <a href='lckpwdf'>lckpwdf</a>() function is intended to protect against multiple simultaneous accesses of the shadow password database. It tries to acquire a lock, and returns 0 on success, or -1 on failure (lock not obtained within 15 seconds). The <a href='ulckpwdf'>ulckpwdf</a>() function releases the lock again. Note that there is no protection against direct access of the shadow password file. Only programs that use <a href='lckpwdf'>lckpwdf</a>() will notice the lock.</p>
+<p>These were the functions that formed the original shadow API. They are widely available.</p>
+<h2>Reentrant versions</h2>
+<p>Analogous to the reentrant functions for the password database, glibc also has reentrant functions for the shadow password database. The <a href='getspnam_r'>getspnam_r</a>() function is like <a href='getspnam'>getspnam</a>() but stores the retrieved shadow password structure in the space pointed to by <code>spbuf</code>. This shadow password structure contains pointers to strings, and these strings are stored in the buffer <code>buf</code> of size <code>buflen</code>. A pointer to the result (in case of success) or NULL (in case no entry was found or an error occurred) is stored in <code>*spbufp</code>.</p>
+<p>The functions <a href='getspent_r'>getspent_r</a>(), <a href='fgetspent_r'>fgetspent_r</a>(), and <a href='sgetspent_r'>sgetspent_r</a>() are similarly analogous to their nonreentrant counterparts.</p>
+<p>Some non-glibc systems also have functions with these names, often with different prototypes.</p>
+<h2>Structure</h2>
+<p>The shadow password structure is defined in <code>&lt;shadow.h&gt;</code> as follows:</p>
+<pre><code>struct spwd {
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>sp_namp;     /* Login name */
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>sp_pwdp;     /* Encrypted password */
+    long  sp_lstchg;   /* Date of last change
+                          (measured in days since
+                          1970-01-01 00:00:00 +0000 (UTC)) */
+    long  sp_min;      /* Min # of days between changes */
+    long  sp_max;      /* Max # of days between changes */
+    long  sp_warn;     /* # of days before password expires
+                          to warn user to change it */
+    long  sp_inact;    /* # of days after password expires
+                          until account is disabled */
+    long  sp_expire;   /* Date when account expires
+                          (measured in days since
+                          1970-01-01 00:00:00 +0000 (UTC)) */
+    unsigned long sp_flag;  /* Reserved */
+};</code></pre>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The functions that return a pointer return NULL if no more entries are available or if an error occurs during processing. The functions which have <code>int</code> as the return value return 0 for success and -1 for failure, with <code>errno</code> set to indicate the cause of the error.</p>
+<p>For the nonreentrant functions, the return value may point to static area, and may be overwritten by subsequent calls to these functions.</p>
+<p>The reentrant functions return zero on success. In case of error, an error number is returned.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The caller does not have permission to access the shadow password file.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>Supplied buffer is too small.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/shadow</code></dt>
+<dd><p>local shadow password database file</p>
+</dd>
+<dt><code>/etc/.pwd.lock</code></dt>
+<dd><p>lock file</p>
+</dd>
+</dl>
+<p>The include file <code>&lt;paths.h&gt;</code> defines the constant <strong>_PATH_SHADOW</strong> to the pathname of the shadow password file.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getspnam'>getspnam</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:getspnam locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='getspent'>getspent</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:getspent<br/>
+race:spentbuf locale</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='setspent'>setspent</a>(),<br/>
+<a href='endspent'>endspent</a>(),<br/>
+<a href='getspent_r'>getspent_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:getspent locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='fgetspent'>fgetspent</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:fgetspent</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='sgetspent'>sgetspent</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:sgetspent</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='putspent'>putspent</a>(),<br/>
+<a href='getspnam_r'>getspnam_r</a>(),<br/>
+<a href='sgetspent_r'>sgetspent_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe locale</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='lckpwdf'>lckpwdf</a>(),<br/>
+<a href='ulckpwdf'>ulckpwdf</a>(),<br/>
+<a href='fgetspent_r'>fgetspent_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+<p>In the above table, <code>getspent</code> in <code>race:getspent</code> signifies that if any of the functions <a href='setspent'>setspent</a>(), <a href='getspent'>getspent</a>(), <a href='getspent_r'>getspent_r</a>(), or <a href='endspent'>endspent</a>() are used in parallel in different threads of a program, then data races could occur.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The shadow password database and its associated API are not specified in POSIX.1. However, many other systems provide a similar API.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getgrnam'>getgrnam</a>(3), <a href='/3/getpwnam'>getpwnam</a>(3), <a href='/3/getpwnam_r'>getpwnam_r</a>(3), <a href='/5/shadow'>shadow</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

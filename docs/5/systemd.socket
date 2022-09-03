@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.socket - Socket unit configuration</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>socket</code>.socket</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A unit configuration file whose name ends in ".socket" encodes information about an IPC or network socket or a file system FIFO controlled and supervised by systemd, for socket-based activation.</p>
+<p>This man page lists the configuration options specific to this unit type. See <a href='/5/systemd.unit'>systemd.unit</a>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. The socket specific configuration options are configured in the [Socket] section.</p>
+<p>Additional options are listed in <a href='/5/systemd.exec'>systemd.exec</a>(5), which define the execution environment the <strong>ExecStartPre=</strong>, <strong>ExecStartPost=</strong>, <strong>ExecStopPre=</strong> and <strong>ExecStopPost=</strong> commands are executed in, and in <a href='/5/systemd.kill'>systemd.kill</a>(5), which define the way the processes are terminated, and in <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5), which configure resource control settings for the processes of the socket.</p>
+<p>For each socket unit, a matching service unit must exist, describing the service to start on incoming traffic on the socket (see <a href='/5/systemd.service'>systemd.service</a>(5) for more information about .service units). The name of the .service unit is by default the same as the name of the .socket unit, but can be altered with the <strong>Service=</strong> option described below. Depending on the setting of the <strong>Accept=</strong> option described below, this .service unit must either be named like the .socket unit, but with the suffix replaced, unless overridden with <strong>Service=</strong>; or it must be a template unit named the same way. Example: a socket file foo.socket needs a matching service foo.service if <strong>Accept=no</strong> is set. If <strong>Accept=yes</strong> is set, a service template foo@.service must exist from which services are instantiated for each incoming connection.</p>
+<p>No implicit <code>WantedBy=</code> or <code>RequiredBy=</code> dependency from the socket to the service is added. This means that the service may be started without the socket, in which case it must be able to open sockets by itself. To prevent this, an explicit <code>Requires=</code> dependency may be added.</p>
+<p>Socket units may be used to implement on-demand starting of services, as well as parallelized starting of services. See the blog stories linked at the end for an introduction.</p>
+<p>Note that the daemon software configured for socket activation with socket units needs to be able to accept sockets from systemd, either via systemds native socket passing interface (see <a href='/3/sd_listen_fds'>sd_listen_fds</a>(3) for details about the precise protocol used and the order in which the file descriptors are passed) or via traditional <a href='/8/inetd'>inetd</a>(8)-style socket passing (i.e. sockets passed in via standard input and output, using <code>StandardInput=socket</code> in the service file).</p>
+<p>All network sockets allocated through .socket units are allocated in the hosts network namespace (see <a href='/7/network_namespaces'>network_namespaces</a>(7)). This does not mean however that the service activated by a configured socket unit has to be part of the hosts network namespace as well. It is supported and even good practice to run services in their own network namespace (for example through <code>PrivateNetwork=</code>, see <a href='/5/systemd.exec'>systemd.exec</a>(5)), receiving only the sockets configured through socket-activation from the hosts namespace. In such a set-up communication within the hosts network namespace is only permitted through the activation sockets passed in while all sockets allocated from the service code itself will be associated with the services own namespace, and thus possibly subject to a restrictive configuration.</p>
+</div></div><h1 id='automatic-dependencies'><a href='#automatic-dependencies'>AUTOMATIC DEPENDENCIES</a></h1><div data-for='automatic-dependencies' data-hide><div class='section' data-for='automatic-dependencies'><div data-more>
+<h2>Implicit Dependencies</h2>
+<p>The following dependencies are implicitly added:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Socket units automatically gain a <code>Before=</code> dependency on the service units they activate.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Socket units referring to file system paths (such as <strong>AF_UNIX</strong> sockets or FIFOs) implicitly gain <code>Requires=</code> and <code>After=</code> dependencies on all mount units necessary to access those paths.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Socket units using the <code>BindToDevice=</code> setting automatically gain a <code>BindsTo=</code> and <code>After=</code> dependency on the device unit encapsulating the specified network interface.</p>
+</blockquote>
+<p>Additional implicit dependencies may be added as result of execution and resource control parameters as documented in <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5).</p>
+<h2>Default Dependencies</h2>
+<p>The following dependencies are added unless <code>DefaultDependencies=no</code> is set:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Socket units automatically gain a <code>Before=</code> dependency on sockets.target.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Socket units automatically gain a pair of <code>After=</code> and <code>Requires=</code> dependency on sysinit.target, and a pair of <code>Before=</code> and <code>Conflicts=</code> dependencies on shutdown.target. These dependencies ensure that the socket unit is started before normal services at boot, and is stopped on shutdown. Only sockets involved with early boot or late system shutdown should disable <code>DefaultDependencies=</code> option.</p>
+</blockquote>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Socket files must include a [Socket] section, which carries information about the socket or FIFO it supervises. A number of options that may be used in this section are shared with other unit types. These options are documented in <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.kill'>systemd.kill</a>(5). The options specific to the [Socket] section of socket units are the following:</p>
+<p><code>ListenStream=</code>, <code>ListenDatagram=</code>, <code>ListenSequentialPacket=</code></p>
+<blockquote>
+<p>Specifies an address to listen on for a stream (<strong>SOCK_STREAM</strong>), datagram (<strong>SOCK_DGRAM</strong>), or sequential packet (<strong>SOCK_SEQPACKET</strong>) socket, respectively. The address can be written in various formats:</p>
+<p>If the address starts with a slash ("/"), it is read as file system socket in the <strong>AF_UNIX</strong> socket family.</p>
+<p>If the address starts with an at symbol ("@"), it is read as abstract namespace socket in the <strong>AF_UNIX</strong> family. The "@" is replaced with a <strong>NUL</strong> character before binding. For details, see <a href='/7/unix'>unix</a>(7).</p>
+<p>If the address string is a single number, it is read as port number to listen on via IPv6. Depending on the value of <code>BindIPv6Only=</code> (see below) this might result in the service being available via both IPv6 and IPv4 (default) or just via IPv6.</p>
+<p>If the address string is a string in the format "<code>v.w.x.y</code>:<code>z</code>", it is interpreted as IPv4 address <code>v.w.x.y</code> and port <code>z</code>.</p>
+<p>If the address string is a string in the format "[<code>x</code>]:<code>y</code>", it is interpreted as IPv6 address <code>x</code> and port <code>y</code>. An optional interface scope (interface name or number) may be specified after a "%" symbol: "[<code>x</code>]:<code>y</code>%<code>dev</code>". Interface scopes are only useful with link-local addresses, because the kernel ignores them in other cases. Note that if an address is specified as IPv6, it might still make the service available via IPv4 too, depending on the <code>BindIPv6Only=</code> setting (see below).</p>
+<p>If the address string is a string in the format "vsock:<code>x</code>:<code>y</code>", it is read as CID <code>x</code> on a port <code>y</code> address in the <strong>AF_VSOCK</strong> family. The CID is a unique 32-bit integer identifier in <strong>AF_VSOCK</strong> analogous to an IP address. Specifying the CID is optional, and may be set to the empty string.</p>
+<p>Note that <strong>SOCK_SEQPACKET</strong> (i.e. <code>ListenSequentialPacket=</code>) is only available for <strong>AF_UNIX</strong> sockets. <strong>SOCK_STREAM</strong> (i.e. <code>ListenStream=</code>) when used for IP sockets refers to TCP sockets, <strong>SOCK_DGRAM</strong> (i.e. <code>ListenDatagram=</code>) to UDP.</p>
+<p>These options may be specified more than once, in which case incoming traffic on any of the sockets will trigger service activation, and all listed sockets will be passed to the service, regardless of whether there is incoming traffic on them or not. If the empty string is assigned to any of these options, the list of addresses to listen on is reset, all prior uses of any of these options will have no effect.</p>
+<p>It is also possible to have more than one socket unit for the same service when using <code>Service=</code>, and the service will receive all the sockets configured in all the socket units. Sockets configured in one unit are passed in the order of configuration, but no ordering between socket units is specified.</p>
+<p>If an IP address is used here, it is often desirable to listen on it before the interface it is configured on is up and running, and even regardless of whether it will be up and running at any point. To deal with this, it is recommended to set the <code>FreeBind=</code> option described below.</p>
+</blockquote>
+<p><code>ListenFIFO=</code></p>
+<blockquote>
+<p>Specifies a file system FIFO (see <a href='/7/fifo'>fifo</a>(7) for details) to listen on. This expects an absolute file system path as argument. Behavior otherwise is very similar to the <code>ListenDatagram=</code> directive above.</p>
+</blockquote>
+<p><code>ListenSpecial=</code></p>
+<blockquote>
+<p>Specifies a special file in the file system to listen on. This expects an absolute file system path as argument. Behavior otherwise is very similar to the <code>ListenFIFO=</code> directive above. Use this to open character device nodes as well as special files in /proc/ and /sys/.</p>
+</blockquote>
+<p><code>ListenNetlink=</code></p>
+<blockquote>
+<p>Specifies a Netlink family to create a socket for to listen on. This expects a short string referring to the <strong>AF_NETLINK</strong> family name (such as <code>audit</code> or <code>kobject-uevent</code>) as argument, optionally suffixed by a whitespace followed by a multicast group integer. Behavior otherwise is very similar to the <code>ListenDatagram=</code> directive above.</p>
+</blockquote>
+<p><code>ListenMessageQueue=</code></p>
+<blockquote>
+<p>Specifies a POSIX message queue name to listen on (see <a href='/7/mq_overview'>mq_overview</a>(7) for details). This expects a valid message queue name (i.e. beginning with "/"). Behavior otherwise is very similar to the <code>ListenFIFO=</code> directive above. On Linux message queue descriptors are actually file descriptors and can be inherited between processes.</p>
+</blockquote>
+<p><code>ListenUSBFunction=</code></p>
+<blockquote>
+<p>Specifies a <strong>USB FunctionFS</strong>[1] endpoints location to listen on, for implementation of USB gadget functions. This expects an absolute file system path of a FunctionFS mount point as the argument. Behavior otherwise is very similar to the <code>ListenFIFO=</code> directive above. Use this to open the FunctionFS endpoint ep0. When using this option, the activated service has to have the <code>USBFunctionDescriptors=</code> and <code>USBFunctionStrings=</code> options set.</p>
+</blockquote>
+<p><code>SocketProtocol=</code></p>
+<blockquote>
+<p>Takes one of <strong>udplite</strong> or <strong>sctp</strong>. The socket will use the UDP-Lite (<strong>IPPROTO_UDPLITE</strong>) or SCTP (<strong>IPPROTO_SCTP</strong>) protocol, respectively.</p>
+</blockquote>
+<p><code>BindIPv6Only=</code></p>
+<blockquote>
+<p>Takes one of <strong>default</strong>, <strong>both</strong> or <strong>ipv6-only</strong>. Controls the IPV6_V6ONLY socket option (see <a href='/7/ipv6'>ipv6</a>(7) for details). If <strong>both</strong>, IPv6 sockets bound will be accessible via both IPv4 and IPv6. If <strong>ipv6-only</strong>, they will be accessible via IPv6 only. If <strong>default</strong> (which is the default, surprise!), the system wide default setting is used, as controlled by /proc/sys/net/ipv6/bindv6only, which in turn defaults to the equivalent of <strong>both</strong>.</p>
+</blockquote>
+<p><code>Backlog=</code></p>
+<blockquote>
+<p>Takes an unsigned integer argument. Specifies the number of connections to queue that have not been accepted yet. This setting matters only for stream and sequential packet sockets. See <a href='/2/listen'>listen</a>(2) for details. Defaults to SOMAXCONN (128).</p>
+</blockquote>
+<p><code>BindToDevice=</code></p>
+<blockquote>
+<p>Specifies a network interface name to bind this socket to. If set, traffic will only be accepted from the specified network interfaces. This controls the <strong>SO_BINDTODEVICE</strong> socket option (see <a href='/7/socket'>socket</a>(7) for details). If this option is used, an implicit dependency from this socket unit on the network interface device unit is created (see <a href='/5/systemd.device'>systemd.device</a>(5)). Note that setting this parameter might result in additional dependencies to be added to the unit (see above).</p>
+</blockquote>
+<p><code>SocketUser=</code>, <code>SocketGroup=</code></p>
+<blockquote>
+<p>Takes a UNIX user/group name. When specified, all <strong>AF_UNIX</strong> sockets and FIFO nodes in the file system are owned by the specified user and group. If unset (the default), the nodes are owned by the root user/group (if run in system context) or the invoking user/group (if run in user context). If only a user is specified but no group, then the group is derived from the users default group.</p>
+</blockquote>
+<p><code>SocketMode=</code></p>
+<blockquote>
+<p>If listening on a file system socket or FIFO, this option specifies the file system access mode used when creating the file node. Takes an access mode in octal notation. Defaults to 0666.</p>
+</blockquote>
+<p><code>DirectoryMode=</code></p>
+<blockquote>
+<p>If listening on a file system socket or FIFO, the parent directories are automatically created if needed. This option specifies the file system access mode used when creating these directories. Takes an access mode in octal notation. Defaults to 0755.</p>
+</blockquote>
+<p><code>Accept=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If yes, a service instance is spawned for each incoming connection and only the connection socket is passed to it. If no, all listening sockets themselves are passed to the started service unit, and only one service unit is spawned for all connections (also see above). This value is ignored for datagram sockets and FIFOs where a single service unit unconditionally handles all incoming traffic. Defaults to <strong>no</strong>. For performance reasons, it is recommended to write new daemons only in a way that is suitable for <strong>Accept=no</strong>. A daemon listening on an <strong>AF_UNIX</strong> socket may, but does not need to, call <a href='/2/close'>close</a>(2) on the received socket before exiting. However, it must not unlink the socket from a file system. It should not invoke <a href='/2/shutdown'>shutdown</a>(2) on sockets it got with <code>Accept=no</code>, but it may do so for sockets it got with <code>Accept=yes</code> set. Setting <code>Accept=yes</code> is mostly useful to allow daemons designed for usage with <a href='/8/inetd'>inetd</a>(8) to work unmodified with systemd socket activation.</p>
+<p>For IPv4 and IPv6 connections, the <code>REMOTE_ADDR</code> environment variable will contain the remote IP address, and <code>REMOTE_PORT</code> will contain the remote port. This is the same as the format used by CGI. For <strong>SOCK_RAW</strong>, the port is the IP protocol.</p>
+</blockquote>
+<p><code>Writable=</code></p>
+<blockquote>
+<p>Takes a boolean argument. May only be used in conjunction with <code>ListenSpecial=</code>. If true, the specified special file is opened in read-write mode, if false, in read-only mode. Defaults to false.</p>
+</blockquote>
+<p><code>FlushPending=</code></p>
+<blockquote>
+<p>Takes a boolean argument. May only be used when <strong>Accept=no</strong>. If yes, the sockets buffers are cleared after the triggered service exited. This causes any pending data to be flushed and any pending incoming connections to be rejected. If no, the sockets buffers wont be cleared, permitting the service to handle any pending connections after restart, which is the usually expected behaviour. Defaults to <strong>no</strong>.</p>
+</blockquote>
+<p><code>MaxConnections=</code></p>
+<blockquote>
+<p>The maximum number of connections to simultaneously run services instances for, when <strong>Accept=yes</strong> is set. If more concurrent connections are coming in, they will be refused until at least one existing connection is terminated. This setting has no effect on sockets configured with <strong>Accept=no</strong> or datagram sockets. Defaults to 64.</p>
+</blockquote>
+<p><code>MaxConnectionsPerSource=</code></p>
+<blockquote>
+<p>The maximum number of connections for a service per source IP address. This is very similar to the <code>MaxConnections=</code> directive above. Disabled by default.</p>
+</blockquote>
+<p><code>KeepAlive=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If true, the TCP/IP stack will send a keep alive message after 2h (depending on the configuration of /proc/sys/net/ipv4/tcp_keepalive_time) for all TCP streams accepted on this socket. This controls the <strong>SO_KEEPALIVE</strong> socket option (see <a href='/7/socket'>socket</a>(7) and the <strong>TCP Keepalive HOWTO</strong>[2] for details.) Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>KeepAliveTimeSec=</code></p>
+<blockquote>
+<p>Takes time (in seconds) as argument. The connection needs to remain idle before TCP starts sending keepalive probes. This controls the TCP_KEEPIDLE socket option (see <a href='/7/socket'>socket</a>(7) and the <strong>TCP Keepalive HOWTO</strong>[2] for details.) Defaults value is 7200 seconds (2 hours).</p>
+</blockquote>
+<p><code>KeepAliveIntervalSec=</code></p>
+<blockquote>
+<p>Takes time (in seconds) as argument between individual keepalive probes, if the socket option <strong>SO_KEEPALIVE</strong> has been set on this socket. This controls the <strong>TCP_KEEPINTVL</strong> socket option (see <a href='/7/socket'>socket</a>(7) and the <strong>TCP Keepalive HOWTO</strong>[2] for details.) Defaults value is 75 seconds.</p>
+</blockquote>
+<p><code>KeepAliveProbes=</code></p>
+<blockquote>
+<p>Takes an integer as argument. It is the number of unacknowledged probes to send before considering the connection dead and notifying the application layer. This controls the TCP_KEEPCNT socket option (see <a href='/7/socket'>socket</a>(7) and the <strong>TCP Keepalive HOWTO</strong>[2] for details.) Defaults value is 9.</p>
+</blockquote>
+<p><code>NoDelay=</code></p>
+<blockquote>
+<p>Takes a boolean argument. TCP Nagles algorithm works by combining a number of small outgoing messages, and sending them all at once. This controls the TCP_NODELAY socket option (see <a href='/7/tcp'>tcp</a>(7)). Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>Priority=</code></p>
+<blockquote>
+<p>Takes an integer argument controlling the priority for all traffic sent from this socket. This controls the <strong>SO_PRIORITY</strong> socket option (see <a href='/7/socket'>socket</a>(7) for details.).</p>
+</blockquote>
+<p><code>DeferAcceptSec=</code></p>
+<blockquote>
+<p>Takes time (in seconds) as argument. If set, the listening process will be awakened only when data arrives on the socket, and not immediately when connection is established. When this option is set, the <strong>TCP_DEFER_ACCEPT</strong> socket option will be used (see <a href='/7/tcp'>tcp</a>(7)), and the kernel will ignore initial ACK packets without any data. The argument specifies the approximate amount of time the kernel should wait for incoming data before falling back to the normal behavior of honoring empty ACK packets. This option is beneficial for protocols where the client sends the data first (e.g. HTTP, in contrast to SMTP), because the server process will not be woken up unnecessarily before it can take any action.</p>
+<p>If the client also uses the <strong>TCP_DEFER_ACCEPT</strong> option, the latency of the initial connection may be reduced, because the kernel will send data in the final packet establishing the connection (the third packet in the "three-way handshake").</p>
+<p>Disabled by default.</p>
+</blockquote>
+<p><code>ReceiveBuffer=</code>, <code>SendBuffer=</code></p>
+<blockquote>
+<p>Takes an integer argument controlling the receive or send buffer sizes of this socket, respectively. This controls the <strong>SO_RCVBUF</strong> and <strong>SO_SNDBUF</strong> socket options (see <a href='/7/socket'>socket</a>(7) for details.). The usual suffixes K, M, G are supported and are understood to the base of 1024.</p>
+</blockquote>
+<p><code>IPTOS=</code></p>
+<blockquote>
+<p>Takes an integer argument controlling the IP Type-Of-Service field for packets generated from this socket. This controls the <strong>IP_TOS</strong> socket option (see <a href='/7/ip'>ip</a>(7) for details.). Either a numeric string or one of <strong>low-delay</strong>, <strong>throughput</strong>, <strong>reliability</strong> or <strong>low-cost</strong> may be specified.</p>
+</blockquote>
+<p><code>IPTTL=</code></p>
+<blockquote>
+<p>Takes an integer argument controlling the IPv4 Time-To-Live/IPv6 Hop-Count field for packets generated from this socket. This sets the <strong>IP_TTL</strong>/<strong>IPV6_UNICAST_HOPS</strong> socket options (see <a href='/7/ip'>ip</a>(7) and <a href='/7/ipv6'>ipv6</a>(7) for details.)</p>
+</blockquote>
+<p><code>Mark=</code></p>
+<blockquote>
+<p>Takes an integer value. Controls the firewall mark of packets generated by this socket. This can be used in the firewall logic to filter packets from this socket. This sets the <strong>SO_MARK</strong> socket option. See <a href='/8/iptables'>iptables</a>(8) for details.</p>
+</blockquote>
+<p><code>ReusePort=</code></p>
+<blockquote>
+<p>Takes a boolean value. If true, allows multiple <a href='/2/bind'>bind</a>(2)s to this TCP or UDP port. This controls the <strong>SO_REUSEPORT</strong> socket option. See <a href='/7/socket'>socket</a>(7) for details.</p>
+</blockquote>
+<p><code>SmackLabel=</code>, <code>SmackLabelIPIn=</code>, <code>SmackLabelIPOut=</code></p>
+<blockquote>
+<p>Takes a string value. Controls the extended attributes "security.SMACK64", "security.SMACK64IPIN" and "security.SMACK64IPOUT", respectively, i.e. the security label of the FIFO, or the security label for the incoming or outgoing connections of the socket, respectively. See <strong>Smack.txt</strong>[3] for details.</p>
+</blockquote>
+<p><code>SELinuxContextFromNet=</code></p>
+<blockquote>
+<p>Takes a boolean argument. When true, systemd will attempt to figure out the SELinux label used for the instantiated service from the information handed by the peer over the network. Note that only the security level is used from the information provided by the peer. Other parts of the resulting SELinux context originate from either the target binary that is effectively triggered by socket unit or from the value of the <code>SELinuxContext=</code> option. This configuration option applies only when activated service is passed in single socket file descriptor, i.e. service instances that have standard input connected to a socket or services triggered by exactly one socket unit. Also note that this option is useful only when MLS/MCS SELinux policy is deployed. Defaults to "false".</p>
+</blockquote>
+<p><code>PipeSize=</code></p>
+<blockquote>
+<p>Takes a size in bytes. Controls the pipe buffer size of FIFOs configured in this socket unit. See <a href='/2/fcntl'>fcntl</a>(2) for details. The usual suffixes K, M, G are supported and are understood to the base of 1024.</p>
+</blockquote>
+<p><code>MessageQueueMaxMessages=</code>, <code>MessageQueueMessageSize=</code></p>
+<blockquote>
+<p>These two settings take integer values and control the mq_maxmsg field or the mq_msgsize field, respectively, when creating the message queue. Note that either none or both of these variables need to be set. See <a href='/3/mq_setattr'>mq_setattr</a>(3) for details.</p>
+</blockquote>
+<p><code>FreeBind=</code></p>
+<blockquote>
+<p>Takes a boolean value. Controls whether the socket can be bound to non-local IP addresses. This is useful to configure sockets listening on specific IP addresses before those IP addresses are successfully configured on a network interface. This sets the <strong>IP_FREEBIND</strong>/<strong>IPV6_FREEBIND</strong> socket option. For robustness reasons it is recommended to use this option whenever you bind a socket to a specific IP address. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>Transparent=</code></p>
+<blockquote>
+<p>Takes a boolean value. Controls the <strong>IP_TRANSPARENT</strong>/<strong>IPV6_TRANSPARENT</strong> socket option. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>Broadcast=</code></p>
+<blockquote>
+<p>Takes a boolean value. This controls the <strong>SO_BROADCAST</strong> socket option, which allows broadcast datagrams to be sent from this socket. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>PassCredentials=</code></p>
+<blockquote>
+<p>Takes a boolean value. This controls the <strong>SO_PASSCRED</strong> socket option, which allows <strong>AF_UNIX</strong> sockets to receive the credentials of the sending process in an ancillary message. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>PassSecurity=</code></p>
+<blockquote>
+<p>Takes a boolean value. This controls the <strong>SO_PASSSEC</strong> socket option, which allows <strong>AF_UNIX</strong> sockets to receive the security context of the sending process in an ancillary message. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>PassPacketInfo=</code></p>
+<blockquote>
+<p>Takes a boolean value. This controls the <strong>IP_PKTINFO</strong>, <strong>IPV6_RECVPKTINFO</strong>, <strong>NETLINK_PKTINFO</strong> or <strong>PACKET_AUXDATA</strong> socket options, which enable reception of additional per-packet metadata as ancillary message, on <strong>AF_INET</strong>, <strong>AF_INET6</strong>, <strong>AF_UNIX</strong> and <strong>AF_PACKET</strong> sockets. Defaults to <strong>false</strong>.</p>
+</blockquote>
+<p><code>Timestamping=</code></p>
+<blockquote>
+<p>Takes one of "off", "us" (alias: "usec", "µs") or "ns" (alias: "nsec"). This controls the <strong>SO_TIMESTAMP</strong> or <strong>SO_TIMESTAMPNS</strong> socket options, and enables whether ingress network traffic shall carry timestamping metadata. Defaults to <strong>off</strong>.</p>
+</blockquote>
+<p><code>TCPCongestion=</code></p>
+<blockquote>
+<p>Takes a string value. Controls the TCP congestion algorithm used by this socket. Should be one of "westwood", "veno", "cubic", "lp" or any other available algorithm supported by the IP stack. This setting applies only to stream sockets.</p>
+</blockquote>
+<p><code>ExecStartPre=</code>, <code>ExecStartPost=</code></p>
+<blockquote>
+<p>Takes one or more command lines, which are executed before or after the listening sockets/FIFOs are created and bound, respectively. The first token of the command line must be an absolute filename, then followed by arguments for the process. Multiple command lines may be specified following the same scheme as used for <code>ExecStartPre=</code> of service unit files.</p>
+</blockquote>
+<p><code>ExecStopPre=</code>, <code>ExecStopPost=</code></p>
+<blockquote>
+<p>Additional commands that are executed before or after the listening sockets/FIFOs are closed and removed, respectively. Multiple command lines may be specified following the same scheme as used for <code>ExecStartPre=</code> of service unit files.</p>
+</blockquote>
+<p><code>TimeoutSec=</code></p>
+<blockquote>
+<p>Configures the time to wait for the commands specified in <code>ExecStartPre=</code>, <code>ExecStartPost=</code>, <code>ExecStopPre=</code> and <code>ExecStopPost=</code> to finish. If a command does not exit within the configured time, the socket will be considered failed and be shut down again. All commands still running will be terminated forcibly via <strong>SIGTERM</strong>, and after another delay of this time with <strong>SIGKILL</strong>. (See <strong>KillMode=</strong> in <a href='/5/systemd.kill'>systemd.kill</a>(5).) Takes a unit-less value in seconds, or a time span value such as "5min 20s". Pass "0" to disable the timeout logic. Defaults to <code>DefaultTimeoutStartSec=</code> from the manager configuration file (see <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5)).</p>
+</blockquote>
+<p><code>Service=</code></p>
+<blockquote>
+<p>Specifies the service unit name to activate on incoming traffic. This setting is only allowed for sockets with <code>Accept=no</code>. It defaults to the service that bears the same name as the socket (with the suffix replaced). In most cases, it should not be necessary to use this option. Note that setting this parameter might result in additional dependencies to be added to the unit (see above).</p>
+</blockquote>
+<p><code>RemoveOnStop=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If enabled, any file nodes created by this socket unit are removed when it is stopped. This applies to <strong>AF_UNIX</strong> sockets in the file system, POSIX message queues, FIFOs, as well as any symlinks to them configured with <code>Symlinks=</code>. Normally, it should not be necessary to use this option, and is not recommended as services might continue to run after the socket unit has been terminated and it should still be possible to communicate with them via their file system node. Defaults to off.</p>
+</blockquote>
+<p><code>Symlinks=</code></p>
+<blockquote>
+<p>Takes a list of file system paths. The specified paths will be created as symlinks to the <strong>AF_UNIX</strong> socket path or FIFO path of this socket unit. If this setting is used, only one <strong>AF_UNIX</strong> socket in the file system or one FIFO may be configured for the socket unit. Use this option to manage one or more symlinked alias names for a socket, binding their lifecycle together. Note that if creation of a symlink fails this is not considered fatal for the socket unit, and the socket unit may still start. If an empty string is assigned, the list of paths is reset. Defaults to an empty list.</p>
+</blockquote>
+<p><code>FileDescriptorName=</code></p>
+<blockquote>
+<p>Assigns a name to all file descriptors this socket unit encapsulates. This is useful to help activated services identify specific file descriptors, if multiple fds are passed. Services may use the <a href='/3/sd_listen_fds_with_names'>sd_listen_fds_with_names</a>(3) call to acquire the names configured for the received file descriptors. Names may contain any ASCII character, but must exclude control characters and ":", and must be at most 255 characters in length. If this setting is not used, the file descriptor name defaults to the name of the socket unit, including its .socket suffix.</p>
+</blockquote>
+<p><code>TriggerLimitIntervalSec=</code>, <code>TriggerLimitBurst=</code></p>
+<blockquote>
+<p>Configures a limit on how often this socket unit my be activated within a specific time interval. The <code>TriggerLimitIntervalSec=</code> may be used to configure the length of the time interval in the usual time units "us", "ms", "s", "min", "h", ... and defaults to 2s (See <a href='/7/systemd.time'>systemd.time</a>(7) for details on the various time units understood). The <code>TriggerLimitBurst=</code> setting takes a positive integer value and specifies the number of permitted activations per time interval, and defaults to 200 for <code>Accept=yes</code> sockets (thus by default permitting 200 activations per 2s), and 20 otherwise (20 activations per 2s). Set either to 0 to disable any form of trigger rate limiting. If the limit is hit, the socket unit is placed into a failure mode, and will not be connectible anymore until restarted. Note that this limit is enforced before the service activation is enqueued.</p>
+</blockquote>
+<p>Check <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.kill'>systemd.kill</a>(5) for more settings.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemctl'>systemctl</a>(1), <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/5/systemd.exec'>systemd.exec</a>(5), <a href='/5/systemd.kill'>systemd.kill</a>(5), <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/7/systemd.directives'>systemd.directives</a>(7), <a href='/3/sd_listen_fds'>sd_listen_fds</a>(3), <a href='/3/sd_listen_fds_with_names'>sd_listen_fds_with_names</a>(3)</p>
+<p>For more extensive descriptions see the "systemd for Developers" series: <strong>Socket Activation</strong>[4], <strong>Socket Activation, part II</strong>[5], <strong>Converting inetd Services</strong>[6], <strong>Socket Activated Internet Services and OS Containers</strong>[7].</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>USB FunctionFS</p>
+<p><a href="https://www.kernel.org/doc/Documentation/usb/functionfs.txt">https://www.kernel.org/doc/Documentation/usb/functionfs.txt</a></p></li>
+<li><p>TCP Keepalive HOWTO</p>
+<p><a href="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/</a></p></li>
+<li><p>Smack.txt</p>
+<p><a href="https://www.kernel.org/doc/Documentation/security/Smack.txt">https://www.kernel.org/doc/Documentation/security/Smack.txt</a></p></li>
+<li><p>Socket Activation</p>
+<p><a href="http://0pointer.de/blog/projects/socket-activation.html">http://0pointer.de/blog/projects/socket-activation.html</a></p></li>
+<li><p>Socket Activation, part II</p>
+<p><a href="http://0pointer.de/blog/projects/socket-activation2.html">http://0pointer.de/blog/projects/socket-activation2.html</a></p></li>
+<li><p>Converting inetd Services</p>
+<p><a href="http://0pointer.de/blog/projects/inetd.html">http://0pointer.de/blog/projects/inetd.html</a></p></li>
+<li><p>Socket Activated Internet Services and OS Containers</p>
+<p><a href="http://0pointer.de/blog/projects/socket-activated-containers.html">http://0pointer.de/blog/projects/socket-activated-containers.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>standards - C and UNIX Standards</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The CONFORMING TO section that appears in many manual pages identifies various standards to which the documented interface conforms. The following list briefly describes these standards.</p>
+<dl>
+<dt><strong>V7</strong></dt>
+<dd><p>Version 7 (also known as Seventh Edition) UNIX, released by AT&amp;T/Bell Labs in 1979. After this point, UNIX systems diverged into two main dialects: BSD and System V.</p>
+</dd>
+<dt><strong>4.2BSD</strong></dt>
+<dd><p>This is an implementation standard defined by the 4.2 release of the <code>Berkeley Software Distribution</code>, released by the University of California at Berkeley. This was the first Berkeley release that contained a TCP/IP stack and the sockets API. 4.2BSD was released in 1983.</p>
+<p>Earlier major BSD releases included <code>3BSD</code> (1980), <code>4BSD</code> (1980), and <code>4.1BSD</code> (1981).</p>
+</dd>
+<dt><strong>4.3BSD</strong></dt>
+<dd><p>The successor to 4.2BSD, released in 1986.</p>
+</dd>
+<dt><strong>4.4BSD</strong></dt>
+<dd><p>The successor to 4.3BSD, released in 1993. This was the last major Berkeley release.</p>
+</dd>
+<dt><strong>System V</strong></dt>
+<dd><p>This is an implementation standard defined by AT&amp;T's milestone 1983 release of its commercial System V (five) release. The previous major AT&amp;T release was <code>System III</code>, released in 1981.</p>
+</dd>
+<dt><strong>System V release 2 (SVr2)</strong></dt>
+<dd><p>This was the next System V release, made in 1985. The SVr2 was formally described in the <code>System V Interface Definition version 1</code> (<code>SVID 1</code>) published in 1985.</p>
+</dd>
+<dt><strong>System V release 3 (SVr3)</strong></dt>
+<dd><p>This was the successor to SVr2, released in 1986. This release was formally described in the <code>System V Interface Definition version 2</code> (<code>SVID 2</code>).</p>
+</dd>
+<dt><strong>System V release 4 (SVr4)</strong></dt>
+<dd><p>This was the successor to SVr3, released in 1989. This version of System V is described in the "Programmer's Reference Manual: Operating System API (Intel processors)" (Prentice-Hall 1992, ISBN 0-13-951294-2) This release was formally described in the <code>System V Interface Definition version 3</code> (<code>SVID 3</code>), and is considered the definitive System V release.</p>
+</dd>
+<dt><strong>SVID 4</strong></dt>
+<dd><p>System V Interface Definition version 4, issued in 1995. Available online at <a href="<a href="http://www.sco.com/developers/devspecs/">http://www.sco.com/developers/devspecs/</a>"></a>.</p>
+</dd>
+<dt><strong>C89</strong></dt>
+<dd><p>This was the first C language standard, ratified by ANSI (American National Standards Institute) in 1989 (<code>X3.159-1989</code>). Sometimes this is known as <code>ANSI C</code>, but since C99 is also an ANSI standard, this term is ambiguous. This standard was also ratified by ISO (International Standards Organization) in 1990 (<code>ISO/IEC 9899:1990</code>), and is thus occasionally referred to as <code>ISO C90</code>.</p>
+</dd>
+<dt><strong>C99</strong></dt>
+<dd><p>This revision of the C language standard was ratified by ISO in 1999 (<code>ISO/IEC 9899:1999</code>). Available online at <a href="<a href="http://www.open-std.org/jtc1/sc22/wg14/www/standards">http://www.open-std.org/jtc1/sc22/wg14/www/standards</a>"></a>.</p>
+</dd>
+<dt><strong>C11</strong></dt>
+<dd><p>This revision of the C language standard was ratified by ISO in 2011 (<code>ISO/IEC 9899:2011</code>).</p>
+<p><strong>LFS</strong> The Large File Summit specification, completed in 1996. This specification defined mechanisms that allowed 32-bit systems to support the use of large files (i.e., 64-bit file offsets). See <a href="<a href="https://www.opengroup.org/platform/lfs.html">https://www.opengroup.org/platform/lfs.html</a>"></a>.</p>
+</dd>
+<dt><strong>POSIX.1-1988</strong></dt>
+<dd><p>This was the first POSIX standard, ratified by IEEE as IEEE Std 1003.1-1988, and subsequently adopted (with minor revisions) as an ISO standard in 1990. The term "POSIX" was coined by Richard Stallman.</p>
+</dd>
+<dt><strong>POSIX.1-1990</strong></dt>
+<dd><p>"Portable Operating System Interface for Computing Environments". IEEE 1003.1-1990 part 1, ratified by ISO in 1990 (<code>ISO/IEC 9945-1:1990</code>).</p>
+</dd>
+<dt><strong>POSIX.2</strong></dt>
+<dd><p>IEEE Std 1003.2-1992, describing commands and utilities, ratified by ISO in 1993 (<code>ISO/IEC 9945-2:1993</code>).</p>
+</dd>
+<dt><strong>POSIX.1b</strong> (formerly known as <code>POSIX.4</code>)</dt>
+<dd><p>IEEE Std 1003.1b-1993, describing real-time facilities for portable operating systems, ratified by ISO in 1996 (<code>ISO/IEC 9945-1:1996</code>).</p>
+</dd>
+<dt><strong>POSIX.1c (formerly known as <code>POSIX.4a</code>)</strong></dt>
+<dd><p>IEEE Std 1003.1c-1995, which describes the POSIX threads interfaces.</p>
+</dd>
+<dt><strong>POSIX.1d</strong></dt>
+<dd><p>IEEE Std 1003.1c-1999, which describes additional real-time extensions.</p>
+</dd>
+<dt><strong>POSIX.1g</strong></dt>
+<dd><p>IEEE Std 1003.1g-2000, which describes networking APIs (including sockets).</p>
+</dd>
+<dt><strong>POSIX.1j</strong></dt>
+<dd><p>IEEE Std 1003.1j-2000, which describes advanced real-time extensions.</p>
+</dd>
+<dt><strong>POSIX.1-1996</strong></dt>
+<dd><p>A 1996 revision of POSIX.1 which incorporated POSIX.1b and POSIX.1c.</p>
+</dd>
+<dt><strong>XPG3</strong></dt>
+<dd><p>Released in 1989, this was the first release of the X/Open Portability Guide to be based on a POSIX standard (POSIX.1-1988). This multivolume guide was developed by the X/Open Group, a multivendor consortium.</p>
+</dd>
+<dt><strong>XPG4</strong></dt>
+<dd><p>A revision of the X/Open Portability Guide, released in 1992. This revision incorporated POSIX.2.</p>
+</dd>
+<dt><strong>XPG4v2</strong></dt>
+<dd><p>A 1994 revision of XPG4. This is also referred to as <code>Spec 1170</code>, where 1170 referred to the number of interfaces defined by this standard.</p>
+</dd>
+<dt><strong>SUS (SUSv1)</strong></dt>
+<dd><p>Single UNIX Specification. This was a repackaging of XPG4v2 and other X/Open standards (X/Open Curses Issue 4 version 2, X/Open Networking Service (XNS) Issue 4). Systems conforming to this standard can be branded <code>UNIX 95</code>.</p>
+</dd>
+<dt><strong>SUSv2</strong></dt>
+<dd><p>Single UNIX Specification version 2. Sometimes also referred to (incorrectly) as <code>XPG5</code>. This standard appeared in 1997. Systems conforming to this standard can be branded <code>UNIX 98</code>. See also <a href="<a href="http://www.unix.org/version2/">http://www.unix.org/version2/</a>"></a>.)</p>
+</dd>
+<dt><strong>POSIX.1-2001, SUSv3</strong></dt>
+<dd><p>This was a 2001 revision and consolidation of the POSIX.1, POSIX.2, and SUS standards into a single document, conducted under the auspices of the Austin Group <a href="<a href="http://www.opengroup.org/austin/">http://www.opengroup.org/austin/</a>"></a>. The standard is available online at <a href="<a href="http://www.unix.org/version3/">http://www.unix.org/version3/</a>"></a>.</p>
+<p>The standard defines two levels of conformance: <code>POSIX conformance</code>, which is a baseline set of interfaces required of a conforming system; and <code>XSI Conformance</code>, which additionally mandates a set of interfaces (the "XSI extension") which are only optional for POSIX conformance. XSI-conformant systems can be branded <code>UNIX 03</code>.</p>
+<p>The POSIX.1-2001 document is broken into four parts:</p>
+<p><strong>XBD</strong>: Definitions, terms and concepts, header file specifications.</p>
+<p><strong>XSH</strong>: Specifications of functions (i.e., system calls and library functions in actual implementations).</p>
+<p><strong>XCU</strong>: Specifications of commands and utilities (i.e., the area formerly described by POSIX.2).</p>
+<p><strong>XRAT</strong>: Informative text on the other parts of the standard.</p>
+<p>POSIX.1-2001 is aligned with C99, so that all of the library functions standardized in C99 are also standardized in POSIX.1-2001.</p>
+<p>The Single UNIX Specification version 3 (SUSv3) comprises the Base Specifications containing XBD, XSH, XCU, and XRAT as above, plus X/Open Curses Issue 4 version 2 as an extra volume that is not in POSIX.1-2001.</p>
+<p>Two Technical Corrigenda (minor fixes and improvements) of the original 2001 standard have occurred: TC1 in 2003 and TC2 in 2004.</p>
+</dd>
+<dt><strong>POSIX.1-2008, SUSv4</strong></dt>
+<dd><p>Work on the next revision of POSIX.1/SUS was completed and ratified in 2008. The standard is available online at <a href="<a href="http://www.unix.org/version4/">http://www.unix.org/version4/</a>"></a>.</p>
+<p>The changes in this revision are not as large as those that occurred for POSIX.1-2001/SUSv3, but a number of new interfaces are added and various details of existing specifications are modified. Many of the interfaces that were optional in POSIX.1-2001 become mandatory in the 2008 revision of the standard. A few interfaces that are present in POSIX.1-2001 are marked as obsolete in POSIX.1-2008, or removed from the standard altogether.</p>
+<p>The revised standard is structured in the same way as its predecessor. The Single UNIX Specification version 4 (SUSv4) comprises the Base Specifications containing XBD, XSH, XCU, and XRAT, plus X/Open Curses Issue 7 as an extra volume that is not in POSIX.1-2008.</p>
+<p>Again there are two levels of conformance: the baseline <code>POSIX Conformance</code>, and <code>XSI Conformance</code>, which mandates an additional set of interfaces beyond those in the base specification.</p>
+<p>In general, where the CONFORMING TO section of a manual page lists POSIX.1-2001, it can be assumed that the interface also conforms to POSIX.1-2008, unless otherwise noted.</p>
+<p>Technical Corrigendum 1 (minor fixes and improvements) of this standard was released in 2013.</p>
+<p>Technical Corrigendum 2 of this standard was released in 2016.</p>
+<p>Further information can be found on the Austin Group web site, <a href="<a href="http://www.opengroup.org/austin/">http://www.opengroup.org/austin/</a>"></a>.</p>
+</dd>
+<dt><strong>SUSv4 2016 edition</strong></dt>
+<dd><p>This is equivalent to POSIX.1-2008, with the addition of Technical Corrigenda 1 and 2 and the XCurses specification.</p>
+</dd>
+<dt><strong>POSIX.1-2017</strong></dt>
+<dd><p>This revision of POSIX is technically identical to POSIX.1-2008 with Technical Corrigenda 1 and 2 applied.</p>
+</dd>
+<dt><strong>SUSv4 2018 edition</strong></dt>
+<dd><p>This is equivalent to POSIX.1-2017, with the addition of the XCurses specification.</p>
+</dd>
+</dl>
+<p>The interfaces documented in POSIX.1/SUS are available as manual pages under sections 0p (header files), 1p (commands), and 3p (functions); thus one can write "man 3p open".</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/getconf'>getconf</a>(1), <a href='/3/confstr'>confstr</a>(3), <a href='/3/pathconf'>pathconf</a>(3), <a href='/3/sysconf'>sysconf</a>(3), <a href='/7/attributes'>attributes</a>(7), <a href='/7/feature_test_macros'>feature_test_macros</a>(7), <a href='/7/libc'>libc</a>(7), <a href='/7/posixoptions'>posixoptions</a>(7), <a href='/7/system_data_types'>system_data_types</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

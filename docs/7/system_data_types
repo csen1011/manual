@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>system_data_types - overview of system data types</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<dl>
+<dt><code>aiocb</code></dt>
+<dd><p><code>Include</code>: <code>&lt;aio.h&gt;</code>.</p>
+<pre><code>struct aiocb {
+    int             aio_fildes;    /* File descriptor */
+    off_t           aio_offset;    /* File offset */
+    volatile void  *aio_buf;       /* Location of buffer */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a>          aio_nbytes;    /* Length of transfer */
+    int             aio_reqprio;   /* Request priority offset */
+    struct sigevent aio_sigevent;  /* Signal number and value */
+    int             aio_lio_opcode;/* Operation to be performed */
+};</code></pre>
+<p>For further information about this structure, see <a href='/7/aio'>aio</a>(7).</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/aio_cancel'>aio_cancel</a>(3), <a href='/3/aio_error'>aio_error</a>(3), <a href='/3/aio_fsync'>aio_fsync</a>(3), <a href='/3/aio_read'>aio_read</a>(3), <a href='/3/aio_return'>aio_return</a>(3), <a href='/3/aio_suspend'>aio_suspend</a>(3), <a href='/3/aio_write'>aio_write</a>(3), <a href='/3/lio_listio'>lio_listio</a>(3)</p>
+</dd>
+<dt><code>clock_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;time.h&gt;</code> or <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;sys/time.h&gt;</code>.</p>
+<p>Used for system time in clock ticks or <strong>CLOCKS_PER_SEC</strong> (defined in <code>&lt;time.h&gt;</code>). According to POSIX, it shall be an integer type or a real-floating type.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/times'>times</a>(2), <a href='/3/clock'>clock</a>(3)</p>
+</dd>
+<dt><code>clockid_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;time.h&gt;</code>.</p>
+<p>Used for clock ID type in the clock and timer functions. According to POSIX, it shall be defined as an arithmetic type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/clock_adjtime'>clock_adjtime</a>(2), <a href='/2/clock_getres'>clock_getres</a>(2), <a href='/2/clock_nanosleep'>clock_nanosleep</a>(2), <a href='/2/timer_create'>timer_create</a>(2), <a href='/3/clock_getcpuclockid'>clock_getcpuclockid</a>(3)</p>
+</dd>
+<dt><code>dev_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;sys/stat.h&gt;</code>.</p>
+<p>Used for device IDs. According to POSIX, it shall be an integer type. For further details of this type, see <a href='/3/makedev'>makedev</a>(3).</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/mknod'>mknod</a>(2), <a href='/2/stat'>stat</a>(2)</p>
+</dd>
+<dt><code>div_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdlib.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    int quot; /* Quotient */
+    int rem;  /* Remainder */
+} div_t;</code></pre>
+<p>It is the type of the value returned by the <a href='/3/div'>div</a>(3) function.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/div'>div</a>(3)</p>
+</dd>
+<dt><code>double_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;math.h&gt;</code>.</p>
+<p>The implementation's most efficient floating type at least as wide as <code>double</code>. Its type depends on the value of the macro <strong>FLT_EVAL_METHOD</strong> (defined in <code>&lt;float.h&gt;</code>):</p>
+<dl>
+<dt>0</dt>
+<dd><p><code>double_t</code> is <code>double</code>.</p>
+</dd>
+<dt>1</dt>
+<dd><p><code>double_t</code> is <code>double</code>.</p>
+</dd>
+<dt>2</dt>
+<dd><p><code>double_t</code> is <code>long double</code>.</p>
+</dd>
+</dl>
+<p>For other values of <strong>FLT_EVAL_METHOD</strong>, the type of <code>double_t</code> is implementation-defined.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>float_t</code> type in this page.</p>
+</dd>
+<dt><code>fd_set</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/select.h&gt;</code>. Alternatively, <code>&lt;sys/time.h&gt;</code>.</p>
+<p>A structure type that can represent a set of file descriptors. According to POSIX, the maximum number of file descriptors in an <code>fd_set</code> structure is the value of the macro <strong>FD_SETSIZE</strong>.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/select'>select</a>(2)</p>
+</dd>
+<dt><code>fenv_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;fenv.h&gt;</code>.</p>
+<p>This type represents the entire floating-point environment, including control modes and status flags; for further details, see <a href='/3/fenv'>fenv</a>(3).</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/fenv'>fenv</a>(3)</p>
+</dd>
+<dt><code>fexcept_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;fenv.h&gt;</code>.</p>
+<p>This type represents the floating-point status flags collectively; for further details see <a href='/3/fenv'>fenv</a>(3).</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/fenv'>fenv</a>(3)</p>
+</dd>
+<dt><code>FILE</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdio.h&gt;</code>. Alternatively, <code>&lt;wchar.h&gt;</code>.</p>
+<p>An object type used for streams.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/fclose'>fclose</a>(3), <a href='/3/flockfile'>flockfile</a>(3), <a href='/3/fopen'>fopen</a>(3), <a href='/3/fprintf'>fprintf</a>(3), <a href='/3/fread'>fread</a>(3), <a href='/3/fscanf'>fscanf</a>(3), <a href='/3/stdin'>stdin</a>(3), <a href='/3/stdio'>stdio</a>(3)</p>
+</dd>
+<dt><code>float_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;math.h&gt;</code>.</p>
+<p>The implementation's most efficient floating type at least as wide as <code>float</code>. Its type depends on the value of the macro <strong>FLT_EVAL_METHOD</strong> (defined in <code>&lt;float.h&gt;</code>):</p>
+<dl>
+<dt>0</dt>
+<dd><p><code>float_t</code> is <code>float</code>.</p>
+</dd>
+<dt>1</dt>
+<dd><p><code>float_t</code> is <code>double</code>.</p>
+</dd>
+<dt>2</dt>
+<dd><p><code>float_t</code> is <code>long double</code>.</p>
+</dd>
+</dl>
+<p>For other values of <strong>FLT_EVAL_METHOD</strong>, the type of <code>float_t</code> is implementation-defined.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>double_t</code> type in this page.</p>
+</dd>
+<dt><code>gid_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;grp.h&gt;</code>, <code>&lt;pwd.h&gt;</code>, <code>&lt;signal.h&gt;</code>, <code>&lt;stropts.h&gt;</code>, <code>&lt;sys/ipc.h&gt;</code>, <code>&lt;sys/stat.h&gt;</code>, or <code>&lt;unistd.h&gt;</code>.</p>
+<p>A type used to hold group IDs. According to POSIX, this shall be an integer type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/chown'>chown</a>(2), <a href='/2/getgid'>getgid</a>(2), <a href='/2/getegid'>getegid</a>(2), <a href='/2/getgroups'>getgroups</a>(2), <a href='/2/getresgid'>getresgid</a>(2), <a href='/2/getgrnam'>getgrnam</a>(2), <a href='/7/credentials'>credentials</a>(7)</p>
+</dd>
+<dt><code>id_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;sys/resource.h&gt;</code>.</p>
+<p>A type used to hold a general identifier. According to POSIX, this shall be an integer type that can be used to contain a <code>pid_t</code>, <code>uid_t</code>, or <code>gid_t</code>.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/getpriority'>getpriority</a>(2), <a href='/2/waitid'>waitid</a>(2)</p>
+</dd>
+<dt><code>imaxdiv_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;inttypes.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    intmax_t    quot; /* Quotient */
+    intmax_t    rem;  /* Remainder */
+} imaxdiv_t;</code></pre>
+<p>It is the type of the value returned by the <a href='/3/imaxdiv'>imaxdiv</a>(3) function.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/imaxdiv'>imaxdiv</a>(3)</p>
+</dd>
+<dt><code>intmax_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p>A signed integer type capable of representing any value of any signed integer type supported by the implementation. According to the C language standard, it shall be capable of storing values in the range [<strong>INTMAX_MIN</strong>, <strong>INTMAX_MAX</strong>].</p>
+<p>The macro <a href='INTMAX_C'>INTMAX_C</a>() expands its argument to an integer constant of type <code>intmax_t</code>.</p>
+<p>The length modifier for <code>intmax_t</code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions is <strong>j</strong>; resulting commonly in <strong>%jd</strong> or <strong>%ji</strong> for printing <code>intmax_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>Bugs</code>: <code>intmax_t</code> is not large enough to represent values of type <code>__int128</code> in implementations where <code>__int128</code> is defined and <code>long long</code> is less than 128 bits wide.</p>
+<p><code>See also</code>: the <code>uintmax_t</code> type in this page.</p>
+</dd>
+<dt><code>int</code>N<code>_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p><code>int8_t</code>, <code>int16_t</code>, <code>int32_t</code>, <code>int64_t</code></p>
+<p>A signed integer type of a fixed width of exactly N bits, N being the value specified in its type name. According to the C language standard, they shall be capable of storing values in the range [<strong>INT</strong>N<strong>_MIN</strong>, <strong>INT</strong>N<strong>_MAX</strong>], substituting N by the appropriate number.</p>
+<p>According to POSIX, <code>int8_t</code>, <code>int16_t</code>, and <code>int32_t</code> are required; <code>int64_t</code> is only required in implementations that provide integer types with width 64; and all other types of this form are optional.</p>
+<p>The length modifiers for the <code>int</code>N<code>_t</code> types for the <a href='/3/printf'>printf</a>(3) family of functions are expanded by macros of the forms <strong>PRId</strong>N and <strong>PRIi</strong>N (defined in <code>&lt;inttypes.h&gt;</code>); resulting for example in <strong>%"PRId64"</strong> or <strong>%"PRIi64"</strong> for printing <code>int64_t</code> values. The length modifiers for the <code>int</code>N<code>_t</code> types for the <a href='/3/scanf'>scanf</a>(3) family of functions are expanded by macros of the forms <strong>SCNd</strong>N and <strong>SCNi</strong>N, (defined in <code>&lt;inttypes.h&gt;</code>); resulting for example in <strong>%"SCNd8"</strong> or <strong>%"SCNi8"</strong> for scanning <code>int8_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>intmax_t</code>, <code>uint</code>N<code>_t</code>, and <code>uintmax_t</code> types in this page.</p>
+</dd>
+<dt><code>intptr_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p>A signed integer type such that any valid (<code>void *</code>) value can be converted to this type and back. According to the C language standard, it shall be capable of storing values in the range [<strong>INTPTR_MIN</strong>, <strong>INTPTR_MAX</strong>].</p>
+<p>The length modifier for <code>intptr_t</code> for the <a href='/3/printf'>printf</a>(3) family of functions is expanded by the macros <strong>PRIdPTR</strong> and <strong>PRIiPTR</strong> (defined in <code>&lt;inttypes.h&gt;</code>); resulting commonly in <strong>%"PRIdPTR"</strong> or <strong>%"PRIiPTR"</strong> for printing <code>intptr_t</code> values. The length modifier for <code>intptr_t</code> for the <a href='/3/scanf'>scanf</a>(3) family of functions is expanded by the macros <strong>SCNdPTR</strong> and <strong>SCNiPTR,</strong> (defined in <code>&lt;inttypes.h&gt;</code>); resulting commonly in <strong>%"SCNdPTR"</strong> or <strong>%"SCNiPTR"</strong> for scanning <code>intptr_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>uintptr_t</code> and <code>void *</code> types in this page.</p>
+</dd>
+<dt><code>lconv</code></dt>
+<dd><p><code>Include</code>: <code>&lt;locale.h&gt;</code>.</p>
+<pre><code>struct lconv {                  /* Values in the "C" locale: */
+    char   *decimal_point;      /* "." */
+    char   *thousands_sep;      /* "" */
+    char   *grouping;           /* "" */
+    char   *mon_decimal_point;  /* "" */
+    char   *mon_thousands_sep;  /* "" */
+    char   *mon_grouping;       /* "" */
+    char   *positive_sign;      /* "" */
+    char   *negative_sign;      /* "" */
+    char   *currency_symbol;    /* "" */
+    char    frac_digits;        /* CHAR_MAX */
+    char    p_cs_precedes;      /* CHAR_MAX */
+    char    n_cs_precedes;      /* CHAR_MAX */
+    char    p_sep_by_space;     /* CHAR_MAX */
+    char    n_sep_by_space;     /* CHAR_MAX */
+    char    p_sign_posn;        /* CHAR_MAX */
+    char    n_sign_posn;        /* CHAR_MAX */
+    char   *int_curr_symbol;    /* "" */
+    char    int_frac_digits;    /* CHAR_MAX */
+    char    int_p_cs_precedes;  /* CHAR_MAX */
+    char    int_n_cs_precedes;  /* CHAR_MAX */
+    char    int_p_sep_by_space; /* CHAR_MAX */
+    char    int_n_sep_by_space; /* CHAR_MAX */
+    char    int_p_sign_posn;    /* CHAR_MAX */
+    char    int_n_sign_posn;    /* CHAR_MAX */
+};</code></pre>
+<p>Contains members related to the formatting of numeric values. In the "C" locale, its members have the values shown in the comments above.</p>
+<p><code>Conforming to</code>: C11 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/setlocale'>setlocale</a>(3), <a href='/3/localeconv'>localeconv</a>(3), <a href='/5/charsets'>charsets</a>(5), <a href='/7/locale'>locale</a>(7)</p>
+</dd>
+<dt><code>ldiv_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdlib.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    long    quot; /* Quotient */
+    long    rem;  /* Remainder */
+} ldiv_t;</code></pre>
+<p>It is the type of the value returned by the <a href='/3/ldiv'>ldiv</a>(3) function.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/ldiv'>ldiv</a>(3)</p>
+</dd>
+<dt><code>lldiv_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdlib.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    long long   quot; /* Quotient */
+    long long   rem;  /* Remainder */
+} lldiv_t;</code></pre>
+<p>It is the type of the value returned by the <a href='/3/lldiv'>lldiv</a>(3) function.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/lldiv'>lldiv</a>(3)</p>
+</dd>
+<dt><code>off_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;aio.h&gt;</code>, <code>&lt;fcntl.h&gt;</code>, <code>&lt;stdio.h&gt;</code>, <code>&lt;sys/mman.h&gt;</code>, <code>&lt;sys/stat.h.h&gt;</code>, or <code>&lt;unistd.h&gt;</code>.</p>
+<p>Used for file sizes. According to POSIX, this shall be a signed integer type.</p>
+<p><code>Versions</code>: <code>&lt;aio.h&gt;</code> and <code>&lt;stdio.h&gt;</code> define <code>off_t</code> since POSIX.1-2008.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>Notes</code>: On some architectures, the width of this type can be controlled with the feature test macro <strong>_FILE_OFFSET_BITS</strong>.</p>
+<p><code>See also</code>: <a href='/2/lseek'>lseek</a>(2), <a href='/2/mmap'>mmap</a>(2), <a href='/2/posix_fadvise'>posix_fadvise</a>(2), <a href='/2/pread'>pread</a>(2), <a href='/2/truncate'>truncate</a>(2), <a href='/3/fseeko'>fseeko</a>(3), <a href='/3/lockf'>lockf</a>(3), <a href='/3/posix_fallocate'>posix_fallocate</a>(3), <a href='/7/feature_test_macros'>feature_test_macros</a>(7)</p>
+</dd>
+<dt><code>pid_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;fcntl.h&gt;</code>, <code>&lt;sched.h&gt;</code>, <code>&lt;signal.h&gt;</code>, <code>&lt;spawn.h&gt;</code>, <code>&lt;sys/msg.h&gt;</code>, <code>&lt;sys/sem.h&gt;</code>, <code>&lt;sys/shm.h&gt;</code>, <code>&lt;sys/wait.h&gt;</code>, <code>&lt;termios.h&gt;</code>, <code>&lt;time.h&gt;</code>, <code>&lt;unistd.h&gt;</code>, or <code>&lt;utmpx.h&gt;</code>.</p>
+<p>This type is used for storing process IDs, process group IDs, and session IDs. According to POSIX, it shall be a signed integer type, and the implementation shall support one or more programming environments where the width of <code>pid_t</code> is no greater than the width of the type <code>long</code>.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/fork'>fork</a>(2), <a href='/2/getpid'>getpid</a>(2), <a href='/2/getppid'>getppid</a>(2), <a href='/2/getsid'>getsid</a>(2), <a href='/2/gettid'>gettid</a>(2), <a href='/2/getpgid'>getpgid</a>(2), <a href='/2/kill'>kill</a>(2), <a href='/2/pidfd_open'>pidfd_open</a>(2), <a href='/2/sched_setscheduler'>sched_setscheduler</a>(2), <a href='/2/waitpid'>waitpid</a>(2), <a href='/3/sigqueue'>sigqueue</a>(3), <a href='/7/credentials'>credentials</a>(7),</p>
+</dd>
+<dt><code>ptrdiff_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stddef.h&gt;</code>.</p>
+<p>Used for a count of elements, and array indices. It is the result of subtracting two pointers. According to the C language standard, it shall be a signed integer type capable of storing values in the range [<strong>PTRDIFF_MIN</strong>, <strong>PTRDIFF_MAX</strong>].</p>
+<p>The length modifier for <code>ptrdiff_t</code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions is <strong>t</strong>; resulting commonly in <strong>%td</strong> or <strong>%ti</strong> for printing <code>ptrdiff_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> and <code>ssize_t</code> types in this page.</p>
+</dd>
+<dt><code>regex_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;regex.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a>  re_nsub; /* Number of parenthesized subexpressions. */
+} regex_t;</code></pre>
+<p>This is a structure type used in regular expression matching. It holds a compiled regular expression, compiled with <a href='/3/regcomp'>regcomp</a>(3).</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/regex'>regex</a>(3)</p>
+</dd>
+<dt><code>regmatch_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;regex.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    regoff_t    rm_so; /* Byte offset from start of string
+                          to start of substring */
+    regoff_t    rm_eo; /* Byte offset from start of string of
+                          the first character after the end of
+                          substring */
+} regmatch_t;</code></pre>
+<p>This is a structure type used in regular expression matching.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/regexec'>regexec</a>(3)</p>
+</dd>
+<dt><code>regoff_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;regex.h&gt;</code>.</p>
+<p>According to POSIX, it shall be a signed integer type capable of storing the largest value that can be stored in either a <code>ptrdiff_t</code> type or a <code>ssize_t</code> type.</p>
+<p><code>Versions</code>: Prior to POSIX.1-2008, the type was capable of storing the largest value that can be stored in either an <code>off_t</code> type or a <code>ssize_t</code> type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>regmatch_t</code> structure and the <code>ptrdiff_t</code> and <code>ssize_t</code> types in this page.</p>
+</dd>
+<dt><code>sigevent</code></dt>
+<dd><p><code>Include</code>: <code>&lt;signal.h&gt;</code>. Alternatively, <code>&lt;aio.h&gt;</code>, <code>&lt;mqueue.h&gt;</code>, or <code>&lt;time.h&gt;</code>.</p>
+<pre><code>struct sigevent {
+    int             sigev_notify; /* Notification type */
+    int             sigev_signo;  /* Signal number */
+    union sigval    sigev_value;  /* Signal value */
+    void          (*sigev_notify_function)(union sigval);
+                                  /* Notification function */
+    pthread_attr_t *sigev_notify_attributes;
+                                  /* Notification attributes */
+};</code></pre>
+<p>For further details about this type, see <a href='/7/sigevent'>sigevent</a>(7).</p>
+<p><code>Versions</code>: <code>&lt;aio.h&gt;</code> and <code>&lt;time.h&gt;</code> define <code>sigevent</code> since POSIX.1-2008.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/timer_create'>timer_create</a>(2), <a href='/3/getaddrinfo_a'>getaddrinfo_a</a>(3), <a href='/3/lio_listio'>lio_listio</a>(3), <a href='/3/mq_notify'>mq_notify</a>(3)</p>
+<p>See also the <code>aiocb</code> structure in this page.</p>
+</dd>
+<dt><code>siginfo_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;signal.h&gt;</code>. Alternatively, <code>&lt;sys/wait.h&gt;</code>.</p>
+<pre><code>typedef struct {
+    int      si_signo;  /* Signal number */
+    int      si_code;   /* Signal code */
+    pid_t    si_pid;    /* Sending process ID */
+    uid_t    si_uid;    /* Real user ID of sending process */
+    void    *si_addr;   /* Address of faulting instruction */
+    int      si_status; /* Exit value or signal */
+    union sigval si_value;  /* Signal value */
+} siginfo_t;</code></pre>
+<p>Information associated with a signal. For further details on this structure (including additional, Linux-specific fields), see <a href='/2/sigaction'>sigaction</a>(2).</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/pidfd_send_signal'>pidfd_send_signal</a>(2), <a href='/2/rt_sigqueueinfo'>rt_sigqueueinfo</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/sigwaitinfo'>sigwaitinfo</a>(2), <a href='/3/psiginfo'>psiginfo</a>(3)</p>
+</dd>
+<dt><code>sigset_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;signal.h&gt;</code>. Alternatively, <code>&lt;spawn.h&gt;</code>, or <code>&lt;sys/select.h&gt;</code>.</p>
+<p>This is a type that represents a set of signals. According to POSIX, this shall be an integer or structure type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/epoll_pwait'>epoll_pwait</a>(2), <a href='/2/ppoll'>ppoll</a>(2), <a href='/2/pselect'>pselect</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/signalfd'>signalfd</a>(2), <a href='/2/sigpending'>sigpending</a>(2), <a href='/2/sigprocmask'>sigprocmask</a>(2), <a href='/2/sigsuspend'>sigsuspend</a>(2), <a href='/2/sigwaitinfo'>sigwaitinfo</a>(2), <a href='/7/signal'>signal</a>(7)</p>
+</dd>
+<dt><code>sigval</code></dt>
+<dd><p><code>Include</code>: <code>&lt;signal.h&gt;</code>.</p>
+<pre><code>union sigval {
+    int     sigval_int; /* Integer value */
+    void   *sigval_ptr; /* Pointer value */
+};</code></pre>
+<p>Data passed with a signal.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/pthread_sigqueue'>pthread_sigqueue</a>(3), <a href='/3/sigqueue'>sigqueue</a>(3), <a href='/7/sigevent'>sigevent</a>(7)</p>
+<p>See also the <code>sigevent</code> structure and the <code>siginfo_t</code> type in this page.</p>
+</dd>
+<dt><code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code></dt>
+<dd><p><code>Include</code>: <code>&lt;stddef.h&gt;</code> or <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;aio.h&gt;</code>, <code>&lt;glob.h&gt;</code>, <code>&lt;grp.h&gt;</code>, <code>&lt;iconv.h&gt;</code>, <code>&lt;monetary.h&gt;</code>, <code>&lt;mqueue.h&gt;</code>, <code>&lt;ndbm.h&gt;</code>, <code>&lt;pwd.h&gt;</code>, <code>&lt;regex.h&gt;</code>, <code>&lt;search.h&gt;</code>, <code>&lt;signal.h&gt;</code>, <code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, <code>&lt;string.h&gt;</code>, <code>&lt;strings.h&gt;</code>, <code>&lt;sys/mman.h&gt;</code>, <code>&lt;sys/msg.h&gt;</code>, <code>&lt;sys/sem.h&gt;</code>, <code>&lt;sys/shm.h&gt;</code>, <code>&lt;sys/socket.h&gt;</code>, <code>&lt;sys/uio.h&gt;</code>, <code>&lt;time.h&gt;</code>, <code>&lt;unistd.h&gt;</code>, <code>&lt;wchar.h&gt;</code>, or <code>&lt;wordexp.h&gt;</code>.</p>
+<p>Used for a count of bytes. It is the result of the <code>sizeof</code> operator. According to the C language standard, it shall be an unsigned integer type capable of storing values in the range [0, <strong>SIZE_MAX</strong>]. According to POSIX, the implementation shall support one or more programming environments where the width of <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> is no greater than the width of the type <code>long</code>.</p>
+<p>The length modifier for <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions is <strong>z</strong>; resulting commonly in <strong>%zu</strong> or <strong>%zx</strong> for printing <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> values.</p>
+<p><code>Versions</code>: <code>&lt;aio.h&gt;</code>, <code>&lt;glob.h&gt;</code>, <code>&lt;grp.h&gt;</code>, <code>&lt;iconv.h&gt;</code>, <code>&lt;mqueue.h&gt;</code>, <code>&lt;pwd.h&gt;</code>, <code>&lt;signal.h&gt;</code>, and <code>&lt;sys/socket.h&gt;</code> define <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> since POSIX.1-2008.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/read'>read</a>(2), <a href='/2/write'>write</a>(2), <a href='/3/fread'>fread</a>(3), <a href='/3/fwrite'>fwrite</a>(3), <a href='/3/memcmp'>memcmp</a>(3), <a href='/3/memcpy'>memcpy</a>(3), <a href='/3/memset'>memset</a>(3), <a href='/3/offsetof'>offsetof</a>(3)</p>
+<p>See also the <code>ptrdiff_t</code> and <code>ssize_t</code> types in this page.</p>
+</dd>
+<dt><code>ssize_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;aio.h&gt;</code>, <code>&lt;monetary.h&gt;</code>, <code>&lt;mqueue.h&gt;</code>, <code>&lt;stdio.h&gt;</code>, <code>&lt;sys/msg.h&gt;</code>, <code>&lt;sys/socket.h&gt;</code>, <code>&lt;sys/uio.h&gt;</code>, or <code>&lt;unistd.h&gt;</code>.</p>
+<p>Used for a count of bytes or an error indication. According to POSIX, it shall be a signed integer type capable of storing values at least in the range [-1, <strong>SSIZE_MAX</strong>], and the implementation shall support one or more programming environments where the width of <code>ssize_t</code> is no greater than the width of the type <code>long</code>.</p>
+<p>Glibc and most other implementations provide a length modifier for <code>ssize_t</code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions, which is <strong>z</strong>; resulting commonly in <strong>%zd</strong> or <strong>%zi</strong> for printing <code>ssize_t</code> values. Although <strong>z</strong> works for <code>ssize_t</code> on most implementations, portable POSIX programs should avoid using it—for example, by converting the value to <code>intmax_t</code> and using its length modifier (<strong>j</strong>).</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/read'>read</a>(2), <a href='/2/readlink'>readlink</a>(2), <a href='/2/readv'>readv</a>(2), <a href='/2/recv'>recv</a>(2), <a href='/2/send'>send</a>(2), <a href='/2/write'>write</a>(2)</p>
+<p>See also the <code>ptrdiff_t</code> and <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> types in this page.</p>
+</dd>
+<dt><code>suseconds_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;sys/select.h&gt;</code>, or <code>&lt;sys/time.h&gt;</code>.</p>
+<p>Used for time in microseconds. According to POSIX, it shall be a signed integer type capable of storing values at least in the range [-1, 1000000], and the implementation shall support one or more programming environments where the width of <code>suseconds_t</code> is no greater than the width of the type <code>long</code>.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>timeval</code> structure in this page.</p>
+</dd>
+<dt><code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a></code></dt>
+<dd><p><code>Include</code>: <code>&lt;time.h&gt;</code> or <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;sched.h&gt;</code>, <code>&lt;sys/msg.h&gt;</code>, <code>&lt;sys/select.h&gt;</code>, <code>&lt;sys/sem.h&gt;</code>, <code>&lt;sys/shm.h&gt;</code>, <code>&lt;sys/stat.h&gt;</code>, <code>&lt;sys/time.h&gt;</code>, or <code>&lt;utime.h&gt;</code>.</p>
+<p>Used for time in seconds. According to POSIX, it shall be an integer type.</p>
+<p><code>Versions</code>: <code>&lt;sched.h&gt;</code> defines <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a></code> since POSIX.1-2008.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/stime'>stime</a>(2), <a href='/2/time'>time</a>(2), <a href='/3/ctime'>ctime</a>(3), <a href='/3/difftime'>difftime</a>(3)</p>
+</dd>
+<dt><code>timer_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;time.h&gt;</code>.</p>
+<p>Used for timer ID returned by <a href='/2/timer_create'>timer_create</a>(2). According to POSIX, there are no defined comparison or assignment operators for this type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/timer_create'>timer_create</a>(2), <a href='/2/timer_delete'>timer_delete</a>(2), <a href='/2/timer_getoverrun'>timer_getoverrun</a>(2), <a href='/2/timer_settime'>timer_settime</a>(2)</p>
+</dd>
+<dt><code>timespec</code></dt>
+<dd><p><code>Include</code>: <code>&lt;time.h&gt;</code>. Alternatively, <code>&lt;aio.h&gt;</code>, <code>&lt;mqueue.h&gt;</code>, <code>&lt;sched.h&gt;</code>, <code>&lt;signal.h&gt;</code>, <code>&lt;sys/select.h&gt;</code>, or <code>&lt;sys/stat.h&gt;</code>.</p>
+<pre><code>struct timespec {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>  tv_sec;  /* Seconds */
+    long    tv_nsec; /* Nanoseconds */
+};</code></pre>
+<p>Describes times in seconds and nanoseconds.</p>
+<p><code>Conforming to</code>: C11 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/clock_gettime'>clock_gettime</a>(2), <a href='/2/clock_nanosleep'>clock_nanosleep</a>(2), <a href='/2/nanosleep'>nanosleep</a>(2), <a href='/2/timerfd_gettime'>timerfd_gettime</a>(2), <a href='/2/timer_gettime'>timer_gettime</a>(2)</p>
+</dd>
+<dt><code>timeval</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/time.h&gt;</code>. Alternatively, <code>&lt;sys/resource.h&gt;</code>, <code>&lt;sys/select.h&gt;</code>, or <code>&lt;utmpx.h&gt;</code>.</p>
+<pre><code>struct timeval {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>      tv_sec;  /* Seconds */
+    suseconds_t tv_usec; /* Microseconds */
+};</code></pre>
+<p>Describes times in seconds and microseconds.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/gettimeofday'>gettimeofday</a>(2), <a href='/2/select'>select</a>(2), <a href='/2/utimes'>utimes</a>(2), <a href='/3/adjtime'>adjtime</a>(3), <a href='/3/futimes'>futimes</a>(3), <a href='/3/timeradd'>timeradd</a>(3)</p>
+</dd>
+<dt><code>uid_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;sys/types.h&gt;</code>. Alternatively, <code>&lt;pwd.h&gt;</code>, <code>&lt;signal.h&gt;</code>, <code>&lt;stropts.h&gt;</code>, <code>&lt;sys/ipc.h&gt;</code>, <code>&lt;sys/stat.h&gt;</code>, or <code>&lt;unistd.h&gt;</code>.</p>
+<p>A type used to hold user IDs. According to POSIX, this shall be an integer type.</p>
+<p><code>Conforming to</code>: POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/2/chown'>chown</a>(2), <a href='/2/getuid'>getuid</a>(2), <a href='/2/geteuid'>geteuid</a>(2), <a href='/2/getresuid'>getresuid</a>(2), <a href='/2/getpwnam'>getpwnam</a>(2), <a href='/7/credentials'>credentials</a>(7)</p>
+</dd>
+<dt><code>uintmax_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p>An unsigned integer type capable of representing any value of any unsigned integer type supported by the implementation. According to the C language standard, it shall be capable of storing values in the range [0, <strong>UINTMAX_MAX</strong>].</p>
+<p>The macro <a href='UINTMAX_C'>UINTMAX_C</a>() expands its argument to an integer constant of type <code>uintmax_t</code>.</p>
+<p>The length modifier for <code>uintmax_t</code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions is <strong>j</strong>; resulting commonly in <strong>%ju</strong> or <strong>%jx</strong> for printing <code>uintmax_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>Bugs</code>: <code>uintmax_t</code> is not large enough to represent values of type <code>unsigned __int128</code> in implementations where <code>unsigned __int128</code> is defined and <code>unsigned long long</code> is less than 128 bits wide.</p>
+<p><code>See also</code>: the <code>intmax_t</code> type in this page.</p>
+</dd>
+<dt><code>uint</code>N<code>_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p><code>uint8_t</code>, <code>uint16_t</code>, <code>uint32_t</code>, <code>uint64_t</code></p>
+<p>An unsigned integer type of a fixed width of exactly N bits, N being the value specified in its type name. According to the C language standard, they shall be capable of storing values in the range [0, <strong>UINT</strong>N<strong>_MAX</strong>], substituting N by the appropriate number.</p>
+<p>According to POSIX, <code>uint8_t</code>, <code>uint16_t</code>, and <code>uint32_t</code> are required; <code>uint64_t</code> is only required in implementations that provide integer types with width 64; and all other types of this form are optional.</p>
+<p>The length modifiers for the <code>uint</code>N<code>_t</code> types for the <a href='/3/printf'>printf</a>(3) family of functions are expanded by macros of the forms <strong>PRIu</strong>N, <strong>PRIo</strong>N, <strong>PRIx</strong>N, and <strong>PRIX</strong>N (defined in <code>&lt;inttypes.h&gt;</code>); resulting for example in <strong>%"PRIu32"</strong> or <strong>%"PRIx32"</strong> for printing <code>uint32_t</code> values. The length modifiers for the <code>uint</code>N<code>_t</code> types for the <a href='/3/scanf'>scanf</a>(3) family of functions are expanded by macros of the forms <strong>SCNu</strong>N, <strong>SCNo</strong>N, <strong>SCNx</strong>N, and <strong>SCNX</strong>N (defined in <code>&lt;inttypes.h&gt;</code>); resulting for example in <strong>%"SCNu16"</strong> or <strong>%"SCNx16"</strong> for scanning <code>uint16_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>intmax_t</code>, <code>int</code>N<code>_t</code>, and <code>uintmax_t</code> types in this page.</p>
+</dd>
+<dt><code>uintptr_t</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdint.h&gt;</code>. Alternatively, <code>&lt;inttypes.h&gt;</code>.</p>
+<p>An unsigned integer type such that any valid (<code>void *</code>) value can be converted to this type and back. According to the C language standard, it shall be capable of storing values in the range [0, <strong>UINTPTR_MAX</strong>].</p>
+<p>The length modifier for <code>uintptr_t</code> for the <a href='/3/printf'>printf</a>(3) family of functions is expanded by the macros <strong>PRIuPTR</strong>, <strong>PRIoPTR</strong>, <strong>PRIxPTR</strong>, and <strong>PRIXPTR</strong> (defined in <code>&lt;inttypes.h&gt;</code>); resulting commonly in <strong>%"PRIuPTR"</strong> or <strong>%"PRIxPTR"</strong> for printing <code>uintptr_t</code> values. The length modifier for <code>uintptr_t</code> for the <a href='/3/scanf'>scanf</a>(3) family of functions is expanded by the macros <strong>SCNuPTR,</strong> <strong>SCNoPTR,</strong> <strong>SCNxPTR</strong>, and <strong>SCNXPTR</strong> (defined in <code>&lt;inttypes.h&gt;</code>); resulting commonly in <strong>%"SCNuPTR"</strong> or <strong>%"SCNxPTR"</strong> for scanning <code>uintptr_t</code> values.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: the <code>intptr_t</code> and <code>void *</code> types in this page.</p>
+</dd>
+<dt><code>va_list</code></dt>
+<dd><p><code>Include</code>: <code>&lt;stdarg&gt;</code>. Alternatively, <code>&lt;stdio.h&gt;</code>, or <code>&lt;wchar.h&gt;</code>.</p>
+<p>Used by functions with a varying number of arguments of varying types. The function must declare an object of type <code>va_list</code> which is used by the macros <a href='/3/va_start'>va_start</a>(3), <a href='/3/va_arg'>va_arg</a>(3), <a href='/3/va_copy'>va_copy</a>(3), and <a href='/3/va_end'>va_end</a>(3) to traverse the list of arguments.</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/va_start'>va_start</a>(3), <a href='/3/va_arg'>va_arg</a>(3), <a href='/3/va_copy'>va_copy</a>(3), <a href='/3/va_end'>va_end</a>(3)</p>
+</dd>
+<dt><code>void *</code></dt>
+<dd><p>According to the C language standard, a pointer to any object type may be converted to a pointer to <code>void</code> and back. POSIX further requires that any pointer, including pointers to functions, may be converted to a pointer to <code>void</code> and back.</p>
+<p>Conversions from and to any other pointer type are done implicitly, not requiring casts at all. Note that this feature prevents any kind of type checking: the programmer should be careful not to convert a <code>void *</code> value to a type incompatible to that of the underlying data, because that would result in undefined behavior.</p>
+<p>This type is useful in function parameters and return value to allow passing values of any type. The function will typically use some mechanism to know the real type of the data being passed via a pointer to <code>void</code>.</p>
+<p>A value of this type can't be dereferenced, as it would give a value of type <code>void</code>, which is not possible. Likewise, pointer arithmetic is not possible with this type. However, in GNU C, pointer arithmetic is allowed as an extension to the standard; this is done by treating the size of a <code>void</code> or of a function as 1. A consequence of this is that <code>sizeof</code> is also allowed on <code>void</code> and on function types, and returns 1.</p>
+<p>The conversion specifier for <code>void *</code> for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions is <strong>p</strong>.</p>
+<p><code>Versions</code>: The POSIX requirement about compatibility between <code>void *</code> and function pointers was added in POSIX.1-2008 Technical Corrigendum 1 (2013).</p>
+<p><code>Conforming to</code>: C99 and later; POSIX.1-2001 and later.</p>
+<p><code>See also</code>: <a href='/3/malloc'>malloc</a>(3), <a href='/3/memcmp'>memcmp</a>(3), <a href='/3/memcpy'>memcpy</a>(3), <a href='/3/memset'>memset</a>(3)</p>
+<p>See also the <code>intptr_t</code> and <code>uintptr_t</code> types in this page.</p>
+</dd>
+</dl>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The structures described in this manual page shall contain, at least, the members shown in their definition, in no particular order.</p>
+<p>Most of the integer types described in this page don't have a corresponding length modifier for the <a href='/3/printf'>printf</a>(3) and the <a href='/3/scanf'>scanf</a>(3) families of functions. To print a value of an integer type that doesn't have a length modifier, it should be converted to <code>intmax_t</code> or <code>uintmax_t</code> by an explicit cast. To scan into a variable of an integer type that doesn't have a length modifier, an intermediate temporary variable of type <code>intmax_t</code> or <code>uintmax_t</code> should be used. When copying from the temporary variable to the destination variable, the value could overflow. If the type has upper and lower limits, the user should check that the value is within those limits, before actually copying the value. The example below shows how these conversions should be done.</p>
+<h2>Conventions used in this page</h2>
+<p>In "Conforming to" we only concern ourselves with C99 and later and POSIX.1-2001 and later. Some types may be specified in earlier versions of one of these standards, but in the interests of simplicity we omit details from earlier standards.</p>
+<p>In "Include", we first note the "primary" header(s) that define the type according to either the C or POSIX.1 standards. Under "Alternatively", we note additional headers that the standards specify shall define the type.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program shown below scans from a string and prints a value stored in a variable of an integer type that doesn't have a length modifier. The appropriate conversions from and to <code>intmax_t</code>, and the appropriate range checks, are used as explained in the notes section above.</p>
+<pre><code>#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/types.h&gt;
+
+int
+main (void)
+{
+    static <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>const str = "500000 us in half a second";
+    suseconds_t us;
+    intmax_t    tmp;
+
+    /* Scan the number from the string into the temporary variable */
+
+    sscanf(str, "%jd", &amp;tmp);
+
+    /* Check that the value is within the valid range of suseconds_t */
+
+    if (tmp &lt; -1 || tmp &gt; 1000000) {
+        fprintf(stderr, "Scanned value outside valid range!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Copy the value to the suseconds_t variable 'us' */
+
+    us = tmp;
+
+    /* Even though suseconds_t can hold the value -1, this isn't
+       a sensible number of microseconds */
+
+    if (us &lt; 0) {
+        fprintf(stderr, "Scanned value shouldn't be negative!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Print the value */
+
+    printf("There are %jd microseconds in half a second.\n",
+            (intmax_t) us);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/7/feature_test_macros'>feature_test_macros</a>(7), <a href='/7/standards'>standards</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.mount - Mount unit configuration</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>mount</code>.mount</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A unit configuration file whose name ends in ".mount" encodes information about a file system mount point controlled and supervised by systemd.</p>
+<p>This man page lists the configuration options specific to this unit type. See <a href='/5/systemd.unit'>systemd.unit</a>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. The mount specific configuration options are configured in the [Mount] section.</p>
+<p>Additional options are listed in <a href='/5/systemd.exec'>systemd.exec</a>(5), which define the execution environment the <a href='/8/mount'>mount</a>(8) program is executed in, and in <a href='/5/systemd.kill'>systemd.kill</a>(5), which define the way the processes are terminated, and in <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5), which configure resource control settings for the processes of the service.</p>
+<p>Note that the options <code>User=</code> and <code>Group=</code> are not useful for mount units. systemd passes two parameters to <a href='/8/mount'>mount</a>(8); the values of <code>What=</code> and <code>Where=</code>. When invoked in this way, <a href='/8/mount'>mount</a>(8) does not read any options from /etc/fstab, and must be run as UID 0.</p>
+<p>Mount units must be named after the mount point directories they control. Example: the mount point /home/lennart must be configured in a unit file home-lennart.mount. For details about the escaping logic used to convert a file system path to a unit name, see <a href='/5/systemd.unit'>systemd.unit</a>(5). Note that mount units cannot be templated, nor is possible to add multiple names to a mount unit by creating additional symlinks to it.</p>
+<p>Optionally, a mount unit may be accompanied by an automount unit, to allow on-demand or parallelized mounting. See <a href='/5/systemd.automount'>systemd.automount</a>(5).</p>
+<p>Mount points created at runtime (independently of unit files or /etc/fstab) will be monitored by systemd and appear like any other mount unit in systemd. See /proc/self/mountinfo description in <a href='/5/proc'>proc</a>(5).</p>
+<p>Some file systems have special semantics as API file systems for kernel-to-userspace and userspace-to-userspace interfaces. Some of them may not be changed via mount units, and cannot be disabled. For a longer discussion see <strong>API File Systems</strong>[1].</p>
+<p>The <a href='/1/systemd-mount'>systemd-mount</a>(1) command allows creating .mount and .automount units dynamically and transiently from the command line.</p>
+</div></div><h1 id='automatic-dependencies'><a href='#automatic-dependencies'>AUTOMATIC DEPENDENCIES</a></h1><div data-for='automatic-dependencies' data-hide><div class='section' data-for='automatic-dependencies'><div data-more>
+<h2>Implicit Dependencies</h2>
+<p>The following dependencies are implicitly added:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If a mount unit is beneath another mount unit in the file system hierarchy, both a requirement dependency and an ordering dependency between both units are created automatically.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Block device backed file systems automatically gain <code>BindsTo=</code> and <code>After=</code> type dependencies on the device unit encapsulating the block device (see below).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If traditional file system quota is enabled for a mount unit, automatic <code>Wants=</code> and <code>Before=</code> dependencies on systemd-quotacheck.service and quotaon.service are added.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Additional implicit dependencies may be added as result of execution and resource control parameters as documented in <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5).</p>
+</blockquote>
+<h2>Default Dependencies</h2>
+<p>The following dependencies are added unless <code>DefaultDependencies=no</code> is set:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>All mount units acquire automatic <code>Before=</code> and <code>Conflicts=</code> on umount.target in order to be stopped during shutdown.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Mount units referring to local file systems automatically gain an <code>After=</code> dependency on local-fs-pre.target, and a <code>Before=</code> dependency on local-fs.target unless <strong>nofail</strong> mount option is set.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Network mount units automatically acquire <code>After=</code> dependencies on remote-fs-pre.target, network.target and network-online.target, and gain a <code>Before=</code> dependency on remote-fs.target unless <strong>nofail</strong> mount option is set. Towards the latter a <code>Wants=</code> unit is added as well.</p>
+</blockquote>
+<p>Mount units referring to local and network file systems are distinguished by their file system type specification. In some cases this is not sufficient (for example network block device based mounts, such as iSCSI), in which case <strong>_netdev</strong> may be added to the mount option string of the unit, which forces systemd to consider the mount unit a network mount.</p>
+</div></div></div><h1 id='fstab'><a href='#fstab'>FSTAB</a></h1><div data-for='fstab' data-hide><div class='section' data-for='fstab'><div data-more>
+<p>Mount units may either be configured via unit files, or via /etc/fstab (see <a href='/5/fstab'>fstab</a>(5) for details). Mounts listed in /etc/fstab will be converted into native units dynamically at boot and when the configuration of the system manager is reloaded. In general, configuring mount points through /etc/fstab is the preferred approach. See <a href='/8/systemd-fstab-generator'>systemd-fstab-generator</a>(8) for details about the conversion.</p>
+<p>The NFS mount option <strong>bg</strong> for NFS background mounts as documented in <a href='/5/nfs'>nfs</a>(5) is detected by <strong>systemd-fstab-generator</strong> and the options are transformed so that systemd fulfills the job-control implications of that option. Specifically <strong>systemd-fstab-generator</strong> acts as though "x-systemd.mount-timeout=infinity,retry=10000" was prepended to the option list, and "fg,nofail" was appended. Depending on specific requirements, it may be appropriate to provide some of these options explicitly, or to make use of the "x-systemd.automount" option described below instead of using "bg".</p>
+<p>When reading /etc/fstab a few special mount options are understood by systemd which influence how dependencies are created for mount points. systemd will create a dependency of type <code>Wants=</code> or <strong>Requires=</strong> (see option <strong>nofail</strong> below), from either local-fs.target or remote-fs.target, depending whether the file system is local or remote.</p>
+<p><strong>x-systemd.requires=</strong></p>
+<blockquote>
+<p>Configures a <code>Requires=</code> and an <code>After=</code> dependency between the created mount unit and another systemd unit, such as a device or mount unit. The argument should be a unit name, or an absolute path to a device node or mount point. This option may be specified more than once. This option is particularly useful for mount point declarations that need an additional device to be around (such as an external journal device for journal file systems) or an additional mount to be in place (such as an overlay file system that merges multiple mount points). See <code>After=</code> and <code>Requires=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for details.</p>
+<p>Note that this option always applies to the created mount unit only regardless whether <strong>x-systemd.automount</strong> has been specified.</p>
+</blockquote>
+<p><strong>x-systemd.before=</strong>, <strong>x-systemd.after=</strong></p>
+<blockquote>
+<p>In the created mount unit, configures a <code>Before=</code> or <code>After=</code> dependency on another systemd unit, such as a mount unit. The argument should be a unit name or an absolute path to a mount point. This option may be specified more than once. This option is particularly useful for mount point declarations with <strong>nofail</strong> option that are mounted asynchronously but need to be mounted before or after some unit start, for example, before local-fs.target unit. See <code>Before=</code> and <code>After=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for details.</p>
+<p>Note that these options always apply to the created mount unit only regardless whether <strong>x-systemd.automount</strong> has been specified.</p>
+</blockquote>
+<p><strong>x-systemd.wanted-by=</strong>, <strong>x-systemd.required-by=</strong></p>
+<blockquote>
+<p>In the created mount unit, configures a <code>WantedBy=</code> or <code>RequiredBy=</code> dependency on another unit. This option may be specified more than once. If this is specified, the normal automatic dependencies on the created mount unit, e.g., local-fs.target, are not automatically created. See <code>WantedBy=</code> and <code>RequiredBy=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for details.</p>
+</blockquote>
+<p><strong>x-systemd.requires-mounts-for=</strong></p>
+<blockquote>
+<p>Configures a <code>RequiresMountsFor=</code> dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See <code>RequiresMountsFor=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for details.</p>
+</blockquote>
+<p><strong>x-systemd.device-bound</strong></p>
+<blockquote>
+<p>The block device backed file system will be upgraded to <code>BindsTo=</code> dependency. This option is only useful when mounting file systems manually with <a href='/8/mount'>mount</a>(8) as the default dependency in this case is <code>Requires=</code>. This option is already implied by entries in /etc/fstab or by mount units.</p>
+</blockquote>
+<p><strong>x-systemd.automount</strong></p>
+<blockquote>
+<p>An automount unit will be created for the file system. See <a href='/5/systemd.automount'>systemd.automount</a>(5) for details.</p>
+</blockquote>
+<p><strong>x-systemd.idle-timeout=</strong></p>
+<blockquote>
+<p>Configures the idle timeout of the automount unit. See <code>TimeoutIdleSec=</code> in <a href='/5/systemd.automount'>systemd.automount</a>(5) for details.</p>
+</blockquote>
+<p><strong>x-systemd.device-timeout=</strong></p>
+<blockquote>
+<p>Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".</p>
+<p>Note that this option can only be used in /etc/fstab, and will be ignored when part of the <code>Options=</code> setting in a unit file.</p>
+</blockquote>
+<p><strong>x-systemd.mount-timeout=</strong></p>
+<blockquote>
+<p>Configure how long systemd should wait for the mount command to finish before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".</p>
+<p>Note that this option can only be used in /etc/fstab, and will be ignored when part of the <code>Options=</code> setting in a unit file.</p>
+<p>See <code>TimeoutSec=</code> below for details.</p>
+</blockquote>
+<p><strong>x-systemd.makefs</strong></p>
+<blockquote>
+<p>The file system will be initialized on the device. If the device is not "empty", i.e. it contains any signature, the operation will be skipped. It is hence expected that this option remains set even after the device has been initialized.</p>
+<p>Note that this option can only be used in /etc/fstab, and will be ignored when part of the <code>Options=</code> setting in a unit file.</p>
+<p>See <a href='/8/systemd-makefs@.service'>systemd-makefs@.service</a>(8).</p>
+<p><a href='/8/wipefs'>wipefs</a>(8) may be used to remove any signatures from a block device to force <strong>x-systemd.makefs</strong> to reinitialize the device.</p>
+</blockquote>
+<p><strong>x-systemd.growfs</strong></p>
+<blockquote>
+<p>The file system will be grown to occupy the full block device. If the file system is already at maximum size, no action will be performed. It is hence expected that this option remains set even after the file system has been grown. Only certain file system types are supported, see <a href='/8/systemd-makefs@.service'>systemd-makefs@.service</a>(8) for details.</p>
+<p>Note that this option can only be used in /etc/fstab, and will be ignored when part of the <code>Options=</code> setting in a unit file.</p>
+</blockquote>
+<p><strong><a href="http://x-systemd.rw">x-systemd.rw</a>-only</strong></p>
+<blockquote>
+<p>If a mount operation fails to mount the file system read-write, it normally tries mounting the file system read-only instead. This option disables that behaviour, and causes the mount to fail immediately instead. This option is translated into the <code>ReadWriteOnly=</code> setting in a unit file.</p>
+</blockquote>
+<p><strong>_netdev</strong></p>
+<blockquote>
+<p>Normally the file system type is used to determine if a mount is a "network mount", i.e. if it should only be started after the network is available. Using this option overrides this detection and specifies that the mount requires network.</p>
+<p>Network mount units are ordered between remote-fs-pre.target and remote-fs.target, instead of local-fs-pre.target and local-fs.target. They also pull in network-online.target and are ordered after it and network.target.</p>
+</blockquote>
+<p><strong>noauto</strong>, <strong>auto</strong></p>
+<blockquote>
+<p>With <strong>noauto</strong>, the mount unit will not be added as a dependency for local-fs.target or remote-fs.target. This means that it will not be mounted automatically during boot, unless it is pulled in by some other unit. The <strong>auto</strong> option has the opposite meaning and is the default.</p>
+<p>Note that if <strong>x-systemd.automount</strong> (see above) is used, neither <strong>auto</strong> nor <strong>noauto</strong> have any effect. The matching automount unit will be added as a dependency to the appropriate target.</p>
+</blockquote>
+<p><strong>nofail</strong></p>
+<blockquote>
+<p>With <strong>nofail</strong>, this mount will be only wanted, not required, by local-fs.target or remote-fs.target. Moreover the mount unit is not ordered before these target units. This means that the boot will continue without waiting for the mount unit and regardless whether the mount point can be mounted successfully.</p>
+</blockquote>
+<p><strong>x-initrd.mount</strong></p>
+<blockquote>
+<p>An additional filesystem to be mounted in the initramfs. See initrd-fs.target description in <a href='/7/systemd.special'>systemd.special</a>(7).</p>
+</blockquote>
+<p>If a mount point is configured in both /etc/fstab and a unit file that is stored below /usr/, the former will take precedence. If the unit file is stored below /etc/, it will take precedence. This means: native unit files take precedence over traditional configuration files, but this is superseded by the rule that configuration in /etc/ will always take precedence over configuration in /usr/.</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Mount files must include a [Mount] section, which carries information about the file system mount points it supervises. A number of options that may be used in this section are shared with other unit types. These options are documented in <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.kill'>systemd.kill</a>(5). The options specific to the [Mount] section of mount units are the following:</p>
+<p><code>What=</code></p>
+<blockquote>
+<p>Takes an absolute path of a device node, file or other resource to mount. See <a href='/8/mount'>mount</a>(8) for details. If this refers to a device node, a dependency on the respective device unit is automatically created. (See <a href='/5/systemd.device'>systemd.device</a>(5) for more information.) This option is mandatory. Note that the usual specifier expansion is applied to this setting, literal percent characters should hence be written as "%%". If this mount is a bind mount and the specified path does not exist yet it is created as directory.</p>
+</blockquote>
+<p><code>Where=</code></p>
+<blockquote>
+<p>Takes an absolute path of a file or directory for the mount point; in particular, the destination cannot be a symbolic link. If the mount point does not exist at the time of mounting, it is created as directory. This string must be reflected in the unit filename. (See above.) This option is mandatory.</p>
+</blockquote>
+<p><code>Type=</code></p>
+<blockquote>
+<p>Takes a string for the file system type. See <a href='/8/mount'>mount</a>(8) for details. This setting is optional.</p>
+</blockquote>
+<p><code>Options=</code></p>
+<blockquote>
+<p>Mount options to use when mounting. This takes a comma-separated list of options. This setting is optional. Note that the usual specifier expansion is applied to this setting, literal percent characters should hence be written as "%%".</p>
+</blockquote>
+<p><code>SloppyOptions=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If true, parsing of the options specified in <code>Options=</code> is relaxed, and unknown mount options are tolerated. This corresponds with <a href='/8/mount'>mount</a>(8)s <code>-s</code> switch. Defaults to off.</p>
+</blockquote>
+<p><code>LazyUnmount=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If true, detach the filesystem from the filesystem hierarchy at time of the unmount operation, and clean up all references to the filesystem as soon as they are not busy anymore. This corresponds with <a href='/8/umount'>umount</a>(8)s <code>-l</code> switch. Defaults to off.</p>
+</blockquote>
+<p><code>ReadWriteOnly=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If false, a mount point that shall be mounted read-write but cannot be mounted so is retried to be mounted read-only. If true the operation will fail immediately after the read-write mount attempt did not succeed. This corresponds with <a href='/8/mount'>mount</a>(8)s <code>-w</code> switch. Defaults to off.</p>
+</blockquote>
+<p><code>ForceUnmount=</code></p>
+<blockquote>
+<p>Takes a boolean argument. If true, force an unmount (in case of an unreachable NFS system). This corresponds with <a href='/8/umount'>umount</a>(8)s <code>-f</code> switch. Defaults to off.</p>
+</blockquote>
+<p><code>DirectoryMode=</code></p>
+<blockquote>
+<p>Directories of mount points (and any parent directories) are automatically created if needed. This option specifies the file system access mode used when creating these directories. Takes an access mode in octal notation. Defaults to 0755.</p>
+</blockquote>
+<p><code>TimeoutSec=</code></p>
+<blockquote>
+<p>Configures the time to wait for the mount command to finish. If a command does not exit within the configured time, the mount will be considered failed and be shut down again. All commands still running will be terminated forcibly via <strong>SIGTERM</strong>, and after another delay of this time with <strong>SIGKILL</strong>. (See <strong>KillMode=</strong> in <a href='/5/systemd.kill'>systemd.kill</a>(5).) Takes a unit-less value in seconds, or a time span value such as "5min 20s". Pass 0 to disable the timeout logic. The default value is set from <code>DefaultTimeoutStartSec=</code> option in <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5).</p>
+</blockquote>
+<p>Check <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/5/systemd.kill'>systemd.kill</a>(5) for more settings.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemctl'>systemctl</a>(1), <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/5/systemd.exec'>systemd.exec</a>(5), <a href='/5/systemd.kill'>systemd.kill</a>(5), <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/5/systemd.device'>systemd.device</a>(5), <a href='/5/proc'>proc</a>(5), <a href='/8/mount'>mount</a>(8), <a href='/8/systemd-fstab-generator'>systemd-fstab-generator</a>(8), <a href='/7/systemd.directives'>systemd.directives</a>(7), <a href='/1/systemd-mount'>systemd-mount</a>(1)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>API File Systems</p>
+<p><a href="https://www.freedesktop.org/wiki/Software/systemd/APIFileSystems">https://www.freedesktop.org/wiki/Software/systemd/APIFileSystems</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

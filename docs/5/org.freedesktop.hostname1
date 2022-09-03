@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>org.freedesktop.hostname1 - The D-Bus interface of systemd-hostnamed</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p><a href='/8/systemd-hostnamed.service'>systemd-hostnamed.service</a>(8) is a system service that can be used to control the hostname and related machine metadata from user programs. This page describes the hostname semantics and the D-Bus interface.</p>
+</div></div></div><h1 id='the-d-bus-api'><a href='#the-d-bus-api'>THE D-BUS API</a></h1><div data-for='the-d-bus-api' data-hide><div class='section' data-for='the-d-bus-api'><div data-more>
+<p>The service exposes the following interfaces on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/hostname1 {
+  interface org.freedesktop.hostname1 {
+    methods:
+      SetHostname(in  s hostname,
+                  in  b interactive);
+      SetStaticHostname(in  s hostname,
+                        in  b interactive);
+      SetPrettyHostname(in  s hostname,
+                        in  b interactive);
+      SetIconName(in  s icon,
+                  in  b interactive);
+      SetChassis(in  s chassis,
+                 in  b interactive);
+      SetDeployment(in  s deployment,
+                    in  b interactive);
+      SetLocation(in  s location,
+                  in  b interactive);
+      GetProductUUID(in  b interactive,
+                     out ay uuid);
+      Describe(out s json);
+    properties:
+      readonly s Hostname = ...;
+      readonly s StaticHostname = ...;
+      readonly s PrettyHostname = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s DefaultHostname = ...;
+      readonly s HostnameSource = ...;
+      readonly s IconName = ...;
+      readonly s Chassis = ...;
+      readonly s Deployment = ...;
+      readonly s Location = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s KernelName = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s KernelRelease = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s KernelVersion = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s OperatingSystemPrettyName = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s OperatingSystemCPEName = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s HomeURL = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s HardwareVendor = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s HardwareModel = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<p>Whenever the hostname or other metadata is changed via the daemon, <strong>PropertyChanged</strong> signals are sent out to subscribed clients. Changing a hostname using this interface is authenticated via <strong>polkit</strong>[1].</p>
+</div></div></div><h1 id='semantics'><a href='#semantics'>SEMANTICS</a></h1><div data-for='semantics' data-hide><div class='section' data-for='semantics'><div data-more>
+<p>The <code>StaticHostname</code> property exposes the "static" hostname configured in /etc/hostname. It is not always in sync with the current hostname as returned by the <a href='/3/gethostname'>gethostname</a>(3) system call. If no static hostname is configured this property will be the empty string.</p>
+<p>When <a href='/1/systemd'>systemd</a>(1) or <a href='/8/systemd-hostnamed.service'>systemd-hostnamed.service</a>(8) set the hostname, this static hostname <code>has the highest priority</code>.</p>
+<p>The <code>Hostname</code> property exposes the actual hostname configured in the kernel via <a href='/3/sethostname'>sethostname</a>(3). It can be different from the static hostname. This property is never empty.</p>
+<p>The <code>PrettyHostname</code> property exposes the <code>pretty hostname</code> which is a free-form UTF-8 hostname for presentation to the user. User interfaces should ensure that the pretty hostname and the static hostname stay in sync. E.g. when the former is "Lennart’s Computer" the latter should be "lennarts-computer". If no pretty hostname is set this setting will be the empty string. Applications should then find a suitable fallback, such as the dynamic hostname.</p>
+<p>The <code>DefaultHostname</code> property exposes the default hostname (configured through <a href='/5/os-release'>os-release</a>(5), or a fallback set at compilation time).</p>
+<p>The <code>HostnameSource</code> property exposes the origin of the currently configured hostname. One of "static" (set from /etc/hostname), "transient" (a non-permanent hostname from an external source), "default" (the value from os-release or the compiled-in fallback).</p>
+<p>The <code>IconName</code> property exposes the <code>icon name</code> following the XDG icon naming spec. If not set, information such as the chassis type (see below) is used to find a suitable fallback icon name (i.e. "computer-laptop" vs. "computer-desktop" is picked based on the chassis information). If no such data is available, the empty string is returned. In that case an application should fall back to a replacement icon, for example "computer". If this property is set to the empty string, the automatic fallback name selection is enabled again.</p>
+<p>The <code>Chassis</code> property exposes a <code>chassis type</code>, one of the currently defined chassis types: "desktop", "laptop", "server", "tablet", "handset", as well as the special chassis types "vm" and "container" for virtualized systems. Note that in most cases the chassis type will be determined automatically from DMI/SMBIOS/ACPI firmware information. Writing to this setting is hence useful only to override misdetected chassis types, or to configure the chassis type if it could not be auto-detected. Set this property to the empty string to reenable the automatic detection of the chassis type from firmware information.</p>
+<p>Note that systemd-hostnamed starts only on request and terminates after a short idle period. This effectively means that <strong>PropertyChanged</strong> messages are not sent out for changes made directly on the files (as in: administrator edits the files with vi). This is the intended behavior: manual configuration changes should require manual reloading.</p>
+<p>The transient (dynamic) hostname exposed by the <code>Hostname</code> property maps directly to the kernel hostname. This hostname should be assumed to be highly dynamic, and hence should be watched directly, without depending on <strong>PropertyChanged</strong> messages from systemd-hostnamed. To accomplish this, open /proc/sys/kernel/hostname and <a href='/3/poll'>poll</a>(3) for <strong>SIGHUP</strong> which is triggered by the kernel every time the hostname changes. Again: this is special for the transient (dynamic) hostname, and does not apply to the configured (fixed) hostname.</p>
+<p>Applications may read the hostname data directly if hostname change notifications are not necessary. Use <a href='/3/gethostname'>gethostname</a>(3), /etc/hostname (possibly with per-distribution fallbacks), and <a href='/3/machine-info'>machine-info</a>(3) for that. For more information on these files and syscalls see the respective man pages.</p>
+<p><code>KernelName</code>, <code>KernelRelease</code>, and <code>KernelVersion</code> expose the kernel name (e.g. "Linux"), release (e.g. "5.0.0-11"), and version (i.e. the build number, e.g. "#11") as reported by <a href='/2/uname'>uname</a>(2). <code>OperatingSystemPrettyName</code>, <code>OperatingSystemCPEName</code>, and <code>HomeURL</code> expose the <code>PRETTY_NAME=</code>, <code>CPE_NAME=</code> and <code>HOME_URL=</code> fields from <a href='/5/os-release'>os-release</a>(5). The purpose of those properties is to allow remote clients to access this information over D-Bus. Local clients can access the information directly.</p>
+<h2>Methods</h2>
+<p><strong>SetHostname()</strong> sets the transient (dynamic) hostname, which is used if no static hostname is set. This value must be an internet-style hostname, 7-bit lowercase ASCII, no special chars/spaces. An empty string will unset the transient hostname.</p>
+<p><strong>SetStaticHostname()</strong> sets the static hostname which is exposed by the <code>StaticHostname</code> property. When called with an empty argument, the static configuration in /etc/hostname is removed. Since the static hostname has the highest priority, calling this function usually affects also the <code>Hostname</code> property and the effective hostname configured in the kernel.</p>
+<p><strong>SetPrettyHostname()</strong> sets the pretty hostname which is exposed by the <code>PrettyHostname</code> property.</p>
+<p><strong>SetIconName()</strong>, <strong>SetChassis()</strong>, <strong>SetDeployment()</strong>, and <strong>SetLocation()</strong> set the properties <code>IconName</code> (the name of the icon representing for the machine), <code>Chassis</code> (the machine form factor), <code>Deployment</code> (the system deployment environment), and <code>Location</code> (physical system location), respectively.</p>
+<p><code>PrettyHostname</code>, <code>IconName</code>, <code>Chassis</code>, <code>Deployment</code>, and <code>Location</code> are stored in /etc/machine-info. See <a href='/5/machine-info'>machine-info</a>(5) for the semantics of those settings.</p>
+<p><strong>GetProductUUID()</strong> returns the "product UUID" as exposed by the kernel based on DMI information in /sys/class/dmi/id/product_uuid. Reading the file directly requires root privileges, and this method allows access to unprivileged clients through the polkit framework.</p>
+<p><strong>Describe()</strong> returns a JSON representation of all properties in one.</p>
+<h2>Security</h2>
+<p>The <code>interactive</code> boolean parameters can be used to control whether polkit should interactively ask the user for authentication credentials if required.</p>
+<p>The polkit action for <strong>SetHostname()</strong> is org.freedesktop.hostname1.set-hostname. For <strong>SetStaticHostname()</strong> and <strong>SetPrettyHostname()</strong> it is org.freedesktop.hostname1.set-static-hostname. For <strong>SetIconName()</strong>, <strong>SetChassis()</strong>, <strong>SetDeployment()</strong> and <strong>SetLocation()</strong> it is org.freedesktop.hostname1.set-machine-info.</p>
+</div></div></div><h1 id='recommendations'><a href='#recommendations'>RECOMMENDATIONS</a></h1><div data-for='recommendations' data-hide><div class='section' data-for='recommendations'><div data-more>
+<p>Here are three examples that show how the pretty hostname and the icon name should be used:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>When registering DNS-SD services: use the pretty hostname in the service name, and pass the icon name in the TXT data, if there is an icon name. Browsing clients can then show the server icon on each service. This is especially useful for WebDAV applications or UPnP media sharing.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Set the bluetooth name to the pretty hostname.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>When your file browser has a "Computer" icon, replace the name with the pretty hostname if set, and the icon with the icon name, if it is set.</p>
+</blockquote>
+<p>To properly handle name lookups with changing local hostnames without having to edit /etc/hosts, we recommend using systemd-hostnamed in combination with <a href='/3/nss-myhostname'>nss-myhostname</a>(3).</p>
+<p>Here are some recommendations to follow when generating a static (internet) hostname from a pretty name:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Generate a single DNS label only, not an FQDN. That means no dots allowed. Strip them, or replace them with "-".</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Its probably safer to not use any non-ASCII chars, even if DNS allows this in some way these days. In fact, restrict your charset to "a-zA-Z0-9" and "-". Strip other chars, or try to replace them in some smart way with chars from this set, for example "ä" → "ae", and use "-" as the replacement for all punctuation characters and whitespace.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Try to avoid creating repeated "-", as well as "-" as the first or last char.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Limit the hostname to 63 chars, which is the length of a DNS label.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If after stripping special chars the empty string is the result, you can pass this as-is to systemd-hostnamed in which case it will automatically use a suitable fallback.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Uppercase charaacters should be replaced with their lowercase equivalents.</p>
+</blockquote>
+<p>Note that while systemd-hostnamed applies some checks to the hostname you pass they are much looser than the recommendations above. For example, systemd-hostnamed will also accept "_" in the hostname, but we recommend not using this to avoid clashes with DNS-SD service types. Also systemd-hostnamed allows longer hostnames, but because of the DNS label limitations, we recommend not making use of this.</p>
+<p>Here are a couple of example conversions:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"Lennarts PC" → "lennarts-pc"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"Müllers Computer" → "muellers-computer"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"Voran!" → "voran"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"Es war einmal ein Männlein" → "es-war-einmal-ein-maennlein"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"Jawoll. Ist doch wahr!" → "jawoll-ist-doch-wahr"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"レナート" → "localhost"</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>"...zack!!! zack!..." → "zack-zack"</p>
+</blockquote>
+<p>Of course, an already valid internet hostname label you enter and pass through this conversion should stay unmodified, so that users have direct control of it, if they want — by simply ignoring the fact that the pretty hostname is pretty and just edit it as if it was the normal internet name.</p>
+</div></div></div><h1 id='versioning'><a href='#versioning'>VERSIONING</a></h1><div data-for='versioning' data-hide><div class='section' data-for='versioning'><div data-more>
+<p>These D-Bus interfaces follow <strong>the usual interface versioning guidelines</strong>[2].</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. Introspect org.freedesktop.hostname1 on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.hostname1 \
+  --object-path /org/freedesktop/hostname1
+      </code></pre>
+<p>.RE</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>David Zeuthens original Fedora <strong>Feature page about xdg-hostname</strong>[3]</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>polkit</p>
+<p><a href="https://www.freedesktop.org/software/polkit/docs/latest/">https://www.freedesktop.org/software/polkit/docs/latest/</a></p></li>
+<li><p>the usual interface versioning guidelines</p>
+<p><a href="http://0pointer.de/blog/projects/versioning-dbus.html">http://0pointer.de/blog/projects/versioning-dbus.html</a></p></li>
+<li><p>Feature page about xdg-hostname</p>
+<p><a href="https://fedoraproject.org/wiki/Features/BetterHostname">https://fedoraproject.org/wiki/Features/BetterHostname</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

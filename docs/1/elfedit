@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>elfedit - update ELF header and program property of ELF files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>elfedit [<strong>--input-mach=</strong><code>machine</code>] [<strong>--input-type=</strong><code>type</code>] [<strong>--input-osabi=</strong><code>osabi</code>] [<strong>--input-abiversion=</strong><code>version</code>] <strong>--output-mach=</strong><code>machine</code> <strong>--output-type=</strong><code>type</code> <strong>--output-osabi=</strong><code>osabi</code> <strong>--output-abiversion=</strong><code>version</code> <strong>--enable-x86-feature=</strong><code>feature</code> <strong>--disable-x86-feature=</strong><code>feature</code> [<strong>-v</strong>|<strong>--version</strong>] [<strong>-h</strong>|<strong>--help</strong>] <code>elffile</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>elfedit</strong> updates the ELF header and program property of ELF files which have the matching ELF machine and file types. The options control how and which fields in the ELF header and program property should be updated.</p>
+<p><code>elffile</code>... are the ELF files to be updated. 32-bit and 64-bit ELF files are supported, as are archives containing ELF files.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The long and short forms of options, shown here as alternatives, are equivalent. At least one of the <strong>--output-mach</strong>, <strong>--output-type</strong>, <strong>--output-osabi</strong>, <strong>--output-abiversion</strong>, <strong>--enable-x86-feature</strong> and <strong>--disable-x86-feature</strong> options must be given.</p>
+<ul>
+<li><p>Set the matching input ELF machine type to <code>machine</code>. If <strong>--input-mach</strong> isn't specified, it will match any ELF machine types. The supported ELF machine types are, <code>i386</code>, <code>IAMCU</code>, <code>L1OM</code>, <code>K1OM</code> and <code>x86-64</code>.</p></li>
+<li><p>Change the ELF machine type in the ELF header to <code>machine</code>. The supported ELF machine types are the same as <strong>--input-mach</strong>.</p></li>
+<li><p>Set the matching input ELF file type to <code>type</code>. If <strong>--input-type</strong> isn't specified, it will match any ELF file types. The supported ELF file types are, <code>rel</code>, <code>exec</code> and <code>dyn</code>.</p></li>
+<li><p>Change the ELF file type in the ELF header to <code>type</code>. The supported ELF types are the same as <strong>--input-type</strong>.</p></li>
+<li><p>Set the matching input ELF file OSABI to <code>osabi</code>. If <strong>--input-osabi</strong> isn't specified, it will match any ELF OSABIs. The supported ELF OSABIs are, <code>none</code>, <code>HPUX</code>, <code>NetBSD</code>, <code>GNU</code>, <code>Linux</code> (alias for <code>GNU</code>), <code>Solaris</code>, <code>AIX</code>, <code>Irix</code>, <code>FreeBSD</code>, <code>TRU64</code>, <code>Modesto</code>, <code>OpenBSD</code>, <code>OpenVMS</code>, <code>NSK</code>, <code>AROS</code> and <code>FenixOS</code>.</p></li>
+<li><p>Change the ELF OSABI in the ELF header to <code>osabi</code>. The supported ELF OSABI are the same as <strong>--input-osabi</strong>.</p></li>
+<li><p>Set the matching input ELF file ABIVERSION to <code>version</code>. <code>version</code> must be between 0 and 255. If <strong>--input-abiversion</strong> isn't specified, it will match any ELF ABIVERSIONs.</p></li>
+<li><p>Change the ELF ABIVERSION in the ELF header to <code>version</code>. <code>version</code> must be between 0 and 255.</p></li>
+<li><p>Set the <code>feature</code> bit in program property in <code>exec</code> or <code>dyn</code> ELF files with machine types of <code>i386</code> or <code>x86-64</code>. The supported features are, <code>ibt</code>, <code>shstk</code>, <code>lam_u48</code> and <code>lam_u57</code>.</p></li>
+<li><p>Clear the <code>feature</code> bit in program property in <code>exec</code> or <code>dyn</code> ELF files with machine types of <code>i386</code> or <code>x86-64</code>. The supported features are the same as <strong>--enable-x86-feature</strong>. Note: <strong>--enable-x86-feature</strong> and <strong>--disable-x86-feature</strong> are available only on hosts with <strong>mmap</strong> support.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the version number of <strong>elfedit</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the command-line options understood by <strong>elfedit</strong>.</p>
+<ol class="example" type="1">
+<li><p>Read command-line options from <code>file</code>. The options read are inserted in place of the original @<code>file</code> option. If <code>file</code> does not exist, or cannot be read, then the option will be treated literally, and not removed. Options in <code>file</code> are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The <code>file</code> may itself contain additional @<code>file</code> options; any such options will be processed recursively.</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>readelf</strong> (1), and the Info entries for <code>binutils</code>.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1991-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License''.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

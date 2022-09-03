@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>tsearch, tfind, tdelete, <a data-bs-content='This is the man page for &lt;code&gt;twalk&lt;/code&gt; and 4 related functions.' data-bs-toggle='popover' tabindex='0'>twalk</a>, tdestroy - manage a binary search tree</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;search.h&gt;</a>
+
+typedef enum { preorder, postorder, endorder, leaf } VISIT;
+
+void *tsearch(const void *key, void **rootp,
+ int (*compar)(const void *, const void *));
+
+void *tfind(const void *key, void *const *rootp,
+ int (*compar)(const void *, const void *));
+
+void *tdelete(const void *key, void **rootp,
+ int (*compar)(const void *, const void *));
+
+void twalk(const void *root,
+ void (*action)(const void *nodep, VISIT which,
+ int depth));
+
+#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;search.h&gt;</a>
+
+void twalk_r(const void *root,
+ void (*action)(const void *nodep, VISIT which,
+ void *closure),
+ void *closure);
+
+void tdestroy(void *root, void (*free_node)(void *nodep));</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='tsearch'>tsearch</a>(), <a href='tfind'>tfind</a>(), <a href='twalk'>twalk</a>(), and <a href='tdelete'>tdelete</a>() manage a binary search tree. They are generalized from Knuth (6.2.2) Algorithm T. The first field in each node of the tree is a pointer to the corresponding data item. (The calling program must store the actual data.) <code>compar</code> points to a comparison routine, which takes pointers to two items. It should return an integer which is negative, zero, or positive, depending on whether the first item is less than, equal to, or greater than the second.</p>
+<p><a href='tsearch'>tsearch</a>() searches the tree for an item. <code>key</code> points to the item to be searched for. <code>rootp</code> points to a variable which points to the root of the tree. If the tree is empty, then the variable that <code>rootp</code> points to should be set to NULL. If the item is found in the tree, then <a href='tsearch'>tsearch</a>() returns a pointer to the corresponding tree node. (In other words, <a href='tsearch'>tsearch</a>() returns a pointer to a pointer to the data item.) If the item is not found, then <a href='tsearch'>tsearch</a>() adds it, and returns a pointer to the corresponding tree node.</p>
+<p><a href='tfind'>tfind</a>() is like <a href='tsearch'>tsearch</a>(), except that if the item is not found, then <a href='tfind'>tfind</a>() returns NULL.</p>
+<p><a href='tdelete'>tdelete</a>() deletes an item from the tree. Its arguments are the same as for <a href='tsearch'>tsearch</a>().</p>
+<p><a href='twalk'>twalk</a>() performs depth-first, left-to-right traversal of a binary tree. <code>root</code> points to the starting node for the traversal. If that node is not the root, then only part of the tree will be visited. <a href='twalk'>twalk</a>() calls the user function <code>action</code> each time a node is visited (that is, three times for an internal node, and once for a leaf). <code>action</code>, in turn, takes three arguments. The first argument is a pointer to the node being visited. The structure of the node is unspecified, but it is possible to cast the pointer to a pointer-to-pointer-to-element in order to access the element stored within the node. The application must not modify the structure pointed to by this argument. The second argument is an integer which takes one of the values <strong>preorder</strong>, <strong>postorder</strong>, or <strong>endorder</strong> depending on whether this is the first, second, or third visit to the internal node, or the value <strong>leaf</strong> if this is the single visit to a leaf node. (These symbols are defined in <code>&lt;search.h&gt;</code>.) The third argument is the depth of the node; the root node has depth zero.</p>
+<p>(More commonly, <strong>preorder</strong>, <strong>postorder</strong>, and <strong>endorder</strong> are known as <strong>preorder</strong>, <strong>inorder</strong>, and <strong>postorder</strong>: before visiting the children, after the first and before the second, and after visiting the children. Thus, the choice of name <strong>postorder</strong> is rather confusing.)</p>
+<p><a href='twalk_r'>twalk_r</a>() is similar to <a href='twalk'>twalk</a>(), but instead of the <code>depth</code> argument, the <code>closure</code> argument pointer is passed to each invocation of the action callback, unchanged. This pointer can be used to pass information to and from the callback function in a thread-safe fashion, without resorting to global variables.</p>
+<p><a href='tdestroy'>tdestroy</a>() removes the whole tree pointed to by <code>root</code>, freeing all resources allocated by the <a href='tsearch'>tsearch</a>() function. For the data in each tree node the function <code>free_node</code> is called. The pointer to the data is passed as the argument to the function. If no such work is necessary, <code>free_node</code> must point to a function doing nothing.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='tsearch'>tsearch</a>() returns a pointer to a matching node in the tree, or to the newly added node, or NULL if there was insufficient memory to add the item. <a href='tfind'>tfind</a>() returns a pointer to the node, or NULL if no match is found. If there are multiple items that match the key, the item whose node is returned is unspecified.</p>
+<p><a href='tdelete'>tdelete</a>() returns a pointer to the parent of the node deleted, or NULL if the item was not found. If the deleted node was the root node, <a href='tdelete'>tdelete</a>() returns a dangling pointer that must not be accessed.</p>
+<p><a href='tsearch'>tsearch</a>(), <a href='tfind'>tfind</a>(), and <a href='tdelete'>tdelete</a>() also return NULL if <code>rootp</code> was NULL on entry.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program inserts twelve random numbers into a binary tree, where duplicate numbers are collapsed, then prints the numbers in order.</p>
+<pre><code>#define _GNU_SOURCE     /* Expose declaration of tdestroy() */
+#include &lt;search.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;time.h&gt;
+
+static void *root = NULL;
+
+static void *
+xmalloc(<a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> n)
+{
+    void *p;
+    p = malloc(n);
+    if (p)
+        return p;
+    fprintf(stderr, "insufficient memory\n");
+    exit(EXIT_FAILURE);
+}
+
+static int
+compare(const void *pa, const void *pb)
+{
+    if (*(int *) pa &lt; *(int *) pb)
+        return -1;
+    if (*(int *) pa &gt; *(int *) pb)
+        return 1;
+    return 0;
+}
+
+static void
+action(const void *nodep, VISIT which, int depth)
+{
+    int *datap;
+
+    switch (which) {
+    case preorder:
+        break;
+    case postorder:
+        datap = *(int **) nodep;
+        printf("%6d\n", *datap);
+        break;
+    case endorder:
+        break;
+    case leaf:
+        datap = *(int **) nodep;
+        printf("%6d\n", *datap);
+        break;
+    }
+}
+
+int
+main(void)
+{
+    int **val;
+
+    srand(time(NULL));
+    for (int i = 0; i &lt; 12; i++) {
+        int *ptr = xmalloc(sizeof(*ptr));
+        *ptr = rand() &amp; 0xff;
+        val = tsearch(ptr, &amp;root, compare);
+        if (val == NULL)
+            exit(EXIT_FAILURE);
+        else if (*val != ptr)
+            free(ptr);
+    }
+    twalk(root, action);
+    tdestroy(root, free);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='twalk_r'>twalk_r</a>() is available in glibc since version 2.30.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='tsearch'>tsearch</a>(), <a href='tfind'>tfind</a>(),<br/>
+<a href='tdelete'>tdelete</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe race:rootp</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='twalk'>twalk</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe race:root</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='twalk_r'>twalk_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe race:root</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='tdestroy'>tdestroy</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4. The functions <a href='tdestroy'>tdestroy</a>() and <a href='twalk_r'>twalk_r</a>() are GNU extensions.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p><a href='twalk'>twalk</a>() takes a pointer to the root, while the other functions take a pointer to a variable which points to the root.</p>
+<p><a href='tdelete'>tdelete</a>() frees the memory required for the node in the tree. The user is responsible for freeing the memory for the corresponding data.</p>
+<p>The example program depends on the fact that <a href='twalk'>twalk</a>() makes no further reference to a node after calling the user function with argument "endorder" or "leaf". This works with the GNU library implementation, but is not in the System V documentation.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/bsearch'>bsearch</a>(3), <a href='/3/hsearch'>hsearch</a>(3), <a href='/3/lsearch'>lsearch</a>(3), <a href='/3/qsort'>qsort</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

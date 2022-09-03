@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>mkswap - set up a Linux swap area</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>mkswap</strong> [options] <code>device</code> [<code>size</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>mkswap</strong> sets up a Linux swap area on a device or in a file.</p>
+<p>The <code>device</code> argument will usually be a disk partition (something like <code>/dev/sdb7</code>) but can also be a file. The Linux kernel does not look at partition IDs, but many installation scripts will assume that partitions of hex type 82 (LINUX_SWAP) are meant to be swap partitions. (<strong>Warning: Solaris also uses this type. Be careful not to kill your Solaris partitions.</strong>)</p>
+<p>The <code>size</code> parameter is superfluous but retained for backwards compatibility. (It specifies the desired size of the swap area in 1024-byte blocks. <strong>mkswap</strong> will use the entire partition or file if it is omitted. Specifying it is unwise - a typo may destroy your disk.)</p>
+<p>After creating the swap area, you need the <strong>swapon</strong> command to start using it. Usually swap areas are listed in <code>/etc/fstab</code> so that they can be taken into use at boot time by a <strong>swapon -a</strong> command in some boot script.</p>
+</div></div><h1 id='warning'><a href='#warning'>WARNING</a></h1><div data-for='warning' data-hide><div class='section' data-for='warning'><div data-more>
+<p>The swap header does not touch the first block. A boot loader or disk label can be there, but it is not a recommended setup. The recommended setup is to use a separate partition for a Linux swap area.</p>
+<p><strong>mkswap</strong>, like many others mkfs-like utils, <strong>erases the first partition block to make any previous filesystem invisible.</strong></p>
+<p>However, <strong>mkswap</strong> refuses to erase the first block on a device with a disk label (SUN, BSD, ...).</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-c</strong>, <strong>--check</strong></p>
+<blockquote>
+<p>Check the device (if it is a block device) for bad blocks before creating the swap area. If any bad blocks are found, the count is printed.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--force</strong></p>
+<blockquote>
+<p>Go ahead even if the command is stupid. This allows the creation of a swap area larger than the file or partition it resides on.</p>
+<p>Also, without this option, <strong>mkswap</strong> will refuse to erase the first block on a device with a partition table.</p>
+</blockquote>
+<p><strong>-L</strong>, <strong>--label</strong> <code>label</code></p>
+<blockquote>
+<p>Specify a <code>label</code> for the device, to allow <strong>swapon</strong> by label.</p>
+</blockquote>
+<p><strong>--lock</strong>[=<code>mode</code>]</p>
+<blockquote>
+<p>Use exclusive BSD lock for device or file it operates. The optional argument <code>mode</code> can be <strong>yes</strong>, <strong>no</strong> (or 1 and 0) or <strong>nonblock</strong>. If the <code>mode</code> argument is omitted, it defaults to <strong>"yes"</strong>. This option overwrites environment variable <strong>$LOCK_BLOCK_DEVICE</strong>. The default is not to use any lock at all, but it’s recommended to avoid collisions with udevd or other tools.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--pagesize</strong> <code>size</code></p>
+<blockquote>
+<p>Specify the page <code>size</code> (in bytes) to use. This option is usually unnecessary; <strong>mkswap</strong> reads the size from the kernel.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--uuid</strong> <code>UUID</code></p>
+<blockquote>
+<p>Specify the <code>UUID</code> to use. The default is to generate a UUID.</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--swapversion 1</strong></p>
+<blockquote>
+<p>Specify the swap-space version. (This option is currently pointless, as the old <strong>-v 0</strong> option has become obsolete and now only <strong>-v 1</strong> is supported. The kernel has not supported v0 swap-space format since 2.5.22 (June 2002). The new version v1 is supported since 2.1.117 (August 1998).)</p>
+</blockquote>
+<p><strong>--verbose</strong></p>
+<blockquote>
+<p>Verbose execution. With this option <strong>mkswap</strong> will output more details about detected problems during swap area set up.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>LIBBLKID_DEBUG=all</p>
+<blockquote>
+<p>enables libblkid debug output.</p>
+</blockquote>
+<p>LOCK_BLOCK_DEVICE=&lt;mode&gt;</p>
+<blockquote>
+<p>use exclusive BSD lock. The mode is "1" or "0". See <strong>--lock</strong> for more details.</p>
+</blockquote>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The maximum useful size of a swap area depends on the architecture and the kernel version.</p>
+<p>The maximum number of the pages that is possible to address by swap area header is 4294967295 (32-bit unsigned int). The remaining space on the swap device is ignored.</p>
+<p>Presently, Linux allows 32 swap areas. The areas in use can be seen in the file <code>/proc/swaps</code>.</p>
+<p><strong>mkswap</strong> refuses areas smaller than 10 pages.</p>
+<p>If you don’t know the page size that your machine uses, you may be able to look it up with <strong>cat /proc/cpuinfo</strong> (or you may not - the contents of this file depend on architecture and kernel version).</p>
+<p>To set up a swap file, it is necessary to create that file before initializing it with <strong>mkswap</strong>, e.g. using a command like</p>
+<blockquote>
+<pre><code># dd if=/dev/zero of=swapfile bs=1MiB count=$((8*1024))</code></pre>
+</blockquote>
+<p>to create 8GiB swapfile.</p>
+<p>Please read notes from <a href='/8/swapon'>swapon</a>(8) about <strong>the swap file use restrictions</strong> (holes, preallocation and copy-on-write issues).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/8/fdisk'>fdisk</a>(8), <a href='/8/swapon'>swapon</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>mkswap</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

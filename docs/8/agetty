@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>agetty - alternative Linux getty</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>agetty</strong> [options] <code>port</code> [<code>baud_rate</code>...] [<code>term</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>agetty</strong> opens a tty port, prompts for a login name and invokes the /bin/login command. It is normally invoked by <a href='/8/init'>init</a>(8).</p>
+<p><strong>agetty</strong> has several <code>non-standard</code> features that are useful for hardwired and for dial-in lines:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Adapts the tty settings to parity bits and to erase, kill, end-of-line and uppercase characters when it reads a login name. The program can handle 7-bit characters with even, odd, none or space parity, and 8-bit characters with no parity. The following special characters are recognized: Control-U (kill); DEL and backspace (erase); carriage return and line feed (end of line). See also the <strong>--erase-chars</strong> and <strong>--kill-chars</strong> options.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally deduces the baud rate from the CONNECT messages produced by Hayes(tm)-compatible modems.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally does not hang up when it is given an already opened line (useful for call-back applications).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally does not display the contents of the <code>/etc/issue</code> file.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally displays an alternative issue files or directories instead of <code>/etc/issue</code> or <code>/etc/issue.d</code>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally does not ask for a login name.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally invokes a non-standard login program instead of <code>/bin/login</code>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally turns on hardware flow control.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Optionally forces the line to be local with no need for carrier detect.</p>
+</blockquote>
+<p>This program does not use the <code>/etc/gettydefs</code> (System V) or <code>/etc/gettytab</code> (SunOS 4) files.</p>
+</div></div><h1 id='arguments'><a href='#arguments'>ARGUMENTS</a></h1><div data-for='arguments' data-hide><div class='section' data-for='arguments'><div data-more>
+<p><code>port</code></p>
+<blockquote>
+<p>A path name relative to the <code>/dev</code> directory. If a "-" is specified, <strong>agetty</strong> assumes that its standard input is already connected to a tty port and that a connection to a remote user has already been established.</p>
+<p>Under System V, a "-" <code>port</code> argument should be preceded by a "--".</p>
+</blockquote>
+<p><code>baud_rate</code>,...</p>
+<blockquote>
+<p>A comma-separated list of one or more baud rates. Each time <strong>agetty</strong> receives a BREAK character it advances through the list, which is treated as if it were circular.</p>
+<p>Baud rates should be specified in descending order, so that the null character (Ctrl-@) can also be used for baud-rate switching.</p>
+<p>This argument is optional and unnecessary for <strong>virtual terminals</strong>.</p>
+<p>The default for <strong>serial terminals</strong> is keep the current baud rate (see <strong>--keep-baud</strong>) and if unsuccessful then default to '9600'.</p>
+</blockquote>
+<p><code>term</code></p>
+<blockquote>
+<p>The value to be used for the <strong>TERM</strong> environment variable. This overrides whatever <a href='/1/init'>init</a>(1) may have set, and is inherited by login and the shell.</p>
+<p>The default is 'vt100', or 'linux' for Linux on a virtual terminal, or 'hurd' for GNU Hurd on a virtual terminal.</p>
+</blockquote>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-8</strong>, <strong>--8bits</strong></p>
+<blockquote>
+<p>Assume that the tty is 8-bit clean, hence disable parity detection.</p>
+</blockquote>
+<p><strong>-a</strong>, <strong>--autologin</strong> <code>username</code></p>
+<blockquote>
+<p>Automatically log in the specified user without asking for a username or password. Using this option causes an <strong>-f</strong> <code>username</code> option and argument to be added to the <strong>/bin/login</strong> command line. See <strong>--login-options</strong>, which can be used to modify this option’s behavior.</p>
+<p>Note that <strong>--autologin</strong> may affect the way in which <strong>getty</strong> initializes the serial line, because on auto-login <strong>agetty</strong> does not read from the line and it has no opportunity optimize the line setting.</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--noreset</strong></p>
+<blockquote>
+<p>Do not reset terminal cflags (control modes). See <a href='/3/termios'>termios</a>(3) for more details.</p>
+</blockquote>
+<p><strong>-E</strong>, <strong>--remote</strong></p>
+<blockquote>
+<p>Typically the <a href='/1/login'>login</a>(1) command is given a remote hostname when called by something such as <a href='/8/telnetd'>telnetd</a>(8). This option allows <strong>agetty</strong> to pass what it is using for a hostname to <a href='/1/login'>login</a>(1) for use in <a href='/5/utmp'>utmp</a>(5). See <strong>--host</strong>, <a href='/1/login'>login</a>(1), and <a href='/5/utmp'>utmp</a>(5).</p>
+<p>If the <strong>--host</strong> <code>fakehost</code> option is given, then an <strong>-h</strong> <code>fakehost</code> option and argument are added to the <code>/bin/login</code> command line.</p>
+<p>If the <strong>--nohostname</strong> option is given, then an <strong>-H</strong> option is added to the <strong>/bin/login</strong> command line.</p>
+<p>See <strong>--login-options</strong>.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--issue-file</strong> <code>path</code></p>
+<blockquote>
+<p>Specifies a ":" delimited list of files and directories to be displayed instead of <code>/etc/issue</code> (or other). All specified files and directories are displayed, missing or empty files are silently ignored. If the specified path is a directory then display all files with .issue file extension in version-sort order from the directory. This allows custom messages to be displayed on different terminals. The <strong>--noissue</strong> option will override this option.</p>
+</blockquote>
+<p><strong>--show-issue</strong></p>
+<blockquote>
+<p>Display the current issue file (or other) on the current terminal and exit. Use this option to review the current setting, it is not designed for any other purpose. Note that output may use some default or incomplete information as proper output depends on terminal and agetty command line.</p>
+</blockquote>
+<p><strong>-h, --flow-control</strong></p>
+<blockquote>
+<p>Enable hardware (RTS/CTS) flow control. It is left up to the application to disable software (XON/XOFF) flow protocol where appropriate.</p>
+</blockquote>
+<p><strong>-H</strong>, <strong>--host</strong> <code>fakehost</code></p>
+<blockquote>
+<p>Write the specified <code>fakehost</code> into the utmp file. Normally, no login host is given, since <strong>agetty</strong> is used for local hardwired connections and consoles. However, this option can be useful for identifying terminal concentrators and the like.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--noissue</strong></p>
+<blockquote>
+<p>Do not display the contents of <code>/etc/issue</code> (or other) before writing the login prompt. Terminals or communications hardware may become confused when receiving lots of text at the wrong baud rate; dial-up scripts may fail if the login prompt is preceded by too much text.</p>
+</blockquote>
+<p><strong>-I</strong>, <strong>--init-string</strong> <code>initstring</code></p>
+<blockquote>
+<p>Set an initial string to be sent to the tty or modem before sending anything else. This may be used to initialize a modem. Non-printable characters may be sent by writing their octal code preceded by a backslash (\). For example, to send a linefeed character (ASCII 10, octal 012), write \12.</p>
+</blockquote>
+<p><strong>-J</strong>, <strong>--noclear</strong></p>
+<blockquote>
+<p>Do not clear the screen before prompting for the login name. By default the screen is cleared.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--login-program</strong> <code>login_program</code></p>
+<blockquote>
+<p>Invoke the specified <code>login_program</code> instead of /bin/login. This allows the use of a non-standard login program. Such a program could, for example, ask for a dial-up password or use a different password file. See <strong>--login-options</strong>.</p>
+</blockquote>
+<p><strong>-L</strong>, <strong>--local-line</strong>[=<code>mode</code>]</p>
+<blockquote>
+<p>Control the CLOCAL line flag. The optional <code>mode</code> argument is 'auto', 'always' or 'never'. If the <code>mode</code> argument is omitted, then the default is 'always'. If the <strong>--local-line</strong> option is not given at all, then the default is 'auto'.</p>
+<p><code>always</code></p>
+<blockquote>
+<p>Forces the line to be a local line with no need for carrier detect. This can be useful when you have a locally attached terminal where the serial line does not set the carrier-detect signal.</p>
+</blockquote>
+<p><code>never</code></p>
+<blockquote>
+<p>Explicitly clears the CLOCAL flag from the line setting and the carrier-detect signal is expected on the line.</p>
+</blockquote>
+<p><code>auto</code></p>
+<blockquote>
+<p>The <strong>agetty</strong> default. Does not modify the CLOCAL setting and follows the setting enabled by the kernel.</p>
+</blockquote>
+</blockquote>
+<p><strong>-m</strong>, <strong>--extract-baud</strong></p>
+<blockquote>
+<p>Try to extract the baud rate from the CONNECT status message produced by Hayes(tm)-compatible modems. These status messages are of the form: "&lt;junk&gt;&lt;speed&gt;&lt;junk&gt;". <strong>agetty</strong> assumes that the modem emits its status message at the same speed as specified with (the first) <code>baud_rate</code> value on the command line.</p>
+<p>Since the <strong>--extract-baud</strong> feature may fail on heavily-loaded systems, you still should enable BREAK processing by enumerating all expected baud rates on the command line.</p>
+</blockquote>
+<p><strong>--list-speeds</strong></p>
+<blockquote>
+<p>Display supported baud rates. These are determined at compilation time.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--skip-login</strong></p>
+<blockquote>
+<p>Do not prompt the user for a login name. This can be used in connection with the <strong>--login-program</strong> option to invoke a non-standard login process such as a BBS system. Note that with the <strong>--skip-login</strong> option, <strong>agetty</strong> gets no input from the user who logs in and therefore will not be able to figure out parity, character size, and newline processing of the connection. It defaults to space parity, 7 bit characters, and ASCII CR (13) end-of-line character. Beware that the program that <strong>agetty</strong> starts (usually /bin/login) is run as root.</p>
+</blockquote>
+<p><strong>-N</strong>, <strong>--nonewline</strong></p>
+<blockquote>
+<p>Do not print a newline before writing out <code>/etc/issue</code>.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--login-options</strong> <code>login_options</code></p>
+<blockquote>
+<p>Options and arguments that are passed to <a href='/1/login'>login</a>(1). Where \u is replaced by the login name. For example:</p>
+<p><strong>--login-options '-h darkstar — \u'</strong></p>
+<p>See <strong>--autologin</strong>, <strong>--login-program</strong> and <strong>--remote</strong>.</p>
+<p>Please read the SECURITY NOTICE below before using this option.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--login-pause</strong></p>
+<blockquote>
+<p>Wait for any key before dropping to the login prompt. Can be combined with <strong>--autologin</strong> to save memory by lazily spawning shells.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--chroot</strong> <code>directory</code></p>
+<blockquote>
+<p>Change root to the specified directory.</p>
+</blockquote>
+<p><strong>-R</strong>, <strong>--hangup</strong></p>
+<blockquote>
+<p>Call <a href='/2/vhangup'>vhangup</a>(2) to do a virtual hangup of the specified terminal.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--keep-baud</strong></p>
+<blockquote>
+<p>Try to keep the existing baud rate. The baud rates from the command line are used when <strong>agetty</strong> receives a BREAK character. If another baud rates specified then the original baud rate is also saved to the end of the wanted baud rates list. This can be used to return to the original baud rate after unexpected BREAKs.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--timeout</strong> <code>timeout</code></p>
+<blockquote>
+<p>Terminate if no user name could be read within <code>timeout</code> seconds. Use of this option with hardwired terminal lines is not recommended.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--detect-case</strong></p>
+<blockquote>
+<p>Turn on support for detecting an uppercase-only terminal. This setting will detect a login name containing only capitals as indicating an uppercase-only terminal and turn on some upper-to-lower case conversions. Note that this has no support for any Unicode characters.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--wait-cr</strong></p>
+<blockquote>
+<p>Wait for the user or the modem to send a carriage-return or a linefeed character before sending the <code>/etc/issue</code> file (or others) and the login prompt. This is useful with the <strong>--init-string</strong> option.</p>
+</blockquote>
+<p><strong>--nohints</strong></p>
+<blockquote>
+<p>Do not print hints about Num, Caps and Scroll Locks.</p>
+</blockquote>
+<p><strong>--nohostname</strong></p>
+<blockquote>
+<p>By default the hostname will be printed. With this option enabled, no hostname at all will be shown.</p>
+</blockquote>
+<p><strong>--long-hostname</strong></p>
+<blockquote>
+<p>By default the hostname is only printed until the first dot. With this option enabled, the fully qualified hostname by <strong>gethostname</strong>(3P) or (if not found) by <a href='/3/getaddrinfo'>getaddrinfo</a>(3) is shown.</p>
+</blockquote>
+<p><strong>--erase-chars</strong> <code>string</code></p>
+<blockquote>
+<p>This option specifies additional characters that should be interpreted as a backspace ("ignore the previous character") when the user types the login name. The default additional 'erase' has been '#', but since util-linux 2.23 no additional erase characters are enabled by default.</p>
+</blockquote>
+<p><strong>--kill-chars</strong> <code>string</code></p>
+<blockquote>
+<p>This option specifies additional characters that should be interpreted as a kill ("ignore all previous characters") when the user types the login name. The default additional 'kill' has been '@', but since util-linux 2.23 no additional kill characters are enabled by default.</p>
+</blockquote>
+<p><strong>--chdir</strong> <code>directory</code></p>
+<blockquote>
+<p>Change directory before the login.</p>
+</blockquote>
+<p><strong>--delay</strong> <code>number</code></p>
+<blockquote>
+<p>Sleep seconds before open tty.</p>
+</blockquote>
+<p><strong>--nice</strong> <code>number</code></p>
+<blockquote>
+<p>Run login with this priority.</p>
+</blockquote>
+<p><strong>--reload</strong></p>
+<blockquote>
+<p>Ask all running agetty instances to reload and update their displayed prompts, if the user has not yet commenced logging in. After doing so the command will exit. This feature might be unsupported on systems without Linux <a href='/7/inotify'>inotify</a>(7).</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p>This section shows examples for the process field of an entry in the <code>/etc/inittab</code> file. You’ll have to prepend appropriate values for the other fields. See <a href='/5/inittab'>inittab</a>(5) for more details.</p>
+<p>For a hardwired line or a console tty:</p>
+<blockquote>
+<p><strong>/sbin/agetty 9600 ttyS1</strong><br/>
+</p>
+</blockquote>
+<p>For a directly connected terminal without proper carrier-detect wiring (try this if your terminal just sleeps instead of giving you a password: prompt):</p>
+<blockquote>
+<p><strong>/sbin/agetty --local-line 9600 ttyS1 vt100</strong><br/>
+</p>
+</blockquote>
+<p>For an old-style dial-in line with a 9600/2400/1200 baud modem:</p>
+<blockquote>
+<p><strong>/sbin/agetty --extract-baud --timeout 60 ttyS1 9600,2400,1200</strong><br/>
+</p>
+</blockquote>
+<p>For a Hayes modem with a fixed 115200 bps interface to the machine (the example init string turns off modem echo and result codes, makes modem/computer DCD track modem/modem DCD, makes a DTR drop cause a disconnection, and turns on auto-answer after 1 ring):</p>
+<blockquote>
+<p><strong>/sbin/agetty --wait-cr --init-string 'ATE0Q1&amp;D2&amp;C1S0=1\015' 115200 ttyS1</strong><br/>
+</p>
+</blockquote>
+</div></div><h1 id='security-notice'><a href='#security-notice'>SECURITY NOTICE</a></h1><div data-for='security-notice' data-hide><div class='section' data-for='security-notice'><div data-more>
+<p>If you use the <strong>--login-program</strong> and <strong>--login-options</strong> options, be aware that a malicious user may try to enter lognames with embedded options, which then get passed to the used login program. Agetty does check for a leading "-" and makes sure the logname gets passed as one parameter (so embedded spaces will not create yet another parameter), but depending on how the login binary parses the command line that might not be sufficient. Check that the used login program cannot be abused this way.</p>
+<p>Some programs use "--" to indicate that the rest of the command line should not be interpreted as options. Use this feature if available by passing "--" before the username gets passed by \u.</p>
+</div></div></div><h1 id='issue-files'><a href='#issue-files'>ISSUE FILES</a></h1><div data-for='issue-files' data-hide><div class='section' data-for='issue-files'><div data-more>
+<p>The default issue file is <code>/etc/issue</code>. If the file exists, then <strong>agetty</strong> also checks for <code>/etc/issue.d</code> directory. The directory is optional extension to the default issue file and content of the directory is printed after <code>/etc/issue</code> content. If the <code>/etc/issue</code> does not exist, then the directory is ignored. All files <strong>with .issue extension</strong> from the directory are printed in version-sort order. The directory can be used to maintain 3rd-party messages independently on the primary system <code>/etc/issue</code> file.</p>
+<p>Since version 2.35 additional locations for issue file and directory are supported. If the default <code>/etc/issue</code> does not exist, then <strong>agetty</strong> checks for <code>/run/issue</code> and <code>/run/issue.d</code>, thereafter for <code>/usr/lib/issue</code> and <code>/usr/lib/issue.d</code>. The directory <code>/etc</code> is expected for host specific configuration, <code>/run</code> is expected for generated stuff and <code>/usr/lib</code> for static distribution maintained configuration.</p>
+<p>The default path maybe overridden by <strong>--issue-file</strong> option. In this case specified path has to be file or directory and all the default issue file and directory locations are ignored.</p>
+<p>The issue file feature can be completely disabled by <strong>--noissue</strong> option.</p>
+<p>It is possible to review the current issue file by <strong>agetty --show-issue</strong> on the current terminal.</p>
+<p>The issue files may contain certain escape codes to display the system name, date, time et cetera. All escape codes consist of a backslash (\) immediately followed by one of the characters listed below.</p>
+<p>4 or 4{<code>interface</code>}</p>
+<blockquote>
+<p>Insert the IPv4 address of the specified network interface (for example: \4{eth0}). If the <code>interface</code> argument is not specified, then select the first fully configured (UP, non-LOCALBACK, RUNNING) interface. If not any configured interface is found, fall back to the IP address of the machine’s hostname.</p>
+</blockquote>
+<p>6 or 6{<code>interface</code>}</p>
+<blockquote>
+<p>The same as \4 but for IPv6.</p>
+</blockquote>
+<p>b</p>
+<blockquote>
+<p>Insert the baudrate of the current line.</p>
+</blockquote>
+<p>d</p>
+<blockquote>
+<p>Insert the current date.</p>
+</blockquote>
+<p>e or e{<code>name</code>}</p>
+<blockquote>
+<p>Translate the human-readable <code>name</code> to an escape sequence and insert it (for example: \e{red}Alert text.\e{reset}). If the <code>name</code> argument is not specified, then insert \033. The currently supported names are: black, blink, blue, bold, brown, cyan, darkgray, gray, green, halfbright, lightblue, lightcyan, lightgray, lightgreen, lightmagenta, lightred, magenta, red, reset, reverse, yellow and white. All unknown names are silently ignored.</p>
+</blockquote>
+<p>s</p>
+<blockquote>
+<p>Insert the system name (the name of the operating system). Same as 'uname -s'. See also the \S escape code.</p>
+</blockquote>
+<p>S or S{VARIABLE}</p>
+<blockquote>
+<p>Insert the VARIABLE data from <code>/etc/os-release</code>. If this file does not exist then fall back to <code>/usr/lib/os-release</code>. If the VARIABLE argument is not specified, then use PRETTY_NAME from the file or the system name (see \s). This escape code can be used to keep <code>/etc/issue</code> distribution and release independent. Note that \S{ANSI_COLOR} is converted to the real terminal escape sequence.</p>
+</blockquote>
+<p>l</p>
+<blockquote>
+<p>Insert the name of the current tty line.</p>
+</blockquote>
+<p>m</p>
+<blockquote>
+<p>Insert the architecture identifier of the machine. Same as <strong>uname -m</strong>.</p>
+</blockquote>
+<p>n</p>
+<blockquote>
+<p>Insert the nodename of the machine, also known as the hostname. Same as <strong>uname -n</strong>.</p>
+</blockquote>
+<p>o</p>
+<blockquote>
+<p>Insert the NIS domainname of the machine. Same as <strong>hostname -d</strong>.</p>
+</blockquote>
+<p>O</p>
+<blockquote>
+<p>Insert the DNS domainname of the machine.</p>
+</blockquote>
+<p>r</p>
+<blockquote>
+<p>Insert the release number of the OS. Same as <strong>uname -r</strong>.</p>
+</blockquote>
+<p>t</p>
+<blockquote>
+<p>Insert the current time.</p>
+</blockquote>
+<p>u</p>
+<blockquote>
+<p>Insert the number of current users logged in.</p>
+</blockquote>
+<p>U</p>
+<blockquote>
+<p>Insert the string "1 user" or "&lt;n&gt; users" where &lt;n&gt; is the number of current users logged in.</p>
+</blockquote>
+<p>v</p>
+<blockquote>
+<p>Insert the version of the OS, that is, the build-date and such.</p>
+</blockquote>
+<p>An example. On my system, the following <code>/etc/issue</code> file:</p>
+<blockquote>
+<pre><code>This is \n.\o (\s \m \r) \t</code></pre>
+</blockquote>
+<p>displays as:</p>
+<blockquote>
+<pre><code>This is <a href="http://thingol.orcan.dk">thingol.orcan.dk</a> (Linux i386 1.1.9) 18:29:30</code></pre>
+</blockquote>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/var/run/utmp</code></p>
+<blockquote>
+<p>the system status file.</p>
+</blockquote>
+<p><code>/etc/issue</code></p>
+<blockquote>
+<p>printed before the login prompt.</p>
+</blockquote>
+<p><code>/etc/os-release /usr/lib/os-release</code></p>
+<blockquote>
+<p>operating system identification data.</p>
+</blockquote>
+<p><code>/dev/console</code></p>
+<blockquote>
+<p>problem reports (if <a href='/3/syslog'>syslog</a>(3) is not used).</p>
+</blockquote>
+<p><code>/etc/inittab</code></p>
+<blockquote>
+<p><a href='/8/init'>init</a>(8) configuration file for SysV-style init daemon.</p>
+</blockquote>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The baud-rate detection feature (the <strong>--extract-baud</strong> option) requires that <strong>agetty</strong> be scheduled soon enough after completion of a dial-in call (within 30 ms with modems that talk at 2400 baud). For robustness, always use the <strong>--extract-baud</strong> option in combination with a multiple baud rate command-line argument, so that BREAK processing is enabled.</p>
+<p>The text in the <code>/etc/issue</code> file (or other) and the login prompt are always output with 7-bit characters and space parity.</p>
+<p>The baud-rate detection feature (the <strong>--extract-baud</strong> option) requires that the modem emits its status message <code>after</code> raising the DCD line.</p>
+</div></div></div><h1 id='diagnostics'><a href='#diagnostics'>DIAGNOSTICS</a></h1><div data-for='diagnostics' data-hide><div class='section' data-for='diagnostics'><div data-more>
+<p>Depending on how the program was configured, all diagnostics are written to the console device or reported via the <a href='/3/syslog'>syslog</a>(3) facility. Error messages are produced if the <code>port</code> argument does not specify a terminal device; if there is no utmp entry for the current process (System V only); and so on.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>The original <strong>agetty</strong> for serial terminals was written by</p>
+<p>and ported to Linux by</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>agetty</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

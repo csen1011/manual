@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>term - format of compiled term file.</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>term</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<h2>STORAGE LOCATION</h2>
+<p>Compiled terminfo descriptions are placed under the directory <strong>/etc/terminfo</strong>. Two configurations are supported (when building the <strong>ncurses</strong> libraries):</p>
+<dl>
+<dt><strong>directory tree</strong></dt>
+<dd><p>A two-level scheme is used to avoid a linear search of a huge UNIX system directory: <strong>/etc/terminfo/c/name</strong> where <code>name</code> is the name of the terminal, and <code>c</code> is the first character of <code>name</code>. Thus, <code>act4</code> can be found in the file <strong>/etc/terminfo/a/act4</strong>. Synonyms for the same terminal are implemented by multiple links to the same compiled file.</p>
+</dd>
+<dt><strong>hashed database</strong></dt>
+<dd><p>Using Berkeley database, two types of records are stored: the terminfo data in the same format as stored in a directory tree with the terminfo's primary name as a key, and records containing only aliases pointing to the primary name.</p>
+<p>If built to write hashed databases, <strong>ncurses</strong> can still read terminfo databases organized as a directory tree, but cannot write entries into the directory tree. It can write (or rewrite) entries in the hashed database.</p>
+<p><strong>ncurses</strong> distinguishes the two cases in the TERMINFO and TERMINFO_DIRS environment variable by assuming a directory tree for entries that correspond to an existing directory, and hashed database otherwise.</p>
+</dd>
+</dl>
+<h2>LEGACY STORAGE FORMAT</h2>
+<p>The format has been chosen so that it will be the same on all hardware. An 8 or more bit byte is assumed, but no assumptions about byte ordering or sign extension are made.</p>
+<p>The compiled file is created with the <strong>tic</strong> program, and read by the routine <strong>setupterm</strong>(3X). The file is divided into six parts:</p>
+<blockquote>
+<dl>
+<dt>a) <code>header</code>,</dt>
+<dd>
+</dd>
+<dt>b) <code>terminal names</code>,</dt>
+<dd>
+</dd>
+<dt>c) <code>boolean flags</code>,</dt>
+<dd>
+</dd>
+<dt>d) <code>numbers</code>,</dt>
+<dd>
+</dd>
+<dt>e) <code>strings</code>, and</dt>
+<dd>
+</dd>
+<dt>f) <code>string table</code>.</dt>
+<dd>
+</dd>
+</dl>
+</blockquote>
+<p>The <code>header</code> section begins the file. This section contains six short integers in the format described below. These integers are</p>
+<blockquote>
+<dl>
+<dt>(1) the <code>magic number</code> (octal 0432);</dt>
+<dd>
+</dd>
+<dt>(2) the size, in bytes, of the <code>terminal names</code> section;</dt>
+<dd>
+</dd>
+<dt>(3) the number of bytes in the <code>boolean flags</code> section;</dt>
+<dd>
+</dd>
+<dt>(4) the number of short integers in the <code>numbers</code> section;</dt>
+<dd>
+</dd>
+<dt>(5) the number of offsets (short integers) in the <code>strings</code> section;</dt>
+<dd>
+</dd>
+<dt>(6) the size, in bytes, of the <code>string table</code>.</dt>
+<dd>
+</dd>
+</dl>
+</blockquote>
+<p>The capabilities in the <code>boolean flags</code>, <code>numbers</code>, and <code>strings</code> sections are in the same order as the file &lt;term.h&gt;.</p>
+<p>Short integers are signed, in the range -32768 to 32767. They are stored as two 8-bit bytes. The first byte contains the least significant 8 bits of the value, and the second byte contains the most significant 8 bits. (Thus, the value represented is 256*second+first.) This format corresponds to the hardware of the VAX and PDP-11 (that is, little-endian machines). Machines where this does not correspond to the hardware must read the integers as two bytes and compute the little-endian value.</p>
+<p>Numbers in a terminal description, whether they are entries in the <code>numbers</code> or <code>strings</code> table, are positive integers. Boolean flags are treated as positive one-byte integers. In each case, those positive integers represent a terminal capability. The terminal compiler tic uses negative integers to handle the cases where a capability is not available:</p>
+<ul>
+<li><p>If a capability is absent from this terminal, tic stores a -1 in the corresponding table.</p>
+<p>The integer value -1 is represented by two bytes 0377, 0377.<br/>
+Absent boolean values are represented by the byte 0 (false).</p></li>
+<li><p>If a capability has been canceled from this terminal, tic stores a -2 in the corresponding table.</p>
+<p>The integer value -2 is represented by two bytes 0377, 0376.<br/>
+The boolean value -2 is represented by the byte 0376.<br/>
+</p></li>
+<li><p>Other negative values are illegal.</p></li>
+</ul>
+<p>The <code>terminal names</code> section comes after the <code>header</code>. It contains the first line of the terminfo description, listing the various names for the terminal, separated by the | character. The <code>terminal names</code> section is terminated with an ASCII NUL character.</p>
+<p>The <code>boolean flags</code> section has one byte for each flag. Boolean capabilities are either 1 or 0 (true or false) according to whether the terminal supports the given capability or not.</p>
+<p>Between the <code>boolean flags</code> section and the <code>number</code> section, a null byte will be inserted, if necessary, to ensure that the <code>number</code> section begins on an even byte This is a relic of the PDP-11's word-addressed architecture, originally designed to avoid traps induced by addressing a word on an odd byte boundary. All short integers are aligned on a short word boundary.</p>
+<p>The <code>numbers</code> section is similar to the <code>boolean flags</code> section. Each capability takes up two bytes, and is stored as a little-endian short integer.</p>
+<p>The <code>strings</code> section is also similar. Each capability is stored as a short integer. The capability value is an index into the <code>string table</code>.</p>
+<p>The <code>string table</code> is the last section. It contains all of the values of string capabilities referenced in the <code>strings</code> section. Each string is null-terminated. Special characters in ^X or \c notation are stored in their interpreted form, not the printing representation. Padding information $&lt;nn&gt; and parameter information %x are stored intact in uninterpreted form.</p>
+<h2>EXTENDED STORAGE FORMAT</h2>
+<p>The previous section describes the conventional terminfo binary format. With some minor variations of the offsets (see PORTABILITY), the same binary format is used in all modern UNIX systems. Each system uses a predefined set of boolean, number or string capabilities.</p>
+<p>The <strong>ncurses</strong> libraries and applications support extended terminfo binary format, allowing users to define capabilities which are loaded at runtime. This extension is made possible by using the fact that the other implementations stop reading the terminfo data when they have reached the end of the size given in the header. <strong>ncurses</strong> checks the size, and if it exceeds that due to the predefined data, continues to parse according to its own scheme.</p>
+<p>First, it reads the extended header (5 short integers):</p>
+<blockquote>
+<dl>
+<dt>(1)</dt>
+<dd><p>count of extended boolean capabilities</p>
+</dd>
+<dt>(2)</dt>
+<dd><p>count of extended numeric capabilities</p>
+</dd>
+<dt>(3)</dt>
+<dd><p>count of extended string capabilities</p>
+</dd>
+<dt>(4)</dt>
+<dd><p>count of the items in extended string table</p>
+</dd>
+<dt>(5)</dt>
+<dd><p>size of the extended string table in bytes</p>
+</dd>
+</dl>
+</blockquote>
+<p>The count- and size-values for the extended string table include the extended capability <code>names</code> as well as extended capability <code>values</code>.</p>
+<p>Using the counts and sizes, <strong>ncurses</strong> allocates arrays and reads data for the extended capabilities in the same order as the header information.</p>
+<p>The extended string table contains values for string capabilities. After the end of these values, it contains the names for each of the extended capabilities in order, e.g., booleans, then numbers and finally strings.</p>
+<p>Applications which manipulate terminal data can use the definitions described in <strong>term_variables</strong>(3X) which associate the long capability names with members of a <strong>TERMTYPE</strong> structure.</p>
+<h2>EXTENDED NUMBER FORMAT</h2>
+<p>On occasion, 16-bit signed integers are not large enough. With <strong>ncurses</strong> 6.1, a new format was introduced by making a few changes to the legacy format:</p>
+<ul>
+<li><p>a different magic number (octal 01036)</p></li>
+<li><p>changing the type for the <code>number</code> array from signed 16-bit integers to signed 32-bit integers.</p></li>
+</ul>
+<p>To maintain compatibility, the library presents the same data structures to direct users of the <strong>TERMTYPE</strong> structure as in previous formats. However, that cannot provide callers with the extended numbers. The library uses a similar but hidden data structure <strong>TERMTYPE2</strong> to provide data for the terminfo functions.</p>
+</div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<h2>setupterm</h2>
+<p>Note that it is possible for <strong>setupterm</strong> to expect a different set of capabilities than are actually present in the file. Either the database may have been updated since <strong>setupterm</strong> was recompiled (resulting in extra unrecognized entries in the file) or the program may have been recompiled more recently than the database was updated (resulting in missing entries). The routine <strong>setupterm</strong> must be prepared for both possibilities - this is why the numbers and sizes are included. Also, new capabilities must always be added at the end of the lists of boolean, number, and string capabilities.</p>
+<h2>Binary format</h2>
+<p>X/Open Curses does not specify a format for the terminfo database. UNIX System V curses used a directory-tree of binary files, one per terminal description.</p>
+<p>Despite the consistent use of little-endian for numbers and the otherwise self-describing format, it is not wise to count on portability of binary terminfo entries between commercial UNIX versions. The problem is that there are at least three versions of terminfo (under HP-UX, AIX, and OSF/1) which diverged from System V terminfo after SVr1, and have added extension capabilities to the string table that (in the binary format) collide with System V and XSI Curses extensions. See <a href='/5/terminfo'>terminfo</a>(5) for detailed discussion of terminfo source compatibility issues.</p>
+<p>This implementation is by default compatible with the binary terminfo format used by Solaris curses, except in a few less-used details where it was found that the latter did not match X/Open Curses. The format used by the other Unix versions can be matched by building ncurses with different configuration options.</p>
+<h2>Magic codes</h2>
+<p>The magic number in a binary terminfo file is the first 16-bits (two bytes). Besides making it more reliable for the library to check that a file is terminfo, utilities such as <strong>file</strong> also use that to tell what the file-format is. System V defined more than one magic number, with 0433, 0435 as screen-dumps (see <a href='/5/scr_dump'>scr_dump</a>(5)). This implementation uses 01036 as a continuation of that sequence, but with a different high-order byte to avoid confusion.</p>
+<h2>The TERMTYPE structure</h2>
+<p>Direct access to the <strong>TERMTYPE</strong> structure is provided for legacy applications. Portable applications should use the <strong>tigetflag</strong> and related functions described in <strong>curs_terminfo</strong>(3X) for reading terminal capabilities.</p>
+<h2>Mixed-case terminal names</h2>
+<p>A small number of terminal descriptions use uppercase characters in their names. If the underlying filesystem ignores the difference between uppercase and lowercase, <strong>ncurses</strong> represents the first character of the terminal name used as the intermediate level of a directory tree in (two-character) hexadecimal form.</p>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p>As an example, here is a description for the Lear-Siegler ADM-3, a popular though rather stupid early terminal:</p>
+<pre><code>adm3a|lsi adm3a,
+        am,
+        cols#80, lines#24,
+        bel=^G, clear= 32$&lt;1&gt;, cr=^M, cub1=^H, cud1=^J,
+        cuf1=^L, cup=\E=%p1%{32}%+%c%p2%{32}%+%c, cuu1=^K,
+        home=^^, ind=^J,
+
+
+and a hexadecimal dump of the compiled terminal description:
+
+  1a 01 10 00 02 00 03 00  82 00 31 00 61 64 6d 33  ........ ..1.adm3
+0010  61 7c 6c 73 69 20 61 64  6d 33 61 00 00 01 50 00  a|lsi ad m3a...P.
+0020  ff ff 18 00 ff ff 00 00  02 00 ff ff ff ff 04 00  ........ ........
+0030  ff ff ff ff ff ff ff ff  0a 00 25 00 27 00 ff ff  ........ ..%.'...
+0040  29 00 ff ff ff ff 2b 00  ff ff 2d 00 ff ff ff ff  ).....+. ..-.....
+0050  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0060  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0070  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0080  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0090  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00a0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00b0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00c0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00d0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00e0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+00f0  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0100  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0110  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  ........ ........
+0120  ff ff ff ff ff ff 2f 00  07 00 0d 00 1a 24 3c 31  ....../. .....$&lt;1
+0130  3e 00 1b 3d 25 70 31 25  7b 33 32 7d 25 2b 25 63  &gt;..=%p1% {32}%+%c
+0140  25 70 32 25 7b 33 32 7d  25 2b 25 63 00 0a 00 1e  %p2%{32} %+%c....
+0150  00 08 00 0c 00 0b 00 0a  00                       ........ .</code></pre>
+</div></div><h1 id='limits'><a href='#limits'>LIMITS</a></h1><div data-for='limits' data-hide><div class='section' data-for='limits'><div data-more>
+<p>Some limitations:</p>
+<ul>
+<li><p>total compiled entries cannot exceed 4096 bytes in the legacy format.</p></li>
+<li><p>total compiled entries cannot exceed 32768 bytes in the extended format.</p></li>
+<li><p>the name field cannot exceed 128 bytes.</p></li>
+</ul>
+<p>Compiled entries are limited to 32768 bytes because offsets into the <code>strings table</code> use two-byte integers. The legacy format could have supported 32768-byte entries, but was limited a virtual memory page's 4096 bytes.</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p>/etc/terminfo/*/* compiled terminal capability database</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>ncurses</strong>(3NCURSES), <a href='/5/terminfo'>terminfo</a>(5).</p>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>Thomas E. Dickey<br/>
+extended terminfo format for ncurses 5.0<br/>
+hashed database support for ncurses 5.6<br/>
+extended number support for ncurses 6.1</p>
+<p>Eric S. Raymond<br/>
+documented legacy terminfo format, e.g., from pcurses.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

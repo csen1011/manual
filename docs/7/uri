@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;uri&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>uri</a>, url, urn - uniform resource identifier (URI), including a URL or URN</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>URI = [ absoluteURI | relativeURI ] [ "#" fragment ]
+absoluteURI = scheme ":" ( hierarchical_part | opaque_part )
+relativeURI = ( net_path | absolute_path | relative_path ) [ "?" query ]
+scheme = "http" | "ftp" | "gopher" | "mailto" | "news" | "telnet" |
+         "file" | "man" | "info" | "whatis" | "ldap" | "wais" | ...
+hierarchical_part = ( net_path | absolute_path ) [ "?" query ]
+net_path = "//" authority [ absolute_path ]
+absolute_path = "/"  path_segments
+relative_path = relative_segment [ absolute_path ]</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A Uniform Resource Identifier (URI) is a short string of characters identifying an abstract or physical resource (for example, a web page). A Uniform Resource Locator (URL) is a URI that identifies a resource through its primary access mechanism (e.g., its network "location"), rather than by name or some other attribute of that resource. A Uniform Resource Name (URN) is a URI that must remain globally unique and persistent even when the resource ceases to exist or becomes unavailable.</p>
+<p>URIs are the standard way to name hypertext link destinations for tools such as web browsers. The string "<a href="http://www.kernel.org">http://www.kernel.org</a>" is a URL (and thus it is also a URI). Many people use the term URL loosely as a synonym for URI (though technically URLs are a subset of URIs).</p>
+<p>URIs can be absolute or relative. An absolute identifier refers to a resource independent of context, while a relative identifier refers to a resource by describing the difference from the current context. Within a relative path reference, the complete path segments "." and ".." have special meanings: "the current hierarchy level" and "the level above this hierarchy level", respectively, just like they do in UNIX-like systems. A path segment which contains a colon character can't be used as the first segment of a relative URI path (e.g., "this:that"), because it would be mistaken for a scheme name; precede such segments with ./ (e.g., "./this:that"). Note that descendants of MS-DOS (e.g., Microsoft Windows) replace devicename colons with the vertical bar ("|") in URIs, so "C:" becomes "C|".</p>
+<p>A fragment identifier, if included, refers to a particular named portion (fragment) of a resource; text after a '#' identifies the fragment. A URI beginning with '#' refers to that fragment in the current resource.</p>
+<h2>Usage</h2>
+<p>There are many different URI schemes, each with specific additional rules and meanings, but they are intentionally made to be as similar as possible. For example, many URL schemes permit the authority to be the following format, called here an <code>ip_server</code> (square brackets show what's optional):</p>
+<p><code>ip_server = </code>[<code>user</code> [ : <code>password</code> ] @ ] <code>host</code> [ : <code>port</code>]</p>
+<p>This format allows you to optionally insert a username, a user plus password, and/or a port number. The <code>host</code> is the name of the host computer, either its name as determined by DNS or an IP address (numbers separated by periods). Thus the URI &lt;<a href="http://fred:fredpassword@example.com:8080/&amp;gt;">http://fred:fredpassword@example.com:8080/&gt;</a> logs into a web server on host <a href="http://example.com">example.com</a> as fred (using fredpassword) using port 8080. Avoid including a password in a URI if possible because of the many security risks of having a password written down. If the URL supplies a username but no password, and the remote server requests a password, the program interpreting the URL should request one from the user.</p>
+<p>Here are some of the most common schemes in use on UNIX-like systems that are understood by many tools. Note that many tools using URIs also have internal schemes or specialized schemes; see those tools' documentation for information on those schemes.</p>
+<p><strong>http - Web (HTTP) server</strong></p>
+<p>http://<code>ip_server</code>/<code>path</code><br/>
+http://<code>ip_server</code>/<code>path</code>?<code>query</code></p>
+<p>This is a URL accessing a web (HTTP) server. The default port is 80. If the path refers to a directory, the web server will choose what to return; usually if there is a file named "index.html" or "index.htm" its content is returned, otherwise, a list of the files in the current directory (with appropriate links) is generated and returned. An example is &lt;<a href="http://lwn.net">http://lwn.net</a>&gt;.</p>
+<p>A query can be given in the archaic "isindex" format, consisting of a word or phrase and not including an equal sign (=). A query can also be in the longer "GET" format, which has one or more query entries of the form <code>key</code>=<code>value</code> separated by the ampersand character (&amp;). Note that <code>key</code> can be repeated more than once, though it's up to the web server and its application programs to determine if there's any meaning to that. There is an unfortunate interaction with HTML/XML/SGML and the GET query format; when such URIs with more than one key are embedded in SGML/XML documents (including HTML), the ampersand (&amp;) has to be rewritten as &amp;amp;. Note that not all queries use this format; larger forms may be too long to store as a URI, so they use a different interaction mechanism (called POST) which does not include the data in the URI. See the Common Gateway Interface specification at <a href="<a href="http://www.w3.org/CGI">http://www.w3.org/CGI</a>"></a> for more information.</p>
+<p><strong>ftp - File Transfer Protocol (FTP)</strong></p>
+<p>ftp://<code>ip_server</code>/<code>path</code></p>
+<p>This is a URL accessing a file through the file transfer protocol (FTP). The default port (for control) is 21. If no username is included, the username "anonymous" is supplied, and in that case many clients provide as the password the requestor's Internet email address. An example is &lt;<a href="ftp://ftp.is.co.za/rfc/rfc1808.txt&amp;gt;">ftp://ftp.is.co.za/rfc/rfc1808.txt&gt;</a>.</p>
+<p><strong>gopher - Gopher server</strong></p>
+<p>gopher://<code>ip_server</code>/<code>gophertype selector</code><br/>
+gopher://<code>ip_server</code>/<code>gophertype selector</code>%09<code>search</code><br/>
+gopher://<code>ip_server</code>/<code>gophertype selector</code>%09<code>search</code>%09<code>gopher+_string</code><br/>
+</p>
+<p>The default gopher port is 70. <code>gophertype</code> is a single-character field to denote the Gopher type of the resource to which the URL refers. The entire path may also be empty, in which case the delimiting "/" is also optional and the gophertype defaults to "1".</p>
+<p><code>selector</code> is the Gopher selector string. In the Gopher protocol, Gopher selector strings are a sequence of octets which may contain any octets except 09 hexadecimal (US-ASCII HT or tab), 0A hexadecimal (US-ASCII character LF), and 0D (US-ASCII character CR).</p>
+<p><strong>mailto - Email address</strong></p>
+<p>mailto:<code>email-address</code></p>
+<p>This is an email address, usually of the form <code>name</code>@<code>hostname</code>. See <a href='/7/mailaddr'>mailaddr</a>(7) for more information on the correct format of an email address. Note that any % character must be rewritten as %25. An example is &lt;<a href="mailto:dwheeler@dwheeler.com">mailto:dwheeler@dwheeler.com</a>&gt;.</p>
+<p><strong>news - Newsgroup or News message</strong></p>
+<p>news:<code>newsgroup-name</code><br/>
+news:<code>message-id</code></p>
+<p>A <code>newsgroup-name</code> is a period-delimited hierarchical name, such as "comp.infosystems.www.misc". If &lt;newsgroup-name&gt; is "*" (as in &lt;news:*&gt;), it is used to refer to "all available news groups". An example is &lt;news:comp.lang.ada&gt;.</p>
+<p>A <code>message-id</code> corresponds to the Message-ID of <a href="<a href="http://www.ietf.org/rfc/rfc1036.txt">http://www.ietf.org/rfc/rfc1036.txt</a>">IETF RFC 1036,</a> without the enclosing "&lt;" and "&gt;"; it takes the form <code>unique</code>@<code>full_domain_name</code>. A message identifier may be distinguished from a news group name by the presence of the "@" character.</p>
+<p><strong>telnet - Telnet login</strong></p>
+<p>telnet://<code>ip_server</code>/</p>
+<p>The Telnet URL scheme is used to designate interactive text services that may be accessed by the Telnet protocol. The final "/" character may be omitted. The default port is 23. An example is &lt;<a href="telnet://melvyl.ucop.edu/&amp;gt;">telnet://melvyl.ucop.edu/&gt;</a>.</p>
+<p><strong>file - Normal file</strong></p>
+<p>file://<code>ip_server</code>/<code>path_segments</code><br/>
+file:<code>path_segments</code></p>
+<p>This represents a file or directory accessible locally. As a special case, <code>ip_server</code> can be the string "localhost" or the empty string; this is interpreted as "the machine from which the URL is being interpreted". If the path is to a directory, the viewer should display the directory's contents with links to each containee; not all viewers currently do this. KDE supports generated files through the URL &lt;file:/cgi-bin&gt;. If the given file isn't found, browser writers may want to try to expand the filename via filename globbing (see <a href='/7/glob'>glob</a>(7) and <a href='/3/glob'>glob</a>(3)).</p>
+<p>The second format (e.g., &lt;file:/etc/passwd&gt;) is a correct format for referring to a local file. However, older standards did not permit this format, and some programs don't recognize this as a URI. A more portable syntax is to use an empty string as the server name, for example, &lt;file:///etc/passwd&gt;; this form does the same thing and is easily recognized by pattern matchers and older programs as a URI. Note that if you really mean to say "start from the current location," don't specify the scheme at all; use a relative address like &lt;../test.txt&gt;, which has the side-effect of being scheme-independent. An example of this scheme is &lt;file:///etc/passwd&gt;.</p>
+<p><strong>man - Man page documentation</strong></p>
+<p>man:<code>command-name</code><br/>
+man:<code>command-name</code>(<code>section</code>)</p>
+<p>This refers to local online manual (man) reference pages. The command name can optionally be followed by a parenthesis and section number; see <a href='/7/man'>man</a>(7) for more information on the meaning of the section numbers. This URI scheme is unique to UNIX-like systems (such as Linux) and is not currently registered by the IETF. An example is &lt;man:ls(1)&gt;.</p>
+<p><strong>info - Info page documentation</strong></p>
+<p>info:<code>virtual-filename</code><br/>
+info:<code>virtual-filename</code>#<code>nodename</code><br/>
+info:(<code>virtual-filename</code>)<br/>
+info:(<code>virtual-filename</code>)<code>nodename</code></p>
+<p>This scheme refers to online info reference pages (generated from texinfo files), a documentation format used by programs such as the GNU tools. This URI scheme is unique to UNIX-like systems (such as Linux) and is not currently registered by the IETF. As of this writing, GNOME and KDE differ in their URI syntax and do not accept the other's syntax. The first two formats are the GNOME format; in nodenames all spaces are written as underscores. The second two formats are the KDE format; spaces in nodenames must be written as spaces, even though this is forbidden by the URI standards. It's hoped that in the future most tools will understand all of these formats and will always accept underscores for spaces in nodenames. In both GNOME and KDE, if the form without the nodename is used the nodename is assumed to be "Top". Examples of the GNOME format are &lt;info:gcc&gt; and &lt;info:gcc#G++_and_GCC&gt;. Examples of the KDE format are &lt;info:(gcc)&gt; and &lt;info:(gcc)G++ and GCC&gt;.</p>
+<p><strong>whatis - Documentation search</strong></p>
+<p>whatis:<code>string</code></p>
+<p>This scheme searches the database of short (one-line) descriptions of commands and returns a list of descriptions containing that string. Only complete word matches are returned. See <a href='/1/whatis'>whatis</a>(1). This URI scheme is unique to UNIX-like systems (such as Linux) and is not currently registered by the IETF.</p>
+<p><strong>ghelp - GNOME help documentation</strong></p>
+<p>ghelp:<code>name-of-application</code></p>
+<p>This loads GNOME help for the given application. Note that not much documentation currently exists in this format.</p>
+<p><strong>ldap - Lightweight Directory Access Protocol</strong></p>
+<p>ldap://<code>hostport</code><br/>
+ldap://<code>hostport</code>/<br/>
+ldap://<code>hostport</code>/<code>dn</code><br/>
+ldap://<code>hostport</code>/<code>dn</code>?<code>attributes</code><br/>
+ldap://<code>hostport</code>/<code>dn</code>?<code>attributes</code>?<code>scope</code><br/>
+ldap://<code>hostport</code>/<code>dn</code>?<code>attributes</code>?<code>scope</code>?<code>filter</code><br/>
+ldap://<code>hostport</code>/<code>dn</code>?<code>attributes</code>?<code>scope</code>?<code>filter</code>?<code>extensions</code></p>
+<p>This scheme supports queries to the Lightweight Directory Access Protocol (LDAP), a protocol for querying a set of servers for hierarchically organized information (such as people and computing resources). See <a href="<a href="http://www.ietf.org/rfc/rfc2255.txt">http://www.ietf.org/rfc/rfc2255.txt</a>">RFC 2255</a> for more information on the LDAP URL scheme. The components of this URL are:</p>
+<ul>
+<li><p>the LDAP server to query, written as a hostname optionally followed by a colon and the port number. The default LDAP port is TCP port 389. If empty, the client determines which the LDAP server to use.</p></li>
+<li><p>the LDAP Distinguished Name, which identifies the base object of the LDAP search (see <a href="<a href="http://www.ietf.org/rfc/rfc2253.txt">http://www.ietf.org/rfc/rfc2253.txt</a>">RFC 2253</a> section 3).</p></li>
+<li><p>a comma-separated list of attributes to be returned; see RFC 2251 section 4.1.5. If omitted, all attributes should be returned.</p></li>
+<li><p>specifies the scope of the search, which can be one of "base" (for a base object search), "one" (for a one-level search), or "sub" (for a subtree search). If scope is omitted, "base" is assumed.</p></li>
+<li><p>specifies the search filter (subset of entries to return). If omitted, all entries should be returned. See <a href="<a href="http://www.ietf.org/rfc/rfc2254.txt">http://www.ietf.org/rfc/rfc2254.txt</a>">RFC 2254</a> section 4.</p></li>
+<li><p>a comma-separated list of type=value pairs, where the =value portion may be omitted for options not requiring it. An extension prefixed with a '!' is critical (must be supported to be valid), otherwise it is noncritical (optional).</p></li>
+</ul>
+<p>LDAP queries are easiest to explain by example. Here's a query that asks <a href="http://ldap.itd.umich.edu">ldap.itd.umich.edu</a> for information about the University of Michigan in the U.S.:</p>
+<pre><code>ldap://<a href="http://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US">ldap.itd.umich.edu/o=University%20of%20Michigan,c=US</a></code></pre>
+<p>To just get its postal address attribute, request:</p>
+<pre><code>ldap://<a href="http://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US?postalAddress">ldap.itd.umich.edu/o=University%20of%20Michigan,c=US?postalAddress</a></code></pre>
+<p>To ask a <a href="http://host.com">host.com</a> at port 6666 for information about the person with common name (cn) "Babs Jensen" at University of Michigan, request:</p>
+<pre><code>ldap://<a href="http://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)">host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)</a></code></pre>
+<p><strong>wais - Wide Area Information Servers</strong></p>
+<p>wais://<code>hostport</code>/<code>database</code><br/>
+wais://<code>hostport</code>/<code>database</code>?<code>search</code><br/>
+wais://<code>hostport</code>/<code>database</code>/<code>wtype</code>/<code>wpath</code></p>
+<p>This scheme designates a WAIS database, search, or document (see <a href="<a href="http://www.ietf.org/rfc/rfc1625.txt">http://www.ietf.org/rfc/rfc1625.txt</a>">IETF RFC 1625</a> for more information on WAIS). Hostport is the hostname, optionally followed by a colon and port number (the default port number is 210).</p>
+<p>The first form designates a WAIS database for searching. The second form designates a particular search of the WAIS database <code>database</code>. The third form designates a particular document within a WAIS database to be retrieved. <code>wtype</code> is the WAIS designation of the type of the object and <code>wpath</code> is the WAIS document-id.</p>
+<p><strong>other schemes</strong></p>
+<p>There are many other URI schemes. Most tools that accept URIs support a set of internal URIs (e.g., Mozilla has the about: scheme for internal information, and the GNOME help browser has the toc: scheme for various starting locations). There are many schemes that have been defined but are not as widely used at the current time (e.g., prospero). The nntp: scheme is deprecated in favor of the news: scheme. URNs are to be supported by the urn: scheme, with a hierarchical name space (e.g., urn:ietf:... would identify IETF documents); at this time URNs are not widely implemented. Not all tools support all schemes.</p>
+<h2>Character encoding</h2>
+<p>URIs use a limited number of characters so that they can be typed in and used in a variety of situations.</p>
+<p>The following characters are reserved, that is, they may appear in a URI but their use is limited to their reserved purpose (conflicting data must be escaped before forming the URI):</p>
+<blockquote>
+<p>; / ? : @ &amp; = + $ ,</p>
+</blockquote>
+<p>Unreserved characters may be included in a URI. Unreserved characters include uppercase and lowercase English letters, decimal digits, and the following limited set of punctuation marks and symbols:</p>
+<blockquote>
+<p>- _ . ! ~ * ' ( )</p>
+</blockquote>
+<p>All other characters must be escaped. An escaped octet is encoded as a character triplet, consisting of the percent character "%" followed by the two hexadecimal digits representing the octet code (you can use uppercase or lowercase letters for the hexadecimal digits). For example, a blank space must be escaped as "%20", a tab character as "%09", and the "&amp;" as "%26". Because the percent "%" character always has the reserved purpose of being the escape indicator, it must be escaped as "%25". It is common practice to escape space characters as the plus symbol (+) in query text; this practice isn't uniformly defined in the relevant RFCs (which recommend %20 instead) but any tool accepting URIs with query text should be prepared for them. A URI is always shown in its "escaped" form.</p>
+<p>Unreserved characters can be escaped without changing the semantics of the URI, but this should not be done unless the URI is being used in a context that does not allow the unescaped character to appear. For example, "%7e" is sometimes used instead of "~" in an HTTP URL path, but the two are equivalent for an HTTP URL.</p>
+<p>For URIs which must handle characters outside the US ASCII character set, the HTML 4.01 specification (section B.2) and IETF RFC 2718 (section 2.2.5) recommend the following approach:</p>
+<ol type="1">
+<li><p>translate the character sequences into UTF-8 (IETF RFC 2279)—see <a href='/7/utf-8'>utf-8</a>(7)—and then</p></li>
+<li><p>use the URI escaping mechanism, that is, use the %HH encoding for unsafe octets.</p></li>
+</ol>
+<h2>Writing a URI</h2>
+<p>When written, URIs should be placed inside double quotes (e.g., "<a href="http://www.kernel.org">http://www.kernel.org</a>"), enclosed in angle brackets (e.g., &lt;<a href="http://lwn.net">http://lwn.net</a>&gt;), or placed on a line by themselves. A warning for those who use double-quotes: <strong>never</strong> move extraneous punctuation (such as the period ending a sentence or the comma in a list) inside a URI, since this will change the value of the URI. Instead, use angle brackets instead, or switch to a quoting system that never includes extraneous characters inside quotation marks. This latter system, called the 'new' or 'logical' quoting system by "Hart's Rules" and the "Oxford Dictionary for Writers and Editors", is preferred practice in Great Britain and hackers worldwide (see the Jargon File's section on Hacker Writing Style, <a href="<a href="http://www.fwi.uva.nl/~mes/jargon/h/HackerWritingStyle.html">http://www.fwi.uva.nl/~mes/jargon/h/HackerWritingStyle.html</a>"></a>, for more information). Older documents suggested inserting the prefix "URL:" just before the URI, but this form has never caught on.</p>
+<p>The URI syntax was designed to be unambiguous. However, as URIs have become commonplace, traditional media (television, radio, newspapers, billboards, etc.) have increasingly used abbreviated URI references consisting of only the authority and path portions of the identified resource (e.g., &lt;<a href="http://www.w3.org/Addressing&amp;gt;)">www.w3.org/Addressing&gt;)</a>. Such references are primarily intended for human interpretation rather than machine, with the assumption that context-based heuristics are sufficient to complete the URI (e.g., hostnames beginning with "www" are likely to have a URI prefix of "http://" and hostnames beginning with "ftp" likely to have a prefix of "ftp://"). Many client implementations heuristically resolve these references. Such heuristics may change over time, particularly when new schemes are introduced. Since an abbreviated URI has the same syntax as a relative URL path, abbreviated URI references cannot be used where relative URIs are permitted, and can be used only when there is no defined base (such as in dialog boxes). Don't use abbreviated URIs as hypertext links inside a document; use the standard format as described here.</p>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href="<a href="http://www.ietf.org/rfc/rfc2396.txt">http://www.ietf.org/rfc/rfc2396.txt</a>">(IETF RFC 2396)</a>, <a href="<a href="http://www.w3.org/TR/REC-html40">http://www.w3.org/TR/REC-html40</a>">(HTML 4.0)</a>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Any tool accepting URIs (e.g., a web browser) on a Linux system should be able to handle (directly or indirectly) all of the schemes described here, including the man: and info: schemes. Handling them by invoking some other program is fine and in fact encouraged.</p>
+<p>Technically the fragment isn't part of the URI.</p>
+<p>For information on how to embed URIs (including URLs) in a data format, see documentation on that format. HTML uses the format &lt;A HREF="<code>uri</code>"&gt; <code>text</code> &lt;/A&gt;. Texinfo files use the format @uref{<code>uri</code>}. Man and mdoc have the recently added UR macro, or just include the URI in the text (viewers should be able to detect :// as part of a URI).</p>
+<p>The GNOME and KDE desktop environments currently vary in the URIs they accept, in particular in their respective help browsers. To list man pages, GNOME uses &lt;toc:man&gt; while KDE uses &lt;man:(index)&gt;, and to list info pages, GNOME uses &lt;toc:info&gt; while KDE uses &lt;info:(dir)&gt; (the author of this man page prefers the KDE approach here, though a more regular format would be even better). In general, KDE uses &lt;file:/cgi-bin/&gt; as a prefix to a set of generated files. KDE prefers documentation in HTML, accessed via the &lt;file:/cgi-bin/helpindex&gt;. GNOME prefers the ghelp scheme to store and find documentation. Neither browser handles file: references to directories at the time of this writing, making it difficult to refer to an entire directory with a browsable URI. As noted above, these environments differ in how they handle the info: scheme, probably the most important variation. It is expected that GNOME and KDE will converge to common URI formats, and a future version of this man page will describe the converged result. Efforts to aid this convergence are encouraged.</p>
+<h2>Security</h2>
+<p>A URI does not in itself pose a security threat. There is no general guarantee that a URL, which at one time located a given resource, will continue to do so. Nor is there any guarantee that a URL will not locate a different resource at some later point in time; such a guarantee can be obtained only from the person(s) controlling that namespace and the resource in question.</p>
+<p>It is sometimes possible to construct a URL such that an attempt to perform a seemingly harmless operation, such as the retrieval of an entity associated with the resource, will in fact cause a possibly damaging remote operation to occur. The unsafe URL is typically constructed by specifying a port number other than that reserved for the network protocol in question. The client unwittingly contacts a site that is in fact running a different protocol. The content of the URL contains instructions that, when interpreted according to this other protocol, cause an unexpected operation. An example has been the use of a gopher URL to cause an unintended or impersonating message to be sent via a SMTP server.</p>
+<p>Caution should be used when using any URL that specifies a port number other than the default for the protocol, especially when it is a number within the reserved space.</p>
+<p>Care should be taken when a URI contains escaped delimiters for a given protocol (for example, CR and LF characters for telnet protocols) that these are not unescaped before transmission. This might violate the protocol, but avoids the potential for such characters to be used to simulate an extra operation or parameter in that protocol, which might lead to an unexpected and possibly harmful remote operation to be performed.</p>
+<p>It is clearly unwise to use a URI that contains a password which is intended to be secret. In particular, the use of a password within the "userinfo" component of a URI is strongly recommended against except in those rare cases where the "password" parameter is intended to be public.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Documentation may be placed in a variety of locations, so there currently isn't a good URI scheme for general online documentation in arbitrary formats. References of the form &lt;file:///usr/doc/ZZZ&gt; don't work because different distributions and local installation requirements may place the files in different directories (it may be in /usr/doc, or /usr/local/doc, or /usr/share, or somewhere else). Also, the directory ZZZ usually changes when a version changes (though filename globbing could partially overcome this). Finally, using the file: scheme doesn't easily support people who dynamically load documentation from the Internet (instead of loading the files onto a local filesystem). A future URI scheme may be added (e.g., "userdoc:") to permit programs to include cross-references to more detailed documentation without having to know the exact location of that documentation. Alternatively, a future version of the filesystem specification may specify file locations sufficiently so that the file: scheme will be able to locate documentation.</p>
+<p>Many programs and file formats don't include a way to incorporate or implement links using URIs.</p>
+<p>Many programs can't handle all of these different URI formats; there should be a standard mechanism to load an arbitrary URI that automatically detects the users' environment (e.g., text or graphics, desktop environment, local user preferences, and currently executing tools) and invokes the right tool for any URI.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/lynx'>lynx</a>(1), <a href='/1/man2html'>man2html</a>(1), <a href='/7/mailaddr'>mailaddr</a>(7), <a href='/7/utf-8'>utf-8</a>(7)</p>
+<p><a href="<a href="http://www.ietf.org/rfc/rfc2255.txt">http://www.ietf.org/rfc/rfc2255.txt</a>">IETF RFC 2255</a></p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

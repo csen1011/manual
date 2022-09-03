@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getpwnam, getpwnam_r, getpwuid, getpwuid_r - get password file entry</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;pwd.h&gt;</a>
+
+struct passwd *getpwnam(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name);
+
+struct passwd *getpwuid(uid_t uid);
+
+int getpwnam_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name, struct passwd *pwd,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct passwd **result);
+
+int getpwuid_r(uid_t uid, struct passwd *pwd,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen, struct passwd **result);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getpwnam_r'>getpwnam_r</a>(), <a href='getpwuid_r'>getpwuid_r</a>():</p>
+<blockquote>
+<p>_POSIX_C_SOURCE || /* Glibc versions &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE</p>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getpwnam'>getpwnam</a>() function returns a pointer to a structure containing the broken-out fields of the record in the password database (e.g., the local password file <code>/etc/passwd</code>, NIS, and LDAP) that matches the username <code>name</code>.</p>
+<p>The <a href='getpwuid'>getpwuid</a>() function returns a pointer to a structure containing the broken-out fields of the record in the password database that matches the user ID <code>uid</code>.</p>
+<p>The <code>passwd</code> structure is defined in <code>&lt;pwd.h&gt;</code> as follows:</p>
+<pre><code>struct passwd {
+    char   *pw_name;       /* username */
+    char   *pw_passwd;     /* user password */
+    uid_t   pw_uid;        /* user ID */
+    gid_t   pw_gid;        /* group ID */
+    char   *pw_gecos;      /* user information */
+    char   *pw_dir;        /* home directory */
+    char   *pw_shell;      /* shell program */
+};</code></pre>
+<p>See <a href='/5/passwd'>passwd</a>(5) for more information about these fields.</p>
+<p>The <a href='getpwnam_r'>getpwnam_r</a>() and <a href='getpwuid_r'>getpwuid_r</a>() functions obtain the same information as <a href='getpwnam'>getpwnam</a>() and <a href='getpwuid'>getpwuid</a>(), but store the retrieved <code>passwd</code> structure in the space pointed to by <code>pwd</code>. The string fields pointed to by the members of the <code>passwd</code> structure are stored in the buffer <code>buf</code> of size <code>buflen</code>. A pointer to the result (in case of success) or NULL (in case no entry was found or an error occurred) is stored in <code>*result</code>.</p>
+<p>The call</p>
+<p>sysconf(_SC_GETPW_R_SIZE_MAX)</p>
+<p>returns either -1, without changing <code>errno</code>, or an initial suggested size for <code>buf</code>. (If this size is too small, the call fails with <strong>ERANGE</strong>, in which case the caller can retry with a larger buffer.)</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The <a href='getpwnam'>getpwnam</a>() and <a href='getpwuid'>getpwuid</a>() functions return a pointer to a <code>passwd</code> structure, or NULL if the matching entry is not found or an error occurs. If an error occurs, <code>errno</code> is set appropriately. If one wants to check <code>errno</code> after the call, it should be set to zero before the call.</p>
+<p>The return value may point to a static area, and may be overwritten by subsequent calls to <a href='/3/getpwent'>getpwent</a>(3), <a href='getpwnam'>getpwnam</a>(), or <a href='getpwuid'>getpwuid</a>(). (Do not pass the returned pointer to <a href='/3/free'>free</a>(3).)</p>
+<p>On success, <a href='getpwnam_r'>getpwnam_r</a>() and <a href='getpwuid_r'>getpwuid_r</a>() return zero, and set <code>*result</code> to <code>pwd</code>. If no matching password record was found, these functions return 0 and store NULL in <code>*result</code>. In case of error, an error number is returned, and NULL is stored in <code>*result</code>.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below demonstrates the use of <a href='getpwnam_r'>getpwnam_r</a>() to find the full username and user ID for the username supplied as a command-line argument.</p>
+<pre><code>#include &lt;pwd.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct passwd pwd;
+    struct passwd *result;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> bufsize;
+    int s;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s username\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (bufsize == -1)          /* Value was indeterminate */
+        bufsize = 16384;        /* Should be more than enough */
+
+    buf = malloc(bufsize);
+    if (buf == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    s = getpwnam_r(argv[1], &amp;pwd, buf, bufsize, &amp;result);
+    if (result == NULL) {
+        if (s == 0)
+            printf("Not found\n");
+        else {
+            errno = s;
+            perror("getpwnam_r");
+        }
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Name: %s; UID: %jd\n", pwd.pw_gecos,
+            (intmax_t) pwd.pw_uid);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>0</strong> or <strong>ENOENT</strong> or <strong>ESRCH</strong> or <strong>EBADF</strong> or <strong>EPERM</strong> or ...</dt>
+<dd><p>The given <code>name</code> or <code>uid</code> was not found.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>A signal was caught; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>I/O error.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient memory to allocate <code>passwd</code> structure.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>Insufficient buffer space supplied.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='note'><a href='#note'>NOTE</a></h1><div data-for='note' data-hide><div class='section' data-for='note'><div data-more>
+<p>The user password database mostly refers to <code>/etc/passwd</code>. However, with recent systems it also refers to network wide databases using NIS, LDAP and other local files as configured in <code>/etc/nsswitch.conf</code>.</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/passwd</code></dt>
+<dd><p>local password database file</p>
+</dd>
+<dt><code>/etc/nsswitch.conf</code></dt>
+<dd><p>System Databases and Name Service Switch configuration file</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getpwnam'>getpwnam</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:pwnam locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='getpwuid'>getpwuid</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:pwuid locale</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getpwnam_r'>getpwnam_r</a>(),<br/>
+<a href='getpwuid_r'>getpwuid_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe locale</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD. The <code>pw_gecos</code> field is not specified in POSIX, but is present on most implementations.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The formulation given above under "RETURN VALUE" is from POSIX.1-2001. It does not call "not found" an error, and hence does not specify what value <code>errno</code> might have in this situation. But that makes it impossible to recognize errors. One might argue that according to POSIX <code>errno</code> should be left unchanged if an entry is not found. Experiments on various UNIX-like systems show that lots of different values occur in this situation: 0, ENOENT, EBADF, ESRCH, EWOULDBLOCK, EPERM, and probably others.</p>
+<p>The <code>pw_dir</code> field contains the name of the initial working directory of the user. Login programs use the value of this field to initialize the <strong>HOME</strong> environment variable for the login shell. An application that wants to determine its user's home directory should inspect the value of <strong>HOME</strong> (rather than the value <code>getpwuid(getuid())-&gt;pw_dir</code>) since this allows the user to modify their notion of "the home directory" during a login session. To determine the (initial) home directory of another user, it is necessary to use <code>getpwnam("username")-&gt;pw_dir</code> or similar.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/endpwent'>endpwent</a>(3), <a href='/3/fgetpwent'>fgetpwent</a>(3), <a href='/3/getgrnam'>getgrnam</a>(3), <a href='/3/getpw'>getpw</a>(3), <a href='/3/getpwent'>getpwent</a>(3), <a href='/3/getspnam'>getspnam</a>(3), <a href='/3/putpwent'>putpwent</a>(3), <a href='/3/setpwent'>setpwent</a>(3), <a href='/5/nsswitch.conf'>nsswitch.conf</a>(5), <a href='/5/passwd'>passwd</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;sem_wait&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>sem_wait</a>, sem_timedwait, sem_trywait - lock a semaphore</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;semaphore.h&gt;</a>
+
+int sem_wait(sem_t *sem);
+
+int sem_trywait(sem_t *sem);
+
+int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout);</code></pre>
+<p>Link with <code>-pthread</code>.</p>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='sem_timedwait'>sem_timedwait</a>(): _POSIX_C_SOURCE &gt;= 200112L</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='sem_wait'>sem_wait</a>() decrements (locks) the semaphore pointed to by <code>sem</code>. If the semaphore's value is greater than zero, then the decrement proceeds, and the function returns, immediately. If the semaphore currently has the value zero, then the call blocks until either it becomes possible to perform the decrement (i.e., the semaphore value rises above zero), or a signal handler interrupts the call.</p>
+<p><a href='sem_trywait'>sem_trywait</a>() is the same as <a href='sem_wait'>sem_wait</a>(), except that if the decrement cannot be immediately performed, then call returns an error (<code>errno</code> set to <strong>EAGAIN</strong>) instead of blocking.</p>
+<p><a href='sem_timedwait'>sem_timedwait</a>() is the same as <a href='sem_wait'>sem_wait</a>(), except that <code>abs_timeout</code> specifies a limit on the amount of time that the call should block if the decrement cannot be immediately performed. The <code>abs_timeout</code> argument points to a structure that specifies an absolute timeout in seconds and nanoseconds since the Epoch, 1970-01-01 00:00:00 +0000 (UTC). This structure is defined as follows:</p>
+<pre><code>struct timespec {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a> tv_sec;      /* Seconds */
+    long   tv_nsec;     /* Nanoseconds [0 .. 999999999] */
+};</code></pre>
+<p>If the timeout has already expired by the time of the call, and the semaphore could not be locked immediately, then <a href='sem_timedwait'>sem_timedwait</a>() fails with a timeout error (<code>errno</code> set to <strong>ETIMEDOUT</strong>).</p>
+<p>If the operation can be performed immediately, then <a href='sem_timedwait'>sem_timedwait</a>() never fails with a timeout error, regardless of the value of <code>abs_timeout</code>. Furthermore, the validity of <code>abs_timeout</code> is not checked in this case.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>All of these functions return 0 on success; on error, the value of the semaphore is left unchanged, -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The (somewhat trivial) program shown below operates on an unnamed semaphore. The program expects two command-line arguments. The first argument specifies a seconds value that is used to set an alarm timer to generate a <strong>SIGALRM</strong> signal. This handler performs a <a href='/3/sem_post'>sem_post</a>(3) to increment the semaphore that is being waited on in <code>main()</code> using <a href='sem_timedwait'>sem_timedwait</a>(). The second command-line argument specifies the length of the timeout, in seconds, for <a href='sem_timedwait'>sem_timedwait</a>(). The following shows what happens on two different runs of the program:</p>
+<pre><code>$ ./a.out 2 3
+About to call sem_timedwait()
+sem_post() from handler
+sem_timedwait() succeeded
+$ ./a.out 2 1
+About to call sem_timedwait()
+sem_timedwait() timed out</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;semaphore.h&gt;
+#include &lt;time.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;signal.h&gt;
+
+sem_t sem;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+handler(int sig)
+{
+    write(STDOUT_FILENO, "sem_post() from handler\n", 24);
+    if (sem_post(&amp;sem) == -1) {
+        write(STDERR_FILENO, "sem_post() failed\n", 18);
+        _exit(EXIT_FAILURE);
+    }
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct sigaction sa;
+    struct timespec ts;
+    int s;
+
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s &lt;alarm-secs&gt; &lt;wait-secs&gt;\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (sem_init(&amp;sem, 0, 0) == -1)
+        handle_error("sem_init");
+
+    /* Establish SIGALRM handler; set alarm timer using argv[1] */
+
+    sa.sa_handler = handler;
+    sigemptyset(&amp;sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGALRM, &amp;sa, NULL) == -1)
+        handle_error("sigaction");
+
+    alarm(atoi(argv[1]));
+
+    /* Calculate relative interval as current time plus
+       number of seconds given argv[2] */
+
+    if (clock_gettime(CLOCK_REALTIME, &amp;ts) == -1)
+        handle_error("clock_gettime");
+
+    ts.tv_sec += atoi(argv[2]);
+
+    printf("main() about to call sem_timedwait()\n");
+    while ((s = sem_timedwait(&amp;sem, &amp;ts)) == -1 &amp;&amp; errno == EINTR)
+        continue;       /* Restart if interrupted by handler */
+
+    /* Check what happened */
+
+    if (s == -1) {
+        if (errno == ETIMEDOUT)
+            printf("sem_timedwait() timed out\n");
+        else
+            perror("sem_timedwait");
+    } else
+        printf("sem_timedwait() succeeded\n");
+
+    exit((s == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The call was interrupted by a signal handler; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>sem</code> is not a valid semaphore.</p>
+</dd>
+</dl>
+<p>The following additional error can occur for <a href='sem_trywait'>sem_trywait</a>():</p>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The operation could not be performed without blocking (i.e., the semaphore currently has the value zero).</p>
+</dd>
+</dl>
+<p>The following additional errors can occur for <a href='sem_timedwait'>sem_timedwait</a>():</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The value of <code>abs_timeout.tv_nsecs</code> is less than 0, or greater than or equal to 1000 million.</p>
+</dd>
+<dt><strong>ETIMEDOUT</strong></dt>
+<dd><p>The call timed out before the semaphore could be locked.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='sem_wait'>sem_wait</a>(), <a href='sem_trywait'>sem_trywait</a>(), <a href='sem_timedwait'>sem_timedwait</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clock_gettime'>clock_gettime</a>(2), <a href='/3/sem_getvalue'>sem_getvalue</a>(3), <a href='/3/sem_post'>sem_post</a>(3), <a href='/7/sem_overview'>sem_overview</a>(7), <a href='/7/time'>time</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

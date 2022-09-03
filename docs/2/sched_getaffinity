@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sched_setaffinity, sched_getaffinity - set and get a thread's CPU affinity mask</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sched.h&gt;</a>
+
+int sched_setaffinity(pid_t pid, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> cpusetsize,
+ const cpu_set_t *mask);
+
+int sched_getaffinity(pid_t pid, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> cpusetsize,
+ cpu_set_t *mask);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A thread's CPU affinity mask determines the set of CPUs on which it is eligible to run. On a multiprocessor system, setting the CPU affinity mask can be used to obtain performance benefits. For example, by dedicating one CPU to a particular thread (i.e., setting the affinity mask of that thread to specify a single CPU, and setting the affinity mask of all other threads to exclude that CPU), it is possible to ensure maximum execution speed for that thread. Restricting a thread to run on a single CPU also avoids the performance cost caused by the cache invalidation that occurs when a thread ceases to execute on one CPU and then recommences execution on a different CPU.</p>
+<p>A CPU affinity mask is represented by the <code>cpu_set_t</code> structure, a "CPU set", pointed to by <code>mask</code>. A set of macros for manipulating CPU sets is described in <a href='/3/CPU_SET'>CPU_SET</a>(3).</p>
+<p><a href='sched_setaffinity'>sched_setaffinity</a>() sets the CPU affinity mask of the thread whose ID is <code>pid</code> to the value specified by <code>mask</code>. If <code>pid</code> is zero, then the calling thread is used. The argument <code>cpusetsize</code> is the length (in bytes) of the data pointed to by <code>mask</code>. Normally this argument would be specified as <code>sizeof(cpu_set_t)</code>.</p>
+<p>If the thread specified by <code>pid</code> is not currently running on one of the CPUs specified in <code>mask</code>, then that thread is migrated to one of the CPUs specified in <code>mask</code>.</p>
+<p><a href='sched_getaffinity'>sched_getaffinity</a>() writes the affinity mask of the thread whose ID is <code>pid</code> into the <code>cpu_set_t</code> structure pointed to by <code>mask</code>. The <code>cpusetsize</code> argument specifies the size (in bytes) of <code>mask</code>. If <code>pid</code> is zero, then the mask of the calling thread is returned.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='sched_setaffinity'>sched_setaffinity</a>() and <a href='sched_getaffinity'>sched_getaffinity</a>() return 0 (but see "C library/kernel differences" below, which notes that the underlying <a href='sched_getaffinity'>sched_getaffinity</a>() differs in its return value). On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below creates a child process. The parent and child then each assign themselves to a specified CPU and execute identical loops that consume some CPU time. Before terminating, the parent waits for the child to complete. The program takes three command-line arguments: the CPU number for the parent, the CPU number for the child, and the number of loop iterations that both processes should perform.</p>
+<p>As the sample runs below demonstrate, the amount of real and CPU time consumed when running the program will depend on intra-core caching effects and whether the processes are using the same CPU.</p>
+<p>We first employ <a href='/1/lscpu'>lscpu</a>(1) to determine that this (x86) system has two cores, each with two CPUs:</p>
+<pre><code>$ lscpu | egrep -i 'core.*:|socket'
+Thread(s) per core:    2
+Core(s) per socket:    2
+Socket(s):             1</code></pre>
+<p>We then time the operation of the example program for three cases: both processes running on the same CPU; both processes running on different CPUs on the same core; and both processes running on different CPUs on different cores.</p>
+<pre><code>$ time -p ./a.out 0 0 100000000
+real 14.75
+user 3.02
+sys 11.73
+$ time -p ./a.out 0 1 100000000
+real 11.52
+user 3.98
+sys 19.06
+$ time -p ./a.out 0 3 100000000
+real 7.89
+user 3.29
+sys 12.07</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;sched.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    cpu_set_t set;
+    int parentCPU, childCPU;
+    int nloops;
+
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s parent-cpu child-cpu num-loops\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    parentCPU = atoi(argv[1]);
+    childCPU = atoi(argv[2]);
+    nloops = atoi(argv[3]);
+
+    CPU_ZERO(&amp;set);
+
+    switch (fork()) {
+    case -1:            /* Error */
+        errExit("fork");
+
+    case 0:             /* Child */
+        CPU_SET(childCPU, &amp;set);
+
+        if (sched_setaffinity(getpid(), sizeof(set), &amp;set) == -1)
+            errExit("sched_setaffinity");
+
+        for (int j = 0; j &lt; nloops; j++)
+            getppid();
+
+        exit(EXIT_SUCCESS);
+
+    default:            /* Parent */
+        CPU_SET(parentCPU, &amp;set);
+
+        if (sched_setaffinity(getpid(), sizeof(set), &amp;set) == -1)
+            errExit("sched_setaffinity");
+
+        for (int j = 0; j &lt; nloops; j++)
+            getppid();
+
+        wait(NULL);     /* Wait for child to terminate */
+        exit(EXIT_SUCCESS);
+    }
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>A supplied memory address was invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The affinity bit mask <code>mask</code> contains no processors that are currently physically on the system and permitted to the thread according to any restrictions that may be imposed by <code>cpuset</code> cgroups or the "cpuset" mechanism described in <a href='/7/cpuset'>cpuset</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>(<a href='sched_getaffinity'>sched_getaffinity</a>() and, in kernels before 2.6.9, <a href='sched_setaffinity'>sched_setaffinity</a>()) <code>cpusetsize</code> is smaller than the size of the affinity mask used by the kernel.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>(<a href='sched_setaffinity'>sched_setaffinity</a>()) The calling thread does not have appropriate privileges. The caller needs an effective user ID equal to the real user ID or effective user ID of the thread identified by <code>pid</code>, or it must possess the <strong>CAP_SYS_NICE</strong> capability in the user namespace of the thread <code>pid</code>.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>The thread whose ID is <code>pid</code> could not be found.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The CPU affinity system calls were introduced in Linux kernel 2.5.8. The system call wrappers were introduced in glibc 2.3. Initially, the glibc interfaces included a <code>cpusetsize</code> argument, typed as <code>unsigned int</code>. In glibc 2.3.3, the <code>cpusetsize</code> argument was removed, but was then restored in glibc 2.3.4, with type <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code>.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These system calls are Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>After a call to <a href='sched_setaffinity'>sched_setaffinity</a>(), the set of CPUs on which the thread will actually run is the intersection of the set specified in the <code>mask</code> argument and the set of CPUs actually present on the system. The system may further restrict the set of CPUs on which the thread runs if the "cpuset" mechanism described in <a href='/7/cpuset'>cpuset</a>(7) is being used. These restrictions on the actual set of CPUs on which the thread will run are silently imposed by the kernel.</p>
+<p>There are various ways of determining the number of CPUs available on the system, including: inspecting the contents of <code>/proc/cpuinfo</code>; using <a href='/3/sysconf'>sysconf</a>(3) to obtain the values of the <strong>_SC_NPROCESSORS_CONF</strong> and <strong>_SC_NPROCESSORS_ONLN</strong> parameters; and inspecting the list of CPU directories under <code>/sys/devices/system/cpu/</code>.</p>
+<p><a href='/7/sched'>sched</a>(7) has a description of the Linux scheduling scheme.</p>
+<p>The affinity mask is a per-thread attribute that can be adjusted independently for each of the threads in a thread group. The value returned from a call to <a href='/2/gettid'>gettid</a>(2) can be passed in the argument <code>pid</code>. Specifying <code>pid</code> as 0 will set the attribute for the calling thread, and passing the value returned from a call to <a href='/2/getpid'>getpid</a>(2) will set the attribute for the main thread of the thread group. (If you are using the POSIX threads API, then use <a href='/3/pthread_setaffinity_np'>pthread_setaffinity_np</a>(3) instead of <a href='sched_setaffinity'>sched_setaffinity</a>().)</p>
+<p>The <code>isolcpus</code> boot option can be used to isolate one or more CPUs at boot time, so that no processes are scheduled onto those CPUs. Following the use of this boot option, the only way to schedule processes onto the isolated CPUs is via <a href='sched_setaffinity'>sched_setaffinity</a>() or the <a href='/7/cpuset'>cpuset</a>(7) mechanism. For further information, see the kernel source file <code>Documentation/admin-guide/kernel-parameters.txt</code>. As noted in that file, <code>isolcpus</code> is the preferred mechanism of isolating CPUs (versus the alternative of manually setting the CPU affinity of all processes on the system).</p>
+<p>A child created via <a href='/2/fork'>fork</a>(2) inherits its parent's CPU affinity mask. The affinity mask is preserved across an <a href='/2/execve'>execve</a>(2).</p>
+<h2>C library/kernel differences</h2>
+<p>This manual page describes the glibc interface for the CPU affinity calls. The actual system call interface is slightly different, with the <code>mask</code> being typed as <code>unsigned long *</code>, reflecting the fact that the underlying implementation of CPU sets is a simple bit mask.</p>
+<p>On success, the raw <a href='sched_getaffinity'>sched_getaffinity</a>() system call returns the number of bytes placed copied into the <code>mask</code> buffer; this will be the minimum of <code>cpusetsize</code> and the size (in bytes) of the <code>cpumask_t</code> data type that is used internally by the kernel to represent the CPU set bit mask.</p>
+<h2>Handling systems with large CPU affinity masks</h2>
+<p>The underlying system calls (which represent CPU masks as bit masks of type <code>unsigned long *</code>) impose no restriction on the size of the CPU mask. However, the <code>cpu_set_t</code> data type used by glibc has a fixed size of 128 bytes, meaning that the maximum CPU number that can be represented is 1023. If the kernel CPU affinity mask is larger than 1024, then calls of the form:</p>
+<p>sched_getaffinity(pid, sizeof(cpu_set_t), &amp;mask);</p>
+<p>fail with the error <strong>EINVAL</strong>, the error produced by the underlying system call for the case where the <code>mask</code> size specified in <code>cpusetsize</code> is smaller than the size of the affinity mask used by the kernel. (Depending on the system CPU topology, the kernel affinity mask can be substantially larger than the number of active CPUs in the system.)</p>
+<p>When working on systems with large kernel CPU affinity masks, one must dynamically allocate the <code>mask</code> argument (see <a href='/3/CPU_ALLOC'>CPU_ALLOC</a>(3)). Currently, the only way to do this is by probing for the size of the required mask using <a href='sched_getaffinity'>sched_getaffinity</a>() calls with increasing mask sizes (until the call does not fail with the error <strong>EINVAL</strong>).</p>
+<p>Be aware that <a href='/3/CPU_ALLOC'>CPU_ALLOC</a>(3) may allocate a slightly larger CPU set than requested (because CPU sets are implemented as bit masks allocated in units of <code>sizeof(long)</code>). Consequently, <a href='sched_getaffinity'>sched_getaffinity</a>() can set bits beyond the requested allocation size, because the kernel sees a few additional bits. Therefore, the caller should iterate over the bits in the returned set, counting those which are set, and stop upon reaching the value returned by <a href='/3/CPU_COUNT'>CPU_COUNT</a>(3) (rather than iterating over the number of bits requested to be allocated).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/lscpu'>lscpu</a>(1), <a href='/1/nproc'>nproc</a>(1), <a href='/1/taskset'>taskset</a>(1), <a href='/2/clone'>clone</a>(2), <a href='/2/getcpu'>getcpu</a>(2), <a href='/2/getpriority'>getpriority</a>(2), <a href='/2/gettid'>gettid</a>(2), <a href='/2/nice'>nice</a>(2), <a href='/2/sched_get_priority_max'>sched_get_priority_max</a>(2), <a href='/2/sched_get_priority_min'>sched_get_priority_min</a>(2), <a href='/2/sched_getscheduler'>sched_getscheduler</a>(2), <a href='/2/sched_setscheduler'>sched_setscheduler</a>(2), <a href='/2/setpriority'>setpriority</a>(2), <a href='/3/CPU_SET'>CPU_SET</a>(3), <a href='/3/get_nprocs'>get_nprocs</a>(3), <a href='/3/pthread_setaffinity_np'>pthread_setaffinity_np</a>(3), <a href='/3/sched_getcpu'>sched_getcpu</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/cpuset'>cpuset</a>(7), <a href='/7/sched'>sched</a>(7), <a href='/8/numactl'>numactl</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

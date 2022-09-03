@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><strong><a data-bs-content='This is the man page for &lt;code&gt;tabs&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>tabs</a></strong> - set tabs on a terminal</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>tabs</strong> [<code>options</code>]] <code>[tabstop-list]</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>tabs</strong> program clears and sets tab-stops on the terminal. This uses the terminfo <code>clear_all_tabs</code> and <code>set_tab</code> capabilities. If either is absent, <strong>tabs</strong> is unable to clear/set tab-stops. The terminal should be configured to use hard tabs, e.g.,</p>
+<pre><code>stty tab0</code></pre>
+<p>Like <a href='/1/clear'>clear</a>(1), <strong>tabs</strong> writes to the standard output. You can redirect the standard output to a file (which prevents <strong>tabs</strong> from actually changing the tabstops), and later <strong>cat</strong> the file to the screen, setting tabstops at that point.</p>
+<p>These are hardware tabs, which cannot be queried rapidly by applications running in the terminal, if at all. Curses and other full-screen applications may use hardware tabs in optimizing their output to the terminal. If the hardware tabstops differ from the information in the terminal database, the result is unpredictable. Before running curses programs, you should either reset tab-stops to the standard interval</p>
+<pre><code>tabs -8</code></pre>
+<p>or use the <strong>reset</strong> program, since the normal initialization sequences do not ensure that tab-stops are reset.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<h2>General Options</h2>
+<dl>
+<dt><strong>-T</strong><code>name</code></dt>
+<dd><p>Tell <strong>tabs</strong> which terminal type to use. If this option is not given, <strong>tabs</strong> will use the <strong>$TERM</strong> environment variable. If that is not set, it will use the <code>ansi+tabs</code> entry.</p>
+</dd>
+<dt><strong>-d</strong></dt>
+<dd><p>The debugging option shows a ruler line, followed by two data lines. The first data line shows the expected tab-stops marked with asterisks. The second data line shows the actual tab-stops, marked with asterisks.</p>
+</dd>
+<dt><strong>-n</strong></dt>
+<dd><p>This option tells <strong>tabs</strong> to check the options and run any debugging option, but not to modify the terminal settings.</p>
+</dd>
+<dt><strong>-V</strong></dt>
+<dd><p>reports the version of ncurses which was used in this program, and exits.</p>
+</dd>
+</dl>
+<p>The <strong>tabs</strong> program processes a single list of tab stops. The last option to be processed which defines a list is the one that determines the list to be processed.</p>
+<h2>Implicit Lists</h2>
+<p>Use a single number as an option, e.g., <strong>-5</strong> to set tabs at the given interval (in this case 1, 6, 11, 16, 21, etc.). Tabs are repeated up to the right margin of the screen.</p>
+<p>Use <strong>-0</strong> to clear all tabs.</p>
+<p>Use <strong>-8</strong> to set tabs to the standard interval.</p>
+<h2>Explicit Lists</h2>
+<p>An explicit list can be defined after the options (this does not use a -). The values in the list must be in increasing numeric order, and greater than zero. They are separated by a comma or a blank, for example,</p>
+<pre><code>tabs 1,6,11,16,21
+
+
+tabs 1 6 11 16 21</code></pre>
+<p>Use a + to treat a number as an increment relative to the previous value, e.g.,</p>
+<pre><code>tabs 1,+5,+5,+5,+5</code></pre>
+<p>which is equivalent to the 1,6,11,16,21 example.</p>
+<h2>Predefined Tab-Stops</h2>
+<p>POSIX defines several predefined lists of tab stops.</p>
+<dl>
+<dt><strong>-a</strong></dt>
+<dd><p>Assembler, IBM S/370, first format<br/>
+1,10,16,36,72</p>
+</dd>
+<dt><strong>-a2</strong></dt>
+<dd><p>Assembler, IBM S/370, second format<br/>
+1,10,16,40,72</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>COBOL, normal format<br/>
+1,8,12,16,20,55</p>
+</dd>
+<dt><strong>-c2</strong></dt>
+<dd><p>COBOL compact format<br/>
+1,6,10,14,49</p>
+</dd>
+<dt><strong>-c3</strong></dt>
+<dd><p>COBOL compact format extended<br/>
+1,6,10,14,18,22,26,30,34,38,42,46,50,54,58,62,67</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>FORTRAN<br/>
+1,7,11,15,19,23</p>
+</dd>
+<dt><strong>-p</strong></dt>
+<dd><p>PL/I<br/>
+1,5,9,13,17,21,25,29,33,37,41,45,49,53,57,61</p>
+</dd>
+<dt><strong>-s</strong></dt>
+<dd><p>SNOBOL<br/>
+1,10,55</p>
+</dd>
+<dt><strong>-u</strong></dt>
+<dd><p>UNIVAC 1100 Assembler<br/>
+1,12,20,44</p>
+</dd>
+</dl>
+<h2>Margins</h2>
+<p>A few terminals provide the capability for changing their left/right margins. The tabs program has an option to use this feature:</p>
+<dl>
+<dt><strong>+m</strong><code> margin</code></dt>
+<dd><p>The effect depends on whether the terminal has the margin capabilities:</p>
+<ul>
+<li><p>If the terminal provides the capability for setting the left margin, tabs uses this, and adjusts the available width for tab-stops.</p></li>
+<li><p>If the terminal does not provide the margin capabilities, tabs imitates the effect, putting the tab stops at the appropriate place on each line. The terminal's left-margin is not modified.</p></li>
+</ul>
+<p>If the <code>margin</code> parameter is omitted, the default is 10. Use <strong>+m0</strong> to reset the left margin, i.e., to the left edge of the terminal's display. Before setting a left-margin, tabs resets the margin to reduce problems which might arise on moving the cursor before the current left-margin.</p>
+</dd>
+</dl>
+<p>When setting or resetting the left-margin, tabs may reset the right-margin.</p>
+</div></div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<p><code>IEEE Std 1003.1/The Open Group Base Specifications Issue 7</code> (POSIX.1-2008) describes a <strong>tabs</strong> utility. However</p>
+<ul>
+<li><p>This standard describes a <strong>+m</strong> option, to set a terminal's left-margin. Very few of the entries in the terminal database provide the <strong>smgl</strong> (<strong>set_left_margin</strong>) or <strong>smglp</strong> (<strong>set_left_margin_parm</strong>) capability needed to support the feature.</p></li>
+<li><p>There is no counterpart in X/Open Curses Issue 7 for this utility, unlike <a href='/1/tput'>tput</a>(1).</p></li>
+</ul>
+<p>The <strong>-d</strong> (debug) and <strong>-n</strong> (no-op) options are extensions not provided by other implementations.</p>
+<p>A <strong>tabs</strong> utility appeared in PWB/Unix 1.0 (1977). There was a reduced version of the <strong>tabs</strong> utility in Unix 7th edition and in 3BSD (1979). The latter supported a single -n option (to cause the first tab stop to be set on the left margin). That option is not documented by POSIX.</p>
+<p>The PWB/Unix <strong>tabs</strong> utility, which was included in System III (1980), used built-in tables rather than the terminal database, to support a half-dozen hardcopy terminal (printer) types. It also had built-in logic to support the left-margin, as well as a feature for copying the tab settings from a file.</p>
+<p>Later versions of Unix, e.g., SVr4, added support for the terminal database, but kept the tables to support the printers. In an earlier development effort, the tab-stop initialization provided by <strong>tset</strong> (1982) and incorporated into <strong>tput</strong> uses the terminal database,</p>
+<p>The <strong>+m</strong> option was documented in the Base Specifications Issue 5 (Unix98, 1997), and omitted in Issue 6 (Unix03, 2004) without documenting the rationale, though an introductory comment <code>and optionally adjusts the margin</code> remains, overlooked in the removal. The documented <strong>tabs</strong> utility in Issues 6 and later has no mechanism for setting margins. The <strong>+m</strong> option in this implementation differs from the feature in SVr4 by using terminal capabilities rather than built-in tables.</p>
+<p>POSIX documents no limits on the number of tab stops. Documentation for other implementations states that there is a limit on the number of tab stops (e.g., 20 in PWB/Unix's <strong>tabs</strong> utility). While some terminals may not accept an arbitrary number of tab stops, this implementation will attempt to set tab stops up to the right margin of the screen, if the given list happens to be that long.</p>
+<p>The <code>Rationale</code> section of the POSIX documentation goes into some detail about the ways the committee considered redesigning the <strong>tabs</strong> and <strong>tput</strong> utilities, without proposing an improved solution. It comments that</p>
+<blockquote>
+<p>no known historical version of tabs supports the capability of setting arbitrary tab stops.</p>
+</blockquote>
+<p>However, the <code>Explicit Lists</code> described in this manual page were implemented in PWB/Unix. Those provide the capability of setting abitrary tab stops.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/infocmp'>infocmp</a>(1), <a href='/1/tset'>tset</a>(1), <strong>ncurses</strong>(3NCURSES), <a href='/5/terminfo'>terminfo</a>(5).</p>
+<p>This describes <strong>ncurses</strong> version 6.3 (patch 20211021).</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

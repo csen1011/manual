@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>org.freedesktop.import1 - The D-Bus interface of systemd-importd</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p><a href='/8/systemd-importd.service'>systemd-importd.service</a>(8) is a system service which may be used to import, export and download additional system images. These images can be used by tools such as <a href='/1/systemd-nspawn'>systemd-nspawn</a>(1) to run local containers. The service is used as the backend for <strong>machinectl pull-raw</strong>, <strong>machinectl pull-tar</strong> and related commands. This page describes the D-Bus interface.</p>
+<p>Note that <a href='/8/systemd-importd.service'>systemd-importd.service</a>(8) is mostly a small companion service for <a href='/8/systemd-machined.service'>systemd-machined.service</a>(8). Many operations to manipulate local container and VM images are hence available via the <strong>systemd-machined</strong> D-Bus API, c.f. <a href='/5/org.freedesktop.machine1'>org.freedesktop.machine1</a>(5).</p>
+</div></div></div><h1 id='the-manager-object'><a href='#the-manager-object'>THE MANAGER OBJECT</a></h1><div data-for='the-manager-object' data-hide><div class='section' data-for='the-manager-object'><div data-more>
+<p>The service exposes the following interfaces on the Manager object on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/import1 {
+  interface org.freedesktop.import1.Manager {
+    methods:
+      ImportTar(in  h fd,
+                in  s local_name,
+                in  b force,
+                in  b read_only,
+                out u transfer_id,
+                out o transfer_path);
+      ImportRaw(in  h fd,
+                in  s local_name,
+                in  b force,
+                in  b read_only,
+                out u transfer_id,
+                out o transfer_path);
+      ImportFileSystem(in  h fd,
+                       in  s local_name,
+                       in  b force,
+                       in  b read_only,
+                       out u transfer_id,
+                       out o transfer_path);
+      ExportTar(in  s local_name,
+                in  h fd,
+                in  s format,
+                out u transfer_id,
+                out o transfer_path);
+      ExportRaw(in  s local_name,
+                in  h fd,
+                in  s format,
+                out u transfer_id,
+                out o transfer_path);
+      PullTar(in  s url,
+              in  s local_name,
+              in  s verify_mode,
+              in  b force,
+              out u transfer_id,
+              out o transfer_path);
+      PullRaw(in  s url,
+              in  s local_name,
+              in  s verify_mode,
+              in  b force,
+              out u transfer_id,
+              out o transfer_path);
+      ListTransfers(out a(usssdo) transfers);
+      CancelTransfer(in  u transfer_id);
+    signals:
+      TransferNew(u transfer_id,
+                  o transfer_path);
+      TransferRemoved(u transfer_id,
+                      o transfer_path,
+                      s result);
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p><strong>ImportTar()</strong> and <strong>ImportRaw()</strong> import a system image and place it into /var/lib/machines/. The first argument should be a file descriptor (opened for reading) referring to the tar or raw file to import. It should reference a file on disk, a pipe or a socket. When <strong>ImportTar()</strong> is used the file descriptor should refer to a tar file, optionally compressed with <a href='/1/gzip'>gzip</a>(1), <a href='/1/bzip2'>bzip2</a>(1), or <a href='/1/xz'>xz</a>(1). <strong>systemd-importd</strong> will detect the used compression scheme (if any) automatically. When <strong>ImportRaw()</strong> is used the file descriptor should refer to a raw or qcow2 disk image containing an MBR or GPT disk label, also optionally compressed with gzip, bzip2 or xz. In either case, if the file is specified as a file descriptor on disk, progress information is generated for the import operation (as in that case we know the total size on disk). If a socket or pipe is specified, progress information is not available. The file descriptor argument is followed by a local name for the image. This should be a name suitable as a hostname and will be used to name the imported image below /var/lib/machines/. A tar import is placed as a directory tree or a <a href='/8/btrfs'>btrfs</a>(8) subvolume below /var/lib/machines/ under the specified name with no suffix appended. A raw import is placed as a file in /var/lib/machines/ with the .raw suffix appended. If the <strong>force</strong> argument is true, any pre-existing image with the same name is removed before starting the operation. Otherwise, the operation fails if an image with the same name already exists. Finally, the <strong>read_only</strong> argument controls whether to create a writable or read-only image. Both methods return immediately after starting the import, with the import transfer ongoing. They return a pair of transfer identifier and object path, which may be used to retrieve progress information about the transfer or to cancel it. The transfer identifier is a simple numeric identifier, the object path references an org.freedesktop.import1.Transfer object, see below. Listen for a <strong>TransferRemoved</strong> signal for the transfer ID in order to detect when a transfer is complete. The returned transfer object is useful to determine the current progress or log output of the ongoing import operation.</p>
+<p><strong>ExportTar()</strong> and <strong>ExportRaw()</strong> implement the reverse operation, and may be used to export a system image in order to place it in a tar or raw image. They take the machine name to export as their first parameter, followed by a file descriptor (opened for writing) where the tar or raw file will be written. It may either reference a file on disk or a pipe/socket. The third argument specifies in which compression format to write the image. It takes one of "uncompressed", "xz", "bzip2" or "gzip", depending on which compression scheme is required. The image written to the specified file descriptor will be a tar file in case of <strong>ExportTar()</strong> or a raw disk image in case of <strong>ExportRaw()</strong>. Note that currently raw disk images may not be exported as tar files, and vice versa. This restriction might be lifted eventually. The method returns a transfer identifier and object path for cancelling or tracking the export operation, similar to <strong>ImportTar()</strong> or <strong>ImportRaw()</strong> as described above.</p>
+<p><strong>PullTar()</strong> and <strong>PullRaw()</strong> may be used to download, verify and import a system image from a URL. They take an URL argument which should point to a tar or raw file on the "http://" or "https://" protocols, possibly compressed with xz, bzip2 or gzip. The second argument is a local name for the image. It should be suitable as a hostname, similar to the matching argument of the <strong>ImportTar()</strong> and <strong>ImportRaw()</strong> methods above. The third argument indicates the verification mode for the image. It may be one of "no", "checksum", "signature". "no" turns off any kind of verification of the image; "checksum" looks for a SHA256SUM file next to the downloaded image and verifies any SHA256 hash value in that file against the image; "signature" does the same but also tries to authenticate the SHA256SUM file via <a href='/8/gpg'>gpg</a>(8) first. The last argument indicates whether to replace a possibly pre-existing image with the same local name (if "true"), or whether to fail (if "false"). Like the import and export calls above, these calls return a pair of transfer identifier and object path for the ongoing download.</p>
+<p><strong>ListTransfers()</strong> returns a list of ongoing import, export or download operations as created with the six calls described above. It returns an array of structures which consist of the numeric transfer identifier, a string indicating the operation (one of "import-tar", "import-raw", "export-tar", "export-raw", "pull-tar" or "pull-raw"), a string describing the remote file (in case of download operations this is the source URL, in case of import/export operations this is a short string describing the file descriptor passed in), a string with the local machine image name, a progress value between 0.0 (for 0%) and 1.0 (for 100%), as well as the transfer object path.</p>
+<p><strong>CancelTransfer()</strong> may be used to cancel an ongoing import, export or download operation. Simply specify the transfer identifier to cancel the ongoing operation.</p>
+<h2>Signals</h2>
+<p>The <strong>TransferNew</strong> signal is generated each time a new transfer is started with the import, export or download calls described above. It carries the transfer ID and object path that have just been created.</p>
+<p>The <strong>TransferRemoved</strong> signal is sent each time a transfer finishes, is canceled or fails. It also carries the transfer ID and object path, followed by a string indicating the result of the operation, which is one of "done" (on success), "canceled" or "failed".</p>
+</div></div></div><h1 id='the-transfer-object'><a href='#the-transfer-object'>THE TRANSFER OBJECT</a></h1><div data-for='the-transfer-object' data-hide><div class='section' data-for='the-transfer-object'><div data-more>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/import1/transfer/_1 {
+  interface org.freedesktop.import1.Transfer {
+    methods:
+      Cancel();
+    signals:
+      LogMessage(u priority,
+                 s line);
+    properties:
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly u Id = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Local = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Remote = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Type = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Verify = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly d Progress = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p>The <strong>Cancel()</strong> method may be used to cancel the transfer. It takes no parameters. This method is pretty much equivalent to the <strong>CancelTransfer()</strong> method on the Manager interface (see above), but is exposed on the Transfer object itself instead of taking a transfer ID.</p>
+<h2>Properties</h2>
+<p>The <code>Id</code> property exposes the numeric transfer ID of the transfer object.</p>
+<p>The <code>Local</code>, <code>Remote</code> and <code>Type</code> properties expose the local container name of this transfer, the remote source (in case of download: the URL, in case of import/export: a string describing the file descriptor passed in), and the type of operation (see the Managers <strong>ListTransfer()</strong> method above for an explanation of the possible values).</p>
+<p>The <code>Verify</code> property exposes the selected verification setting and is only defined for download operations (see above).</p>
+<p>The <code>Progress</code> property exposes the current progress of the transfer as a value between 0.0 and 1.0. To show a progress bar on screen we recommend to query this value in regular intervals, for example every 500 ms or so.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. Introspect org.freedesktop.import1.Manager on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.import1 \
+  --object-path /org/freedesktop/import1
+      </code></pre>
+<p>.RE</p>
+<p><strong>Example 2. Introspect org.freedesktop.import1.Transfer on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.import1 \
+  --object-path /org/freedesktop/import1/transfer/_1
+      </code></pre>
+<p>.RE</p>
+</div></div><h1 id='versioning'><a href='#versioning'>VERSIONING</a></h1><div data-for='versioning' data-hide><div class='section' data-for='versioning'><div data-more>
+<p>These D-Bus interfaces follow <strong>the usual interface versioning guidelines</strong>[1].</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>the usual interface versioning guidelines</p>
+<p><a href="http://0pointer.de/blog/projects/versioning-dbus.html">http://0pointer.de/blog/projects/versioning-dbus.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>semget - get a System V semaphore set identifier</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ipc.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/sem.h&gt;</a></code></pre>
+<p><strong>int semget(key_t </strong><code>key</code><strong>,</strong> <strong>int </strong><code>nsems</code><strong>,</strong> <strong>int </strong><code>semflg</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='semget'>semget</a>() system call returns the System V semaphore set identifier associated with the argument <code>key</code>. It may be used either to obtain the identifier of a previously created semaphore set (when <code>semflg</code> is zero and <code>key</code> does not have the value <strong>IPC_PRIVATE</strong>), or to create a new set.</p>
+<p>A new set of <code>nsems</code> semaphores is created if <code>key</code> has the value <strong>IPC_PRIVATE</strong> or if no existing semaphore set is associated with <code>key</code> and <strong>IPC_CREAT</strong> is specified in <code>semflg</code>.</p>
+<p>If <code>semflg</code> specifies both <strong>IPC_CREAT</strong> and <strong>IPC_EXCL</strong> and a semaphore set already exists for <code>key</code>, then <a href='semget'>semget</a>() fails with <code>errno</code> set to <strong>EEXIST</strong>. (This is analogous to the effect of the combination <strong>O_CREAT | O_EXCL</strong> for <a href='/2/open'>open</a>(2).)</p>
+<p>Upon creation, the least significant 9 bits of the argument <code>semflg</code> define the permissions (for owner, group and others) for the semaphore set. These bits have the same format, and the same meaning, as the <code>mode</code> argument of <a href='/2/open'>open</a>(2) (though the execute permissions are not meaningful for semaphores, and write permissions mean permission to alter semaphore values).</p>
+<p>When creating a new semaphore set, <a href='semget'>semget</a>() initializes the set's associated data structure, <code>semid_ds</code> (see <a href='/2/semctl'>semctl</a>(2)), as follows:</p>
+<ul>
+<li><p><code>sem_perm.cuid</code> and <code>sem_perm.uid</code> are set to the effective user ID of the calling process.</p></li>
+<li><p><code>sem_perm.cgid</code> and <code>sem_perm.gid</code> are set to the effective group ID of the calling process.</p></li>
+<li><p>The least significant 9 bits of <code>sem_perm.mode</code> are set to the least significant 9 bits of <code>semflg</code>.</p></li>
+<li><p><code>sem_nsems</code> is set to the value of <code>nsems</code>.</p></li>
+<li><p><code>sem_otime</code> is set to 0.</p></li>
+<li><p><code>sem_ctime</code> is set to the current time.</p></li>
+</ul>
+<p>The argument <code>nsems</code> can be 0 (a don't care) when a semaphore set is not being created. Otherwise, <code>nsems</code> must be greater than 0 and less than or equal to the maximum number of semaphores per semaphore set (<strong>SEMMSL</strong>).</p>
+<p>If the semaphore set already exists, the permissions are verified.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>If successful, the return value will be the semaphore set identifier (a nonnegative integer), otherwise, -1 is returned, with <code>errno</code> indicating the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program shown below uses <a href='semget'>semget</a>() to create a new semaphore set or retrieve the ID of an existing set. It generates the <code>key</code> for <a href='semget'>semget</a>() using <a href='/3/ftok'>ftok</a>(3). The first two command-line arguments are used as the <code>pathname</code> and <code>proj_id</code> arguments for <a href='/3/ftok'>ftok</a>(3). The third command-line argument is an integer that specifies the <code>nsems</code> argument for <a href='semget'>semget</a>(). Command-line options can be used to specify the <strong>IPC_CREAT</strong> (<code>-c</code>) and <strong>IPC_EXCL</strong> (<code>-x</code>) flags for the call to <a href='semget'>semget</a>(). The usage of this program is demonstrated below.</p>
+<p>We first create two files that will be used to generate keys using <a href='/3/ftok'>ftok</a>(3), create two semaphore sets using those files, and then list the sets using <a href='/1/ipcs'>ipcs</a>(1):</p>
+<pre><code>$ touch mykey mykey2
+$ ./t_semget -c mykey p 1
+ID = 9
+$ ./t_semget -c mykey2 p 2
+ID = 10
+$ ipcs -s
+
+------ Semaphore Arrays --------
+key        semid      owner      perms      nsems
+0x7004136d 9          mtk        600        1
+0x70041368 10         mtk        600        2</code></pre>
+<p>Next, we demonstrate that when <a href='/2/semctl'>semctl</a>(2) is given the same <code>key</code> (as generated by the same arguments to <a href='/3/ftok'>ftok</a>(3)), it returns the ID of the already existing semaphore set:</p>
+<pre><code>$ ./t_semget -c mykey p 1
+ID = 9</code></pre>
+<p>Finally, we demonstrate the kind of collision that can occur when <a href='/3/ftok'>ftok</a>(3) is given different <code>pathname</code> arguments that have the same inode number:</p>
+<pre><code>$ ln mykey link
+$ ls -i1 link mykey
+2233197 link
+2233197 mykey
+$ ./t_semget link p 1       # Generates same key as 'mykey'
+ID = 9</code></pre>
+<h2>Program source</h2>
+<pre><code>/* t_semget.c
+
+   Licensed under GNU General Public License v2 or later.
+*/
+#include &lt;sys/types.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/sem.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+static void
+usage(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pname)
+{
+    fprintf(stderr, "Usage: %s [-cx] pathname proj-id num-sems\n",
+            pname);
+    fprintf(stderr, "    -c           Use IPC_CREAT flag\n");
+    fprintf(stderr, "    -x           Use IPC_EXCL flag\n");
+    exit(EXIT_FAILURE);
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int semid, nsems, flags, opt;
+    key_t key;
+
+    flags = 0;
+    while ((opt = getopt(argc, argv, "cx")) != -1) {
+        switch (opt) {
+        case 'c': flags |= IPC_CREAT;   break;
+        case 'x': flags |= IPC_EXCL;    break;
+        default:  usage(argv[0]);
+        }
+    }
+
+    if (argc != optind + 3)
+        usage(argv[0]);
+
+    key = ftok(argv[optind], argv[optind + 1][0]);
+    if (key == -1) {
+        perror("ftok");
+        exit(EXIT_FAILURE);
+    }
+
+    nsems = atoi(argv[optind + 2]);
+
+    semid = semget(key, nsems, flags | 0600);
+    if (semid == -1) {
+        perror("semget");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("ID = %d\n", semid);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>On failure, <code>errno</code> will be set to one of the following:</p>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>A semaphore set exists for <code>key</code>, but the calling process does not have permission to access the set, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p><strong>IPC_CREAT</strong> and <strong>IPC_EXCL</strong> were specified in <code>semflg</code>, but a semaphore set already exists for <code>key</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>nsems</code> is less than 0 or greater than the limit on the number of semaphores per semaphore set (<strong>SEMMSL</strong>).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>A semaphore set corresponding to <code>key</code> already exists, but <code>nsems</code> is larger than the number of semaphores in that set.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>No semaphore set exists for <code>key</code> and <code>semflg</code> did not specify <strong>IPC_CREAT</strong>.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>A semaphore set has to be created but the system does not have enough memory for the new data structure.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>A semaphore set has to be created but the system limit for the maximum number of semaphore sets (<strong>SEMMNI</strong>), or the system wide maximum number of semaphores (<strong>SEMMNS</strong>), would be exceeded.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>SVr4, POSIX.1-2001.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p><strong>IPC_PRIVATE</strong> isn't a flag field but a <code>key_t</code> type. If this special value is used for <code>key</code>, the system call ignores all but the least significant 9 bits of <code>semflg</code> and creates a new semaphore set (on success). The values of the semaphores in a newly created set are indeterminate. (POSIX.1-2001 and POSIX.1-2008 are explicit on this point, although POSIX.1-2008 notes that a future version of the standard may require an implementation to initialize the semaphores to 0.) Although Linux, like many other implementations, initializes the semaphore values to 0, a portable application cannot rely on this: it should explicitly initialize the semaphores to the desired values.</p>
+<p>Initialization can be done using <a href='/2/semctl'>semctl</a>(2) <strong>SETVAL</strong> or <strong>SETALL</strong> operation. Where multiple peers do not know who will be the first to initialize the set, checking for a nonzero <code>sem_otime</code> in the associated data structure retrieved by a <a href='/2/semctl'>semctl</a>(2) <strong>IPC_STAT</strong> operation can be used to avoid races. The following limits on semaphore set resources affect the <a href='semget'>semget</a>() call:</p>
+<dl>
+<dt><strong>SEMMNI</strong></dt>
+<dd><p>System-wide limit on the number of semaphore sets. On Linux systems before version 3.19, the default value for this limit was 128. Since Linux 3.19, the default value is 32,000. On Linux, this limit can be read and modified via the fourth field of <code>/proc/sys/kernel/sem</code>.</p>
+</dd>
+<dt><strong>SEMMSL</strong></dt>
+<dd><p>Maximum number of semaphores per semaphore ID. On Linux systems before version 3.19, the default value for this limit was 250. Since Linux 3.19, the default value is 32,000. On Linux, this limit can be read and modified via the first field of <code>/proc/sys/kernel/sem</code>.</p>
+</dd>
+<dt><strong>SEMMNS</strong></dt>
+<dd><p>System-wide limit on the number of semaphores: policy dependent (on Linux, this limit can be read and modified via the second field of <code>/proc/sys/kernel/sem</code>). Note that the number of semaphores system-wide is also limited by the product of <strong>SEMMSL</strong> and <strong>SEMMNI</strong>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The name choice <strong>IPC_PRIVATE</strong> was perhaps unfortunate, <strong>IPC_NEW</strong> would more clearly show its function.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/semctl'>semctl</a>(2), <a href='/2/semop'>semop</a>(2), <a href='/3/ftok'>ftok</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/sem_overview'>sem_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

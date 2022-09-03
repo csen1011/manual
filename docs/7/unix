@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>unix - sockets for local interprocess communication</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/socket.h&gt;</strong><br/>
+<strong>#include &lt;sys/un.h&gt;</strong></p>
+<p><code>unix_socket</code><strong> = socket(AF_UNIX, type, 0);</strong><br/>
+<code>error</code><strong> = socketpair(AF_UNIX, type, 0, int *</strong><code>sv</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>AF_UNIX</strong> (also known as <strong>AF_LOCAL</strong>) socket family is used to communicate between processes on the same machine efficiently. Traditionally, UNIX domain sockets can be either unnamed, or bound to a filesystem pathname (marked as being of type socket). Linux also supports an abstract namespace which is independent of the filesystem.</p>
+<p>Valid socket types in the UNIX domain are: <strong>SOCK_STREAM</strong>, for a stream-oriented socket; <strong>SOCK_DGRAM</strong>, for a datagram-oriented socket that preserves message boundaries (as on most UNIX implementations, UNIX domain datagram sockets are always reliable and don't reorder datagrams); and (since Linux 2.6.4) <strong>SOCK_SEQPACKET</strong>, for a sequenced-packet socket that is connection-oriented, preserves message boundaries, and delivers messages in the order that they were sent.</p>
+<p>UNIX domain sockets support passing file descriptors or process credentials to other processes using ancillary data.</p>
+<h2>Address format</h2>
+<p>A UNIX domain socket address is represented in the following structure:</p>
+<pre><code>    sa_family_t sun_family;               /* AF_UNIX */
+    char        sun_path[108];            /* Pathname */
+};</code></pre>
+<p>The <code>sun_family</code> field always contains <strong>AF_UNIX</strong>. On Linux, <code>sun_path</code> is 108 bytes in size; see also NOTES, below.</p>
+<p>Various systems calls (for example, <a href='/2/bind'>bind</a>(2), <a href='/2/connect'>connect</a>(2), and <a href='/2/sendto'>sendto</a>(2)) take a <code>sockaddr_un</code> argument as input. Some other system calls (for example, <a href='/2/getsockname'>getsockname</a>(2), <a href='/2/getpeername'>getpeername</a>(2), <a href='/2/recvfrom'>recvfrom</a>(2), and <a href='/2/accept'>accept</a>(2)) return an argument of this type.</p>
+<p>Three types of address are distinguished in the <code>sockaddr_un</code> structure:</p>
+<ul>
+<li><p><code>pathname</code>: a UNIX domain socket can be bound to a null-terminated filesystem pathname using <a href='/2/bind'>bind</a>(2). When the address of a pathname socket is returned (by one of the system calls noted above), its length is</p>
+<p>offsetof(struct sockaddr_un, sun_path) + strlen(sun_path) + 1</p>
+<p>and <code>sun_path</code> contains the null-terminated pathname. (On Linux, the above <a href='offsetof'>offsetof</a>() expression equates to the same value as <code>sizeof(sa_family_t)</code>, but some other implementations include other fields before <code>sun_path</code>, so the <a href='offsetof'>offsetof</a>() expression more portably describes the size of the address structure.)</p>
+<p>For further details of pathname sockets, see below.</p></li>
+<li><p><code>unnamed</code>: A stream socket that has not been bound to a pathname using <a href='/2/bind'>bind</a>(2) has no name. Likewise, the two sockets created by <a href='/2/socketpair'>socketpair</a>(2) are unnamed. When the address of an unnamed socket is returned, its length is <code>sizeof(sa_family_t)</code>, and <code>sun_path</code> should not be inspected.</p></li>
+<li><p><code>abstract</code>: an abstract socket address is distinguished (from a pathname socket) by the fact that <code>sun_path[0]</code> is a null byte ('\0'). The socket's address in this namespace is given by the additional bytes in <code>sun_path</code> that are covered by the specified length of the address structure. (Null bytes in the name have no special significance.) The name has no connection with filesystem pathnames. When the address of an abstract socket is returned, the returned <code>addrlen</code> is greater than <code>sizeof(sa_family_t)</code> (i.e., greater than 2), and the name of the socket is contained in the first <code>(addrlen - sizeof(sa_family_t))</code> bytes of <code>sun_path</code>.</p></li>
+</ul>
+<h2>Pathname sockets</h2>
+<p>When binding a socket to a pathname, a few rules should be observed for maximum portability and ease of coding:</p>
+<ul>
+<li><p>The pathname in <code>sun_path</code> should be null-terminated.</p></li>
+<li><p>The length of the pathname, including the terminating null byte, should not exceed the size of <code>sun_path</code>.</p></li>
+<li><p>The <code>addrlen</code> argument that describes the enclosing <code>sockaddr_un</code> structure should have a value of at least:</p>
+<pre><code>    offsetof(struct sockaddr_un, sun_path)+strlen(addr.sun_path)+1</code></pre>
+<p>or, more simply, <code>addrlen</code> can be specified as <code>sizeof(struct sockaddr_un)</code>.</p></li>
+</ul>
+<p>There is some variation in how implementations handle UNIX domain socket addresses that do not follow the above rules. For example, some (but not all) implementations append a null terminator if none is present in the supplied <code>sun_path</code>.</p>
+<p>When coding portable applications, keep in mind that some implementations have <code>sun_path</code> as short as 92 bytes.</p>
+<p>Various system calls (<a href='/2/accept'>accept</a>(2), <a href='/2/recvfrom'>recvfrom</a>(2), <a href='/2/getsockname'>getsockname</a>(2), <a href='/2/getpeername'>getpeername</a>(2)) return socket address structures. When applied to UNIX domain sockets, the value-result <code>addrlen</code> argument supplied to the call should be initialized as above. Upon return, the argument is set to indicate the <code>actual</code> size of the address structure. The caller should check the value returned in this argument: if the output value exceeds the input value, then there is no guarantee that a null terminator is present in <code>sun_path</code>. (See <a href='#bugs'>BUGS</a>.) In the Linux implementation, pathname sockets honor the permissions of the directory they are in. Creation of a new socket fails if the process does not have write and search (execute) permission on the directory in which the socket is created.</p>
+<p>On Linux, connecting to a stream socket object requires write permission on that socket; sending a datagram to a datagram socket likewise requires write permission on that socket. POSIX does not make any statement about the effect of the permissions on a socket file, and on some systems (e.g., older BSDs), the socket permissions are ignored. Portable programs should not rely on this feature for security.</p>
+<p>When creating a new socket, the owner and group of the socket file are set according to the usual rules. The socket file has all permissions enabled, other than those that are turned off by the process <a href='/2/umask'>umask</a>(2).</p>
+<p>The owner, group, and permissions of a pathname socket can be changed (using <a href='/2/chown'>chown</a>(2) and <a href='/2/chmod'>chmod</a>(2)). Socket permissions have no meaning for abstract sockets: the process <a href='/2/umask'>umask</a>(2) has no effect when binding an abstract socket, and changing the ownership and permissions of the object (via <a href='/2/fchown'>fchown</a>(2) and <a href='/2/fchmod'>fchmod</a>(2)) has no effect on the accessibility of the socket.</p>
+<p>Abstract sockets automatically disappear when all open references to the socket are closed.</p>
+<p>The abstract socket namespace is a nonportable Linux extension. For historical reasons, these socket options are specified with a <strong>SOL_SOCKET</strong> type even though they are <strong>AF_UNIX</strong> specific. They can be set with <a href='/2/setsockopt'>setsockopt</a>(2) and read with <a href='/2/getsockopt'>getsockopt</a>(2) by specifying <strong>SOL_SOCKET</strong> as the socket family.</p>
+<dl>
+<dt><strong>SO_PASSCRED</strong></dt>
+<dd><p>Enabling this socket option causes receipt of the credentials of the sending process in an <strong>SCM_CREDENTIALS ancillary</strong> message in each subsequently received message. The returned credentials are those specified by the sender using <strong>SCM_CREDENTIALS</strong>, or a default that includes the sender's PID, real user ID, and real group ID, if the sender did not specify <strong>SCM_CREDENTIALS</strong> ancillary data.</p>
+<p>When this option is set and the socket is not yet connected, a unique name in the abstract namespace will be generated automatically.</p>
+<p>The value given as an argument to <a href='/2/setsockopt'>setsockopt</a>(2) and returned as the result of <a href='/2/getsockopt'>getsockopt</a>(2) is an integer boolean flag.</p>
+</dd>
+<dt><strong>SO_PASSSEC</strong></dt>
+<dd><p>Enables receiving of the SELinux security label of the peer socket in an ancillary message of type <strong>SCM_SECURITY</strong> (see below).</p>
+<p>The value given as an argument to <a href='/2/setsockopt'>setsockopt</a>(2) and returned as the result of <a href='/2/getsockopt'>getsockopt</a>(2) is an integer boolean flag.</p>
+<p>The <strong>SO_PASSSEC</strong> option is supported for UNIX domain datagram sockets since Linux 2.6.18; support for UNIX domain stream sockets was added in Linux 4.2.</p>
+</dd>
+<dt><strong>SO_PEEK_OFF</strong></dt>
+<dd><p>See <a href='/7/socket'>socket</a>(7).</p>
+</dd>
+<dt><strong>SO_PEERCRED</strong></dt>
+<dd><p>This read-only socket option returns the credentials of the peer process connected to this socket. The returned credentials are those that were in effect at the time of the call to <a href='/2/connect'>connect</a>(2) or <a href='/2/socketpair'>socketpair</a>(2).</p>
+<p>The argument to <a href='/2/getsockopt'>getsockopt</a>(2) is a pointer to a <code>ucred</code> structure; define the <strong>_GNU_SOURCE</strong> feature test macro to obtain the definition of that structure from <code>&lt;sys/socket.h&gt;</code>.</p>
+<p>The use of this option is possible only for connected <strong>AF_UNIX</strong> stream sockets and for <strong>AF_UNIX</strong> stream and datagram socket pairs created using <a href='/2/socketpair'>socketpair</a>(2).</p>
+</dd>
+<dt><strong>SO_PEERSEC</strong></dt>
+<dd><p>This read-only socket option returns the security context of the peer socket connected to this socket. By default, this will be the same as the security context of the process that created the peer socket unless overridden by the policy or by a process with the required permissions.</p>
+<p>The argument to <a href='/2/getsockopt'>getsockopt</a>(2) is a pointer to a buffer of the specified length in bytes into which the security context string will be copied. If the buffer length is less than the length of the security context string, then <a href='/2/getsockopt'>getsockopt</a>(2) returns -1, sets <code>errno</code> to <strong>ERANGE</strong>, and returns the required length via <code>optlen</code>. The caller should allocate at least <strong>NAME_MAX</strong> bytes for the buffer initially, although this is not guaranteed to be sufficient. Resizing the buffer to the returned length and retrying may be necessary.</p>
+<p>The security context string may include a terminating null character in the returned length, but is not guaranteed to do so: a security context "foo" might be represented as either {'f','o','o'} of length 3 or {'f','o','o','\0'} of length 4, which are considered to be interchangeable. The string is printable, does not contain non-terminating null characters, and is in an unspecified encoding (in particular, it is not guaranteed to be ASCII or UTF-8).</p>
+<p>The use of this option for sockets in the <strong>AF_UNIX</strong> address family is supported since Linux 2.6.2 for connected stream sockets, and since Linux 4.18 also for stream and datagram socket pairs created using <a href='/2/socketpair'>socketpair</a>(2). If a <a href='/2/bind'>bind</a>(2) call specifies <code>addrlen</code> as <code>sizeof(sa_family_t)</code>, or the <strong>SO_PASSCRED</strong> socket option was specified for a socket that was not explicitly bound to an address, then the socket is autobound to an abstract address. The address consists of a null byte followed by 5 bytes in the character set <code>[0-9a-f]</code>. Thus, there is a limit of 2^20 autobind addresses. (From Linux 2.1.15, when the autobind feature was added, 8 bytes were used, and the limit was thus 2^32 autobind addresses. The change to 5 bytes came in Linux 2.3.15.)</p>
+</dd>
+</dl>
+<h2>Sockets API</h2>
+<p>The following paragraphs describe domain-specific details and unsupported features of the sockets API for UNIX domain sockets on Linux.</p>
+<p>UNIX domain sockets do not support the transmission of out-of-band data (the <strong>MSG_OOB</strong> flag for <a href='/2/send'>send</a>(2) and <a href='/2/recv'>recv</a>(2)).</p>
+<p>The <a href='/2/send'>send</a>(2) <strong>MSG_MORE</strong> flag is not supported by UNIX domain sockets.</p>
+<p>Before Linux 3.4, the use of <strong>MSG_TRUNC</strong> in the <code>flags</code> argument of <a href='/2/recv'>recv</a>(2) was not supported by UNIX domain sockets.</p>
+<p>The <strong>SO_SNDBUF</strong> socket option does have an effect for UNIX domain sockets, but the <strong>SO_RCVBUF</strong> option does not. For datagram sockets, the <strong>SO_SNDBUF</strong> value imposes an upper limit on the size of outgoing datagrams. This limit is calculated as the doubled (see <a href='/7/socket'>socket</a>(7)) option value less 32 bytes used for overhead.</p>
+<h2>Ancillary messages</h2>
+<p>Ancillary data is sent and received using <a href='/2/sendmsg'>sendmsg</a>(2) and <a href='/2/recvmsg'>recvmsg</a>(2). For historical reasons, the ancillary message types listed below are specified with a <strong>SOL_SOCKET</strong> type even though they are <strong>AF_UNIX</strong> specific. To send them, set the <code>cmsg_level</code> field of the struct <code>cmsghdr</code> to <strong>SOL_SOCKET</strong> and the <code>cmsg_type</code> field to the type. For more information, see <a href='/3/cmsg'>cmsg</a>(3).</p>
+<dl>
+<dt><strong>SCM_RIGHTS</strong></dt>
+<dd><p>Send or receive a set of open file descriptors from another process. The data portion contains an integer array of the file descriptors.</p>
+<p>Commonly, this operation is referred to as "passing a file descriptor" to another process. However, more accurately, what is being passed is a reference to an open file description (see <a href='/2/open'>open</a>(2)), and in the receiving process it is likely that a different file descriptor number will be used. Semantically, this operation is equivalent to duplicating (<a href='/2/dup'>dup</a>(2)) a file descriptor into the file descriptor table of another process.</p>
+<p>If the buffer used to receive the ancillary data containing file descriptors is too small (or is absent), then the ancillary data is truncated (or discarded) and the excess file descriptors are automatically closed in the receiving process.</p>
+<p>If the number of file descriptors received in the ancillary data would cause the process to exceed its <strong>RLIMIT_NOFILE</strong> resource limit (see <a href='/2/getrlimit'>getrlimit</a>(2)), the excess file descriptors are automatically closed in the receiving process.</p>
+<p>The kernel constant <strong>SCM_MAX_FD</strong> defines a limit on the number of file descriptors in the array. Attempting to send an array larger than this limit causes <a href='/2/sendmsg'>sendmsg</a>(2) to fail with the error <strong>EINVAL</strong>. <strong>SCM_MAX_FD</strong> has the value 253 (or 255 in kernels before 2.6.38).</p>
+</dd>
+<dt><strong>SCM_CREDENTIALS</strong></dt>
+<dd><p>Send or receive UNIX credentials. This can be used for authentication. The credentials are passed as a <code>struct ucred</code> ancillary message. This structure is defined in <code>&lt;sys/socket.h&gt;</code> as follows:</p>
+<pre><code>struct ucred {
+    pid_t pid;    /* Process ID of the sending process */
+    uid_t uid;    /* User ID of the sending process */
+    gid_t gid;    /* Group ID of the sending process */
+};</code></pre>
+<p>Since glibc 2.8, the <strong>_GNU_SOURCE</strong> feature test macro must be defined (before including <code>any</code> header files) in order to obtain the definition of this structure.</p>
+<p>The credentials which the sender specifies are checked by the kernel. A privileged process is allowed to specify values that do not match its own. The sender must specify its own process ID (unless it has the capability <strong>CAP_SYS_ADMIN</strong>, in which case the PID of any existing process may be specified), its real user ID, effective user ID, or saved set-user-ID (unless it has <strong>CAP_SETUID</strong>), and its real group ID, effective group ID, or saved set-group-ID (unless it has <strong>CAP_SETGID</strong>).</p>
+<p>To receive a <code>struct ucred</code> message, the <strong>SO_PASSCRED</strong> option must be enabled on the socket.</p>
+</dd>
+<dt><strong>SCM_SECURITY</strong></dt>
+<dd><p>Receive the SELinux security context (the security label) of the peer socket. The received ancillary data is a null-terminated string containing the security context. The receiver should allocate at least <strong>NAME_MAX</strong> bytes in the data portion of the ancillary message for this data.</p>
+<p>To receive the security context, the <strong>SO_PASSSEC</strong> option must be enabled on the socket (see above).</p>
+</dd>
+</dl>
+<p>When sending ancillary data with <a href='/2/sendmsg'>sendmsg</a>(2), only one item of each of the above types may be included in the sent message.</p>
+<p>At least one byte of real data should be sent when sending ancillary data. On Linux, this is required to successfully send ancillary data over a UNIX domain stream socket. When sending ancillary data over a UNIX domain datagram socket, it is not necessary on Linux to send any accompanying real data. However, portable applications should also include at least one byte of real data when sending ancillary data over a datagram socket.</p>
+<p>When receiving from a stream socket, ancillary data forms a kind of barrier for the received data. For example, suppose that the sender transmits as follows:</p>
+<blockquote>
+<ol type="1">
+<li><p><a href='/2/sendmsg'>sendmsg</a>(2) of four bytes, with no ancillary data.</p></li>
+<li><p><a href='/2/sendmsg'>sendmsg</a>(2) of one byte, with ancillary data.</p></li>
+<li><p><a href='/2/sendmsg'>sendmsg</a>(2) of four bytes, with no ancillary data.</p></li>
+</ol>
+</blockquote>
+<p>Suppose that the receiver now performs <a href='/2/recvmsg'>recvmsg</a>(2) calls each with a buffer size of 20 bytes. The first call will receive five bytes of data, along with the ancillary data sent by the second <a href='/2/sendmsg'>sendmsg</a>(2) call. The next call will receive the remaining four bytes of data.</p>
+<p>If the space allocated for receiving incoming ancillary data is too small then the ancillary data is truncated to the number of headers that will fit in the supplied buffer (or, in the case of an <strong>SCM_RIGHTS</strong> file descriptor list, the list of file descriptors may be truncated). If no buffer is provided for incoming ancillary data (i.e., the <code>msg_control</code> field of the <code>msghdr</code> structure supplied to <a href='/2/recvmsg'>recvmsg</a>(2) is NULL), then the incoming ancillary data is discarded. In both of these cases, the <strong>MSG_CTRUNC</strong> flag will be set in the <code>msg.msg_flags</code> value returned by <a href='/2/recvmsg'>recvmsg</a>(2). The following <a href='/2/ioctl'>ioctl</a>(2) calls return information in <code>value</code>. The correct syntax is:</p>
+<blockquote>
+<pre><code>int value;
+error = ioctl(unix_socket, ioctl_type, &amp;value);</code></pre>
+</blockquote>
+<p><code>ioctl_type</code> can be:</p>
+<dl>
+<dt><strong>SIOCINQ</strong></dt>
+<dd><p>For <strong>SOCK_STREAM</strong> sockets, this call returns the number of unread bytes in the receive buffer. The socket must not be in LISTEN state, otherwise an error (<strong>EINVAL</strong>) is returned. <strong>SIOCINQ</strong> is defined in <code>&lt;linux/sockios.h&gt;</code>. Alternatively, you can use the synonymous <strong>FIONREAD</strong>, defined in <code>&lt;sys/ioctl.h&gt;</code>. For <strong>SOCK_DGRAM</strong> sockets, the returned value is the same as for Internet domain datagram sockets; see <a href='/7/udp'>udp</a>(7).</p>
+</dd>
+</dl>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EADDRINUSE</strong></dt>
+<dd><p>The specified local address is already in use or the filesystem socket object already exists.</p>
+</dd>
+<dt><strong>EBADF</strong></dt>
+<dd><p>This error can occur for <a href='/2/sendmsg'>sendmsg</a>(2) when sending a file descriptor as ancillary data over a UNIX domain socket (see the description of <strong>SCM_RIGHTS</strong>, above), and indicates that the file descriptor number that is being sent is not valid (e.g., it is not an open file descriptor).</p>
+</dd>
+<dt><strong>ECONNREFUSED</strong></dt>
+<dd><p>The remote address specified by <a href='/2/connect'>connect</a>(2) was not a listening socket. This error can also occur if the target pathname is not a socket.</p>
+</dd>
+<dt><strong>ECONNRESET</strong></dt>
+<dd><p>Remote socket was unexpectedly closed.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>User memory address was not valid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid argument passed. A common cause is that the value <strong>AF_UNIX</strong> was not specified in the <code>sun_type</code> field of passed addresses, or the socket was in an invalid state for the applied operation.</p>
+</dd>
+<dt><strong>EISCONN</strong></dt>
+<dd><p><a href='/2/connect'>connect</a>(2) called on an already connected socket or a target address was specified on a connected socket.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>The pathname in the remote address specified to <a href='/2/connect'>connect</a>(2) did not exist.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>ENOTCONN</strong></dt>
+<dd><p>Socket operation needs a target address, but the socket is not connected.</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>Stream operation called on non-stream oriented socket or tried to use the out-of-band data option.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The sender passed invalid credentials in the <code>struct ucred</code>.</p>
+</dd>
+<dt><strong>EPIPE</strong></dt>
+<dd><p>Remote socket was closed on a stream socket. If enabled, a <strong>SIGPIPE</strong> is sent as well. This can be avoided by passing the <strong>MSG_NOSIGNAL</strong> flag to <a href='/2/send'>send</a>(2) or <a href='/2/sendmsg'>sendmsg</a>(2).</p>
+</dd>
+<dt><strong>EPROTONOSUPPORT</strong></dt>
+<dd><p>Passed protocol is not <strong>AF_UNIX</strong>.</p>
+</dd>
+<dt><strong>EPROTOTYPE</strong></dt>
+<dd><p>Remote socket does not match the local socket type (<strong>SOCK_DGRAM</strong> versus <strong>SOCK_STREAM</strong>).</p>
+</dd>
+<dt><strong>ESOCKTNOSUPPORT</strong></dt>
+<dd><p>Unknown socket type.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>While sending an ancillary message containing credentials (<strong>SCM_CREDENTIALS</strong>), the caller specified a PID that does not match any existing process.</p>
+</dd>
+<dt><strong>ETOOMANYREFS</strong></dt>
+<dd><p>This error can occur for <a href='/2/sendmsg'>sendmsg</a>(2) when sending a file descriptor as ancillary data over a UNIX domain socket (see the description of <strong>SCM_RIGHTS</strong>, above). It occurs if the number of "in-flight" file descriptors exceeds the <strong>RLIMIT_NOFILE</strong> resource limit and the caller does not have the <strong>CAP_SYS_RESOURCE</strong> capability. An in-flight file descriptor is one that has been sent using <a href='/2/sendmsg'>sendmsg</a>(2) but has not yet been accepted in the recipient process using <a href='/2/recvmsg'>recvmsg</a>(2).</p>
+<p>This error is diagnosed since mainline Linux 4.5 (and in some earlier kernel versions where the fix has been backported). In earlier kernel versions, it was possible to place an unlimited number of file descriptors in flight, by sending each file descriptor with <a href='/2/sendmsg'>sendmsg</a>(2) and then closing the file descriptor so that it was not accounted against the <strong>RLIMIT_NOFILE</strong> resource limit.</p>
+</dd>
+</dl>
+<p>Other errors can be generated by the generic socket layer or by the filesystem while generating a filesystem socket object. See the appropriate manual pages for more information.</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><strong>SCM_CREDENTIALS</strong> and the abstract namespace were introduced with Linux 2.2 and should not be used in portable programs. (Some BSD-derived systems also support credential passing, but the implementation details differ.)</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Binding to a socket with a filename creates a socket in the filesystem that must be deleted by the caller when it is no longer needed (using <a href='/2/unlink'>unlink</a>(2)). The usual UNIX close-behind semantics apply; the socket can be unlinked at any time and will be finally removed from the filesystem when the last reference to it is closed.</p>
+<p>To pass file descriptors or credentials over a <strong>SOCK_STREAM</strong> socket, you must to send or receive at least one byte of nonancillary data in the same <a href='/2/sendmsg'>sendmsg</a>(2) or <a href='/2/recvmsg'>recvmsg</a>(2) call.</p>
+<p>UNIX domain stream sockets do not support the notion of out-of-band data. When binding a socket to an address, Linux is one of the implementations that appends a null terminator if none is supplied in <code>sun_path</code>. In most cases this is unproblematic: when the socket address is retrieved, it will be one byte longer than that supplied when the socket was bound. However, there is one case where confusing behavior can result: if 108 non-null bytes are supplied when a socket is bound, then the addition of the null terminator takes the length of the pathname beyond <code>sizeof(sun_path)</code>. Consequently, when retrieving the socket address (for example, via <a href='/2/accept'>accept</a>(2)), if the input <code>addrlen</code> argument for the retrieving call is specified as <code>sizeof(struct sockaddr_un)</code>, then the returned address structure <code>won't</code> have a null terminator in <code>sun_path</code>.</p>
+<p>In addition, some implementations don't require a null terminator when binding a socket (the <code>addrlen</code> argument is used to determine the length of <code>sun_path</code>) and when the socket address is retrieved on these implementations, there is no null terminator in <code>sun_path</code>.</p>
+<p>Applications that retrieve socket addresses can (portably) code to handle the possibility that there is no null terminator in <code>sun_path</code> by respecting the fact that the number of valid bytes in the pathname is:</p>
+<p>strnlen(addr.sun_path, addrlen - offsetof(sockaddr_un, sun_path))</p>
+<p>Alternatively, an application can retrieve the socket address by allocating a buffer of size <code>sizeof(struct sockaddr_un)+1</code> that is zeroed out before the retrieval. The retrieving call can specify <code>addrlen</code> as <code>sizeof(struct sockaddr_un)</code>, and the extra zero byte ensures that there will be a null terminator for the string returned in <code>sun_path</code>:</p>
+<pre><code>void *addrp;
+
+addrlen = sizeof(struct sockaddr_un);
+addrp = malloc(addrlen + 1);
+if (addrp == NULL)
+    /* Handle error */ ;
+memset(addrp, 0, addrlen + 1);
+
+if (getsockname(sfd, (struct sockaddr *) addrp, &amp;addrlen)) == -1)
+    /* handle error */ ;
+
+printf("sun_path = %s\n", ((struct sockaddr_un *) addrp)-&gt;sun_path);</code></pre>
+<p>This sort of messiness can be avoided if it is guaranteed that the applications that <code>create</code> pathname sockets follow the rules outlined above under <code>Pathname sockets</code>.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following code demonstrates the use of sequenced-packet sockets for local interprocess communication. It consists of two programs. The server program waits for a connection from the client program. The client sends each of its command-line arguments in separate messages. The server treats the incoming messages as integers and adds them up. The client sends the command string "END". The server sends back a message containing the sum of the client's integers. The client prints the sum and exits. The server waits for the next client to connect. To stop the server, the client is called with the command-line argument "DOWN".</p>
+<p>The following output was recorded while running the server in the background and repeatedly executing the client. Execution of the server program ends when it receives the "DOWN" command.</p>
+<h2>Example output</h2>
+<pre><code>$ ./server &amp;
+[1] 25887
+$ ./client 3 4
+Result = 7
+$ ./client 11 -5
+Result = 6
+$ ./client DOWN
+Result = 0
+[1]+  Done                    ./server
+$</code></pre>
+<h2>Program source</h2>
+<pre><code>/*
+ * File connection.h
+ */
+
+#define SOCKET_NAME "/tmp/9Lq7BNBnBycd6nxy.socket"
+#define BUFFER_SIZE 12
+
+/*
+ * File server.c
+ */
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/un.h&gt;
+#include &lt;unistd.h&gt;
+#include "connection.h"
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct sockaddr_un name;
+    int down_flag = 0;
+    int ret;
+    int connection_socket;
+    int data_socket;
+    int result;
+    char buffer[BUFFER_SIZE];
+
+    /* Create local socket. */
+
+    connection_socket = socket(AF_UNIX, SOCK_SEQPACKET, 0);
+    if (connection_socket == -1) {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * For portability clear the whole structure, since some
+     * implementations have additional (nonstandard) fields in
+     * the structure.
+     */
+
+    memset(&amp;name, 0, sizeof(name));
+
+    /* Bind socket to socket name. */
+
+    name.sun_family = AF_UNIX;
+    strncpy(name.sun_path, SOCKET_NAME, sizeof(name.sun_path) - 1);
+
+    ret = bind(connection_socket, (const struct sockaddr *) &amp;name,
+               sizeof(name));
+    if (ret == -1) {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Prepare for accepting connections. The backlog size is set
+     * to 20. So while one request is being processed other requests
+     * can be waiting.
+     */
+
+    ret = listen(connection_socket, 20);
+    if (ret == -1) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+
+    /* This is the main loop for handling connections. */
+
+    for (;;) {
+
+        /* Wait for incoming connection. */
+
+        data_socket = accept(connection_socket, NULL, NULL);
+        if (data_socket == -1) {
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
+
+        result = 0;
+        for (;;) {
+
+            /* Wait for next data packet. */
+
+            ret = read(data_socket, buffer, sizeof(buffer));
+            if (ret == -1) {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+
+            /* Ensure buffer is 0-terminated. */
+
+            buffer[sizeof(buffer) - 1] = 0;
+
+            /* Handle commands. */
+
+            if (!strncmp(buffer, "DOWN", sizeof(buffer))) {
+                down_flag = 1;
+                break;
+            }
+
+            if (!strncmp(buffer, "END", sizeof(buffer))) {
+                break;
+            }
+
+            /* Add received summand. */
+
+            result += atoi(buffer);
+        }
+
+        /* Send result. */
+
+        sprintf(buffer, "%d", result);
+        ret = write(data_socket, buffer, sizeof(buffer));
+        if (ret == -1) {
+            perror("write");
+            exit(EXIT_FAILURE);
+        }
+
+        /* Close socket. */
+
+        close(data_socket);
+
+        /* Quit on DOWN command. */
+
+        if (down_flag) {
+            break;
+        }
+    }
+
+    close(connection_socket);
+
+    /* Unlink the socket. */
+
+    unlink(SOCKET_NAME);
+
+    exit(EXIT_SUCCESS);
+}
+
+/*
+ * File client.c
+ */
+
+#include &lt;errno.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/un.h&gt;
+#include &lt;unistd.h&gt;
+#include "connection.h"
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct sockaddr_un addr;
+    int ret;
+    int data_socket;
+    char buffer[BUFFER_SIZE];
+
+    /* Create local socket. */
+
+    data_socket = socket(AF_UNIX, SOCK_SEQPACKET, 0);
+    if (data_socket == -1) {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * For portability clear the whole structure, since some
+     * implementations have additional (nonstandard) fields in
+     * the structure.
+     */
+
+    memset(&amp;addr, 0, sizeof(addr));
+
+    /* Connect socket to socket address */
+
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, SOCKET_NAME, sizeof(addr.sun_path) - 1);
+
+    ret = connect(data_socket, (const struct sockaddr *) &amp;addr,
+                   sizeof(addr));
+    if (ret == -1) {
+        fprintf(stderr, "The server is down.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Send arguments. */
+
+    for (int i = 1; i &lt; argc; ++i) {
+        ret = write(data_socket, argv[i], strlen(argv[i]) + 1);
+        if (ret == -1) {
+            perror("write");
+            break;
+        }
+    }
+
+    /* Request result. */
+
+    strcpy(buffer, "END");
+    ret = write(data_socket, buffer, strlen(buffer) + 1);
+    if (ret == -1) {
+        perror("write");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Receive result. */
+
+    ret = read(data_socket, buffer, sizeof(buffer));
+    if (ret == -1) {
+        perror("read");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Ensure buffer is 0-terminated. */
+
+    buffer[sizeof(buffer) - 1] = 0;
+
+    printf("Result = %s\n", buffer);
+
+    /* Close socket. */
+
+    close(data_socket);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>For an example of the use of <strong>SCM_RIGHTS</strong> see <a href='/3/cmsg'>cmsg</a>(3).</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/recvmsg'>recvmsg</a>(2), <a href='/2/sendmsg'>sendmsg</a>(2), <a href='/2/socket'>socket</a>(2), <a href='/2/socketpair'>socketpair</a>(2), <a href='/3/cmsg'>cmsg</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/credentials'>credentials</a>(7), <a href='/7/socket'>socket</a>(7), <a href='/7/udp'>udp</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

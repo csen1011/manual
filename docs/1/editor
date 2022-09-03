@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>nano - Nano's ANOther editor, inspired by Pico</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>nano</strong> [<code>options</code>] [[<strong>+</strong><code>line</code>[<strong>,</strong><code>column</code>]] <code>file</code>]...</p>
+<p><strong>nano</strong> [<strong><code>options</code></strong>] [[<strong>+</strong>[<strong>crCR</strong>](<strong>/</strong>|<strong>?</strong>)<strong><code>string</code></strong>] <strong><code>file</code></strong>]...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>nano</strong><code> is a small and friendly editor. It copies the look and feel</code> of Pico, but is free software, and implements several features that Pico lacks, such as: opening multiple files, scrolling per line, undo/redo, syntax coloring, line numbering, and soft-wrapping overlong lines.</p>
+<p>When giving a filename on the command line, the cursor can be put on a specific line by adding the line number with a plus sign (<strong>+</strong>) before the filename, and even in a specific column by adding it with a comma. (Negative numbers count from the end of the file or line.) The cursor can be put on the first or last occurrence of a specific string by specifying that string after <strong>+/</strong> or <strong>+?</strong> before the filename. The string can be made case sensitive and/or caused to be interpreted as a regular expression by inserting <strong>c</strong> and/or <strong>r</strong> after the <strong>+</strong> sign. These search modes can be explicitly disabled by using the uppercase variant of those letters: <strong>C</strong> and/or <strong>R</strong>. When the string contains spaces, it needs to be enclosed in quotes. To give an example: to open a file at the first occurrence of the word "Foo", you would do:</p>
+<blockquote>
+<p><strong>nano +c/Foo </strong><code>file</code></p>
+</blockquote>
+<p>As a special case: if instead of a filename a dash (<strong>-</strong>) is given, <strong>nano</strong> will read data from standard input.</p>
+</div></div><h1 id='editing'><a href='#editing'>EDITING</a></h1><div data-for='editing' data-hide><div class='section' data-for='editing'><div data-more>
+<p>Entering text and moving around in a file is straightforward: typing the letters and using the normal cursor movement keys. Commands are entered by using the Control (^) and the Alt or Meta (M-) keys. Typing <strong>^K</strong> deletes the current line and puts it in the cutbuffer. Consecutive <strong>^K</strong>s will put all deleted lines together in the cutbuffer. Any cursor movement or executing any other command will cause the next <strong>^K</strong> to overwrite the cutbuffer. A <strong>^U</strong> will paste the current contents of the cutbuffer at the current cursor position.</p>
+<p>When a more precise piece of text needs to be cut or copied, you can mark its start with <strong>^6</strong>, move the cursor to its end (the marked text will be highlighted), and then use <strong>^K</strong> to cut it, or <strong>M-6</strong> to copy it to the cutbuffer. You can also save the marked text to a file with <strong>^O</strong>, or spell check it with <strong>^T^T</strong>.</p>
+<p>On some terminals, text can be selected also by holding down Shift while using the arrow keys. Holding down the Ctrl or Alt key too will increase the stride. Any cursor movement without Shift being held will cancel such a selection.</p>
+<p>The two lines at the bottom of the screen show some important commands; the built-in help (<strong>^G</strong>) lists all the available ones. The default key bindings can be changed via a <code>nanorc</code> file -- see <a href='/5/nanorc'>nanorc</a>(5).</p>
+</div></div></div><h1 id='notice'><a href='#notice'>NOTICE</a></h1><div data-for='notice' data-hide><div class='section' data-for='notice'><div data-more>
+<p>Since version 4.0, <strong>nano</strong> by default:</p>
+<blockquote>
+<p>· does not automatically hard-wrap lines that become overlong,<br/>
+· includes the line below the title bar in the editing area,<br/>
+· does linewise (smooth) scrolling.</p>
+</blockquote>
+<p>If you want the old, Pico behavior back, you can use <strong>--breaklonglines</strong>, <strong>--emptyline</strong>, and <strong>--jumpyscrolling</strong> (or <strong>-bej</strong> for short).</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-A</strong>, <strong>--smarthome</strong></dt>
+<dd><p>Make the Home key smarter. When Home is pressed anywhere but at the very beginning of non-whitespace characters on a line, the cursor will jump to that beginning (either forwards or backwards). If the cursor is already at that position, it will jump to the true beginning of the line.</p>
+</dd>
+<dt><strong>-B</strong>, <strong>--backup</strong></dt>
+<dd><p>When saving a file, back up the previous version of it, using the current filename suffixed with a tilde (<strong>~</strong>).</p>
+</dd>
+<dt><strong>-C <code>directory</code></strong>, <strong>--backupdir=</strong><code>directory</code></dt>
+<dd><p>Make and keep not just one backup file, but make and keep a uniquely numbered one every time a file is saved -- when backups are enabled (<strong>-B</strong>). The uniquely numbered files are stored in the specified <code>directory</code>.</p>
+</dd>
+<dt><strong>-D</strong>, <strong>--boldtext</strong></dt>
+<dd><p>For the interface, use bold instead of reverse video. This will be overridden by setting the options <strong>titlecolor</strong>, <strong>statuscolor</strong>, <strong>keycolor</strong>, <strong>functioncolor</strong>, <strong>numbercolor</strong>, and/or <strong>selectedcolor</strong> in your nanorc file. See <a href='/5/nanorc'>nanorc</a>(5).</p>
+</dd>
+<dt><strong>-E</strong>, <strong>--tabstospaces</strong></dt>
+<dd><p>Convert each typed tab to spaces -- to the number of spaces that a tab at that position would take up.</p>
+</dd>
+<dt><strong>-F</strong>, <strong>--multibuffer</strong></dt>
+<dd><p>Read a file into a new buffer by default.</p>
+</dd>
+<dt><strong>-G</strong>, <strong>--locking</strong></dt>
+<dd><p>Use vim-style file locking when editing files.</p>
+</dd>
+<dt><strong>-H</strong>, <strong>--historylog</strong></dt>
+<dd><p>Save the last hundred search strings and replacement strings and executed commands, so they can be easily reused in later sessions.</p>
+</dd>
+<dt><strong>-I</strong>, <strong>--ignorercfiles</strong></dt>
+<dd><p>Don't look at the system's <code>nanorc</code> nor at the user's <code>nanorc</code>.</p>
+</dd>
+<dt><strong>-J <code>number</code></strong>, <strong>--guidestripe=</strong><code>number</code></dt>
+<dd><p>Draw a vertical stripe at the given column, to help judge the width of the text. (The color of the stripe can be changed with <strong>set stripecolor</strong> in your <code>nanorc</code> file.)</p>
+</dd>
+<dt><strong>-K</strong>, <strong>--rawsequences</strong></dt>
+<dd><p>Interpret escape sequences directly, instead of asking <strong>ncurses</strong> to translate them. (If you need this option to get some keys to work properly, it means that the terminfo terminal description that is used does not fully match the actual behavior of your terminal. This can happen when you ssh into a BSD machine, for example.) Using this option disables <strong>nano</strong>'s mouse support.</p>
+</dd>
+<dt><strong>-L</strong>, <strong>--nonewlines</strong></dt>
+<dd><p>Don't automatically add a newline when a text does not end with one. (This can cause you to save non-POSIX text files.)</p>
+</dd>
+<dt><strong>-M</strong>, <strong>--trimblanks</strong></dt>
+<dd><p>Snip trailing whitespace from the wrapped line when automatic hard-wrapping occurs or when text is justified.</p>
+</dd>
+<dt><strong>-N</strong>, <strong>--noconvert</strong></dt>
+<dd><p>Disable automatic conversion of files from DOS/Mac format.</p>
+</dd>
+<dt><strong>-O</strong>, <strong>--bookstyle</strong></dt>
+<dd><p>When justifying, treat any line that starts with whitespace as the beginning of a paragraph (unless auto-indenting is on).</p>
+</dd>
+<dt><strong>-P</strong>, <strong>--positionlog</strong></dt>
+<dd><p>For the 200 most recent files, log the last position of the cursor, and place it at that position again upon reopening such a file.</p>
+</dd>
+<dt><strong>-Q "<code>regex</code><strong>"</strong></strong>, <strong>--quotestr="</strong><code>regex</code><strong>"""</strong></dt>
+<dd><p>Set the regular expression for matching the quoting part of a line. The default value is "<strong>^([ \t]*([!#%:;&gt;|}]|//))+</strong>". (Note that <strong>\t</strong> stands for an actual Tab.) This makes it possible to rejustify blocks of quoted text when composing email, and to rewrap blocks of line comments when writing source code.</p>
+</dd>
+<dt><strong>-R</strong>, <strong>--restricted</strong></dt>
+<dd><p>Restricted mode: don't read or write to any file not specified on the command line. This means: don't read or write history files; don't allow suspending; don't allow spell checking; don't allow a file to be appended to, prepended to, or saved under a different name if it already has one; and don't make backup files. Restricted mode can also be activated by invoking <strong>nano</strong> with any name beginning with 'r' (e.g. "rnano").</p>
+</dd>
+<dt><strong>-S</strong>, <strong>--softwrap</strong></dt>
+<dd><p>Display over multiple screen rows lines that exceed the screen's width. (You can make this soft-wrapping occur at whitespace instead of rudely at the screen's edge, by using also <strong>--atblanks</strong>.) (The old short option, <strong>-$</strong>, is deprecated.)</p>
+</dd>
+<dt><strong>-T <code>number</code></strong>, <strong>--tabsize=</strong><code>number</code></dt>
+<dd><p>Set the size (width) of a tab to <code>number columns. The value of</code> <code>number</code> must be greater than 0. The default value is <strong>8</strong>.</p>
+</dd>
+<dt><strong>-U</strong>, <strong>--quickblank</strong></dt>
+<dd><p>Make status-bar messages disappear after 1 keystroke instead of after 20. Note that option <strong>-c</strong> (<strong>--constantshow</strong>) overrides this. When option <strong>--minibar</strong> or <strong>--zero</strong> is in effect, <strong>--quickblank</strong> makes a message disappear after 0.8 seconds instead of after the default 1.5 seconds.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Show the current version number and exit.</p>
+</dd>
+<dt><strong>-W</strong>, <strong>--wordbounds</strong></dt>
+<dd><p>Detect word boundaries differently by treating punctuation characters as part of a word.</p>
+</dd>
+<dt><strong>-X "<code>characters</code><strong>"</strong></strong>, <strong>--wordchars="</strong><code>characters</code><strong>"""</strong></dt>
+<dd><p>Specify which other characters (besides the normal alphanumeric ones) should be considered as part of a word. When using this option, you probably want to omit <strong>-W</strong> (<strong>--wordbounds</strong>).</p>
+</dd>
+<dt><strong>-Y <code>name</code></strong>, <strong>--syntax=</strong><code>name</code></dt>
+<dd><p>Specify the name of the syntax highlighting to use from among the ones defined in the <code>nanorc files.</code></p>
+</dd>
+<dt><strong>-Z</strong>, <strong>--zap</strong></dt>
+<dd><p>Let an unmodified Backspace or Delete erase the marked region (instead of a single character, and without affecting the cutbuffer).</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--atblanks</strong></dt>
+<dd><p>When doing soft line wrapping, wrap lines at whitespace instead of always at the edge of the screen.</p>
+</dd>
+<dt><strong>-b</strong>, <strong>--breaklonglines</strong></dt>
+<dd><p>Automatically hard-wrap the current line when it becomes overlong. (This option is the opposite of <strong>-w</strong> (<strong>--nowrap</strong>) -- the last one given takes effect.)</p>
+</dd>
+<dt><strong>-c</strong>, <strong>--constantshow</strong></dt>
+<dd><p>Constantly show the cursor position on the status bar. Note that this overrides option <strong>-U</strong> (<strong>--quickblank</strong>).</p>
+</dd>
+<dt><strong>-d</strong>, <strong>--rebinddelete</strong></dt>
+<dd><p>Interpret the Delete and Backspace keys differently so that both Backspace and Delete work properly. You should only use this option when on your system either Backspace acts like Delete or Delete acts like Backspace.</p>
+</dd>
+<dt><strong>-e</strong>, <strong>--emptyline</strong></dt>
+<dd><p>Do not use the line below the title bar, leaving it entirely blank.</p>
+</dd>
+<dt><strong>-f <code>file</code></strong>, <strong>--rcfile=</strong><code>file</code></dt>
+<dd><p>Read only this <code>file</code> for setting nano's options, instead of reading both the system-wide and the user's nanorc files.</p>
+</dd>
+<dt><strong>-g</strong>, <strong>--showcursor</strong></dt>
+<dd><p>Make the cursor visible in the file browser (putting it on the highlighted item) and in the help viewer. Useful for braille users and people with poor vision.</p>
+</dd>
+<dt><strong>-h</strong>, <strong>--help</strong></dt>
+<dd><p>Show a summary of the available command-line options and exit.</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--autoindent</strong></dt>
+<dd><p>Automatically indent a newly created line to the same number of tabs and/or spaces as the previous line (or as the next line if the previous line is the beginning of a paragraph).</p>
+</dd>
+<dt><strong>-j</strong>, <strong>--jumpyscrolling</strong></dt>
+<dd><p>Scroll the buffer contents per half-screen instead of per line.</p>
+</dd>
+<dt><strong>-k</strong>, <strong>--cutfromcursor</strong></dt>
+<dd><p>Make the 'Cut Text' command (normally <strong>^K</strong>) cut from the current cursor position to the end of the line, instead of cutting the entire line.</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--linenumbers</strong></dt>
+<dd><p>Display line numbers to the left of the text area. (Any line with an anchor additionally gets a mark in the margin.)</p>
+</dd>
+<dt><strong>-m</strong>, <strong>--mouse</strong></dt>
+<dd><p>Enable mouse support, if available for your system. When enabled, mouse clicks can be used to place the cursor, set the mark (with a double click), and execute shortcuts. The mouse will work in the X Window System, and on the console when gpm is running. Text can still be selected through dragging by holding down the Shift key.</p>
+</dd>
+<dt><strong>-n</strong>, <strong>--noread</strong></dt>
+<dd><p>Treat any name given on the command line as a new file. This allows <strong>nano</strong> to write to named pipes: it will start with a blank buffer, and will write to the pipe when the user saves the "file". This way <strong>nano</strong> can be used as an editor in combination with for instance <strong>gpg</strong> without having to write sensitive data to disk first.</p>
+</dd>
+<dt><strong>-o <code>directory</code></strong>, <strong>--operatingdir=</strong><code>directory</code></dt>
+<dd><p>Set the operating directory. This makes <strong>nano</strong><code> set up something</code> similar to a chroot.</p>
+</dd>
+<dt><strong>-p</strong>, <strong>--preserve</strong></dt>
+<dd><p>Preserve the XON and XOFF sequences (<strong>^Q</strong> and <strong>^S</strong>) so they will be caught by the terminal.</p>
+</dd>
+<dt><strong>-q</strong>, <strong>--indicator</strong></dt>
+<dd><p>Display a "scrollbar" on the righthand side of the edit window. It shows the position of the viewport in the buffer and how much of the buffer is covered by the viewport.</p>
+</dd>
+<dt><strong>-r <code>number</code></strong>, <strong>--fill=</strong><code>number</code></dt>
+<dd><p>Set the target width for justifying and automatic hard-wrapping at this <code>number</code> of columns. If the value is 0 or less, wrapping will occur at the width of the screen minus <code>number</code> columns, allowing the wrap point to vary along with the width of the screen if the screen is resized. The default value is <strong>-8</strong>.</p>
+</dd>
+<dt><strong>-s "<code>program</code> [<code>argument </code>...]<strong>"</strong>, <strong>--speller="</strong><code>program</code> [<code>argument </code>...]<strong>"</strong></strong></dt>
+<dd><p>Use this command to perform spell checking and correcting, instead of using the built-in corrector that calls <a href='/1/hunspell'>hunspell</a>(1) or <a href='/1/spell'>spell</a>(1).</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--saveonexit</strong></dt>
+<dd><p>Save a changed buffer without prompting (when exiting with <strong>^X</strong>). (The old form of the long option, <strong>--tempfile</strong>, is deprecated.)</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--unix</strong></dt>
+<dd><p>Save a file by default in Unix format. This overrides nano's default behavior of saving a file in the format that it had. (This option has no effect when you also use <strong>--noconvert</strong>.)</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--view</strong></dt>
+<dd><p>Just view the file and disallow editing: read-only mode. This mode allows the user to open also other files for viewing, unless <strong>--restricted</strong> is given too.</p>
+</dd>
+<dt><strong>-w</strong>, <strong>--nowrap</strong></dt>
+<dd><p>Do not automatically hard-wrap the current line when it becomes overlong. This is the default. (This option is the opposite of <strong>-b</strong> (<strong>--breaklonglines</strong>) -- the last one given takes effect.)</p>
+</dd>
+<dt><strong>-x</strong>, <strong>--nohelp</strong></dt>
+<dd><p>Don't show the two help lines at the bottom of the screen.</p>
+</dd>
+<dt><strong>-y</strong>, <strong>--afterends</strong></dt>
+<dd><p>Make Ctrl+Right and Ctrl+Delete stop at word ends instead of beginnings.</p>
+</dd>
+<dt><strong>-z</strong>, <strong>--suspendable</strong></dt>
+<dd><p>Obsolete option; ignored. Suspension is enabled by default, reachable via <strong>^T^Z</strong>. (If you want a plain <strong>^Z</strong> to suspend nano, add <strong>bind ^Z suspend main</strong> to your nanorc.)</p>
+</dd>
+<dt><strong>-%</strong>, <strong>--stateflags</strong></dt>
+<dd><p>Use the top-right corner of the screen for showing some state flags: <strong>I</strong> when auto-indenting, <strong>M</strong> when the mark is on, <strong>L</strong> when hard-wrapping (breaking long lines), <strong>R</strong> when recording a macro, and <strong>S</strong> when soft-wrapping. When the buffer is modified, a star (<strong>*</strong>) is shown after the filename in the center of the title bar.</p>
+</dd>
+<dt><strong>-_</strong>, <strong>--minibar</strong></dt>
+<dd><p>Suppress the title bar and instead show information about the current buffer at the bottom of the screen, in the space for the status bar. In this "minibar" the filename is shown on the left, followed by an asterisk if the buffer has been modified. On the right are displayed the current line and column number, the code of the character under the cursor (in Unicode format: U+xxxx), the same flags as are shown by <strong>--stateflags</strong>, and a percentage that expresses how far the cursor is into the file (linewise). When a file is loaded or saved, and also when switching between buffers, the number of lines in the buffer is displayed after the filename. This number is cleared upon the next keystroke, or replaced with an [i/n] counter when multiple buffers are open. The line plus column numbers and the character code are displayed only when <strong>--constantshow</strong> is used, and can be toggled on and off with <strong>M-C</strong>. The state flags are displayed only when <strong>--stateflags</strong> is used.</p>
+</dd>
+<dt><strong>-0</strong>, <strong>--zero</strong></dt>
+<dd><p>Hide all elements of the interface (title bar, status bar, and help lines) and use all rows of the terminal for showing the contents of the buffer. The status bar appears only when there is a significant message, and disappears after 1.5 seconds or upon the next keystroke. With <strong>M-Z</strong> the title bar plus status bar can be toggled. With <strong>M-X</strong> the help lines.</p>
+</dd>
+<dt><strong>-!</strong>, <strong>--magic</strong></dt>
+<dd><p>When neither the file's name nor its first line give a clue, try using libmagic to determine the applicable syntax.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='toggles'><a href='#toggles'>TOGGLES</a></h1><div data-for='toggles' data-hide><div class='section' data-for='toggles'><div data-more>
+<p>Several of the above options can be switched on and off also while <strong>nano</strong> is running. For example, <strong>M-L</strong> toggles the hard-wrapping of long lines, <strong>M-S</strong> toggles soft-wrapping, <strong>M-N</strong> toggles line numbers, <strong>M-M</strong> toggles the mouse, <strong>M-I</strong> auto-indentation, and <strong>M-X</strong> the help lines. See at the end of the <strong>^G</strong> help text for a complete list.</p>
+<p>The <strong>M-X</strong> toggle is special: it works in all menus except the help viewer and the linter. All other toggles work in the main menu only.</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p>When <strong>--rcfile</strong> is given, <strong>nano</strong> will read just the specified file for setting its options and syntaxes and key bindings. Without that option, <strong>nano</strong> will read two configuration files: first the system's <code>nanorc</code> (if it exists), and then the user's <code>nanorc</code> (if it exists), either <code>~/.nanorc</code> or <code>$XDG_CONFIG_HOME/nano/nanorc</code> or <code>~/.config/nano/nanorc</code>, whichever is encountered first. See <a href='/5/nanorc'>nanorc</a>(5) for more information on the possible contents of those files.</p>
+<p>See <code>/usr/share/nano/</code> and <code>/usr/share/nano/extra/</code> for available syntax-coloring definitions.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>If no alternative spell checker command is specified on the command line nor in one of the <code>nanorc</code> files, <strong>nano</strong> will check the <strong>SPELL</strong> environment variable for one.</p>
+<p>In some cases <strong>nano</strong> will try to dump the buffer into an emergency file. This will happen mainly if <strong>nano</strong> receives a SIGHUP or SIGTERM or runs out of memory. It will write the buffer into a file named <code>nano.save</code> if the buffer didn't have a name already, or will add a ".save" suffix to the current filename. If an emergency file with that name already exists in the current directory, it will add ".save" plus a number (e.g. ".save.1") to the current filename in order to make it unique. In multibuffer mode, <strong>nano</strong> will write all the open buffers to their respective emergency files.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The recording and playback of keyboard macros works correctly only on a terminal emulator, not on a Linux console (VT), because the latter does not by default distinguish modified from unmodified arrow keys.</p>
+<p>Please report any other bugs that you encounter via:<br/>
+<code><a href="https://savannah.gnu.org/bugs/?group=nano">https://savannah.gnu.org/bugs/?group=nano</a></code>.</p>
+<p>When nano crashes, it will save any modified buffers to emergency .save files. If you are able to reproduce the crash and you want to get a backtrace, define the environment variable <strong>NANO_NOCATCH</strong>.</p>
+</div></div></div><h1 id='homepage'><a href='#homepage'>HOMEPAGE</a></h1><div data-for='homepage' data-hide><div class='section' data-for='homepage'><div data-more>
+<p><code><a href="https://nano-editor.org/">https://nano-editor.org/</a></code></p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/nanorc'>nanorc</a>(5)</p>
+<p><code>/usr/share/doc/nano/</code> (or equivalent on your system)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

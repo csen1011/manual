@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>shmat, shmdt - System V shared memory operations</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/shm.h&gt;</a>
+
+void *shmat(int shmid, const void *shmaddr, int shmflg);
+
+int shmdt(const void *shmaddr);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<h2>shmat()</h2>
+<p><a href='shmat'>shmat</a>() attaches the System V shared memory segment identified by <code>shmid</code> to the address space of the calling process. The attaching address is specified by <code>shmaddr</code> with one of the following criteria:</p>
+<ul>
+<li><p>If <code>shmaddr</code> is NULL, the system chooses a suitable (unused) page-aligned address to attach the segment.</p></li>
+<li><p>If <code>shmaddr</code> isn't NULL and <strong>SHM_RND</strong> is specified in <code>shmflg</code>, the attach occurs at the address equal to <code>shmaddr</code> rounded down to the nearest multiple of <strong>SHMLBA</strong>.</p></li>
+<li><p>Otherwise, <code>shmaddr</code> must be a page-aligned address at which the attach occurs.</p></li>
+</ul>
+<p>In addition to <strong>SHM_RND</strong>, the following flags may be specified in the <code>shmflg</code> bit-mask argument:</p>
+<dl>
+<dt><strong>SHM_EXEC</strong> (Linux-specific; since Linux 2.6.9)</dt>
+<dd><p>Allow the contents of the segment to be executed. The caller must have execute permission on the segment.</p>
+</dd>
+<dt><strong>SHM_RDONLY</strong></dt>
+<dd><p>Attach the segment for read-only access. The process must have read permission for the segment. If this flag is not specified, the segment is attached for read and write access, and the process must have read and write permission for the segment. There is no notion of a write-only shared memory segment.</p>
+</dd>
+<dt><strong>SHM_REMAP</strong> (Linux-specific)</dt>
+<dd><p>This flag specifies that the mapping of the segment should replace any existing mapping in the range starting at <code>shmaddr</code> and continuing for the size of the segment. (Normally, an <strong>EINVAL</strong> error would result if a mapping already exists in this address range.) In this case, <code>shmaddr</code> must not be NULL.</p>
+</dd>
+</dl>
+<p>The <a href='/2/brk'>brk</a>(2) value of the calling process is not altered by the attach. The segment will automatically be detached at process exit. The same segment may be attached as a read and as a read-write one, and more than once, in the process's address space.</p>
+<p>A successful <a href='shmat'>shmat</a>() call updates the members of the <code>shmid_ds</code> structure (see <a href='/2/shmctl'>shmctl</a>(2)) associated with the shared memory segment as follows:</p>
+<ul>
+<li><p><code>shm_atime</code> is set to the current time.</p></li>
+<li><p><code>shm_lpid</code> is set to the process-ID of the calling process.</p></li>
+<li><p><code>shm_nattch</code> is incremented by one. <a href='shmdt'>shmdt</a>() detaches the shared memory segment located at the address specified by <code>shmaddr</code> from the address space of the calling process. The to-be-detached segment must be currently attached with <code>shmaddr</code> equal to the value returned by the attaching <a href='shmat'>shmat</a>() call.</p></li>
+</ul>
+<p>On a successful <a href='shmdt'>shmdt</a>() call, the system updates the members of the <code>shmid_ds</code> structure associated with the shared memory segment as follows:</p>
+<ul>
+<li><p><code>shm_dtime</code> is set to the current time.</p></li>
+<li><p><code>shm_lpid</code> is set to the process-ID of the calling process.</p></li>
+<li><p><code>shm_nattch</code> is decremented by one. If it becomes 0 and the segment is marked for deletion, the segment is deleted.</p></li>
+</ul>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='shmat'>shmat</a>() returns the address of the attached shared memory segment; on error, <code>(void *) -1</code> is returned, and <code>errno</code> is set to indicate the cause of the error.</p>
+<p>On success, <a href='shmdt'>shmdt</a>() returns 0; on error -1 is returned, and <code>errno</code> is set to indicate the cause of the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The two programs shown below exchange a string using a shared memory segment. Further details about the programs are given below. First, we show a shell session demonstrating their use.</p>
+<p>In one terminal window, we run the "reader" program, which creates a System V shared memory segment and a System V semaphore set. The program prints out the IDs of the created objects, and then waits for the semaphore to change value.</p>
+<pre><code>$ ./svshm_string_read
+shmid = 1114194; semid = 15</code></pre>
+<p>In another terminal window, we run the "writer" program. The "writer" program takes three command-line arguments: the IDs of the shared memory segment and semaphore set created by the "reader", and a string. It attaches the existing shared memory segment, copies the string to the shared memory, and modifies the semaphore value.</p>
+<pre><code>$ ./svshm_string_write 1114194 15 'Hello, world'</code></pre>
+<p>Returning to the terminal where the "reader" is running, we see that the program has ceased waiting on the semaphore and has printed the string that was copied into the shared memory segment by the writer:</p>
+<pre><code>Hello, world</code></pre>
+<p>The following header file is included by the "reader" and "writer" programs.</p>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/shm.h&gt;
+#include &lt;sys/sem.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+union semun {                   /* Used in calls to semctl() */
+    int                 val;
+    struct semid_ds *   buf;
+    unsigned short *    array;
+#if defined(__linux__)
+    struct seminfo *    __buf;
+#endif
+};
+
+#define MEM_SIZE 4096</code></pre>
+<p>The "reader" program creates a shared memory segment and a semaphore set containing one semaphore. It then attaches the shared memory object into its address space and initializes the semaphore value to 1. Finally, the program waits for the semaphore value to become 0, and afterwards prints the string that has been copied into the shared memory segment by the "writer".</p>
+<pre><code>/* svshm_string_read.c
+
+   Licensed under GNU General Public License v2 or later.
+*/
+#include "svshm_string.h"
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int semid, shmid;
+    union semun arg, dummy;
+    struct sembuf sop;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>addr;
+
+    /* Create shared memory and semaphore set containing one
+       semaphore */
+
+    shmid = shmget(IPC_PRIVATE, MEM_SIZE, IPC_CREAT | 0600);
+    if (shmid == -1)
+        errExit("shmget");
+
+    semid = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (shmid == -1)
+        errExit("shmget");
+
+    /* Attach shared memory into our address space */
+
+    addr = shmat(shmid, NULL, SHM_RDONLY);
+    if (addr == (void *) -1)
+        errExit("shmat");
+
+    /* Initialize semaphore 0 in set with value 1 */
+
+    arg.val = 1;
+    if (semctl(semid, 0, SETVAL, arg) == -1)
+        errExit("semctl");
+
+    printf("shmid = %d; semid = %d\n", shmid, semid);
+
+    /* Wait for semaphore value to become 0 */
+
+    sop.sem_num = 0;
+    sop.sem_op = 0;
+    sop.sem_flg = 0;
+
+    if (semop(semid, &amp;sop, 1) == -1)
+        errExit("semop");
+
+    /* Print the string from shared memory */
+
+    printf("%s\n", addr);
+
+    /* Remove shared memory and semaphore set */
+
+    if (shmctl(shmid, IPC_RMID, NULL) == -1)
+        errExit("shmctl");
+    if (semctl(semid, 0, IPC_RMID, dummy) == -1)
+        errExit("semctl");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>The writer program takes three command-line arguments: the IDs of the shared memory segment and semaphore set that have already been created by the "reader", and a string. It attaches the shared memory segment into its address space, and then decrements the semaphore value to 0 in order to inform the "reader" that it can now examine the contents of the shared memory.</p>
+<pre><code>/* svshm_string_write.c
+
+   Licensed under GNU General Public License v2 or later.
+*/
+#include "svshm_string.h"
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int semid, shmid;
+    struct sembuf sop;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>addr;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> len;
+
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s shmid semid string\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    len = strlen(argv[3]) + 1;  /* +1 to include trailing '\0' */
+    if (len &gt; MEM_SIZE) {
+        fprintf(stderr, "String is too big!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Get object IDs from command-line */
+
+    shmid = atoi(argv[1]);
+    semid = atoi(argv[2]);
+
+    /* Attach shared memory into our address space and copy string
+       (including trailing null byte) into memory. */
+
+    addr = shmat(shmid, NULL, 0);
+    if (addr == (void *) -1)
+        errExit("shmat");
+
+    memcpy(addr, argv[3], len);
+
+    /* Decrement semaphore to 0 */
+
+    sop.sem_num = 0;
+    sop.sem_op = -1;
+    sop.sem_flg = 0;
+
+    if (semop(semid, &amp;sop, 1) == -1)
+        errExit("semop");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>When <a href='shmat'>shmat</a>() fails, <code>errno</code> is set to one of the following:</p>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The calling process does not have the required permissions for the requested attach type, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p><code>shmid</code> points to a removed identifier.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid <code>shmid</code> value, unaligned (i.e., not page-aligned and <strong>SHM_RND</strong> was not specified) or invalid <code>shmaddr</code> value, or can't attach segment at <code>shmaddr</code>, or <strong>SHM_REMAP</strong> was specified and <code>shmaddr</code> was NULL.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Could not allocate memory for the descriptor or for the page tables.</p>
+</dd>
+</dl>
+<p>When <a href='shmdt'>shmdt</a>() fails, <code>errno</code> is set as follows:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There is no shared memory segment attached at <code>shmaddr</code>; or, <code>shmaddr</code> is not aligned on a page boundary.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+<p>In SVID 3 (or perhaps earlier), the type of the <code>shmaddr</code> argument was changed from <code><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a></code> into <code>const void *</code>, and the returned type of <a href='shmat'>shmat</a>() from <code><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a></code> into <code>void *</code>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>After a <a href='/2/fork'>fork</a>(2), the child inherits the attached shared memory segments.</p>
+<p>After an <a href='/2/execve'>execve</a>(2), all attached shared memory segments are detached from the process.</p>
+<p>Upon <a href='/2/_exit'>_exit</a>(2), all attached shared memory segments are detached from the process.</p>
+<p>Using <a href='shmat'>shmat</a>() with <code>shmaddr</code> equal to NULL is the preferred, portable way of attaching a shared memory segment. Be aware that the shared memory segment attached in this way may be attached at different addresses in different processes. Therefore, any pointers maintained within the shared memory must be made relative (typically to the starting address of the segment), rather than absolute.</p>
+<p>On Linux, it is possible to attach a shared memory segment even if it is already marked to be deleted. However, POSIX.1 does not specify this behavior and many other implementations do not support it.</p>
+<p>The following system parameter affects <a href='shmat'>shmat</a>():</p>
+<dl>
+<dt><strong>SHMLBA</strong></dt>
+<dd><p>Segment low boundary address multiple. When explicitly specifying an attach address in a call to <a href='shmat'>shmat</a>(), the caller should ensure that the address is a multiple of this value. This is necessary on some architectures, in order either to ensure good CPU cache performance or to ensure that different attaches of the same segment have consistent views within the CPU cache. <strong>SHMLBA</strong> is normally some multiple of the system page size. (On many Linux architectures, <strong>SHMLBA</strong> is the same as the system page size.)</p>
+</dd>
+</dl>
+<p>The implementation places no intrinsic per-process limit on the number of shared memory segments (<strong>SHMSEG</strong>).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/brk'>brk</a>(2), <a href='/2/mmap'>mmap</a>(2), <a href='/2/shmctl'>shmctl</a>(2), <a href='/2/shmget'>shmget</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/shm_overview'>shm_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

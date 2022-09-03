@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ipv6 - Linux IPv6 protocol implementation</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/socket.h&gt;</strong><br/>
+<strong>#include &lt;netinet/in.h&gt;</strong></p>
+<p><code>tcp6_socket</code><strong> = socket(AF_INET6, SOCK_STREAM, 0);</strong><br/>
+<code>raw6_socket</code><strong> = socket(AF_INET6, SOCK_RAW, </strong><code>protocol</code><strong>);</strong><br/>
+<code>udp6_socket</code><strong> = socket(AF_INET6, SOCK_DGRAM, </strong><code>protocol</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Linux 2.2 optionally implements the Internet Protocol, version 6. This man page contains a description of the IPv6 basic API as implemented by the Linux kernel and glibc 2.1. The interface is based on the BSD sockets interface; see <a href='/7/socket'>socket</a>(7).</p>
+<p>The IPv6 API aims to be mostly compatible with the IPv4 API (see <a href='/7/ip'>ip</a>(7)). Only differences are described in this man page.</p>
+<p>To bind an <strong>AF_INET6</strong> socket to any process, the local address should be copied from the <code>in6addr_any</code> variable which has <code>in6_addr</code> type. In static initializations, <strong>IN6ADDR_ANY_INIT</strong> may also be used, which expands to a constant expression. Both of them are in network byte order.</p>
+<p>The IPv6 loopback address (::1) is available in the global <code>in6addr_loopback</code> variable. For initializations, <strong>IN6ADDR_LOOPBACK_INIT</strong> should be used.</p>
+<p>IPv4 connections can be handled with the v6 API by using the v4-mapped-on-v6 address type; thus a program needs to support only this API type to support both protocols. This is handled transparently by the address handling functions in the C library.</p>
+<p>IPv4 and IPv6 share the local port space. When you get an IPv4 connection or packet to an IPv6 socket, its source address will be mapped to v6 and it will be mapped to v6.</p>
+<h2>Address format</h2>
+<pre><code>struct sockaddr_in6 {
+    sa_family_t     sin6_family;   /* AF_INET6 */
+    in_port_t       sin6_port;     /* port number */
+    uint32_t        sin6_flowinfo; /* IPv6 flow information */
+    struct in6_addr sin6_addr;     /* IPv6 address */
+    uint32_t        sin6_scope_id; /* Scope ID (new in 2.4) */
+};
+
+struct in6_addr {
+    unsigned char   s6_addr[16];   /* IPv6 address */
+};</code></pre>
+<p><code>sin6_family</code> is always set to <strong>AF_INET6</strong>; <code>sin6_port</code> is the protocol port (see <code>sin_port</code> in <a href='/7/ip'>ip</a>(7)); <code>sin6_flowinfo</code> is the IPv6 flow identifier; <code>sin6_addr</code> is the 128-bit IPv6 address. <code>sin6_scope_id</code> is an ID depending on the scope of the address. It is new in Linux 2.4. Linux supports it only for link-local addresses, in that case <code>sin6_scope_id</code> contains the interface index (see <a href='/7/netdevice'>netdevice</a>(7))</p>
+<p>IPv6 supports several address types: unicast to address a single host, multicast to address a group of hosts, anycast to address the nearest member of a group of hosts (not implemented in Linux), IPv4-on-IPv6 to address an IPv4 host, and other reserved address types.</p>
+<p>The address notation for IPv6 is a group of 8 4-digit hexadecimal numbers, separated with a ':'. "::" stands for a string of 0 bits. Special addresses are ::1 for loopback and ::FFFF:&lt;IPv4 address&gt; for IPv4-mapped-on-IPv6.</p>
+<p>The port space of IPv6 is shared with IPv4.</p>
+<h2>Socket options</h2>
+<p>IPv6 supports some protocol-specific socket options that can be set with <a href='/2/setsockopt'>setsockopt</a>(2) and read with <a href='/2/getsockopt'>getsockopt</a>(2). The socket option level for IPv6 is <strong>IPPROTO_IPV6</strong>. A boolean integer flag is zero when it is false, otherwise true.</p>
+<dl>
+<dt><strong>IPV6_ADDRFORM</strong></dt>
+<dd><p>Turn an <strong>AF_INET6</strong> socket into a socket of a different address family. Only <strong>AF_INET</strong> is currently supported for that. It is allowed only for IPv6 sockets that are connected and bound to a v4-mapped-on-v6 address. The argument is a pointer to an integer containing <strong>AF_INET</strong>. This is useful to pass v4-mapped sockets as file descriptors to programs that don't know how to deal with the IPv6 API.</p>
+</dd>
+<dt><strong>IPV6_ADD_MEMBERSHIP, IPV6_DROP_MEMBERSHIP</strong></dt>
+<dd><p>Control membership in multicast groups. Argument is a pointer to a <code>struct ipv6_mreq</code>.</p>
+</dd>
+<dt><strong>IPV6_MTU</strong></dt>
+<dd><p><a href='getsockopt'>getsockopt</a>(): Retrieve the current known path MTU of the current socket. Valid only when the socket has been connected. Returns an integer.</p>
+<p><a href='setsockopt'>setsockopt</a>(): Set the MTU to be used for the socket. The MTU is limited by the device MTU or the path MTU when path MTU discovery is enabled. Argument is a pointer to integer.</p>
+</dd>
+<dt><strong>IPV6_MTU_DISCOVER</strong></dt>
+<dd><p>Control path-MTU discovery on the socket. See <strong>IP_MTU_DISCOVER</strong> in <a href='/7/ip'>ip</a>(7) for details.</p>
+</dd>
+<dt><strong>IPV6_MULTICAST_HOPS</strong></dt>
+<dd><p>Set the multicast hop limit for the socket. Argument is a pointer to an integer. -1 in the value means use the route default, otherwise it should be between 0 and 255.</p>
+</dd>
+<dt><strong>IPV6_MULTICAST_IF</strong></dt>
+<dd><p>Set the device for outgoing multicast packets on the socket. This is allowed only for <strong>SOCK_DGRAM</strong> and <strong>SOCK_RAW</strong> socket. The argument is a pointer to an interface index (see <a href='/7/netdevice'>netdevice</a>(7)) in an integer.</p>
+</dd>
+<dt><strong>IPV6_MULTICAST_LOOP</strong></dt>
+<dd><p>Control whether the socket sees multicast packets that it has send itself. Argument is a pointer to boolean.</p>
+</dd>
+<dt><strong>IPV6_RECVPKTINFO</strong> (since Linux 2.6.14)</dt>
+<dd><p>Set delivery of the <strong>IPV6_PKTINFO</strong> control message on incoming datagrams. Such control messages contain a <code>struct in6_pktinfo</code>, as per RFC 3542. Allowed only for <strong>SOCK_DGRAM</strong> or <strong>SOCK_RAW</strong> sockets. Argument is a pointer to a boolean value in an integer.</p>
+</dd>
+</dl>
+<p><strong>IPV6_RTHDR, IPV6_AUTHHDR, IPV6_DSTOPTS, IPV6_HOPOPTS, IPV6_FLOWINFO, IPV6_HOPLIMIT</strong></p>
+<p>Set delivery of control messages for incoming datagrams containing extension headers from the received packet. <strong>IPV6_RTHDR</strong> delivers the routing header, <strong>IPV6_AUTHHDR</strong> delivers the authentication header, <strong>IPV6_DSTOPTS</strong> delivers the destination options, <strong>IPV6_HOPOPTS</strong> delivers the hop options, <strong>IPV6_FLOWINFO</strong> delivers an integer containing the flow ID, <strong>IPV6_HOPLIMIT</strong> delivers an integer containing the hop count of the packet. The control messages have the same type as the socket option. All these header options can also be set for outgoing packets by putting the appropriate control message into the control buffer of <a href='/2/sendmsg'>sendmsg</a>(2). Allowed only for <strong>SOCK_DGRAM</strong> or <strong>SOCK_RAW</strong> sockets. Argument is a pointer to a boolean value.</p>
+<dl>
+<dt><strong>IPV6_RECVERR</strong></dt>
+<dd><p>Control receiving of asynchronous error options. See <strong>IP_RECVERR</strong> in <a href='/7/ip'>ip</a>(7) for details. Argument is a pointer to boolean.</p>
+</dd>
+<dt><strong>IPV6_ROUTER_ALERT</strong></dt>
+<dd><p>Pass forwarded packets containing a router alert hop-by-hop option to this socket. Allowed only for <strong>SOCK_RAW</strong> sockets. The tapped packets are not forwarded by the kernel, it is the user's responsibility to send them out again. Argument is a pointer to an integer. A positive integer indicates a router alert option value to intercept. Packets carrying a router alert option with a value field containing this integer will be delivered to the socket. A negative integer disables delivery of packets with router alert options to this socket.</p>
+</dd>
+<dt><strong>IPV6_UNICAST_HOPS</strong></dt>
+<dd><p>Set the unicast hop limit for the socket. Argument is a pointer to an integer. -1 in the value means use the route default, otherwise it should be between 0 and 255.</p>
+</dd>
+<dt><strong>IPV6_V6ONLY</strong> (since Linux 2.4.21 and 2.6)</dt>
+<dd><p>If this flag is set to true (nonzero), then the socket is restricted to sending and receiving IPv6 packets only. In this case, an IPv4 and an IPv6 application can bind to a single port at the same time.</p>
+<p>If this flag is set to false (zero), then the socket can be used to send and receive packets to and from an IPv6 address or an IPv4-mapped IPv6 address.</p>
+<p>The argument is a pointer to a boolean value in an integer.</p>
+<p>The default value for this flag is defined by the contents of the file <code>/proc/sys/net/ipv6/bindv6only</code>. The default value for that file is 0 (false).</p>
+</dd>
+</dl>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>The user tried to <a href='/2/bind'>bind</a>(2) to a link-local IPv6 address, but the <code>sin6_scope_id</code> in the supplied <code>sockaddr_in6</code> structure is not a valid interface index.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>Linux 2.4 will break binary compatibility for the <code>sockaddr_in6</code> for 64-bit hosts by changing the alignment of <code>in6_addr</code> and adding an additional <code>sin6_scope_id</code> field. The kernel interfaces stay compatible, but a program including <code>sockaddr_in6</code> or <code>in6_addr</code> into other structures may not be. This is not a problem for 32-bit hosts like i386.</p>
+<p>The <code>sin6_flowinfo</code> field is new in Linux 2.4. It is transparently passed/read by the kernel when the passed address length contains it. Some programs that pass a longer address buffer and then check the outgoing address length may break.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The <code>sockaddr_in6</code> structure is bigger than the generic <code>sockaddr</code>. Programs that assume that all address types can be stored safely in a <code>struct sockaddr</code> need to be changed to use <code>struct sockaddr_storage</code> for that instead.</p>
+<p><strong>SOL_IP</strong>, <strong>SOL_IPV6</strong>, <strong>SOL_ICMPV6</strong>, and other <strong>SOL_*</strong> socket options are nonportable variants of <strong>IPPROTO_*</strong>. See also <a href='/7/ip'>ip</a>(7).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The IPv6 extended API as in RFC 2292 is currently only partly implemented; although the 2.2 kernel has near complete support for receiving options, the macros for generating IPv6 options are missing in glibc 2.1.</p>
+<p>IPSec support for EH and AH headers is missing.</p>
+<p>Flow label management is not complete and not documented here.</p>
+<p>This man page is not complete.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/cmsg'>cmsg</a>(3), <a href='/7/ip'>ip</a>(7)</p>
+<p>RFC 2553: IPv6 BASIC API; Linux tries to be compliant to this. RFC 2460: IPv6 specification.</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

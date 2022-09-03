@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getaddrinfo_a, gai_suspend, <a data-bs-content='This is the man page for &lt;code&gt;gai_error&lt;/code&gt; and 3 related functions.' data-bs-toggle='popover' tabindex='0'>gai_error</a>, gai_cancel - asynchronous network address and service translation</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;netdb.h&gt;</a>
+
+int getaddrinfo_a(int mode, struct gaicb *list[],
+ int nitems, struct sigevent *sevp);
+
+int gai_suspend(const struct gaicb * const list[], int nitems,
+ const struct timespec *timeout);
+
+int gai_error(struct gaicb *req);
+
+int gai_cancel(struct gaicb *req);
+
+Link with -lanl.</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getaddrinfo_a'>getaddrinfo_a</a>() function performs the same task as <a href='/3/getaddrinfo'>getaddrinfo</a>(3), but allows multiple name look-ups to be performed asynchronously, with optional notification on completion of look-up operations.</p>
+<p>The <code>mode</code> argument has one of the following values:</p>
+<dl>
+<dt><strong>GAI_WAIT</strong></dt>
+<dd><p>Perform the look-ups synchronously. The call blocks until the look-ups have completed.</p>
+</dd>
+<dt><strong>GAI_NOWAIT</strong></dt>
+<dd><p>Perform the look-ups asynchronously. The call returns immediately, and the requests are resolved in the background. See the discussion of the <code>sevp</code> argument below.</p>
+</dd>
+</dl>
+<p>The array <code>list</code> specifies the look-up requests to process. The <code>nitems</code> argument specifies the number of elements in <code>list</code>. The requested look-up operations are started in parallel. NULL elements in <code>list</code> are ignored. Each request is described by a <code>gaicb</code> structure, defined as follows:</p>
+<pre><code>struct gaicb {
+    const char            *ar_name;
+    const char            *ar_service;
+    const struct addrinfo *ar_request;
+    struct addrinfo       *ar_result;
+};</code></pre>
+<p>The elements of this structure correspond to the arguments of <a href='/3/getaddrinfo'>getaddrinfo</a>(3). Thus, <code>ar_name</code> corresponds to the <code>node</code> argument and <code>ar_service</code> to the <code>service</code> argument, identifying an Internet host and a service. The <code>ar_request</code> element corresponds to the <code>hints</code> argument, specifying the criteria for selecting the returned socket address structures. Finally, <code>ar_result</code> corresponds to the <code>res</code> argument; you do not need to initialize this element, it will be automatically set when the request is resolved. The <code>addrinfo</code> structure referenced by the last two elements is described in <a href='/3/getaddrinfo'>getaddrinfo</a>(3).</p>
+<p>When <code>mode</code> is specified as <strong>GAI_NOWAIT</strong>, notifications about resolved requests can be obtained by employing the <code>sigevent</code> structure pointed to by the <code>sevp</code> argument. For the definition and general details of this structure, see <a href='/7/sigevent'>sigevent</a>(7). The <code>sevp-&gt;sigev_notify</code> field can have the following values:</p>
+<dl>
+<dt><strong>SIGEV_NONE</strong></dt>
+<dd><p>Don't provide any notification.</p>
+</dd>
+<dt><strong>SIGEV_SIGNAL</strong></dt>
+<dd><p>When a look-up completes, generate the signal <code>sigev_signo</code> for the process. See <a href='/7/sigevent'>sigevent</a>(7) for general details. The <code>si_code</code> field of the <code>siginfo_t</code> structure will be set to <strong>SI_ASYNCNL</strong>.</p>
+</dd>
+<dt><strong>SIGEV_THREAD</strong></dt>
+<dd><p>When a look-up completes, invoke <code>sigev_notify_function</code> as if it were the start function of a new thread. See <a href='/7/sigevent'>sigevent</a>(7) for details.</p>
+</dd>
+</dl>
+<p>For <strong>SIGEV_SIGNAL</strong> and <strong>SIGEV_THREAD</strong>, it may be useful to point <code>sevp-&gt;sigev_value.sival_ptr</code> to <code>list</code>.</p>
+<p>The <a href='gai_suspend'>gai_suspend</a>() function suspends execution of the calling thread, waiting for the completion of one or more requests in the array <code>list</code>. The <code>nitems</code> argument specifies the size of the array <code>list</code>. The call blocks until one of the following occurs:</p>
+<ul>
+<li><p>One or more of the operations in <code>list</code> completes.</p></li>
+<li><p>The call is interrupted by a signal that is caught.</p></li>
+<li><p>The time interval specified in <code>timeout</code> elapses. This argument specifies a timeout in seconds plus nanoseconds (see <a href='/2/nanosleep'>nanosleep</a>(2) for details of the <code>timespec</code> structure). If <code>timeout</code> is NULL, then the call blocks indefinitely (until one of the events above occurs).</p></li>
+</ul>
+<p>No explicit indication of which request was completed is given; you must determine which request(s) have completed by iterating with <a href='gai_error'>gai_error</a>() over the list of requests.</p>
+<p>The <a href='gai_error'>gai_error</a>() function returns the status of the request <code>req</code>: either <strong>EAI_INPROGRESS</strong> if the request was not completed yet, 0 if it was handled successfully, or an error code if the request could not be resolved.</p>
+<p>The <a href='gai_cancel'>gai_cancel</a>() function cancels the request <code>req</code>. If the request has been canceled successfully, the error status of the request will be set to <strong>EAI_CANCELED</strong> and normal asynchronous notification will be performed. The request cannot be canceled if it is currently being processed; in that case, it will be handled as if <a href='gai_cancel'>gai_cancel</a>() has never been called. If <code>req</code> is NULL, an attempt is made to cancel all outstanding requests that the process has made.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The <a href='getaddrinfo_a'>getaddrinfo_a</a>() function returns 0 if all of the requests have been enqueued successfully, or one of the following nonzero error codes:</p>
+<dl>
+<dt><strong>EAI_AGAIN</strong></dt>
+<dd><p>The resources necessary to enqueue the look-up requests were not available. The application may check the error status of each request to determine which ones failed.</p>
+</dd>
+<dt><strong>EAI_MEMORY</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>EAI_SYSTEM</strong></dt>
+<dd><p><code>mode</code> is invalid.</p>
+</dd>
+</dl>
+<p>The <a href='gai_suspend'>gai_suspend</a>() function returns 0 if at least one of the listed requests has been completed. Otherwise, it returns one of the following nonzero error codes:</p>
+<dl>
+<dt><strong>EAI_AGAIN</strong></dt>
+<dd><p>The given timeout expired before any of the requests could be completed.</p>
+</dd>
+<dt><strong>EAI_ALLDONE</strong></dt>
+<dd><p>There were no actual requests given to the function.</p>
+</dd>
+<dt><strong>EAI_INTR</strong></dt>
+<dd><p>A signal has interrupted the function. Note that this interruption might have been caused by signal notification of some completed look-up request.</p>
+</dd>
+</dl>
+<p>The <a href='gai_error'>gai_error</a>() function can return <strong>EAI_INPROGRESS</strong> for an unfinished look-up request, 0 for a successfully completed look-up (as described above), one of the error codes that could be returned by <a href='/3/getaddrinfo'>getaddrinfo</a>(3), or the error code <strong>EAI_CANCELED</strong> if the request has been canceled explicitly before it could be finished.</p>
+<p>The <a href='gai_cancel'>gai_cancel</a>() function can return one of these values:</p>
+<dl>
+<dt><strong>EAI_CANCELED</strong></dt>
+<dd><p>The request has been canceled successfully.</p>
+</dd>
+<dt><strong>EAI_NOTCANCELED</strong></dt>
+<dd><p>The request has not been canceled.</p>
+</dd>
+<dt><strong>EAI_ALLDONE</strong></dt>
+<dd><p>The request has already completed.</p>
+</dd>
+</dl>
+<p>The <a href='/3/gai_strerror'>gai_strerror</a>(3) function translates these error codes to a human readable string, suitable for error reporting.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Two examples are provided: a simple example that resolves several requests in parallel synchronously, and a complex example showing some of the asynchronous capabilities.</p>
+<h2>Synchronous example</h2>
+<p>The program below simply resolves several hostnames in parallel, giving a speed-up compared to resolving the hostnames sequentially using <a href='/3/getaddrinfo'>getaddrinfo</a>(3). The program might be used like this:</p>
+<pre><code>$ ./a.out <a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a> <a href="http://enoent.linuxfoundation.org">enoent.linuxfoundation.org</a> <a href="http://gnu.cz">gnu.cz</a>
+<a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a>: 128.30.2.36
+<a href="http://enoent.linuxfoundation.org">enoent.linuxfoundation.org</a>: Name or service not known
+<a href="http://gnu.cz">gnu.cz</a>: 87.236.197.13</code></pre>
+<p>Here is the program source code</p>
+<pre><code>#define _GNU_SOURCE
+#include &lt;netdb.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int ret;
+    struct gaicb *reqs[argc - 1];
+    char host[NI_MAXHOST];
+    struct addrinfo *res;
+
+    if (argc &lt; 2) {
+        fprintf(stderr, "Usage: %s HOST...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i &lt; argc - 1; i++) {
+        reqs[i] = malloc(sizeof(*reqs[0]));
+        if (reqs[i] == NULL) {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+        memset(reqs[i], 0, sizeof(*reqs[0]));
+        reqs[i]-&gt;ar_name = argv[i + 1];
+    }
+
+    ret = getaddrinfo_a(GAI_WAIT, reqs, argc - 1, NULL);
+    if (ret != 0) {
+        fprintf(stderr, "getaddrinfo_a() failed: %s\n",
+                gai_strerror(ret));
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i &lt; argc - 1; i++) {
+        printf("%s: ", reqs[i]-&gt;ar_name);
+        ret = gai_error(reqs[i]);
+        if (ret == 0) {
+            res = reqs[i]-&gt;ar_result;
+
+            ret = getnameinfo(res-&gt;ai_addr, res-&gt;ai_addrlen,
+                    host, sizeof(host),
+                    NULL, 0, NI_NUMERICHOST);
+            if (ret != 0) {
+                fprintf(stderr, "getnameinfo() failed: %s\n",
+                        gai_strerror(ret));
+                exit(EXIT_FAILURE);
+            }
+            puts(host);
+
+        } else {
+            puts(gai_strerror(ret));
+        }
+    }
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<h2>Asynchronous example</h2>
+<p>This example shows a simple interactive <a href='getaddrinfo_a'>getaddrinfo_a</a>() front-end. The notification facility is not demonstrated.</p>
+<p>An example session might look like this:</p>
+<pre><code>$ ./a.out
+&gt; a <a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a> <a href="http://enoent.linuxfoundation.org">enoent.linuxfoundation.org</a> <a href="http://gnu.cz">gnu.cz</a>
+&gt; c 2
+[2] <a href="http://gnu.cz">gnu.cz</a>: Request not canceled
+&gt; w 0 1
+[00] <a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a>: Finished
+&gt; l
+[00] <a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a>: 216.165.129.139
+[01] <a href="http://enoent.linuxfoundation.org">enoent.linuxfoundation.org</a>: Processing request in progress
+[02] <a href="http://gnu.cz">gnu.cz</a>: 87.236.197.13
+&gt; l
+[00] <a href="http://ftp.us.kernel.org">ftp.us.kernel.org</a>: 216.165.129.139
+[01] <a href="http://enoent.linuxfoundation.org">enoent.linuxfoundation.org</a>: Name or service not known
+[02] <a href="http://gnu.cz">gnu.cz</a>: 87.236.197.13</code></pre>
+<p>The program source is as follows:</p>
+<pre><code>#define _GNU_SOURCE
+#include &lt;netdb.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+static struct gaicb **reqs = NULL;
+static int nreqs = 0;
+
+static <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>
+getcmd(void)
+{
+    static char buf[256];
+
+    fputs("&gt; ", stdout); fflush(stdout);
+    if (fgets(buf, sizeof(buf), stdin) == NULL)
+        return NULL;
+
+    if (buf[strlen(buf) - 1] == '\n')
+        buf[strlen(buf) - 1] = 0;
+
+    return buf;
+}
+
+/* Add requests for specified hostnames */
+static void
+add_requests(void)
+{
+    int nreqs_base = nreqs;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>host;
+    int ret;
+
+    while ((host = strtok(NULL, " "))) {
+        nreqs++;
+        reqs = realloc(reqs, sizeof(reqs[0]) * nreqs);
+
+        reqs[nreqs - 1] = calloc(1, sizeof(*reqs[0]));
+        reqs[nreqs - 1]-&gt;ar_name = strdup(host);
+    }
+
+    /* Queue nreqs_base..nreqs requests. */
+
+    ret = getaddrinfo_a(GAI_NOWAIT, &amp;reqs[nreqs_base],
+                        nreqs - nreqs_base, NULL);
+    if (ret) {
+        fprintf(stderr, "getaddrinfo_a() failed: %s\n",
+                gai_strerror(ret));
+        exit(EXIT_FAILURE);
+    }
+}
+
+/* Wait until at least one of specified requests completes */
+static void
+wait_requests(void)
+{
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>id;
+    int ret, n;
+    struct gaicb const **wait_reqs = calloc(nreqs, sizeof(*wait_reqs));
+                /* NULL elements are ignored by gai_suspend(). */
+
+    while ((id = strtok(NULL, " ")) != NULL) {
+        n = atoi(id);
+
+        if (n &gt;= nreqs) {
+            printf("Bad request number: %s\n", id);
+            return;
+        }
+
+        wait_reqs[n] = reqs[n];
+    }
+
+    ret = gai_suspend(wait_reqs, nreqs, NULL);
+    if (ret) {
+        printf("gai_suspend(): %s\n", gai_strerror(ret));
+        return;
+    }
+
+    for (int i = 0; i &lt; nreqs; i++) {
+        if (wait_reqs[i] == NULL)
+            continue;
+
+        ret = gai_error(reqs[i]);
+        if (ret == EAI_INPROGRESS)
+            continue;
+
+        printf("[%02d] %s: %s\n", i, reqs[i]-&gt;ar_name,
+               ret == 0 ? "Finished" : gai_strerror(ret));
+    }
+}
+
+/* Cancel specified requests */
+static void
+cancel_requests(void)
+{
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>id;
+    int ret, n;
+
+    while ((id = strtok(NULL, " ")) != NULL) {
+        n = atoi(id);
+
+        if (n &gt;= nreqs) {
+            printf("Bad request number: %s\n", id);
+            return;
+        }
+
+        ret = gai_cancel(reqs[n]);
+        printf("[%s] %s: %s\n", id, reqs[atoi(id)]-&gt;ar_name,
+               gai_strerror(ret));
+    }
+}
+
+/* List all requests */
+static void
+list_requests(void)
+{
+    int ret;
+    char host[NI_MAXHOST];
+    struct addrinfo *res;
+
+    for (int i = 0; i &lt; nreqs; i++) {
+        printf("[%02d] %s: ", i, reqs[i]-&gt;ar_name);
+        ret = gai_error(reqs[i]);
+
+        if (!ret) {
+            res = reqs[i]-&gt;ar_result;
+
+            ret = getnameinfo(res-&gt;ai_addr, res-&gt;ai_addrlen,
+                              host, sizeof(host),
+                              NULL, 0, NI_NUMERICHOST);
+            if (ret) {
+                fprintf(stderr, "getnameinfo() failed: %s\n",
+                        gai_strerror(ret));
+                exit(EXIT_FAILURE);
+            }
+            puts(host);
+        } else {
+            puts(gai_strerror(ret));
+        }
+    }
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>cmdline;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>cmd;
+
+    while ((cmdline = getcmd()) != NULL) {
+        cmd = strtok(cmdline, " ");
+
+        if (cmd == NULL) {
+            list_requests();
+        } else {
+            switch (cmd[0]) {
+            case 'a':
+                add_requests();
+                break;
+            case 'w':
+                wait_requests();
+                break;
+            case 'c':
+                cancel_requests();
+                break;
+            case 'l':
+                list_requests();
+                break;
+            default:
+                fprintf(stderr, "Bad command: %c\n", cmd[0]);
+                break;
+            }
+        }
+    }
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getaddrinfo_a'>getaddrinfo_a</a>(), <a href='gai_suspend'>gai_suspend</a>(), <a href='gai_error'>gai_error</a>(), <a href='gai_cancel'>gai_cancel</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These functions are GNU extensions; they first appeared in glibc in version 2.2.3.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The interface of <a href='getaddrinfo_a'>getaddrinfo_a</a>() was modeled after the <a href='/3/lio_listio'>lio_listio</a>(3) interface.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getaddrinfo'>getaddrinfo</a>(3), <a href='/3/inet'>inet</a>(3), <a href='/3/lio_listio'>lio_listio</a>(3), <a href='/7/hostname'>hostname</a>(7), <a href='/7/ip'>ip</a>(7), <a href='/7/sigevent'>sigevent</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

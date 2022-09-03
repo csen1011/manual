@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>address_families - socket address families (domains)</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/types.h&gt;</strong> /* See <a href='#notes'>NOTES </a>*/<br/>
+<strong>#include &lt;sys/socket.h&gt;</strong></p>
+<p><strong>int socket(int </strong><code>domain</code><strong>, int </strong><code>type</code><strong>, int </strong><code>protocol</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <code>domain</code> argument of the <a href='/2/socket'>socket</a>(2) specifies a communication domain; this selects the protocol family which will be used for communication. These families are defined in <code>&lt;sys/socket.h&gt;</code>. The formats currently understood by the Linux kernel include:</p>
+<dl>
+<dt><strong>AF_UNIX</strong>, <strong>AF_LOCAL</strong></dt>
+<dd><p>Local communication For further information, see <a href='/7/unix'>unix</a>(7).</p>
+</dd>
+<dt><strong>AF_INET</strong></dt>
+<dd><p>IPv4 Internet protocols. For further information, see <a href='/7/ip'>ip</a>(7).</p>
+</dd>
+<dt><strong>AF_AX25</strong></dt>
+<dd><p>Amateur radio AX.25 protocol. For further information, see <a href='/4/ax25'>ax25</a>(4).</p>
+</dd>
+<dt><strong>AF_IPX</strong></dt>
+<dd><p>IPX - Novell protocols.</p>
+</dd>
+<dt><strong>AF_APPLETALK</strong></dt>
+<dd><p>AppleTalk For further information, see <a href='/7/ddp'>ddp</a>(7).</p>
+</dd>
+<dt><strong>AF_NETROM</strong></dt>
+<dd><p>AX.25 packet layer protocol. For further information, see <a href='/4/netrom'>netrom</a>(4),</p>
+</dd>
+</dl>
+<p><code>The Packet Radio Protocols and Linux</code></p>
+<p>and the <code>AX.25</code>, <code>NET/ROM</code>, and <code>ROSE network programming</code> chapters of the</p>
+<p><code>Linux Amateur Radio AX.25 HOWTO</code></p>
+<dl>
+<dt><strong>AF_BRIDGE</strong></dt>
+<dd><p>Can't be used for creating sockets; mostly used for bridge links in <a href='/7/rtnetlink'>rtnetlink</a>(7) protocol commands.</p>
+</dd>
+<dt><strong>AF_ATMPVC</strong></dt>
+<dd><p>Access to raw ATM Permanent Virtual Circuits (PVCs). For further information, see the</p>
+</dd>
+</dl>
+<p><code>ATM on Linux HOWTO</code></p>
+<dl>
+<dt><strong>AF_X25</strong></dt>
+<dd><p>ITU-T X.25 / ISO-8208 protocol. For further information, see <a href='/7/x25'>x25</a>(7).</p>
+</dd>
+<dt><strong>AF_INET6</strong></dt>
+<dd><p>IPv6 Internet protocols. For further information, see <a href='/7/ipv6'>ipv6</a>(7).</p>
+</dd>
+<dt><strong>AF_ROSE</strong></dt>
+<dd><p>RATS (Radio Amateur Telecommunications Society) Open Systems environment (ROSE) AX.25 packet layer protocol. For further information, see the resources listed for <strong>AF_NETROM</strong>.</p>
+</dd>
+<dt><strong>AF_DECnet</strong></dt>
+<dd><p>DECet protocol sockets. See <code>Documentation/networking/decnet.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_NETBEUI</strong></dt>
+<dd><p>Reserved for "802.2LLC project"; never used.</p>
+</dd>
+<dt><strong>AF_SECURITY</strong></dt>
+<dd><p>This was a short-lived (between Linux 2.1.30 and 2.1.99pre2) protocol family for firewall upcalls.</p>
+</dd>
+<dt><strong>AF_KEY</strong></dt>
+<dd><p>Key management protocol, originally developed for usage with IPsec (since Linux 2.1.38). This has no relation to <a href='/2/keyctl'>keyctl</a>(2) and the in-kernel key storage facility. See</p>
+</dd>
+</dl>
+<p>RFC 2367 <code>PF_KEY Key Management API, Version 2</code></p>
+<p>for details.</p>
+<dl>
+<dt><strong>AF_NETLINK</strong></dt>
+<dd><p>Kernel user interface device For further information, see <a href='/7/netlink'>netlink</a>(7).</p>
+</dd>
+<dt><strong>AF_PACKET</strong></dt>
+<dd><p>Low-level packet interface. For further information, see <a href='/7/packet'>packet</a>(7).</p>
+</dd>
+<dt><strong>AF_ECONET</strong></dt>
+<dd><p>Acorn Econet protocol (removed in Linux 3.5). See the <a href="<a href="http://www.8bs.com/othrdnld/manuals/econet.shtml">http://www.8bs.com/othrdnld/manuals/econet.shtml</a>">Econet documentation</a> for details.</p>
+</dd>
+<dt><strong>AF_ATMSVC</strong></dt>
+<dd><p>Access to ATM Switched Virtual Circuits (SVCs) See the</p>
+</dd>
+</dl>
+<p><code>ATM on Linux HOWTO</code></p>
+<p>for details.</p>
+<dl>
+<dt><strong>AF_RDS</strong></dt>
+<dd><p>Reliable Datagram Sockets (RDS) protocol (since Linux 2.6.30). RDS over RDMA has no relation to <strong>AF_SMC</strong> or <strong>AF_XDP</strong>. For further information see <a href='/7/rds'>rds</a>(7), <a href='/7/rds-rdma'>rds-rdma</a>(7), and <code>Documentation/networking/rds.txt</code> in the Linux kernel source tree.</p>
+</dd>
+<dt><strong>AF_IRDA</strong></dt>
+<dd><p>Socket interface over IrDA (moved to staging in Linux 4.14, removed in Linux 4.17). For further information see <a href='/7/irda'>irda</a>(7).</p>
+</dd>
+<dt><strong>AF_PPPOX</strong></dt>
+<dd><p>Generic PPP transport layer, for setting up L2 tunnels (L2TP and PPPoE). See <code>Documentation/networking/l2tp.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_WANPIPE</strong></dt>
+<dd><p>Legacy protocol for wide area network (WAN) connectivity that was used by Sangoma WAN cards (called "WANPIPE"); removed in Linux 2.6.21.</p>
+</dd>
+<dt><strong>AF_LLC</strong></dt>
+<dd><p>Logical link control (IEEE 802.2 LLC) protocol, upper part of data link layer of ISO/OSI networking protocol stack (since Linux 2.4); has no relation to <strong>AF_PACKET</strong>. See chapter <code>13.5.3. Logical Link Control</code> in <code>Understanding Linux Kernel Internals</code> (O'Reilly Media, 2006) and <code>IEEE Standards for Local Area Networks: Logical Link Control</code> (The Institute of Electronics and Electronics Engineers, Inc., New York, New York, 1985) for details. See also <a href="<a href="https://wiki.linuxfoundation.org/networking/llc">https://wiki.linuxfoundation.org/networking/llc</a>">some historical notes</a> regarding its development.</p>
+</dd>
+<dt><strong>AF_IB</strong></dt>
+<dd><p>InfiniBand native addressing (since Linux 3.11).</p>
+</dd>
+<dt><strong>AF_MPLS</strong></dt>
+<dd><p>Multiprotocol Label Switching (since Linux 4.1); mostly used for configuring MPLS routing via <a href='/7/netlink'>netlink</a>(7), as it doesn't expose ability to create sockets to user space.</p>
+</dd>
+<dt><strong>AF_CAN</strong></dt>
+<dd><p>Controller Area Network automotive bus protocol (since Linux 2.6.25). See <code>Documentation/networking/can.rst</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_TIPC</strong></dt>
+<dd><p>TIPC, "cluster domain sockets" protocol (since Linux 2.6.16). See</p>
+</dd>
+</dl>
+<p><code>TIPC Programmer's Guide</code></p>
+<p>and the <a href="<a href="http://tipc.io/protocol.html">http://tipc.io/protocol.html</a>">protocol description</a> for details.</p>
+<dl>
+<dt><strong>AF_BLUETOOTH</strong></dt>
+<dd><p>Bluetooth low-level socket protocol (since Linux 3.11). See</p>
+</dd>
+</dl>
+<p><code>Bluetooth Management API overview</code></p>
+<p>and</p>
+<p><code>An Introduction to Bluetooth Programming</code> by Albert Huang</p>
+<p>for details.</p>
+<dl>
+<dt><strong>AF_IUCV</strong></dt>
+<dd><p>IUCV (inter-user communication vehicle) z/VM protocol for hypervisor-guest interaction (since Linux 2.6.21); has no relation to <strong>AF_VSOCK</strong> and/or <strong>AF_SMC</strong> See</p>
+</dd>
+</dl>
+<p><code>IUCV protocol overview</code></p>
+<p>for details.</p>
+<dl>
+<dt><strong>AF_RXRPC</strong></dt>
+<dd><p>Rx, Andrew File System remote procedure call protocol (since Linux 2.6.22). See <code>Documentation/networking/rxrpc.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_ISDN</strong></dt>
+<dd><p>New "modular ISDN" driver interface protocol (since Linux 2.6.27). See the <a href="<a href="http://www.misdn.eu/wiki/Main_Page/">http://www.misdn.eu/wiki/Main_Page/</a>">mISDN wiki</a> for details.</p>
+</dd>
+<dt><strong>AF_PHONET</strong></dt>
+<dd><p>Nokia cellular modem IPC/RPC interface (since Linux 2.6.31). See <code>Documentation/networking/phonet.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_IEEE802154</strong></dt>
+<dd><p>IEEE 802.15.4 WPAN (wireless personal area network) raw packet protocol (since Linux 2.6.31). See <code>Documentation/networking/ieee802154.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_CAIF</strong></dt>
+<dd><p>Ericsson's Communication CPU to Application CPU interface (CAIF) protocol (since Linux 2.6.36). See <code>Documentation/networking/caif/Linux-CAIF.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_ALG</strong></dt>
+<dd><p>Interface to kernel crypto API (since Linux 2.6.38). See <code>Documentation/crypto/userspace-if.rst</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_VSOCK</strong></dt>
+<dd><p>VMWare VSockets protocol for hypervisor-guest interaction (since Linux 3.9); has no relation to <strong>AF_IUCV</strong> and <strong>AF_SMC</strong>. For further information, see <a href='/7/vsock'>vsock</a>(7).</p>
+</dd>
+<dt><strong>AF_KCM</strong></dt>
+<dd><p>KCM (kernel connection multiplexer) interface (since Linux 4.6). See <code>Documentation/networking/kcm.txt</code> in the Linux kernel source tree for details.</p>
+</dd>
+<dt><strong>AF_QIPCRTR</strong></dt>
+<dd><p>Qualcomm IPC router interface protocol (since Linux 4.7).</p>
+</dd>
+<dt><strong>AF_SMC</strong></dt>
+<dd><p>SMC-R (shared memory communications over RDMA) protocol (since Linux 4.11), and SMC-D (shared memory communications, direct memory access) protocol for intra-node z/VM quest interaction (since Linux 4.19); has no relation to <strong>AF_RDS</strong>, <strong>AF_IUCV</strong> or <strong>AF_VSOCK</strong>. See</p>
+</dd>
+</dl>
+<p>RFC 7609 <code>IBM's Shared Memory Communications over RDMA (SMC-R) Protocol</code></p>
+<p>for details regarding SMC-R. See</p>
+<p><code>SMC-D Reference Information</code></p>
+<p>for details regarding SMC-D.</p>
+<dl>
+<dt><strong>AF_XDP</strong></dt>
+<dd><p>XDP (express data path) interface (since Linux 4.18). See <code>Documentation/networking/af_xdp.rst</code> in the Linux kernel source tree for details.</p>
+</dd>
+</dl>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/socket'>socket</a>(2), <a href='/7/socket'>socket</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

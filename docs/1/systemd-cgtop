@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-cgtop - Show top control groups by their resource usage</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>systemd-cgtop</strong> [OPTIONS...] [GROUP]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-cgtop</strong> shows the top control groups of the local Linux control group hierarchy, ordered by their CPU, memory, or disk I/O load. The display is refreshed in regular intervals (by default every 1s), similar in style to <a href='/1/top'>top</a>(1). If a control group path is specified, shows only the services of the specified control group.</p>
+<p>If <strong>systemd-cgtop</strong> is not connected to a tty, no column headers are printed and the default is to only run one iteration. The <strong>--iterations=</strong> argument, if given, is honored. This mode is suitable for scripting.</p>
+<p>Resource usage is only accounted for control groups in the relevant hierarchy, i.e. CPU usage is only accounted for control groups in the "cpuacct" hierarchy, memory usage only for those in "memory" and disk I/O usage for those in "blkio". If resource monitoring for these resources is required, it is recommended to add the <code>CPUAccounting=1</code>, <code>MemoryAccounting=1</code> and <code>BlockIOAccounting=1</code> settings in the unit files in question. See <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5) for details.</p>
+<p>The CPU load value can be between 0 and 100 times the number of processors the system has. For example, if the system has 8 processors, the CPU load value is going to be between 0% and 800%. The number of processors can be found in "/proc/cpuinfo".</p>
+<p>To emphasize this: unless "CPUAccounting=1", "MemoryAccounting=1" and "BlockIOAccounting=1" are enabled for the services in question, no resource accounting will be available for system services and the data shown by <strong>systemd-cgtop</strong> will be incomplete.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The following options are understood:</p>
+<p><strong>-p</strong>, <strong>--order=path</strong></p>
+<blockquote>
+<p>Order by control group path name.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--order=tasks</strong></p>
+<blockquote>
+<p>Order by number of tasks/processes in the control group.</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--order=cpu</strong></p>
+<blockquote>
+<p>Order by CPU load.</p>
+</blockquote>
+<p><strong>-m</strong>, <strong>--order=memory</strong></p>
+<blockquote>
+<p>Order by memory usage.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--order=io</strong></p>
+<blockquote>
+<p>Order by disk I/O load.</p>
+</blockquote>
+<p><strong>-b</strong>, <strong>--batch</strong></p>
+<blockquote>
+<p>Run in "batch" mode: do not accept input and run until the iteration limit set with <strong>--iterations=</strong> is exhausted or until killed. This mode could be useful for sending output from <strong>systemd-cgtop</strong> to other programs or to a file.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--raw</strong></p>
+<blockquote>
+<p>Format byte counts (as in memory usage and I/O metrics) and CPU time with raw numeric values rather than human-readable numbers.</p>
+</blockquote>
+<p><strong>--cpu=percentage</strong>, <strong>--cpu=time</strong></p>
+<blockquote>
+<p>Controls whether the CPU usage is shown as percentage or time. By default, the CPU usage is shown as percentage. This setting may also be toggled at runtime by pressing the % key.</p>
+</blockquote>
+<p><strong>-P</strong></p>
+<blockquote>
+<p>Count only userspace processes instead of all tasks. By default, all tasks are counted: each kernel thread and each userspace thread individually. With this setting, kernel threads are excluded from the counting and each userspace process only counts as one, regardless how many threads it consists of. This setting may also be toggled at runtime by pressing the P key. This option may not be combined with <strong>-k</strong>.</p>
+</blockquote>
+<p><strong>-k</strong></p>
+<blockquote>
+<p>Count only userspace processes and kernel threads instead of all tasks. By default, all tasks are counted: each kernel thread and each userspace thread individually. With this setting, kernel threads are included in the counting and each userspace process only counts as on one, regardless how many threads it consists of. This setting may also be toggled at runtime by pressing the k key. This option may not be combined with <strong>-P</strong>.</p>
+</blockquote>
+<p><strong>--recursive=</strong></p>
+<blockquote>
+<p>Controls whether the number of processes shown for a control group shall include all processes that are contained in any of the child control groups as well. Takes a boolean argument, which defaults to "yes". If enabled, the processes in child control groups are included, if disabled, only the processes in the control group itself are counted. This setting may also be toggled at runtime by pressing the r key. Note that this setting only applies to process counting, i.e. when the <strong>-P</strong> or <strong>-k</strong> options are used. It has not effect if all tasks are counted, in which case the counting is always recursive.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--iterations=</strong></p>
+<blockquote>
+<p>Perform only this many iterations. A value of 0 indicates that the program should run indefinitely.</p>
+</blockquote>
+<p><strong>-1</strong></p>
+<blockquote>
+<p>A shortcut for <strong>--iterations=1</strong>.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--delay=</strong></p>
+<blockquote>
+<p>Specify refresh delay in seconds (or if one of "ms", "us", "min" is specified as unit in this time unit). This setting may also be increased and decreased at runtime by pressing the + and - keys.</p>
+</blockquote>
+<p><strong>--depth=</strong></p>
+<blockquote>
+<p>Maximum control group tree traversal depth. Specifies how deep <strong>systemd-cgtop</strong> shall traverse the control group hierarchies. If 0 is specified, only the root group is monitored. For 1, only the first level of control groups is monitored, and so on. Defaults to 3.</p>
+</blockquote>
+<p><strong>-M </strong><code>MACHINE</code>, <strong>--machine=</strong><code>MACHINE</code></p>
+<blockquote>
+<p>Limit control groups shown to the part corresponding to the container <code>MACHINE</code>. This option may not be used when a control group path is specified.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Print a short help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Print a short version string and exit.</p>
+</blockquote>
+</div></div></div><h1 id='keys'><a href='#keys'>KEYS</a></h1><div data-for='keys' data-hide><div class='section' data-for='keys'><div data-more>
+<p><strong>systemd-cgtop</strong> is an interactive tool and may be controlled via user input using the following keys:</p>
+<p>h</p>
+<blockquote>
+<p>Shows a short help text.</p>
+</blockquote>
+<p>Space</p>
+<blockquote>
+<p>Immediately refresh output.</p>
+</blockquote>
+<p>q</p>
+<blockquote>
+<p>Terminate the program.</p>
+</blockquote>
+<p>p, t, c, m, i</p>
+<blockquote>
+<p>Sort the control groups by path, number of tasks, CPU load, memory usage, or I/O load, respectively. This setting may also be controlled using the <strong>--order=</strong> command line switch.</p>
+</blockquote>
+<p>%</p>
+<blockquote>
+<p>Toggle between showing CPU time as time or percentage. This setting may also be controlled using the <strong>--cpu=</strong> command line switch.</p>
+</blockquote>
+<p>+, -</p>
+<blockquote>
+<p>Increase or decrease refresh delay, respectively. This setting may also be controlled using the <strong>--delay=</strong> command line switch.</p>
+</blockquote>
+<p>P</p>
+<blockquote>
+<p>Toggle between counting all tasks, or only userspace processes. This setting may also be controlled using the <strong>-P</strong> command line switch (see above).</p>
+</blockquote>
+<p>k</p>
+<blockquote>
+<p>Toggle between counting all tasks, or only userspace processes and kernel threads. This setting may also be controlled using the <strong>-k</strong> command line switch (see above).</p>
+</blockquote>
+<p>r</p>
+<blockquote>
+<p>Toggle between recursively including or excluding processes in child control groups in control group process counts. This setting may also be controlled using the <strong>--recursive=</strong> command line switch. This key is not available if all tasks are counted, it is only available if processes are counted, as enabled with the P or k keys.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>On success, 0 is returned, a non-zero failure code otherwise.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemctl'>systemctl</a>(1), <a href='/1/systemd-cgls'>systemd-cgls</a>(1), <a href='/5/systemd.resource-control'>systemd.resource-control</a>(5), <a href='/1/top'>top</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

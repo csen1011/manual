@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ldconfig - configure dynamic linker run-time bindings</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>/sbin/ldconfig</strong> [<strong>-nNvXV</strong>] [<strong>-f</strong> <code>conf</code>] [<strong>-C</strong> <code>cache</code>] [<strong>-r</strong> <code>root</code>] <code>directory</code>`..</p>
+<p><strong>/sbin/ldconfig</strong> <strong>-l</strong> [<strong>-v</strong>] <code>library</code>`..</p>
+<p><strong>/sbin/ldconfig</strong> <strong>-p</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>ldconfig</strong> creates the necessary links and cache to the most recent shared libraries found in the directories specified on the command line, in the file <code>/etc/ld.so.conf</code>, and in the trusted directories, <code>/lib</code> and <code>/usr/lib</code> (on some 64-bit architectures such as x86-64, <code>/lib</code> and <code>/usr/lib</code> are the trusted directories for 32-bit libraries, while <code>/lib64</code> and <code>/usr/lib64</code> are used for 64-bit libraries).</p>
+<p>The cache is used by the run-time linker, <code><a href="http://ld.so">ld.so</a></code> or <code><a href="http://ld-linux.so">ld-linux.so</a></code>. <strong>ldconfig</strong> checks the header and filenames of the libraries it encounters when determining which versions should have their links updated.</p>
+<p><strong>ldconfig</strong> will attempt to deduce the type of ELF libraries (i.e., libc5 or libc6/glibc) based on what C libraries, if any, the library was linked against.</p>
+<p>Some existing libraries do not contain enough information to allow the deduction of their type. Therefore, the <code>/etc/ld.so.conf</code> file format allows the specification of an expected type. This is used <code>only</code> for those ELF libraries which we can not work out. The format is "dirname=TYPE", where TYPE can be libc4, libc5, or libc6. (This syntax also works on the command line.) Spaces are <code>not</code> allowed. Also see the <strong>-p</strong> option. <strong>ldconfig</strong> should normally be run by the superuser as it may require write permission on some root owned directories and files.</p>
+<p>Note that <strong>ldconfig</strong> will only look at files that are named <code>lib*.so*</code> (for regular shared objects) or <code>ld-*.so*</code> (for the dynamic loader itself). Other files will be ignored. Also, <strong>ldconfig</strong> expects a certain pattern to how the symlinks are set up, like this example, where the middle file (<strong>libfoo.so.1</strong> here) is the SONAME for the library:</p>
+<pre><code><a href="http://libfoo.so">libfoo.so</a> -&gt; libfoo.so.1 -&gt; libfoo.so.1.12</code></pre>
+<p>Failure to follow this pattern may result in compatibility issues after an upgrade.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-c</strong> <code>fmt</code>, <strong>--format=<code>fmt</code></strong></dt>
+<dd><p>(Since glibc 2.2) Cache format to use: <code>old</code>, <code>new</code>, or <code>compat</code>. Since glibc 2.32, the default is <code>new</code>. Before that, it was <code>compat</code>.</p>
+</dd>
+<dt><strong>-C </strong><code>cache</code></dt>
+<dd><p>Use <code>cache</code> instead of <code>/etc/ld.so.cache</code>.</p>
+</dd>
+<dt><strong>-f </strong><code>conf</code></dt>
+<dd><p>Use <code>conf</code> instead of <code>/etc/ld.so.conf</code>.</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--ignore-aux-cache</strong></dt>
+<dd><p>(Since glibc 2.7) Ignore auxiliary cache file.</p>
+</dd>
+<dt><strong>-l</strong></dt>
+<dd><p>(Since glibc 2.2) Library mode. Manually link individual libraries. Intended for use by experts only.</p>
+</dd>
+<dt><strong>-n</strong></dt>
+<dd><p>Process only the directories specified on the command line. Don't process the trusted directories, nor those specified in <code>/etc/ld.so.conf</code>. Implies <strong>-N</strong>.</p>
+</dd>
+<dt><strong>-N</strong></dt>
+<dd><p>Don't rebuild the cache. Unless <strong>-X</strong> is also specified, links are still updated.</p>
+</dd>
+<dt><strong>-p</strong>, <strong>--print-cache</strong></dt>
+<dd><p>Print the lists of directories and candidate libraries stored in the current cache.</p>
+</dd>
+<dt><strong>-r </strong><code>root</code></dt>
+<dd><p>Change to and use <code>root</code> as the root directory.</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--verbose</strong></dt>
+<dd><p>Verbose mode. Print current version number, the name of each directory as it is scanned, and any links that are created. Overrides quiet mode.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Print program version.</p>
+</dd>
+<dt><strong>-X</strong></dt>
+<dd><p>Don't update links. Unless <strong>-N</strong> is also specified, the cache is still rebuilt.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/lib/<a href="http://ld.so">ld.so</a></code></dt>
+<dd><p>Run-time linker/loader.</p>
+</dd>
+<dt><code>/etc/ld.so.conf</code></dt>
+<dd><p>File containing a list of directories, one per line, in which to search for libraries.</p>
+</dd>
+<dt><code>/etc/ld.so.cache</code></dt>
+<dd><p>File containing an ordered list of libraries found in the directories specified in <code>/etc/ld.so.conf</code>, as well as those found in the trusted directories.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ldd'>ldd</a>(1), <strong><a href="http://ld.so">ld.so</a></strong>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

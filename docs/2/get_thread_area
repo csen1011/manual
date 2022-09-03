@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;get_thread_area&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>get_thread_area</a>, set_thread_area - manipulate thread-local storage information</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;linux/unistd.h&gt;</a>
+
+#if defined __i386__ || defined __x86_64__
+# include &lt;asm/ldt.h&gt;
+
+int get_thread_area(struct user_desc *u_info);
+int set_thread_area(struct user_desc *u_info);
+
+#elif defined __m68k__
+
+int get_thread_area(void);
+int set_thread_area(unsigned long tp);
+
+#elif defined __mips__
+
+int set_thread_area(unsigned long addr);
+
+#endif</code></pre>
+<p><code>Note</code>: There are no glibc wrappers for these system calls; see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These calls provide architecture-specific support for a thread-local storage implementation. At the moment, <a href='set_thread_area'>set_thread_area</a>() is available on m68k, MIPS, and x86 (both 32-bit and 64-bit variants); <a href='get_thread_area'>get_thread_area</a>() is available on m68k and x86.</p>
+<p>On m68k and MIPS, <a href='set_thread_area'>set_thread_area</a>() allows storing an arbitrary pointer (provided in the <strong>tp</strong> argument on m68k and in the <strong>addr</strong> argument on MIPS) in the kernel data structure associated with the calling thread; this pointer can later be retrieved using <a href='get_thread_area'>get_thread_area</a>() (see also NOTES for information regarding obtaining the thread pointer on MIPS).</p>
+<p>On x86, Linux dedicates three global descriptor table (GDT) entries for thread-local storage. For more information about the GDT, see the Intel Software Developer's Manual or the AMD Architecture Programming Manual.</p>
+<p>Both of these system calls take an argument that is a pointer to a structure of the following type:</p>
+<pre><code>struct user_desc {
+    unsigned int  entry_number;
+    unsigned int  base_addr;
+    unsigned int  limit;
+    unsigned int  seg_32bit:1;
+    unsigned int  contents:2;
+    unsigned int  read_exec_only:1;
+    unsigned int  limit_in_pages:1;
+    unsigned int  seg_not_present:1;
+    unsigned int  useable:1;
+#ifdef __x86_64__
+    unsigned int  lm:1;
+#endif
+};</code></pre>
+<p><a href='get_thread_area'>get_thread_area</a>() reads the GDT entry indicated by <code>u_info-&gt;entry_number</code> and fills in the rest of the fields in <code>u_info</code>.</p>
+<p><a href='set_thread_area'>set_thread_area</a>() sets a TLS entry in the GDT.</p>
+<p>The TLS array entry set by <a href='set_thread_area'>set_thread_area</a>() corresponds to the value of <code>u_info-&gt;entry_number</code> passed in by the user. If this value is in bounds, <a href='set_thread_area'>set_thread_area</a>() writes the TLS descriptor pointed to by <code>u_info</code> into the thread's TLS array.</p>
+<p>When <a href='set_thread_area'>set_thread_area</a>() is passed an <code>entry_number</code> of -1, it searches for a free TLS entry. If <a href='set_thread_area'>set_thread_area</a>() finds a free TLS entry, the value of <code>u_info-&gt;entry_number</code> is set upon return to show which entry was changed.</p>
+<p>A <code>user_desc</code> is considered "empty" if <code>read_exec_only</code> and <code>seg_not_present</code> are set to 1 and all of the other fields are 0. If an "empty" descriptor is passed to <a href='set_thread_area'>set_thread_area</a>(), the corresponding TLS entry will be cleared. See <a href='#bugs'>BUGS </a>for additional details.</p>
+<p>Since Linux 3.19, <a href='set_thread_area'>set_thread_area</a>() cannot be used to write non-present segments, 16-bit segments, or code segments, although clearing a segment is still acceptable.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On x86, these system calls return 0 on success, and -1 on failure, with <code>errno</code> set appropriately.</p>
+<p>On MIPS and m68k, <a href='set_thread_area'>set_thread_area</a>() always returns 0. On m68k, <a href='get_thread_area'>get_thread_area</a>() returns the thread area pointer value (previously set via <a href='set_thread_area'>set_thread_area</a>()).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>u_info</code> is an invalid pointer.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>u_info-&gt;entry_number</code> is out of bounds.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p><a href='get_thread_area'>get_thread_area</a>() or <a href='set_thread_area'>set_thread_area</a>() was invoked as a 64-bit system call.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>(<a href='set_thread_area'>set_thread_area</a>()) A free TLS entry could not be located.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='set_thread_area'>set_thread_area</a>() first appeared in Linux 2.5.29. <a href='get_thread_area'>get_thread_area</a>() first appeared in Linux 2.5.32.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='set_thread_area'>set_thread_area</a>() and <a href='get_thread_area'>get_thread_area</a>() are Linux-specific and should not be used in programs that are intended to be portable.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Glibc does not provide wrappers for these system calls, since they are generally intended for use only by threading libraries. In the unlikely event that you want to call them directly, use <a href='/2/syscall'>syscall</a>(2).</p>
+<p><a href='/2/arch_prctl'>arch_prctl</a>(2) can interfere with <a href='set_thread_area'>set_thread_area</a>() on x86. See <a href='/2/arch_prctl'>arch_prctl</a>(2) for more details. This is not normally a problem, as <a href='/2/arch_prctl'>arch_prctl</a>(2) is normally used only by 64-bit programs.</p>
+<p>On MIPS, the current value of the thread area pointer can be obtained using the instruction:</p>
+<pre><code>rdhwr dest, $29</code></pre>
+<p>This instruction traps and is handled by kernel.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>On 64-bit kernels before Linux 3.19, one of the padding bits in <code>user_desc</code>, if set, would prevent the descriptor from being considered empty (see <a href='/2/modify_ldt'>modify_ldt</a>(2)). As a result, the only reliable way to clear a TLS entry is to use <a href='/3/memset'>memset</a>(3) to zero the entire <code>user_desc</code> structure, including padding bits, and then to set the <code>read_exec_only</code> and <code>seg_not_present</code> bits. On Linux 3.19, a <code>user_desc</code> consisting entirely of zeros except for <code>entry_number</code> will also be interpreted as a request to clear a TLS entry, but this behaved differently on older kernels.</p>
+<p>Prior to Linux 3.19, the DS and ES segment registers must not reference TLS entries.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/arch_prctl'>arch_prctl</a>(2), <a href='/2/modify_ldt'>modify_ldt</a>(2), <a href='/2/ptrace'>ptrace</a>(2) (<strong>PTRACE_GET_THREAD_AREA</strong> and <strong>PTRACE_SET_THREAD_AREA</strong>)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

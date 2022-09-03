@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>glob - globbing pathnames</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Long ago, in UNIX V6, there was a program <code>/etc/glob</code> that would expand wildcard patterns. Soon afterward this became a shell built-in.</p>
+<p>These days there is also a library routine <a href='/3/glob'>glob</a>(3) that will perform this function for a user program.</p>
+<p>The rules are as follows (POSIX.2, 3.13).</p>
+<h2>Wildcard matching</h2>
+<p>A string is a wildcard pattern if it contains one of the characters '?', '*' or '['. Globbing is the operation that expands a wildcard pattern into the list of pathnames matching the pattern. Matching is defined by:</p>
+<p>A '?' (not between brackets) matches any single character.</p>
+<p>A '*' (not between brackets) matches any string, including the empty string.</p>
+<p><strong>Character classes</strong></p>
+<p>An expression "<code>[...]</code>" where the first character after the leading '[' is not an '!' matches a single character, namely any of the characters enclosed by the brackets. The string enclosed by the brackets cannot be empty; therefore ']' can be allowed between the brackets, provided that it is the first character. (Thus, "<code>[][!]</code>" matches the three characters '[', ']' and '!'.)</p>
+<p><strong>Ranges</strong></p>
+<p>There is one special convention: two characters separated by '-' denote a range. (Thus, "<code>[A-Fa-f0-9]</code>" is equivalent to "<code>[ABCDEFabcdef0123456789]</code>".) One may include '-' in its literal meaning by making it the first or last character between the brackets. (Thus, "<code>[]-]</code>" matches just the two characters ']' and '-', and "<code>[--0]</code>" matches the three characters '-', '.', '0', since '/' cannot be matched.)</p>
+<p><strong>Complementation</strong></p>
+<p>An expression "<code>[!...]</code>" matches a single character, namely any character that is not matched by the expression obtained by removing the first '!' from it. (Thus, "<code>[!]a-]</code>" matches any single character except ']', 'a' and '-'.)</p>
+<p>One can remove the special meaning of '?', '*' and '[' by preceding them by a backslash, or, in case this is part of a shell command line, enclosing them in quotes. Between brackets these characters stand for themselves. Thus, "<code>[[?*\]</code>" matches the four characters '[', '?', '*' and '\'.</p>
+<h2>Pathnames</h2>
+<p>Globbing is applied on each of the components of a pathname separately. A '/' in a pathname cannot be matched by a '?' or '*' wildcard, or by a range like "<code>[.-0]</code>". A range containing an explicit '/' character is syntactically incorrect. (POSIX requires that syntactically incorrect patterns are left unchanged.)</p>
+<p>If a filename starts with a '.', this character must be matched explicitly. (Thus, <code>rm *</code> will not remove .profile, and <code>tar c *</code> will not archive all your files; <code>tar c .</code> is better.)</p>
+<h2>Empty lists</h2>
+<p>The nice and simple rule given above: "expand a wildcard pattern into the list of matching pathnames" was the original UNIX definition. It allowed one to have patterns that expand into an empty list, as in</p>
+<pre><code>    xv -wait 0 *.gif *.jpg</code></pre>
+<p>where perhaps no *.gif files are present (and this is not an error). However, POSIX requires that a wildcard pattern is left unchanged when it is syntactically incorrect, or the list of matching pathnames is empty. With <code>bash</code> one can force the classical behavior using this command:</p>
+<p>shopt -s nullglob</p>
+<p>(Similar problems occur elsewhere. For example, where old scripts have</p>
+<pre><code>    rm `find . -name "*~"`</code></pre>
+<p>new scripts require</p>
+<pre><code>    rm -f nosuchfile `find . -name "*~"`</code></pre>
+<p>to avoid error messages from <code>rm</code> called with an empty argument list.)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Regular expressions</h2>
+<p>Note that wildcard patterns are not regular expressions, although they are a bit similar. First of all, they match filenames, rather than text, and secondly, the conventions are not the same: for example, in a regular expression '*' means zero or more copies of the preceding thing.</p>
+<p>Now that regular expressions have bracket expressions where the negation is indicated by a '^', POSIX has declared the effect of a wildcard pattern "<code>[^...]</code>" to be undefined.</p>
+<h2>Character classes and internationalization</h2>
+<p>Of course ranges were originally meant to be ASCII ranges, so that "<code>[ -%]</code>" stands for "<code>[ !"#$%]</code>" and "<code>[a-z]</code>" stands for "any lowercase letter". Some UNIX implementations generalized this so that a range X-Y stands for the set of characters with code between the codes for X and for Y. However, this requires the user to know the character coding in use on the local system, and moreover, is not convenient if the collating sequence for the local alphabet differs from the ordering of the character codes. Therefore, POSIX extended the bracket notation greatly, both for wildcard patterns and for regular expressions. In the above we saw three types of items that can occur in a bracket expression: namely (i) the negation, (ii) explicit single characters, and (iii) ranges. POSIX specifies ranges in an internationally more useful way and adds three more types:</p>
+<p>(iii) Ranges X-Y comprise all characters that fall between X and Y (inclusive) in the current collating sequence as defined by the <strong>LC_COLLATE</strong> category in the current locale.</p>
+<p>(iv) Named character classes, like</p>
+<pre><code>[:alnum:]  [:alpha:]  [:blank:]  [:cntrl:]
+[:digit:]  [:graph:]  [:lower:]  [:print:]
+[:punct:]  [:space:]  [:upper:]  [:xdigit:]</code></pre>
+<p>so that one can say "<code>[[:lower:]]</code>" instead of "<code>[a-z]</code>", and have things work in Denmark, too, where there are three letters past 'z' in the alphabet. These character classes are defined by the <strong>LC_CTYPE</strong> category in the current locale.</p>
+<p>(v) Collating symbols, like "<code>[.ch.]</code>" or "<code>[.a-acute.]</code>", where the string between "<code>[.</code>" and "<code>.]</code>" is a collating element defined for the current locale. Note that this may be a multicharacter element.</p>
+<p>(vi) Equivalence class expressions, like "<code>[=a=]</code>", where the string between "<code>[=</code>" and "<code>=]</code>" is any collating element from its equivalence class, as defined for the current locale. For example, "<code>[[=a=]]</code>" might be equivalent to "<code>[aá�aäâ]</code>", that is, to "<code>[a[.a-acute.][.a-grave.][.a-umlaut.][.a-circumflex.]]</code>".</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/sh'>sh</a>(1), <a href='/3/fnmatch'>fnmatch</a>(3), <a href='/3/glob'>glob</a>(3), <a href='/7/locale'>locale</a>(7), <a href='/7/regex'>regex</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

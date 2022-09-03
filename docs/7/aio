@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>aio - POSIX asynchronous I/O overview</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The POSIX asynchronous I/O (AIO) interface allows applications to initiate one or more I/O operations that are performed asynchronously (i.e., in the background). The application can elect to be notified of completion of the I/O operation in a variety of ways: by delivery of a signal, by instantiation of a thread, or no notification at all.</p>
+<p>The POSIX AIO interface consists of the following functions:</p>
+<dl>
+<dt><a href='/3/aio_read'>aio_read</a>(3)</dt>
+<dd><p>Enqueue a read request. This is the asynchronous analog of <a href='/2/read'>read</a>(2).</p>
+</dd>
+<dt><a href='/3/aio_write'>aio_write</a>(3)</dt>
+<dd><p>Enqueue a write request. This is the asynchronous analog of <a href='/2/write'>write</a>(2).</p>
+</dd>
+<dt><a href='/3/aio_fsync'>aio_fsync</a>(3)</dt>
+<dd><p>Enqueue a sync request for the I/O operations on a file descriptor. This is the asynchronous analog of <a href='/2/fsync'>fsync</a>(2) and <a href='/2/fdatasync'>fdatasync</a>(2).</p>
+</dd>
+<dt><a href='/3/aio_error'>aio_error</a>(3)</dt>
+<dd><p>Obtain the error status of an enqueued I/O request.</p>
+</dd>
+<dt><a href='/3/aio_return'>aio_return</a>(3)</dt>
+<dd><p>Obtain the return status of a completed I/O request.</p>
+</dd>
+<dt><a href='/3/aio_suspend'>aio_suspend</a>(3)</dt>
+<dd><p>Suspend the caller until one or more of a specified set of I/O requests completes.</p>
+</dd>
+<dt><a href='/3/aio_cancel'>aio_cancel</a>(3)</dt>
+<dd><p>Attempt to cancel outstanding I/O requests on a specified file descriptor.</p>
+</dd>
+<dt><a href='/3/lio_listio'>lio_listio</a>(3)</dt>
+<dd><p>Enqueue multiple I/O requests using a single function call.</p>
+</dd>
+</dl>
+<p>The <code>aiocb</code> ("asynchronous I/O control block") structure defines parameters that control an I/O operation. An argument of this type is employed with all of the functions listed above. This structure has the following form:</p>
+<pre><code>#include &lt;aiocb.h&gt;
+
+struct aiocb {
+    /* The order of these fields is implementation-dependent */
+
+    int             aio_fildes;     /* File descriptor */
+    off_t           aio_offset;     /* File offset */
+    volatile void  *aio_buf;        /* Location of buffer */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a>          aio_nbytes;     /* Length of transfer */
+    int             aio_reqprio;    /* Request priority */
+    struct sigevent aio_sigevent;   /* Notification method */
+    int             aio_lio_opcode; /* Operation to be performed;
+                                       lio_listio() only */
+
+    /* Various implementation-internal fields not shown */
+};
+
+/* Operation codes for 'aio_lio_opcode': */
+
+enum { LIO_READ, LIO_WRITE, LIO_NOP };</code></pre>
+<p>The fields of this structure are as follows:</p>
+<dl>
+<dt><code>aio_fildes</code></dt>
+<dd><p>The file descriptor on which the I/O operation is to be performed.</p>
+</dd>
+<dt><code>aio_offset</code></dt>
+<dd><p>This is the file offset at which the I/O operation is to be performed.</p>
+</dd>
+<dt><code>aio_buf</code></dt>
+<dd><p>This is the buffer used to transfer data for a read or write operation.</p>
+</dd>
+<dt><code>aio_nbytes</code></dt>
+<dd><p>This is the size of the buffer pointed to by <code>aio_buf</code>.</p>
+</dd>
+<dt><code>aio_reqprio</code></dt>
+<dd><p>This field specifies a value that is subtracted from the calling thread's real-time priority in order to determine the priority for execution of this I/O request (see <a href='/3/pthread_setschedparam'>pthread_setschedparam</a>(3)). The specified value must be between 0 and the value returned by <code>sysconf(_SC_AIO_PRIO_DELTA_MAX)</code>. This field is ignored for file synchronization operations.</p>
+</dd>
+<dt><code>aio_sigevent</code></dt>
+<dd><p>This field is a structure that specifies how the caller is to be notified when the asynchronous I/O operation completes. Possible values for <code>aio_sigevent.sigev_notify</code> are <strong>SIGEV_NONE</strong>, <strong>SIGEV_SIGNAL</strong>, and <strong>SIGEV_THREAD</strong>. See <a href='/7/sigevent'>sigevent</a>(7) for further details.</p>
+</dd>
+<dt><code>aio_lio_opcode</code></dt>
+<dd><p>The type of operation to be performed; used only for <a href='/3/lio_listio'>lio_listio</a>(3).</p>
+</dd>
+</dl>
+<p>In addition to the standard functions listed above, the GNU C library provides the following extension to the POSIX AIO API:</p>
+<dl>
+<dt><a href='/3/aio_init'>aio_init</a>(3)</dt>
+<dd><p>Set parameters for tuning the behavior of the glibc POSIX AIO implementation.</p>
+</dd>
+</dl>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The <code>aio_reqprio</code> field of the <code>aiocb</code> structure was less than 0, or was greater than the limit returned by the call <code>sysconf(_SC_AIO_PRIO_DELTA_MAX)</code>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The POSIX AIO interfaces are provided by glibc since version 2.1.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>It is a good idea to zero out the control block buffer before use (see <a href='/3/memset'>memset</a>(3)). The control block buffer and the buffer pointed to by <code>aio_buf</code> must not be changed while the I/O operation is in progress. These buffers must remain valid until the I/O operation completes.</p>
+<p>Simultaneous asynchronous read or write operations using the same <code>aiocb</code> structure yield undefined results.</p>
+<p>The current Linux POSIX AIO implementation is provided in user space by glibc. This has a number of limitations, most notably that maintaining multiple threads to perform I/O operations is expensive and scales poorly. Work has been in progress for some time on a kernel state-machine-based implementation of asynchronous I/O (see <a href='/2/io_submit'>io_submit</a>(2), <a href='/2/io_setup'>io_setup</a>(2), <a href='/2/io_cancel'>io_cancel</a>(2), <a href='/2/io_destroy'>io_destroy</a>(2), <a href='/2/io_getevents'>io_getevents</a>(2)), but this implementation hasn't yet matured to the point where the POSIX AIO implementation can be completely reimplemented using the kernel system calls.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below opens each of the files named in its command-line arguments and queues a request on the resulting file descriptor using <a href='/3/aio_read'>aio_read</a>(3). The program then loops, periodically monitoring each of the I/O operations that is still in progress using <a href='/3/aio_error'>aio_error</a>(3). Each of the I/O requests is set up to provide notification by delivery of a signal. After all I/O requests have completed, the program retrieves their status using <a href='/3/aio_return'>aio_return</a>(3).</p>
+<p>The <strong>SIGQUIT</strong> signal (generated by typing control-\) causes the program to request cancellation of each of the outstanding requests using <a href='/3/aio_cancel'>aio_cancel</a>(3).</p>
+<p>Here is an example of what we might see when running this program. In this example, the program queues two requests to standard input, and these are satisfied by two lines of input containing "abc" and "x".</p>
+<pre><code>$ ./a.out /dev/stdin /dev/stdin
+opened /dev/stdin on descriptor 3
+opened /dev/stdin on descriptor 4
+aio_error():
+    for request 0 (descriptor 3): In progress
+    for request 1 (descriptor 4): In progress
+abc
+I/O completion signal received
+aio_error():
+    for request 0 (descriptor 3): I/O succeeded
+    for request 1 (descriptor 4): In progress
+aio_error():
+    for request 1 (descriptor 4): In progress
+x
+I/O completion signal received
+aio_error():
+    for request 1 (descriptor 4): I/O succeeded
+All I/O requests completed
+aio_return():
+    for request 0 (descriptor 3): 4
+    for request 1 (descriptor 4): 2</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;fcntl.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;aio.h&gt;
+#include &lt;signal.h&gt;
+
+#define BUF_SIZE 20     /* Size of buffers for read operations */
+
+#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+struct ioRequest {      /* Application-defined structure for tracking
+                           I/O requests */
+    int           reqNum;
+    int           status;
+    struct aiocb *aiocbp;
+};
+
+static volatile sig_atomic_t gotSIGQUIT = 0;
+                        /* On delivery of SIGQUIT, we attempt to
+                           cancel all outstanding I/O requests */
+
+static void             /* Handler for SIGQUIT */
+quitHandler(int sig)
+{
+    gotSIGQUIT = 1;
+}
+
+#define IO_SIGNAL SIGUSR1   /* Signal used to notify I/O completion */
+
+static void                 /* Handler for I/O completion signal */
+aioSigHandler(int sig, siginfo_t *si, void *ucontext)
+{
+    if (si-&gt;si_code == SI_ASYNCIO) {
+        write(STDOUT_FILENO, "I/O completion signal received\n", 31);
+
+        /* The corresponding ioRequest structure would be available as
+               struct ioRequest *ioReq = si-&gt;si_value.sival_ptr;
+           and the file descriptor would then be available via
+               ioReq-&gt;aiocbp-&gt;aio_fildes */
+    }
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct sigaction sa;
+    int s;
+    int numReqs;        /* Total number of queued I/O requests */
+    int openReqs;       /* Number of I/O requests still in progress */
+
+    if (argc &lt; 2) {
+        fprintf(stderr, "Usage: %s &lt;pathname&gt; &lt;pathname&gt;...\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    numReqs = argc - 1;
+
+    /* Allocate our arrays */
+
+    struct ioRequest *ioList = calloc(numReqs, sizeof(*ioList));
+    if (ioList == NULL)
+        errExit("calloc");
+
+    struct aiocb *aiocbList = calloc(numReqs, sizeof(*aiocbList));
+    if (aiocbList == NULL)
+        errExit("calloc");
+
+    /* Establish handlers for SIGQUIT and the I/O completion signal */
+
+    sa.sa_flags = SA_RESTART;
+    sigemptyset(&amp;sa.sa_mask);
+
+    sa.sa_handler = quitHandler;
+    if (sigaction(SIGQUIT, &amp;sa, NULL) == -1)
+        errExit("sigaction");
+
+    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sa.sa_sigaction = aioSigHandler;
+    if (sigaction(IO_SIGNAL, &amp;sa, NULL) == -1)
+        errExit("sigaction");
+
+    /* Open each file specified on the command line, and queue
+       a read request on the resulting file descriptor */
+
+    for (int j = 0; j &lt; numReqs; j++) {
+        ioList[j].reqNum = j;
+        ioList[j].status = EINPROGRESS;
+        ioList[j].aiocbp = &amp;aiocbList[j];
+
+        ioList[j].aiocbp-&gt;aio_fildes = open(argv[j + 1], O_RDONLY);
+        if (ioList[j].aiocbp-&gt;aio_fildes == -1)
+            errExit("open");
+        printf("opened %s on descriptor %d\n", argv[j + 1],
+                ioList[j].aiocbp-&gt;aio_fildes);
+
+        ioList[j].aiocbp-&gt;aio_buf = malloc(BUF_SIZE);
+        if (ioList[j].aiocbp-&gt;aio_buf == NULL)
+            errExit("malloc");
+
+        ioList[j].aiocbp-&gt;aio_nbytes = BUF_SIZE;
+        ioList[j].aiocbp-&gt;aio_reqprio = 0;
+        ioList[j].aiocbp-&gt;aio_offset = 0;
+        ioList[j].aiocbp-&gt;aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+        ioList[j].aiocbp-&gt;aio_sigevent.sigev_signo = IO_SIGNAL;
+        ioList[j].aiocbp-&gt;aio_sigevent.sigev_value.sival_ptr =
+                                &amp;ioList[j];
+
+        s = aio_read(ioList[j].aiocbp);
+        if (s == -1)
+            errExit("aio_read");
+    }
+
+    openReqs = numReqs;
+
+    /* Loop, monitoring status of I/O requests */
+
+    while (openReqs &gt; 0) {
+        sleep(3);       /* Delay between each monitoring step */
+
+        if (gotSIGQUIT) {
+
+            /* On receipt of SIGQUIT, attempt to cancel each of the
+               outstanding I/O requests, and display status returned
+               from the cancellation requests */
+
+            printf("got SIGQUIT; canceling I/O requests: \n");
+
+            for (int j = 0; j &lt; numReqs; j++) {
+                if (ioList[j].status == EINPROGRESS) {
+                    printf("    Request %d on descriptor %d:", j,
+                            ioList[j].aiocbp-&gt;aio_fildes);
+                    s = aio_cancel(ioList[j].aiocbp-&gt;aio_fildes,
+                            ioList[j].aiocbp);
+                    if (s == AIO_CANCELED)
+                        printf("I/O canceled\n");
+                    else if (s == AIO_NOTCANCELED)
+                        printf("I/O not canceled\n");
+                    else if (s == AIO_ALLDONE)
+                        printf("I/O all done\n");
+                    else
+                        perror("aio_cancel");
+                }
+            }
+
+            gotSIGQUIT = 0;
+        }
+
+        /* Check the status of each I/O request that is still
+           in progress */
+
+        printf("aio_error():\n");
+        for (int j = 0; j &lt; numReqs; j++) {
+            if (ioList[j].status == EINPROGRESS) {
+                printf("    for request %d (descriptor %d): ",
+                        j, ioList[j].aiocbp-&gt;aio_fildes);
+                ioList[j].status = aio_error(ioList[j].aiocbp);
+
+                switch (ioList[j].status) {
+                case 0:
+                    printf("I/O succeeded\n");
+                    break;
+                case EINPROGRESS:
+                    printf("In progress\n");
+                    break;
+                case ECANCELED:
+                    printf("Canceled\n");
+                    break;
+                default:
+                    perror("aio_error");
+                    break;
+                }
+
+                if (ioList[j].status != EINPROGRESS)
+                    openReqs--;
+            }
+        }
+    }
+
+    printf("All I/O requests completed\n");
+
+    /* Check status return of all I/O requests */
+
+    printf("aio_return():\n");
+    for (int j = 0; j &lt; numReqs; j++) {
+        ssize_t s;
+
+        s = aio_return(ioList[j].aiocbp);
+        printf("    for request %d (descriptor %d): %zd\n",
+                j, ioList[j].aiocbp-&gt;aio_fildes, s);
+    }
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/io_cancel'>io_cancel</a>(2), <a href='/2/io_destroy'>io_destroy</a>(2), <a href='/2/io_getevents'>io_getevents</a>(2), <a href='/2/io_setup'>io_setup</a>(2), <a href='/2/io_submit'>io_submit</a>(2), <a href='/3/aio_cancel'>aio_cancel</a>(3), <a href='/3/aio_error'>aio_error</a>(3), <a href='/3/aio_init'>aio_init</a>(3), <a href='/3/aio_read'>aio_read</a>(3), <a href='/3/aio_return'>aio_return</a>(3), <a href='/3/aio_write'>aio_write</a>(3), <a href='/3/lio_listio'>lio_listio</a>(3)</p>
+<p>"Asynchronous I/O Support in Linux 2.5", Bhattacharya, Pratt, Pulavarty, and Morgan, Proceedings of the Linux Symposium, 2003, <a href="<a href="https://www.kernel.org/doc/ols/2003/ols2003-pages-351-366.pdf">https://www.kernel.org/doc/ols/2003/ols2003-pages-351-366.pdf</a>"></a></p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

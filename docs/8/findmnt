@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>findmnt - find a filesystem</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>findmnt</strong> [options]</p>
+<p><strong>findmnt</strong> [options] <code>device</code>|<code>mountpoint</code></p>
+<p><strong>findmnt</strong> [options] [<strong>--source</strong>] <code>device</code> [<strong>--target</strong> <code>path</code>|<strong>--mountpoint</strong> <code>mountpoint</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>findmnt</strong> will list all mounted filesystems or search for a filesystem. The <strong>findmnt</strong> command is able to search in <code>/etc/fstab</code>, <code>/etc/mtab</code> or <code>/proc/self/mountinfo</code>. If <code>device</code> or <code>mountpoint</code> is not given, all filesystems are shown.</p>
+<p>The device may be specified by device name, major:minor numbers, filesystem label or UUID, or partition label or UUID. Note that <strong>findmnt</strong> follows <a href='/8/mount'>mount</a>(8) behavior where a device name may be interpreted as a mountpoint (and vice versa) if the <strong>--target</strong>, <strong>--mountpoint</strong> or <strong>--source</strong> options are not specified.</p>
+<p>The command-line option <strong>--target</strong> accepts any file or directory and then <strong>findmnt</strong> displays the filesystem for the given path.</p>
+<p>The command prints all mounted filesystems in the tree-like format by default.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-A</strong>, <strong>--all</strong></p>
+<blockquote>
+<p>Disable all built-in filters and print all filesystems.</p>
+</blockquote>
+<p><strong>-a</strong>, <strong>--ascii</strong></p>
+<blockquote>
+<p>Use ascii characters for tree formatting.</p>
+</blockquote>
+<p><strong>-b</strong>, <strong>--bytes</strong></p>
+<blockquote>
+<p>Print the SIZE, USED and AVAIL columns in bytes rather than in a human-readable format.</p>
+</blockquote>
+<p><strong>-C</strong>, <strong>--nocanonicalize</strong></p>
+<blockquote>
+<p>Do not canonicalize paths at all. This option affects the comparing of paths and the evaluation of tags (LABEL, UUID, etc.).</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--canonicalize</strong></p>
+<blockquote>
+<p>Canonicalize all printed paths.</p>
+</blockquote>
+<p><strong>-D</strong>, <strong>--df</strong></p>
+<blockquote>
+<p>Imitate the output of <a href='/1/df'>df</a>(1). This option is equivalent to <strong>-o SOURCE,FSTYPE,SIZE,USED,AVAIL,USE%,TARGET</strong> but excludes all pseudo filesystems. Use <strong>--all</strong> to print all filesystems.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--direction</strong> <code>word</code></p>
+<blockquote>
+<p>The search direction, either <strong>forward</strong> or <strong>backward</strong>.</p>
+</blockquote>
+<p><strong>-e</strong>, <strong>--evaluate</strong></p>
+<blockquote>
+<p>Convert all tags (LABEL, UUID, PARTUUID or PARTLABEL) to the corresponding device names.</p>
+</blockquote>
+<p><strong>-F</strong>, <strong>--tab-file</strong> <code>path</code></p>
+<blockquote>
+<p>Search in an alternative file. If used with <strong>--fstab</strong>, <strong>--mtab</strong> or <strong>--kernel</strong>, then it overrides the default paths. If specified more than once, then tree-like output is disabled (see the <strong>--list</strong> option).</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--first-only</strong></p>
+<blockquote>
+<p>Print the first matching filesystem only.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--invert</strong></p>
+<blockquote>
+<p>Invert the sense of matching.</p>
+</blockquote>
+<p><strong>-J</strong>, <strong>--json</strong></p>
+<blockquote>
+<p>Use JSON output format.</p>
+</blockquote>
+<p><strong>-k</strong>, <strong>--kernel</strong></p>
+<blockquote>
+<p>Search in <code>/proc/self/mountinfo</code>. The output is in the tree-like format. This is the default. The output contains only mount options maintained by kernel (see also <strong>--mtab)</strong>.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--list</strong></p>
+<blockquote>
+<p>Use the list output format. This output format is automatically enabled if the output is restricted by the <strong>-t</strong>, <strong>-O</strong>, <strong>-S</strong> or <strong>-T</strong> option and the option <strong>--submounts</strong> is not used or if more that one source file (the option <strong>-F</strong>) is specified.</p>
+</blockquote>
+<p><strong>-M</strong>, <strong>--mountpoint</strong> <code>path</code></p>
+<blockquote>
+<p>Explicitly define the mountpoint file or directory. See also <strong>--target</strong>.</p>
+</blockquote>
+<p><strong>-m</strong>, <strong>--mtab</strong></p>
+<blockquote>
+<p>Search in <code>/etc/mtab</code>. The output is in the list format by default (see <strong>--tree</strong>). The output may include user space mount options.</p>
+</blockquote>
+<p><strong>-N</strong>, <strong>--task</strong> <code>tid</code></p>
+<blockquote>
+<p>Use alternative namespace <code>/proc/&lt;tid&gt;/mountinfo</code> rather than the default <code>/proc/self/mountinfo</code>. If the option is specified more than once, then tree-like output is disabled (see the <strong>--list</strong> option). See also the <a href='/1/unshare'>unshare</a>(1) command.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--noheadings</strong></p>
+<blockquote>
+<p>Do not print a header line.</p>
+</blockquote>
+<p><strong>-O</strong>, <strong>--options</strong> <code>list</code></p>
+<blockquote>
+<p>Limit the set of printed filesystems. More than one option may be specified in a comma-separated list. The <strong>-t</strong> and <strong>-O</strong> options are cumulative in effect. It is different from <strong>-t</strong> in that each option is matched exactly; a leading <code>no</code> at the beginning does not have global meaning. The "no" can used for individual items in the list. The "no" prefix interpretation can be disabled by "+" prefix.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--output</strong> <code>list</code></p>
+<blockquote>
+<p>Define output columns. See the <strong>--help</strong> output to get a list of the currently supported columns. The <strong>TARGET</strong> column contains tree formatting if the <strong>--list</strong> or <strong>--raw</strong> options are not specified.</p>
+<p>The default list of columns may be extended if <code>list</code> is specified in the format <code>+list</code> (e.g., <strong>findmnt -o +PROPAGATION</strong>).</p>
+</blockquote>
+<p><strong>--output-all</strong></p>
+<blockquote>
+<p>Output almost all available columns. The columns that require <strong>--poll</strong> are not included.</p>
+</blockquote>
+<p><strong>-P</strong>, <strong>--pairs</strong></p>
+<blockquote>
+<p>Produce output in the form of key="value" pairs. All potentially unsafe value characters are hex-escaped (\x&lt;code&gt;).</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--poll</strong>[<code>=list</code>]</p>
+<blockquote>
+<p>Monitor changes in the <code>/proc/self/mountinfo</code> file. Supported actions are: mount, umount, remount and move. More than one action may be specified in a comma-separated list. All actions are monitored by default.</p>
+<p>The time for which <strong>--poll</strong> will block can be restricted with the <strong>--timeout</strong> or <strong>--first-only</strong> options.</p>
+<p>The standard columns always use the new version of the information from the mountinfo file, except the umount action which is based on the original information cached by <strong>findmnt</strong>. The poll mode allows using extra columns:</p>
+<p><strong>ACTION</strong></p>
+<blockquote>
+<p>mount, umount, move or remount action name; this column is enabled by default</p>
+</blockquote>
+<p><strong>OLD-TARGET</strong></p>
+<blockquote>
+<p>available for umount and move actions</p>
+</blockquote>
+<p><strong>OLD-OPTIONS</strong></p>
+<blockquote>
+<p>available for umount and remount actions</p>
+</blockquote>
+</blockquote>
+<p><strong>--pseudo</strong></p>
+<blockquote>
+<p>Print only pseudo filesystems.</p>
+</blockquote>
+<p><strong>--shadow</strong></p>
+<blockquote>
+<p>Print only filesystems over-mounted by another filesystem.</p>
+</blockquote>
+<p><strong>-R</strong>, <strong>--submounts</strong></p>
+<blockquote>
+<p>Print recursively all submounts for the selected filesystems. The restrictions defined by options <strong>-t</strong>, <strong>-O</strong>, <strong>-S</strong>, <strong>-T</strong> and <strong>--direction</strong> are not applied to submounts. All submounts are always printed in tree-like order. The option enables the tree-like output format by default. This option has no effect for <strong>--mtab</strong> or <strong>--fstab</strong>.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--raw</strong></p>
+<blockquote>
+<p>Use raw output format. All potentially unsafe characters are hex-escaped (\x&lt;code&gt;).</p>
+</blockquote>
+<p><strong>--real</strong></p>
+<blockquote>
+<p>Print only real filesystems.</p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--source</strong> <code>spec</code></p>
+<blockquote>
+<p>Explicitly define the mount source. Supported specifications are <code>device</code>, <code>maj</code><strong>:</strong><code>min</code>, <strong>LABEL=</strong><code>label</code>, <strong>UUID=</strong><code>uuid</code>, <strong>PARTLABEL=</strong><code>label</code> and <strong>PARTUUID=</strong><code>uuid</code>.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--fstab</strong></p>
+<blockquote>
+<p>Search in <code>/etc/fstab</code>. The output is in the list format (see <strong>--list</strong>).</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--target</strong> <code>path</code></p>
+<blockquote>
+<p>Define the mount target. If <code>path</code> is not a mountpoint file or directory, then <strong>findmnt</strong> checks the <code>path</code> elements in reverse order to get the mountpoint (this feature is supported only when searching in kernel files and unsupported for <strong>--fstab</strong>). It’s recommended to use the option <strong>--mountpoint</strong> when checks of <code>path</code> elements are unwanted and <code>path</code> is a strictly specified mountpoint.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--types</strong> <code>list</code></p>
+<blockquote>
+<p>Limit the set of printed filesystems. More than one type may be specified in a comma-separated list. The list of filesystem types can be prefixed with <strong>no</strong> to specify the filesystem types on which no action should be taken. For more details see <a href='/8/mount'>mount</a>(8).</p>
+</blockquote>
+<p><strong>--tree</strong></p>
+<blockquote>
+<p>Enable tree-like output if possible. The options is silently ignored for tables where is missing child-parent relation (e.g., fstab).</p>
+</blockquote>
+<p><strong>--shadowed</strong></p>
+<blockquote>
+<p>Print only filesystems over-mounted by another filesystem.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--uniq</strong></p>
+<blockquote>
+<p>Ignore filesystems with duplicate mount targets, thus effectively skipping over-mounted mount points.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--notruncate</strong></p>
+<blockquote>
+<p>Do not truncate text in columns. The default is to not truncate the <strong>TARGET</strong>, <strong>SOURCE</strong>, <strong>UUID</strong>, <strong>LABEL</strong>, <strong>PARTUUID</strong>, <strong>PARTLABEL</strong> columns. This option disables text truncation also in all other columns.</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--nofsroot</strong></p>
+<blockquote>
+<p>Do not print a [/dir] in the SOURCE column for bind mounts or btrfs subvolumes.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--timeout</strong> <code>milliseconds</code></p>
+<blockquote>
+<p>Specify an upper limit on the time for which <strong>--poll</strong> will block, in milliseconds.</p>
+</blockquote>
+<p><strong>-x</strong>, <strong>--verify</strong></p>
+<blockquote>
+<p>Check mount table content. The default is to verify <code>/etc/fstab</code> parsability and usability. It’s possible to use this option also with <strong>--tab-file</strong>. It’s possible to specify source (device) or target (mountpoint) to filter mount table. The option <strong>--verbose</strong> forces findmnt to print more details.</p>
+</blockquote>
+<p><strong>--verbose</strong></p>
+<blockquote>
+<p>Force findmnt to print more information (<strong>--verify</strong> only for now).</p>
+</blockquote>
+<p><strong>--vfs-all</strong></p>
+<blockquote>
+<p>When used with <strong>VFS-OPTIONS</strong> column, print all VFS (fs-independent) flags. This option is designed for auditing purposes to list also default VFS kernel mount options which are normally not listed.</p>
+</blockquote>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>LIBMOUNT_FSTAB=&lt;path&gt;</p>
+<blockquote>
+<p>overrides the default location of the fstab file</p>
+</blockquote>
+<p>LIBMOUNT_MTAB=&lt;path&gt;</p>
+<blockquote>
+<p>overrides the default location of the mtab file</p>
+</blockquote>
+<p>LIBMOUNT_DEBUG=all</p>
+<blockquote>
+<p>enables libmount debug output</p>
+</blockquote>
+<p>LIBSMARTCOLS_DEBUG=all</p>
+<blockquote>
+<p>enables libsmartcols debug output</p>
+</blockquote>
+<p>LIBSMARTCOLS_DEBUG_PADDING=on</p>
+<blockquote>
+<p>use visible padding characters.</p>
+</blockquote>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>findmnt --fstab -t nfs</strong></p>
+<blockquote>
+<p>Prints all NFS filesystems defined in <code>/etc/fstab</code>.</p>
+</blockquote>
+<p><strong>findmnt --fstab /mnt/foo</strong></p>
+<blockquote>
+<p>Prints all <code>/etc/fstab</code> filesystems where the mountpoint directory is <code>/mnt/foo</code>. It also prints bind mounts where <code>/mnt/foo</code> is a source.</p>
+</blockquote>
+<p><strong>findmnt --fstab --target /mnt/foo</strong></p>
+<blockquote>
+<p>Prints all <code>/etc/fstab</code> filesystems where the mountpoint directory is <code>/mnt/foo</code>.</p>
+</blockquote>
+<p><strong>findmnt --fstab --evaluate</strong></p>
+<blockquote>
+<p>Prints all <code>/etc/fstab</code> filesystems and converts LABEL= and UUID= tags to the real device names.</p>
+</blockquote>
+<p><strong>findmnt -n --raw --evaluate --output=target LABEL=/boot</strong></p>
+<blockquote>
+<p>Prints only the mountpoint where the filesystem with label "/boot" is mounted.</p>
+</blockquote>
+<p><strong>findmnt --poll --mountpoint /mnt/foo</strong></p>
+<blockquote>
+<p>Monitors mount, unmount, remount and move on <code>/mnt/foo</code>.</p>
+</blockquote>
+<p><strong>findmnt --poll=umount --first-only --mountpoint /mnt/foo</strong></p>
+<blockquote>
+<p>Waits for <code>/mnt/foo</code> unmount.</p>
+</blockquote>
+<p><strong>findmnt --poll=remount -t ext3 -O ro</strong></p>
+<blockquote>
+<p>Monitors remounts to read-only mode on all ext3 filesystems.</p>
+</blockquote>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/fstab'>fstab</a>(5), <a href='/8/mount'>mount</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>findmnt</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

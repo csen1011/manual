@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.generator - systemd unit generators</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>/path/to/generator</strong> <code>normal-dir</code> <code>early-dir</code> <code>late-dir</code></p>
+<pre><code>/run/systemd/system-generators/*
+/etc/systemd/system-generators/*
+/usr/local/lib/systemd/system-generators/*
+/lib/systemd/system-generators/*</code></pre>
+<pre><code>/run/systemd/user-generators/*
+/etc/systemd/user-generators/*
+/usr/local/lib/systemd/user-generators/*
+/usr/lib/systemd/user-generators/*</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Generators are small executables placed in /lib/systemd/system-generators/ and other directories listed above. <a href='/1/systemd'>systemd</a>(1) will execute these binaries very early at bootup and at configuration reload time — before unit files are loaded. Their main purpose is to convert configuration that is not native to the service manager into dynamically generated unit files, symlinks or unit file drop-ins, so that they can extend the unit file hierarchy the service manager subsequently loads and operates on.</p>
+<p>Each generator is called with three directory paths that are to be used for generator output. In these three directories, generators may dynamically generate unit files (regular ones, instances, as well as templates), unit file .d/ drop-ins, and create symbolic links to unit files to add additional dependencies, create aliases, or instantiate existing templates. Those directories are included in the unit load path of <a href='/1/systemd'>systemd</a>(1), allowing generated configuration to extend or override existing definitions.</p>
+<p>Directory paths for generator output differ by priority: .../generator.early has priority higher than the admin configuration in /etc/, while .../generator has lower priority than /etc/ but higher than vendor configuration in /usr/, and .../generator.late has priority lower than all other configuration. See the next section and the discussion of unit load paths and unit overriding in <a href='/5/systemd.unit'>systemd.unit</a>(5).</p>
+<p>Generators are loaded from a set of paths determined during compilation, as listed above. System and user generators are loaded from directories with names ending in system-generators/ and user-generators/, respectively. Generators found in directories listed earlier override the ones with the same name in directories lower in the list. A symlink to /dev/null or an empty file can be used to mask a generator, thereby preventing it from running. Please note that the order of the two directories with the highest priority is reversed with respect to the unit load path, and generators in /run/ overwrite those in /etc/.</p>
+<p>After installing new generators or updating the configuration, <strong>systemctl daemon-reload</strong> may be executed. This will delete the previous configuration created by generators, re-run all generators, and cause <strong>systemd</strong> to reload units from disk. See <a href='/1/systemctl'>systemctl</a>(1) for more information.</p>
+</div></div><h1 id='output-directories'><a href='#output-directories'>OUTPUT DIRECTORIES</a></h1><div data-for='output-directories' data-hide><div class='section' data-for='output-directories'><div data-more>
+<p>Generators are invoked with three arguments: paths to directories where generators can place their generated unit files or symlinks. By default those paths are runtime directories that are included in the search path of <strong>systemd</strong>, but a generator may be called with different paths for debugging purposes.</p>
+<blockquote>
+<p>1.</p>
+<ul>
+<li></li>
+</ul>
+<p><code>normal-dir</code></p>
+<p>In normal use this is /run/systemd/generator in case of the system generators and $XDG_RUNTIME_DIR/generator in case of the user generators. Unit files placed in this directory take precedence over vendor unit configuration but not over native user/administrator unit configuration.</p>
+</blockquote>
+<blockquote>
+<p>2.</p>
+<ul>
+<li></li>
+</ul>
+<p><code>early-dir</code></p>
+<p>In normal use this is /run/systemd/generator.early in case of the system generators and $XDG_RUNTIME_DIR/generator.early in case of the user generators. Unit files placed in this directory override unit files in /usr/, /run/ and /etc/. This means that unit files placed in this directory take precedence over all normal configuration, both vendor and user/administrator.</p>
+</blockquote>
+<blockquote>
+<p>3.</p>
+<ul>
+<li></li>
+</ul>
+<p><code>late-dir</code></p>
+<p>In normal use this is /run/systemd/generator.late in case of the system generators and $XDG_RUNTIME_DIR/generator.late in case of the user generators. This directory may be used to extend the unit file tree without overriding any other unit files. Any native configuration files supplied by the vendor or user/administrator take precedence.</p>
+</blockquote>
+</div></div></div><h1 id='notes-about-writing-generators'><a href='#notes-about-writing-generators'>NOTES ABOUT WRITING GENERATORS</a></h1><div data-for='notes-about-writing-generators' data-hide><div class='section' data-for='notes-about-writing-generators'><div data-more>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>All generators are executed in parallel. That means all executables are started at the very same time and need to be able to cope with this parallelism.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Generators are run very early at boot and cannot rely on any external services. They may not talk to any other process. That includes simple things such as logging to <a href='/3/syslog'>syslog</a>(3), or <strong>systemd</strong> itself (this means: no <a href='/1/systemctl'>systemctl</a>(1))! Non-essential file systems like /var/ and /home/ are mounted after generators have run. Generators can however rely on the most basic kernel functionality to be available, as well as mounted /sys/, /proc/, /dev/, /usr/ and /run/ file systems.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Units written by generators are removed when the configuration is reloaded. That means the lifetime of the generated units is closely bound to the reload cycles of <strong>systemd</strong> itself.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Generators should only be used to generate unit files, .d/*.conf drop-ins for them and symlinks to them, not any other kind of non-unit related configuration. Due to the lifecycle logic mentioned above, generators are not a good fit to generate dynamic configuration for other services. If you need to generate dynamic configuration for other services, do so in normal services you order before the service in question.</p>
+<p>Note that using the <code>StandardInputData=</code>/<code>StandardInputText=</code> settings of service unit files (see <a href='/5/systemd.exec'>systemd.exec</a>(5)), it is possible to make arbitrary input data (including daemon-specific configuration) part of the unit definitions, which often might be sufficient to embed data or configuration for other programs into unit files in a native fashion.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Since <a href='/3/syslog'>syslog</a>(3) is not available (see above), log messages have to be written to /dev/kmsg instead.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The generator should always include its own name in a comment at the top of the generated file, so that the user can easily figure out which component created or amended a particular unit.</p>
+<p>The <code>SourcePath=</code> directive should be used in generated files to specify the source configuration file they are generated from. This makes things more easily understood by the user and also has the benefit that systemd can warn the user about configuration files that changed on disk but have not been read yet by systemd. The <code>SourcePath=</code> value does not have to be a file in a physical filesystem. For example, in the common case of the generator looking at the kernel command line, <strong>SourcePath=/proc/cmdline</strong> should be used.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Generators may write out dynamic unit files or just hook unit files into other units with the usual .wants/ or .requires/ symlinks. Often, it is nicer to simply instantiate a template unit file from /usr/ with a generator instead of writing out entirely dynamic unit files. Of course, this works only if a single parameter is to be used.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If you are careful, you can implement generators in shell scripts. We do recommend C code however, since generators are executed synchronously and hence delay the entire boot if they are slow.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Regarding overriding semantics: there are two rules we try to follow when thinking about the overriding semantics:</p>
+<blockquote>
+<p>1.</p>
+<ul>
+<li></li>
+</ul>
+<p>User configuration should override vendor configuration. This (mostly) means that stuff from /etc/ should override stuff from /usr/.</p>
+</blockquote>
+<blockquote>
+<p>2.</p>
+<ul>
+<li></li>
+</ul>
+<p>Native configuration should override non-native configuration. This (mostly) means that stuff you generate should never override native unit files for the same purpose.</p>
+</blockquote>
+<p>Of these two rules the first rule is probably the more important one and breaks the second one sometimes. Hence, when deciding whether to use argv[1], argv[2], or argv[3], your default choice should probably be argv[1].</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Instead of heading off now and writing all kind of generators for legacy configuration file formats, please think twice! It is often a better idea to just deprecate old stuff instead of keeping it artificially alive.</p>
+</blockquote>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. systemd-fstab-generator</strong></p>
+<p><a href='/8/systemd-fstab-generator'>systemd-fstab-generator</a>(8) converts /etc/fstab into native mount units. It uses argv[1] as location to place the generated unit files in order to allow the user to override /etc/fstab with their own native unit files, but also to ensure that /etc/fstab overrides any vendor default from /usr/.</p>
+<p>After editing /etc/fstab, the user should invoke <strong>systemctl daemon-reload</strong>. This will re-run all generators and cause <strong>systemd</strong> to reload units from disk. To actually mount new directories added to fstab, <strong>systemctl start </strong><code>/path/to/mountpoint</code> or <strong>systemctl start local-fs.target</strong> may be used.</p>
+<p><strong>Example 2. systemd-system-update-generator</strong></p>
+<p><a href='/8/systemd-system-update-generator'>systemd-system-update-generator</a>(8) temporarily redirects default.target to system-update.target, if a system update is scheduled. Since this needs to override the default user configuration for default.target, it uses argv[2]. For details about this logic, see <a href='/7/systemd.offline-updates'>systemd.offline-updates</a>(7).</p>
+<p><strong>Example 3. Debugging a generator</strong></p>
+<p>.RS 4</p>
+<pre><code>dir=$(mktemp -d)
+SYSTEMD_LOG_LEVEL=debug /lib/systemd/system-generators/systemd-fstab-generator \
+        "$dir" "$dir" "$dir"
+find $dir</code></pre>
+<p>.RE</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/8/systemd-cryptsetup-generator'>systemd-cryptsetup-generator</a>(8), <a href='/8/systemd-debug-generator'>systemd-debug-generator</a>(8), <a href='/8/systemd-fstab-generator'>systemd-fstab-generator</a>(8), <a href='/5/fstab'>fstab</a>(5), <a href='/8/systemd-getty-generator'>systemd-getty-generator</a>(8), <a href='/8/systemd-gpt-auto-generator'>systemd-gpt-auto-generator</a>(8), <a href='/8/systemd-hibernate-resume-generator'>systemd-hibernate-resume-generator</a>(8), <a href='/8/systemd-rc-local-generator'>systemd-rc-local-generator</a>(8), <a href='/8/systemd-system-update-generator'>systemd-system-update-generator</a>(8), <a href='/8/systemd-sysv-generator'>systemd-sysv-generator</a>(8), <a href='/8/systemd-xdg-autostart-generator'>systemd-xdg-autostart-generator</a>(8), <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/1/systemctl'>systemctl</a>(1), <a href='/7/systemd.environment-generator'>systemd.environment-generator</a>(7)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

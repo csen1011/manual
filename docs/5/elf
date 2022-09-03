@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>elf - format of Executable and Linking Format (ELF) files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;elf.h&gt;</a></code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The header file <code>&lt;elf.h&gt;</code> defines the format of ELF executable binary files. Amongst these files are normal executable files, relocatable object files, core files, and shared objects.</p>
+<p>An executable file using the ELF file format consists of an ELF header, followed by a program header table or a section header table, or both. The ELF header is always at offset zero of the file. The program header table and the section header table's offset in the file are defined in the ELF header. The two tables describe the rest of the particularities of the file.</p>
+<p>This header file describes the above mentioned headers as C structures and also includes structures for dynamic sections, relocation sections and symbol tables. The following types are used for N-bit architectures (N=32,64, <code>ElfN</code> stands for <code>Elf32</code> or <code>Elf64</code>, <code>uintN_t</code> stands for <code>uint32_t</code> or <code>uint64_t</code>):</p>
+<pre><code>ElfN_Addr       Unsigned program address, uintN_t
+ElfN_Off        Unsigned file offset, uintN_t
+ElfN_Section    Unsigned section index, uint16_t
+ElfN_Versym     Unsigned version symbol information, uint16_t
+Elf_Byte        unsigned char
+ElfN_Half       uint16_t
+ElfN_Sword      int32_t
+ElfN_Word       uint32_t
+ElfN_Sxword     int64_t
+ElfN_Xword      uint64_t</code></pre>
+<p>(Note: the *BSD terminology is a bit different. There, <code>Elf64_Half</code> is twice as large as <code>Elf32_Half</code>, and <code>Elf64Quarter</code> is used for <code>uint16_t</code>. In order to avoid confusion these types are replaced by explicit ones in the below.)</p>
+<p>All data structures that the file format defines follow the "natural" size and alignment guidelines for the relevant class. If necessary, data structures contain explicit padding to ensure 4-byte alignment for 4-byte objects, to force structure sizes to a multiple of 4, and so on. The ELF header is described by the type <code>Elf32_Ehdr</code> or <code>Elf64_Ehdr</code>:</p>
+<pre><code>#define EI_NIDENT 16
+
+typedef struct {
+    unsigned char e_ident[EI_NIDENT];
+    uint16_t      e_type;
+    uint16_t      e_machine;
+    uint32_t      e_version;
+    ElfN_Addr     e_entry;
+    ElfN_Off      e_phoff;
+    ElfN_Off      e_shoff;
+    uint32_t      e_flags;
+    uint16_t      e_ehsize;
+    uint16_t      e_phentsize;
+    uint16_t      e_phnum;
+    uint16_t      e_shentsize;
+    uint16_t      e_shnum;
+    uint16_t      e_shstrndx;
+} ElfN_Ehdr;</code></pre>
+<p>The fields have the following meanings: <code>e_ident</code> This array of bytes specifies how to interpret the file, independent of the processor or the file's remaining contents. Within this array everything is named by macros, which start with the prefix <strong>EI_</strong> and may contain values which start with the prefix <strong>ELF</strong>. The following macros are defined:</p>
+<blockquote>
+<dl>
+<dt><strong>EI_MAG0</strong></dt>
+<dd><p>The first byte of the magic number. It must be filled with <strong>ELFMAG0</strong>. (0: 0x7f)</p>
+</dd>
+<dt><strong>EI_MAG1</strong></dt>
+<dd><p>The second byte of the magic number. It must be filled with <strong>ELFMAG1</strong>. (1: 'E')</p>
+</dd>
+<dt><strong>EI_MAG2</strong></dt>
+<dd><p>The third byte of the magic number. It must be filled with <strong>ELFMAG2</strong>. (2: 'L')</p>
+</dd>
+<dt><strong>EI_MAG3</strong></dt>
+<dd><p>The fourth byte of the magic number. It must be filled with <strong>ELFMAG3</strong>. (3: 'F')</p>
+</dd>
+<dt><strong>EI_CLASS</strong></dt>
+<dd><p>The fifth byte identifies the architecture for this binary:</p>
+<p><strong>ELFCLASSNONE</strong> This class is invalid.</p>
+<dl>
+<dt><strong>ELFCLASS32</strong></dt>
+<dd><p>This defines the 32-bit architecture. It supports machines with files and virtual address spaces up to 4 Gigabytes.</p>
+</dd>
+<dt><strong>ELFCLASS64</strong></dt>
+<dd><p>This defines the 64-bit architecture.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>EI_DATA</strong></dt>
+<dd><p>The sixth byte specifies the data encoding of the processor-specific data in the file. Currently, these encodings are supported:</p>
+<p><strong>ELFDATANONE</strong> Unknown data format.</p>
+<dl>
+<dt><strong>ELFDATA2LSB</strong></dt>
+<dd><p>Two's complement, little-endian.</p>
+</dd>
+<dt><strong>ELFDATA2MSB</strong></dt>
+<dd><p>Two's complement, big-endian.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>EI_VERSION</strong></dt>
+<dd><p>The seventh byte is the version number of the ELF specification:</p>
+</dd>
+</dl>
+<blockquote>
+<dl>
+<dt><strong>EV_NONE</strong></dt>
+<dd><p>Invalid version.</p>
+</dd>
+<dt><strong>EV_CURRENT</strong></dt>
+<dd><p>Current version.</p>
+</dd>
+</dl>
+</blockquote>
+<dl>
+<dt><strong>EI_OSABI</strong></dt>
+<dd><p>The eighth byte identifies the operating system and ABI to which the object is targeted. Some fields in other ELF structures have flags and values that have platform-specific meanings; the interpretation of those fields is determined by the value of this byte. For example:</p>
+<p><strong>ELFOSABI_NONE</strong> Same as ELFOSABI_SYSV</p>
+<dl>
+<dt><strong>ELFOSABI_SYSV</strong></dt>
+<dd><p>UNIX System V ABI</p>
+</dd>
+<dt><strong>ELFOSABI_HPUX</strong></dt>
+<dd><p>HP-UX ABI</p>
+</dd>
+<dt><strong>ELFOSABI_NETBSD</strong></dt>
+<dd><p>NetBSD ABI</p>
+</dd>
+<dt><strong>ELFOSABI_LINUX</strong></dt>
+<dd><p>Linux ABI</p>
+</dd>
+<dt><strong>ELFOSABI_SOLARIS</strong></dt>
+<dd><p>Solaris ABI</p>
+</dd>
+<dt><strong>ELFOSABI_IRIX</strong></dt>
+<dd><p>IRIX ABI</p>
+</dd>
+<dt><strong>ELFOSABI_FREEBSD</strong></dt>
+<dd><p>FreeBSD ABI</p>
+</dd>
+<dt><strong>ELFOSABI_TRU64</strong></dt>
+<dd><p>TRU64 UNIX ABI</p>
+</dd>
+<dt><strong>ELFOSABI_ARM</strong></dt>
+<dd><p>ARM architecture ABI</p>
+</dd>
+<dt><strong>ELFOSABI_STANDALONE</strong></dt>
+<dd><p>Stand-alone (embedded) ABI</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>EI_ABIVERSION</strong></dt>
+<dd><p>The ninth byte identifies the version of the ABI to which the object is targeted. This field is used to distinguish among incompatible versions of an ABI. The interpretation of this version number is dependent on the ABI identified by the <strong>EI_OSABI</strong> field. Applications conforming to this specification use the value 0.</p>
+</dd>
+<dt><strong>EI_PAD</strong></dt>
+<dd><p>Start of padding. These bytes are reserved and set to zero. Programs which read them should ignore them. The value for <strong>EI_PAD</strong> will change in the future if currently unused bytes are given meanings.</p>
+</dd>
+<dt><strong>EI_NIDENT</strong></dt>
+<dd><p>The size of the <code>e_ident</code> array.</p>
+</dd>
+</dl>
+</blockquote>
+<dl>
+<dt><code>e_type</code></dt>
+<dd><p>This member of the structure identifies the object file type:</p>
+<p><strong>ET_NONE</strong> An unknown type.</p>
+<dl>
+<dt><strong>ET_REL</strong></dt>
+<dd><p>A relocatable file.</p>
+</dd>
+<dt><strong>ET_EXEC</strong></dt>
+<dd><p>An executable file.</p>
+</dd>
+<dt><strong>ET_DYN</strong></dt>
+<dd><p>A shared object.</p>
+</dd>
+<dt><strong>ET_CORE</strong></dt>
+<dd><p>A core file.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>e_machine</code></dt>
+<dd><p>This member specifies the required architecture for an individual file. For example:</p>
+<p><strong>EM_NONE</strong> An unknown machine</p>
+<dl>
+<dt><strong>EM_M32</strong></dt>
+<dd><p>AT&amp;T WE 32100</p>
+</dd>
+<dt><strong>EM_SPARC</strong></dt>
+<dd><p>Sun Microsystems SPARC</p>
+</dd>
+<dt><strong>EM_386</strong></dt>
+<dd><p>Intel 80386</p>
+</dd>
+<dt><strong>EM_68K</strong></dt>
+<dd><p>Motorola 68000</p>
+</dd>
+<dt><strong>EM_88K</strong></dt>
+<dd><p>Motorola 88000</p>
+</dd>
+<dt><strong>EM_860</strong></dt>
+<dd><p>Intel 80860</p>
+</dd>
+<dt><strong>EM_MIPS</strong></dt>
+<dd><p>MIPS RS3000 (big-endian only)</p>
+</dd>
+<dt><strong>EM_PARISC</strong></dt>
+<dd><p>HP/PA</p>
+</dd>
+<dt><strong>EM_SPARC32PLUS</strong></dt>
+<dd><p>SPARC with enhanced instruction set</p>
+</dd>
+<dt><strong>EM_PPC</strong></dt>
+<dd><p>PowerPC</p>
+</dd>
+<dt><strong>EM_PPC64</strong></dt>
+<dd><p>PowerPC 64-bit</p>
+</dd>
+<dt><strong>EM_S390</strong></dt>
+<dd><p>IBM S/390</p>
+</dd>
+<dt><strong>EM_ARM</strong></dt>
+<dd><p>Advanced RISC Machines</p>
+</dd>
+<dt><strong>EM_SH</strong></dt>
+<dd><p>Renesas SuperH</p>
+</dd>
+<dt><strong>EM_SPARCV9</strong></dt>
+<dd><p>SPARC v9 64-bit</p>
+</dd>
+<dt><strong>EM_IA_64</strong></dt>
+<dd><p>Intel Itanium</p>
+</dd>
+<dt><strong>EM_X86_64</strong></dt>
+<dd><p>AMD x86-64</p>
+</dd>
+<dt><strong>EM_VAX</strong></dt>
+<dd><p>DEC Vax</p>
+</dd>
+</dl>
+</dd>
+<dt><code>e_version</code></dt>
+<dd><p>This member identifies the file version:</p>
+<p><strong>EV_NONE</strong> Invalid version</p>
+<dl>
+<dt><strong>EV_CURRENT</strong></dt>
+<dd><p>Current version</p>
+</dd>
+</dl>
+</dd>
+<dt><code>e_entry</code></dt>
+<dd><p>This member gives the virtual address to which the system first transfers control, thus starting the process. If the file has no associated entry point, this member holds zero.</p>
+</dd>
+<dt><code>e_phoff</code></dt>
+<dd><p>This member holds the program header table's file offset in bytes. If the file has no program header table, this member holds zero.</p>
+</dd>
+<dt><code>e_shoff</code></dt>
+<dd><p>This member holds the section header table's file offset in bytes. If the file has no section header table, this member holds zero.</p>
+</dd>
+<dt><code>e_flags</code></dt>
+<dd><p>This member holds processor-specific flags associated with the file. Flag names take the form EF_`machine_flag'. Currently, no flags have been defined.</p>
+</dd>
+<dt><code>e_ehsize</code></dt>
+<dd><p>This member holds the ELF header's size in bytes.</p>
+</dd>
+<dt><code>e_phentsize</code></dt>
+<dd><p>This member holds the size in bytes of one entry in the file's program header table; all entries are the same size.</p>
+</dd>
+<dt><code>e_phnum</code></dt>
+<dd><p>This member holds the number of entries in the program header table. Thus the product of <code>e_phentsize</code> and <code>e_phnum</code> gives the table's size in bytes. If a file has no program header, <code>e_phnum</code> holds the value zero.</p>
+<p>If the number of entries in the program header table is larger than or equal to <strong>PN_XNUM</strong> (0xffff), this member holds <strong>PN_XNUM</strong> (0xffff) and the real number of entries in the program header table is held in the <code>sh_info</code> member of the initial entry in section header table. Otherwise, the <code>sh_info</code> member of the initial entry contains the value zero.</p>
+<dl>
+<dt><strong>PN_XNUM</strong></dt>
+<dd><p>This is defined as 0xffff, the largest number <code>e_phnum</code> can have, specifying where the actual number of program headers is assigned.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>e_shentsize</code></dt>
+<dd><p>This member holds a sections header's size in bytes. A section header is one entry in the section header table; all entries are the same size.</p>
+</dd>
+<dt><code>e_shnum</code></dt>
+<dd><p>This member holds the number of entries in the section header table. Thus the product of <code>e_shentsize</code> and <code>e_shnum</code> gives the section header table's size in bytes. If a file has no section header table, <code>e_shnum</code> holds the value of zero.</p>
+<p>If the number of entries in the section header table is larger than or equal to <strong>SHN_LORESERVE</strong> (0xff00), <code>e_shnum</code> holds the value zero and the real number of entries in the section header table is held in the <code>sh_size</code> member of the initial entry in section header table. Otherwise, the <code>sh_size</code> member of the initial entry in the section header table holds the value zero.</p>
+</dd>
+<dt><code>e_shstrndx</code></dt>
+<dd><p>This member holds the section header table index of the entry associated with the section name string table. If the file has no section name string table, this member holds the value <strong>SHN_UNDEF</strong>.</p>
+<p>If the index of section name string table section is larger than or equal to <strong>SHN_LORESERVE</strong> (0xff00), this member holds <strong>SHN_XINDEX</strong> (0xffff) and the real index of the section name string table section is held in the <code>sh_link</code> member of the initial entry in section header table. Otherwise, the <code>sh_link</code> member of the initial entry in section header table contains the value zero. An executable or shared object file's program header table is an array of structures, each describing a segment or other information the system needs to prepare the program for execution. An object file <code>segment</code> contains one or more <code>sections</code>. Program headers are meaningful only for executable and shared object files. A file specifies its own program header size with the ELF header's <code>e_phentsize</code> and <code>e_phnum</code> members. The ELF program header is described by the type <code>Elf32_Phdr</code> or <code>Elf64_Phdr</code> depending on the architecture:</p>
+</dd>
+</dl>
+<pre><code>typedef struct {
+    uint32_t   p_type;
+    Elf32_Off  p_offset;
+    Elf32_Addr p_vaddr;
+    Elf32_Addr p_paddr;
+    uint32_t   p_filesz;
+    uint32_t   p_memsz;
+    uint32_t   p_flags;
+    uint32_t   p_align;
+} Elf32_Phdr;</code></pre>
+<pre><code>typedef struct {
+    uint32_t   p_type;
+    uint32_t   p_flags;
+    Elf64_Off  p_offset;
+    Elf64_Addr p_vaddr;
+    Elf64_Addr p_paddr;
+    uint64_t   p_filesz;
+    uint64_t   p_memsz;
+    uint64_t   p_align;
+} Elf64_Phdr;</code></pre>
+<p>The main difference between the 32-bit and the 64-bit program header lies in the location of the <code>p_flags</code> member in the total struct.</p>
+<dl>
+<dt><code>p_type</code></dt>
+<dd><p>This member of the structure indicates what kind of segment this array element describes or how to interpret the array element's information.</p>
+<dl>
+<dt><strong>PT_NULL</strong></dt>
+<dd><p>The array element is unused and the other members' values are undefined. This lets the program header have ignored entries.</p>
+</dd>
+<dt><strong>PT_LOAD</strong></dt>
+<dd><p>The array element specifies a loadable segment, described by <code>p_filesz</code> and <code>p_memsz</code>. The bytes from the file are mapped to the beginning of the memory segment. If the segment's memory size <code>p_memsz</code> is larger than the file size <code>p_filesz</code>, the "extra" bytes are defined to hold the value 0 and to follow the segment's initialized area. The file size may not be larger than the memory size. Loadable segment entries in the program header table appear in ascending order, sorted on the <code>p_vaddr</code> member.</p>
+</dd>
+<dt><strong>PT_DYNAMIC</strong></dt>
+<dd><p>The array element specifies dynamic linking information.</p>
+</dd>
+<dt><strong>PT_INTERP</strong></dt>
+<dd><p>The array element specifies the location and size of a null-terminated pathname to invoke as an interpreter. This segment type is meaningful only for executable files (though it may occur for shared objects). However it may not occur more than once in a file. If it is present, it must precede any loadable segment entry.</p>
+</dd>
+<dt><strong>PT_NOTE</strong></dt>
+<dd><p>The array element specifies the location of notes (ElfN_Nhdr).</p>
+</dd>
+<dt><strong>PT_SHLIB</strong></dt>
+<dd><p>This segment type is reserved but has unspecified semantics. Programs that contain an array element of this type do not conform to the ABI.</p>
+</dd>
+<dt><strong>PT_PHDR</strong></dt>
+<dd><p>The array element, if present, specifies the location and size of the program header table itself, both in the file and in the memory image of the program. This segment type may not occur more than once in a file. Moreover, it may occur only if the program header table is part of the memory image of the program. If it is present, it must precede any loadable segment entry.</p>
+</dd>
+<dt><strong>PT_LOPROC</strong>, <strong>PT_HIPROC</strong></dt>
+<dd><p>Values in the inclusive range [<strong>PT_LOPROC</strong>, <strong>PT_HIPROC</strong>] are reserved for processor-specific semantics.</p>
+</dd>
+<dt><strong>PT_GNU_STACK</strong></dt>
+<dd><p>GNU extension which is used by the Linux kernel to control the state of the stack via the flags set in the <code>p_flags</code> member.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>p_offset</code></dt>
+<dd><p>This member holds the offset from the beginning of the file at which the first byte of the segment resides.</p>
+</dd>
+<dt><code>p_vaddr</code></dt>
+<dd><p>This member holds the virtual address at which the first byte of the segment resides in memory.</p>
+</dd>
+<dt><code>p_paddr</code></dt>
+<dd><p>On systems for which physical addressing is relevant, this member is reserved for the segment's physical address. Under BSD this member is not used and must be zero.</p>
+</dd>
+<dt><code>p_filesz</code></dt>
+<dd><p>This member holds the number of bytes in the file image of the segment. It may be zero.</p>
+</dd>
+<dt><code>p_memsz</code></dt>
+<dd><p>This member holds the number of bytes in the memory image of the segment. It may be zero.</p>
+</dd>
+<dt><code>p_flags</code></dt>
+<dd><p>This member holds a bit mask of flags relevant to the segment:</p>
+<p><strong>PF_X</strong> An executable segment.</p>
+<dl>
+<dt><strong>PF_W</strong></dt>
+<dd><p>A writable segment.</p>
+</dd>
+<dt><strong>PF_R</strong></dt>
+<dd><p>A readable segment.</p>
+</dd>
+</dl>
+<p>A text segment commonly has the flags <strong>PF_X</strong> and <strong>PF_R</strong>. A data segment commonly has <strong>PF_W</strong> and <strong>PF_R</strong>.</p>
+</dd>
+<dt><code>p_align</code></dt>
+<dd><p>This member holds the value to which the segments are aligned in memory and in the file. Loadable process segments must have congruent values for <code>p_vaddr</code> and <code>p_offset</code>, modulo the page size. Values of zero and one mean no alignment is required. Otherwise, <code>p_align</code> should be a positive, integral power of two, and <code>p_vaddr</code> should equal <code>p_offset</code>, modulo <code>p_align</code>. A file's section header table lets one locate all the file's sections. The section header table is an array of <code>Elf32_Shdr</code> or <code>Elf64_Shdr</code> structures. The ELF header's <code>e_shoff</code> member gives the byte offset from the beginning of the file to the section header table. <code>e_shnum</code> holds the number of entries the section header table contains. <code>e_shentsize</code> holds the size in bytes of each entry.</p>
+</dd>
+</dl>
+<p>A section header table index is a subscript into this array. Some section header table indices are reserved: the initial entry and the indices between <strong>SHN_LORESERVE</strong> and <strong>SHN_HIRESERVE</strong>. The initial entry is used in ELF extensions for <code>e_phnum</code>, <code>e_shnum</code>, and <code>e_shstrndx</code>; in other cases, each field in the initial entry is set to zero. An object file does not have sections for these special indices:</p>
+<dl>
+<dt><strong>SHN_UNDEF</strong></dt>
+<dd><p>This value marks an undefined, missing, irrelevant, or otherwise meaningless section reference.</p>
+</dd>
+<dt><strong>SHN_LORESERVE</strong></dt>
+<dd><p>This value specifies the lower bound of the range of reserved indices.</p>
+</dd>
+<dt><strong>SHN_LOPROC</strong>, <strong>SHN_HIPROC</strong></dt>
+<dd><p>Values greater in the inclusive range [<strong>SHN_LOPROC</strong>, <strong>SHN_HIPROC</strong>] are reserved for processor-specific semantics.</p>
+</dd>
+<dt><strong>SHN_ABS</strong></dt>
+<dd><p>This value specifies the absolute value for the corresponding reference. For example, a symbol defined relative to section number <strong>SHN_ABS</strong> has an absolute value and is not affected by relocation.</p>
+</dd>
+<dt><strong>SHN_COMMON</strong></dt>
+<dd><p>Symbols defined relative to this section are common symbols, such as FORTRAN COMMON or unallocated C external variables.</p>
+</dd>
+<dt><strong>SHN_HIRESERVE</strong></dt>
+<dd><p>This value specifies the upper bound of the range of reserved indices. The system reserves indices between <strong>SHN_LORESERVE</strong> and <strong>SHN_HIRESERVE</strong>, inclusive. The section header table does not contain entries for the reserved indices.</p>
+</dd>
+</dl>
+<p>The section header has the following structure:</p>
+<pre><code>typedef struct {
+    uint32_t   sh_name;
+    uint32_t   sh_type;
+    uint32_t   sh_flags;
+    Elf32_Addr sh_addr;
+    Elf32_Off  sh_offset;
+    uint32_t   sh_size;
+    uint32_t   sh_link;
+    uint32_t   sh_info;
+    uint32_t   sh_addralign;
+    uint32_t   sh_entsize;
+} Elf32_Shdr;</code></pre>
+<pre><code>typedef struct {
+    uint32_t   sh_name;
+    uint32_t   sh_type;
+    uint64_t   sh_flags;
+    Elf64_Addr sh_addr;
+    Elf64_Off  sh_offset;
+    uint64_t   sh_size;
+    uint32_t   sh_link;
+    uint32_t   sh_info;
+    uint64_t   sh_addralign;
+    uint64_t   sh_entsize;
+} Elf64_Shdr;</code></pre>
+<p>No real differences exist between the 32-bit and 64-bit section headers.</p>
+<dl>
+<dt><code>sh_name</code></dt>
+<dd><p>This member specifies the name of the section. Its value is an index into the section header string table section, giving the location of a null-terminated string.</p>
+</dd>
+<dt><code>sh_type</code></dt>
+<dd><p>This member categorizes the section's contents and semantics.</p>
+<dl>
+<dt><strong>SHT_NULL</strong></dt>
+<dd><p>This value marks the section header as inactive. It does not have an associated section. Other members of the section header have undefined values.</p>
+</dd>
+<dt><strong>SHT_PROGBITS</strong></dt>
+<dd><p>This section holds information defined by the program, whose format and meaning are determined solely by the program.</p>
+</dd>
+<dt><strong>SHT_SYMTAB</strong></dt>
+<dd><p>This section holds a symbol table. Typically, <strong>SHT_SYMTAB</strong> provides symbols for link editing, though it may also be used for dynamic linking. As a complete symbol table, it may contain many symbols unnecessary for dynamic linking. An object file can also contain a <strong>SHT_DYNSYM</strong> section.</p>
+</dd>
+<dt><strong>SHT_STRTAB</strong></dt>
+<dd><p>This section holds a string table. An object file may have multiple string table sections.</p>
+</dd>
+<dt><strong>SHT_RELA</strong></dt>
+<dd><p>This section holds relocation entries with explicit addends, such as type <code>Elf32_Rela</code> for the 32-bit class of object files. An object may have multiple relocation sections.</p>
+</dd>
+<dt><strong>SHT_HASH</strong></dt>
+<dd><p>This section holds a symbol hash table. An object participating in dynamic linking must contain a symbol hash table. An object file may have only one hash table.</p>
+</dd>
+<dt><strong>SHT_DYNAMIC</strong></dt>
+<dd><p>This section holds information for dynamic linking. An object file may have only one dynamic section.</p>
+</dd>
+<dt><strong>SHT_NOTE</strong></dt>
+<dd><p>This section holds notes (ElfN_Nhdr).</p>
+</dd>
+<dt><strong>SHT_NOBITS</strong></dt>
+<dd><p>A section of this type occupies no space in the file but otherwise resembles <strong>SHT_PROGBITS</strong>. Although this section contains no bytes, the <code>sh_offset</code> member contains the conceptual file offset.</p>
+</dd>
+<dt><strong>SHT_REL</strong></dt>
+<dd><p>This section holds relocation offsets without explicit addends, such as type <code>Elf32_Rel</code> for the 32-bit class of object files. An object file may have multiple relocation sections.</p>
+</dd>
+<dt><strong>SHT_SHLIB</strong></dt>
+<dd><p>This section is reserved but has unspecified semantics.</p>
+</dd>
+<dt><strong>SHT_DYNSYM</strong></dt>
+<dd><p>This section holds a minimal set of dynamic linking symbols. An object file can also contain a <strong>SHT_SYMTAB</strong> section.</p>
+</dd>
+<dt><strong>SHT_LOPROC</strong>, <strong>SHT_HIPROC</strong></dt>
+<dd><p>Values in the inclusive range [<strong>SHT_LOPROC</strong>, <strong>SHT_HIPROC</strong>] are reserved for processor-specific semantics.</p>
+</dd>
+<dt><strong>SHT_LOUSER</strong></dt>
+<dd><p>This value specifies the lower bound of the range of indices reserved for application programs.</p>
+</dd>
+<dt><strong>SHT_HIUSER</strong></dt>
+<dd><p>This value specifies the upper bound of the range of indices reserved for application programs. Section types between <strong>SHT_LOUSER</strong> and <strong>SHT_HIUSER</strong> may be used by the application, without conflicting with current or future system-defined section types.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>sh_flags</code></dt>
+<dd><p>Sections support one-bit flags that describe miscellaneous attributes. If a flag bit is set in <code>sh_flags</code>, the attribute is "on" for the section. Otherwise, the attribute is "off" or does not apply. Undefined attributes are set to zero.</p>
+<dl>
+<dt><strong>SHF_WRITE</strong></dt>
+<dd><p>This section contains data that should be writable during process execution.</p>
+</dd>
+<dt><strong>SHF_ALLOC</strong></dt>
+<dd><p>This section occupies memory during process execution. Some control sections do not reside in the memory image of an object file. This attribute is off for those sections.</p>
+</dd>
+<dt><strong>SHF_EXECINSTR</strong></dt>
+<dd><p>This section contains executable machine instructions.</p>
+</dd>
+<dt><strong>SHF_MASKPROC</strong></dt>
+<dd><p>All bits included in this mask are reserved for processor-specific semantics.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>sh_addr</code></dt>
+<dd><p>If this section appears in the memory image of a process, this member holds the address at which the section's first byte should reside. Otherwise, the member contains zero.</p>
+</dd>
+<dt><code>sh_offset</code></dt>
+<dd><p>This member's value holds the byte offset from the beginning of the file to the first byte in the section. One section type, <strong>SHT_NOBITS</strong>, occupies no space in the file, and its <code>sh_offset</code> member locates the conceptual placement in the file.</p>
+</dd>
+<dt><code>sh_size</code></dt>
+<dd><p>This member holds the section's size in bytes. Unless the section type is <strong>SHT_NOBITS</strong>, the section occupies <code>sh_size</code> bytes in the file. A section of type <strong>SHT_NOBITS</strong> may have a nonzero size, but it occupies no space in the file.</p>
+</dd>
+<dt><code>sh_link</code></dt>
+<dd><p>This member holds a section header table index link, whose interpretation depends on the section type.</p>
+</dd>
+<dt><code>sh_info</code></dt>
+<dd><p>This member holds extra information, whose interpretation depends on the section type.</p>
+</dd>
+<dt><code>sh_addralign</code></dt>
+<dd><p>Some sections have address alignment constraints. If a section holds a doubleword, the system must ensure doubleword alignment for the entire section. That is, the value of <code>sh_addr</code> must be congruent to zero, modulo the value of <code>sh_addralign</code>. Only zero and positive integral powers of two are allowed. The value 0 or 1 means that the section has no alignment constraints.</p>
+</dd>
+<dt><code>sh_entsize</code></dt>
+<dd><p>Some sections hold a table of fixed-sized entries, such as a symbol table. For such a section, this member gives the size in bytes for each entry. This member contains zero if the section does not hold a table of fixed-size entries.</p>
+</dd>
+</dl>
+<p>Various sections hold program and control information:</p>
+<dl>
+<dt><code>.bss</code></dt>
+<dd><p>This section holds uninitialized data that contributes to the program's memory image. By definition, the system initializes the data with zeros when the program begins to run. This section is of type <strong>SHT_NOBITS</strong>. The attribute types are <strong>SHF_ALLOC</strong> and <strong>SHF_WRITE</strong>.</p>
+</dd>
+<dt><code>.comment</code></dt>
+<dd><p>This section holds version control information. This section is of type <strong>SHT_PROGBITS</strong>. No attribute types are used.</p>
+</dd>
+<dt><code>.ctors</code></dt>
+<dd><p>This section holds initialized pointers to the C++ constructor functions. This section is of type <strong>SHT_PROGBITS</strong>. The attribute types are <strong>SHF_ALLOC</strong> and <strong>SHF_WRITE</strong>.</p>
+</dd>
+<dt><code>.data</code></dt>
+<dd><p>This section holds initialized data that contribute to the program's memory image. This section is of type <strong>SHT_PROGBITS</strong>. The attribute types are <strong>SHF_ALLOC</strong> and <strong>SHF_WRITE</strong>.</p>
+</dd>
+<dt><code>.data1</code></dt>
+<dd><p>This section holds initialized data that contribute to the program's memory image. This section is of type <strong>SHT_PROGBITS</strong>. The attribute types are <strong>SHF_ALLOC</strong> and <strong>SHF_WRITE</strong>.</p>
+</dd>
+<dt><code>.debug</code></dt>
+<dd><p>This section holds information for symbolic debugging. The contents are unspecified. This section is of type <strong>SHT_PROGBITS</strong>. No attribute types are used.</p>
+</dd>
+<dt><code>.dtors</code></dt>
+<dd><p>This section holds initialized pointers to the C++ destructor functions. This section is of type <strong>SHT_PROGBITS</strong>. The attribute types are <strong>SHF_ALLOC</strong> and <strong>SHF_WRITE</strong>.</p>
+</dd>
+<dt><code>.dynamic</code></dt>
+<dd><p>This section holds dynamic linking information. The section's attributes will include the <strong>SHF_ALLOC</strong> bit. Whether the <strong>SHF_WRITE</strong> bit is set is processor-specific. This section is of type <strong>SHT_DYNAMIC</strong>. See the attributes above.</p>
+</dd>
+<dt><code>.dynstr</code></dt>
+<dd><p>This section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries. This section is of type <strong>SHT_STRTAB</strong>. The attribute type used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.dynsym</code></dt>
+<dd><p>This section holds the dynamic linking symbol table. This section is of type <strong>SHT_DYNSYM</strong>. The attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.fini</code></dt>
+<dd><p>This section holds executable instructions that contribute to the process termination code. When a program exits normally the system arranges to execute the code in this section. This section is of type <strong>SHT_PROGBITS</strong>. The attributes used are <strong>SHF_ALLOC</strong> and <strong>SHF_EXECINSTR</strong>.</p>
+</dd>
+<dt><code>.gnu.version</code></dt>
+<dd><p>This section holds the version symbol table, an array of <code>ElfN_Half</code> elements. This section is of type <strong>SHT_GNU_versym</strong>. The attribute type used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.gnu.version_d</code></dt>
+<dd><p>This section holds the version symbol definitions, a table of <code>ElfN_Verdef</code> structures. This section is of type <strong>SHT_GNU_verdef</strong>. The attribute type used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.gnu.version_r</code></dt>
+<dd><p>This section holds the version symbol needed elements, a table of <code>ElfN_Verneed</code> structures. This section is of type <strong>SHT_GNU_versym</strong>. The attribute type used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.got</code></dt>
+<dd><p>This section holds the global offset table. This section is of type <strong>SHT_PROGBITS</strong>. The attributes are processor-specific.</p>
+</dd>
+<dt><code>.hash</code></dt>
+<dd><p>This section holds a symbol hash table. This section is of type <strong>SHT_HASH</strong>. The attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.init</code></dt>
+<dd><p>This section holds executable instructions that contribute to the process initialization code. When a program starts to run the system arranges to execute the code in this section before calling the main program entry point. This section is of type <strong>SHT_PROGBITS</strong>. The attributes used are <strong>SHF_ALLOC</strong> and <strong>SHF_EXECINSTR</strong>.</p>
+</dd>
+<dt><code>.interp</code></dt>
+<dd><p>This section holds the pathname of a program interpreter. If the file has a loadable segment that includes the section, the section's attributes will include the <strong>SHF_ALLOC</strong> bit. Otherwise, that bit will be off. This section is of type <strong>SHT_PROGBITS</strong>.</p>
+</dd>
+<dt><code>.line</code></dt>
+<dd><p>This section holds line number information for symbolic debugging, which describes the correspondence between the program source and the machine code. The contents are unspecified. This section is of type <strong>SHT_PROGBITS</strong>. No attribute types are used.</p>
+</dd>
+<dt><code>.note</code></dt>
+<dd><p>This section holds various notes. This section is of type <strong>SHT_NOTE</strong>. No attribute types are used.</p>
+</dd>
+<dt><code>.note.ABI-tag</code></dt>
+<dd><p>This section is used to declare the expected run-time ABI of the ELF image. It may include the operating system name and its run-time versions. This section is of type <strong>SHT_NOTE</strong>. The only attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.note.gnu.build-id</code></dt>
+<dd><p>This section is used to hold an ID that uniquely identifies the contents of the ELF image. Different files with the same build ID should contain the same executable content. See the <strong>--build-id</strong> option to the GNU linker (<strong>ld</strong> (1)) for more details. This section is of type <strong>SHT_NOTE</strong>. The only attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.note.GNU-stack</code></dt>
+<dd><p>This section is used in Linux object files for declaring stack attributes. This section is of type <strong>SHT_PROGBITS</strong>. The only attribute used is <strong>SHF_EXECINSTR</strong>. This indicates to the GNU linker that the object file requires an executable stack.</p>
+</dd>
+<dt><code>.note.openbsd.ident</code></dt>
+<dd><p>OpenBSD native executables usually contain this section to identify themselves so the kernel can bypass any compatibility ELF binary emulation tests when loading the file.</p>
+</dd>
+<dt><code>.plt</code></dt>
+<dd><p>This section holds the procedure linkage table. This section is of type <strong>SHT_PROGBITS</strong>. The attributes are processor-specific.</p>
+</dd>
+<dt><code>.relNAME</code></dt>
+<dd><p>This section holds relocation information as described below. If the file has a loadable segment that includes relocation, the section's attributes will include the <strong>SHF_ALLOC</strong> bit. Otherwise, the bit will be off. By convention, "NAME" is supplied by the section to which the relocations apply. Thus a relocation section for <strong>.text</strong> normally would have the name <strong>.rel.text</strong>. This section is of type <strong>SHT_REL</strong>.</p>
+</dd>
+<dt><code>.relaNAME</code></dt>
+<dd><p>This section holds relocation information as described below. If the file has a loadable segment that includes relocation, the section's attributes will include the <strong>SHF_ALLOC</strong> bit. Otherwise, the bit will be off. By convention, "NAME" is supplied by the section to which the relocations apply. Thus a relocation section for <strong>.text</strong> normally would have the name <strong>.rela.text</strong>. This section is of type <strong>SHT_RELA</strong>.</p>
+</dd>
+<dt><code>.rodata</code></dt>
+<dd><p>This section holds read-only data that typically contributes to a nonwritable segment in the process image. This section is of type <strong>SHT_PROGBITS</strong>. The attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.rodata1</code></dt>
+<dd><p>This section holds read-only data that typically contributes to a nonwritable segment in the process image. This section is of type <strong>SHT_PROGBITS</strong>. The attribute used is <strong>SHF_ALLOC</strong>.</p>
+</dd>
+<dt><code>.shstrtab</code></dt>
+<dd><p>This section holds section names. This section is of type <strong>SHT_STRTAB</strong>. No attribute types are used.</p>
+</dd>
+<dt><code>.strtab</code></dt>
+<dd><p>This section holds strings, most commonly the strings that represent the names associated with symbol table entries. If the file has a loadable segment that includes the symbol string table, the section's attributes will include the <strong>SHF_ALLOC</strong> bit. Otherwise, the bit will be off. This section is of type <strong>SHT_STRTAB</strong>.</p>
+</dd>
+<dt><code>.symtab</code></dt>
+<dd><p>This section holds a symbol table. If the file has a loadable segment that includes the symbol table, the section's attributes will include the <strong>SHF_ALLOC</strong> bit. Otherwise, the bit will be off. This section is of type <strong>SHT_SYMTAB</strong>.</p>
+</dd>
+<dt><code>.text</code></dt>
+<dd><p>This section holds the "text", or executable instructions, of a program. This section is of type <strong>SHT_PROGBITS</strong>. The attributes used are <strong>SHF_ALLOC</strong> and <strong>SHF_EXECINSTR</strong>. String table sections hold null-terminated character sequences, commonly called strings. The object file uses these strings to represent symbol and section names. One references a string as an index into the string table section. The first byte, which is index zero, is defined to hold a null byte ('\0'). Similarly, a string table's last byte is defined to hold a null byte, ensuring null termination for all strings.</p>
+</dd>
+</dl>
+<p>An object file's symbol table holds information needed to locate and relocate a program's symbolic definitions and references. A symbol table index is a subscript into this array.</p>
+<pre><code>typedef struct {
+    uint32_t      st_name;
+    Elf32_Addr    st_value;
+    uint32_t      st_size;
+    unsigned char st_info;
+    unsigned char st_other;
+    uint16_t      st_shndx;
+} Elf32_Sym;</code></pre>
+<pre><code>typedef struct {
+    uint32_t      st_name;
+    unsigned char st_info;
+    unsigned char st_other;
+    uint16_t      st_shndx;
+    Elf64_Addr    st_value;
+    uint64_t      st_size;
+} Elf64_Sym;</code></pre>
+<p>The 32-bit and 64-bit versions have the same members, just in a different order.</p>
+<dl>
+<dt><code>st_name</code></dt>
+<dd><p>This member holds an index into the object file's symbol string table, which holds character representations of the symbol names. If the value is nonzero, it represents a string table index that gives the symbol name. Otherwise, the symbol has no name.</p>
+</dd>
+<dt><code>st_value</code></dt>
+<dd><p>This member gives the value of the associated symbol.</p>
+</dd>
+<dt><code>st_size</code></dt>
+<dd><p>Many symbols have associated sizes. This member holds zero if the symbol has no size or an unknown size.</p>
+</dd>
+<dt><code>st_info</code></dt>
+<dd><p>This member specifies the symbol's type and binding attributes:</p>
+<dl>
+<dt><strong>STT_NOTYPE</strong></dt>
+<dd><p>The symbol's type is not defined.</p>
+</dd>
+<dt><strong>STT_OBJECT</strong></dt>
+<dd><p>The symbol is associated with a data object.</p>
+</dd>
+<dt><strong>STT_FUNC</strong></dt>
+<dd><p>The symbol is associated with a function or other executable code.</p>
+</dd>
+<dt><strong>STT_SECTION</strong></dt>
+<dd><p>The symbol is associated with a section. Symbol table entries of this type exist primarily for relocation and normally have <strong>STB_LOCAL</strong> bindings.</p>
+</dd>
+<dt><strong>STT_FILE</strong></dt>
+<dd><p>By convention, the symbol's name gives the name of the source file associated with the object file. A file symbol has <strong>STB_LOCAL</strong> bindings, its section index is <strong>SHN_ABS</strong>, and it precedes the other <strong>STB_LOCAL</strong> symbols of the file, if it is present.</p>
+</dd>
+<dt><strong>STT_LOPROC</strong>, <strong>STT_HIPROC</strong></dt>
+<dd><p>Values in the inclusive range [<strong>STT_LOPROC</strong>, <strong>STT_HIPROC</strong>] are reserved for processor-specific semantics.</p>
+</dd>
+<dt><strong>STB_LOCAL</strong></dt>
+<dd><p>Local symbols are not visible outside the object file containing their definition. Local symbols of the same name may exist in multiple files without interfering with each other.</p>
+</dd>
+<dt><strong>STB_GLOBAL</strong></dt>
+<dd><p>Global symbols are visible to all object files being combined. One file's definition of a global symbol will satisfy another file's undefined reference to the same symbol.</p>
+</dd>
+<dt><strong>STB_WEAK</strong></dt>
+<dd><p>Weak symbols resemble global symbols, but their definitions have lower precedence.</p>
+</dd>
+<dt><strong>STB_LOPROC</strong>, <strong>STB_HIPROC</strong></dt>
+<dd><p>Values in the inclusive range [<strong>STB_LOPROC</strong>, <strong>STB_HIPROC</strong>] are reserved for processor-specific semantics.</p>
+</dd>
+</dl>
+<p>There are macros for packing and unpacking the binding and type fields:</p>
+<dl>
+<dt><strong><a href='ELF32_ST_BIND'>ELF32_ST_BIND</a>(</strong><code>info</code><strong>)</strong>, <strong><a href='ELF64_ST_BIND'>ELF64_ST_BIND</a>(</strong><code>info</code><strong>)</strong></dt>
+<dd><p>Extract a binding from an <code>st_info</code> value.</p>
+</dd>
+<dt><strong><a href='ELF32_ST_TYPE'>ELF32_ST_TYPE</a>(</strong><code>info</code><strong>)</strong>, <strong><a href='ELF64_ST_TYPE'>ELF64_ST_TYPE</a>(</strong><code>info</code><strong>)</strong></dt>
+<dd><p>Extract a type from an <code>st_info</code> value.</p>
+</dd>
+<dt><strong><a href='ELF32_ST_INFO'>ELF32_ST_INFO</a>(</strong><code>bind</code><strong>, </strong><code>type</code><strong>)</strong>, <strong><a href='ELF64_ST_INFO'>ELF64_ST_INFO</a>(</strong><code>bind</code><strong>, </strong><code>type</code><strong>)</strong></dt>
+<dd><p>Convert a binding and a type into an <code>st_info</code> value.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>st_other</code></dt>
+<dd><p>This member defines the symbol visibility.</p>
+<p><strong>STV_DEFAULT</strong> Default symbol visibility rules. Global and weak symbols are available to other modules; references in the local module can be interposed by definitions in other modules.</p>
+<dl>
+<dt><strong>STV_INTERNAL</strong></dt>
+<dd><p>Processor-specific hidden class.</p>
+</dd>
+<dt><strong>STV_HIDDEN</strong></dt>
+<dd><p>Symbol is unavailable to other modules; references in the local module always resolve to the local symbol (i.e., the symbol can't be interposed by definitions in other modules).</p>
+</dd>
+<dt><strong>STV_PROTECTED</strong></dt>
+<dd><p>Symbol is available to other modules, but references in the local module always resolve to the local symbol.</p>
+</dd>
+</dl>
+<p>There are macros for extracting the visibility type:</p>
+<p><strong>ELF32_ST_VISIBILITY</strong>(other) or <strong>ELF64_ST_VISIBILITY</strong>(other)</p>
+</dd>
+<dt><code>st_shndx</code></dt>
+<dd><p>Every symbol table entry is "defined" in relation to some section. This member holds the relevant section header table index. Relocation is the process of connecting symbolic references with symbolic definitions. Relocatable files must have information that describes how to modify their section contents, thus allowing executable and shared object files to hold the right information for a process's program image. Relocation entries are these data.</p>
+</dd>
+</dl>
+<p>Relocation structures that do not need an addend:</p>
+<pre><code>typedef struct {
+    Elf32_Addr r_offset;
+    uint32_t   r_info;
+} Elf32_Rel;</code></pre>
+<pre><code>typedef struct {
+    Elf64_Addr r_offset;
+    uint64_t   r_info;
+} Elf64_Rel;</code></pre>
+<p>Relocation structures that need an addend:</p>
+<pre><code>typedef struct {
+    Elf32_Addr r_offset;
+    uint32_t   r_info;
+    int32_t    r_addend;
+} Elf32_Rela;</code></pre>
+<pre><code>typedef struct {
+    Elf64_Addr r_offset;
+    uint64_t   r_info;
+    int64_t    r_addend;
+} Elf64_Rela;</code></pre>
+<dl>
+<dt><code>r_offset</code></dt>
+<dd><p>This member gives the location at which to apply the relocation action. For a relocatable file, the value is the byte offset from the beginning of the section to the storage unit affected by the relocation. For an executable file or shared object, the value is the virtual address of the storage unit affected by the relocation.</p>
+</dd>
+<dt><code>r_info</code></dt>
+<dd><p>This member gives both the symbol table index with respect to which the relocation must be made and the type of relocation to apply. Relocation types are processor-specific. When the text refers to a relocation entry's relocation type or symbol table index, it means the result of applying <strong>ELF[32|64]_R_TYPE</strong> or <strong>ELF[32|64]_R_SYM</strong>, respectively, to the entry's <code>r_info</code> member.</p>
+</dd>
+<dt><code>r_addend</code></dt>
+<dd><p>This member specifies a constant addend used to compute the value to be stored into the relocatable field. The <code>.dynamic</code> section contains a series of structures that hold relevant dynamic linking information. The <code>d_tag</code> member controls the interpretation of <code>d_un</code>.</p>
+</dd>
+</dl>
+<pre><code>typedef struct {
+    Elf32_Sword    d_tag;
+    union {
+        Elf32_Word d_val;
+        Elf32_Addr d_ptr;
+    } d_un;
+} Elf32_Dyn;
+extern Elf32_Dyn _DYNAMIC[];</code></pre>
+<pre><code>typedef struct {
+    Elf64_Sxword    d_tag;
+    union {
+        Elf64_Xword d_val;
+        Elf64_Addr  d_ptr;
+    } d_un;
+} Elf64_Dyn;
+extern Elf64_Dyn _DYNAMIC[];</code></pre>
+<dl>
+<dt><code>d_tag</code></dt>
+<dd><p>This member may have any of the following values:</p>
+<dl>
+<dt><strong>DT_NULL</strong></dt>
+<dd><p>Marks end of dynamic section</p>
+</dd>
+<dt><strong>DT_NEEDED</strong></dt>
+<dd><p>String table offset to name of a needed library</p>
+</dd>
+<dt><strong>DT_PLTRELSZ</strong></dt>
+<dd><p>Size in bytes of PLT relocation entries</p>
+</dd>
+<dt><strong>DT_PLTGOT</strong></dt>
+<dd><p>Address of PLT and/or GOT</p>
+</dd>
+<dt><strong>DT_HASH</strong></dt>
+<dd><p>Address of symbol hash table</p>
+</dd>
+<dt><strong>DT_STRTAB</strong></dt>
+<dd><p>Address of string table</p>
+</dd>
+<dt><strong>DT_SYMTAB</strong></dt>
+<dd><p>Address of symbol table</p>
+</dd>
+<dt><strong>DT_RELA</strong></dt>
+<dd><p>Address of Rela relocation table</p>
+</dd>
+<dt><strong>DT_RELASZ</strong></dt>
+<dd><p>Size in bytes of the Rela relocation table</p>
+</dd>
+<dt><strong>DT_RELAENT</strong></dt>
+<dd><p>Size in bytes of a Rela relocation table entry</p>
+</dd>
+<dt><strong>DT_STRSZ</strong></dt>
+<dd><p>Size in bytes of string table</p>
+</dd>
+<dt><strong>DT_SYMENT</strong></dt>
+<dd><p>Size in bytes of a symbol table entry</p>
+</dd>
+<dt><strong>DT_INIT</strong></dt>
+<dd><p>Address of the initialization function</p>
+</dd>
+<dt><strong>DT_FINI</strong></dt>
+<dd><p>Address of the termination function</p>
+</dd>
+<dt><strong>DT_SONAME</strong></dt>
+<dd><p>String table offset to name of shared object</p>
+</dd>
+<dt><strong>DT_RPATH</strong></dt>
+<dd><p>String table offset to library search path (deprecated)</p>
+</dd>
+<dt><strong>DT_SYMBOLIC</strong></dt>
+<dd><p>Alert linker to search this shared object before the executable for symbols</p>
+</dd>
+<dt><strong>DT_REL</strong></dt>
+<dd><p>Address of Rel relocation table</p>
+</dd>
+<dt><strong>DT_RELSZ</strong></dt>
+<dd><p>Size in bytes of Rel relocation table</p>
+</dd>
+<dt><strong>DT_RELENT</strong></dt>
+<dd><p>Size in bytes of a Rel table entry</p>
+</dd>
+<dt><strong>DT_PLTREL</strong></dt>
+<dd><p>Type of relocation entry to which the PLT refers (Rela or Rel)</p>
+</dd>
+<dt><strong>DT_DEBUG</strong></dt>
+<dd><p>Undefined use for debugging</p>
+</dd>
+<dt><strong>DT_TEXTREL</strong></dt>
+<dd><p>Absence of this entry indicates that no relocation entries should apply to a nonwritable segment</p>
+</dd>
+<dt><strong>DT_JMPREL</strong></dt>
+<dd><p>Address of relocation entries associated solely with the PLT</p>
+</dd>
+<dt><strong>DT_BIND_NOW</strong></dt>
+<dd><p>Instruct dynamic linker to process all relocations before transferring control to the executable</p>
+</dd>
+<dt><strong>DT_RUNPATH</strong></dt>
+<dd><p>String table offset to library search path</p>
+</dd>
+<dt><strong>DT_LOPROC</strong>, <strong>DT_HIPROC</strong></dt>
+<dd><p>Values in the inclusive range [<strong>DT_LOPROC</strong>, <strong>DT_HIPROC</strong>] are reserved for processor-specific semantics</p>
+</dd>
+</dl>
+</dd>
+<dt><code>d_val</code></dt>
+<dd><p>This member represents integer values with various interpretations.</p>
+</dd>
+<dt><code>d_ptr</code></dt>
+<dd><p>This member represents program virtual addresses. When interpreting these addresses, the actual address should be computed based on the original file value and memory base address. Files do not contain relocation entries to fixup these addresses.</p>
+</dd>
+<dt><code>_DYNAMIC</code></dt>
+<dd><p>Array containing all the dynamic structures in the <code>.dynamic</code> section. This is automatically populated by the linker. ELF notes allow for appending arbitrary information for the system to use. They are largely used by core files (<code>e_type</code> of <strong>ET_CORE</strong>), but many projects define their own set of extensions. For example, the GNU tool chain uses ELF notes to pass information from the linker to the C library.</p>
+</dd>
+</dl>
+<p>Note sections contain a series of notes (see the <code>struct</code> definitions below). Each note is followed by the name field (whose length is defined in <code>n_namesz</code>) and then by the descriptor field (whose length is defined in <code>n_descsz</code>) and whose starting address has a 4 byte alignment. Neither field is defined in the note struct due to their arbitrary lengths.</p>
+<p>An example for parsing out two consecutive notes should clarify their layout in memory:</p>
+<pre><code>void *memory, *name, *desc;
+Elf64_Nhdr *note, *next_note;
+
+/* The buffer is pointing to the start of the section/segment */
+note = memory;
+
+/* If the name is defined, it follows the note */
+name = note-&gt;n_namesz == 0 ? NULL : memory + sizeof(*note);
+
+/* If the descriptor is defined, it follows the name
+   (with alignment) */
+
+desc = note-&gt;n_descsz == 0 ? NULL :
+       memory + sizeof(*note) + ALIGN_UP(note-&gt;n_namesz, 4);
+
+/* The next note follows both (with alignment) */
+next_note = memory + sizeof(*note) +
+                     ALIGN_UP(note-&gt;n_namesz, 4) +
+                     ALIGN_UP(note-&gt;n_descsz, 4);</code></pre>
+<p>Keep in mind that the interpretation of <code>n_type</code> depends on the namespace defined by the <code>n_namesz</code> field. If the <code>n_namesz</code> field is not set (e.g., is 0), then there are two sets of notes: one for core files and one for all other ELF types. If the namespace is unknown, then tools will usually fallback to these sets of notes as well.</p>
+<pre><code>typedef struct {
+    Elf32_Word n_namesz;
+    Elf32_Word n_descsz;
+    Elf32_Word n_type;
+} Elf32_Nhdr;</code></pre>
+<pre><code>typedef struct {
+    Elf64_Word n_namesz;
+    Elf64_Word n_descsz;
+    Elf64_Word n_type;
+} Elf64_Nhdr;</code></pre>
+<dl>
+<dt><code>n_namesz</code></dt>
+<dd><p>The length of the name field in bytes. The contents will immediately follow this note in memory. The name is null terminated. For example, if the name is "GNU", then <code>n_namesz</code> will be set to 4.</p>
+</dd>
+<dt><code>n_descsz</code></dt>
+<dd><p>The length of the descriptor field in bytes. The contents will immediately follow the name field in memory.</p>
+</dd>
+<dt><code>n_type</code></dt>
+<dd><p>Depending on the value of the name field, this member may have any of the following values:</p>
+<dl>
+<dt><strong>Core files (e_type = ET_CORE)</strong></dt>
+<dd><p>Notes used by all core files. These are highly operating system or architecture specific and often require close coordination with kernels, C libraries, and debuggers. These are used when the namespace is the default (i.e., <code>n_namesz</code> will be set to 0), or a fallback when the namespace is unknown.</p>
+<p><strong>NT_PRSTATUS</strong> prstatus struct</p>
+<dl>
+<dt><strong>NT_FPREGSET</strong></dt>
+<dd><p>fpregset struct</p>
+</dd>
+<dt><strong>NT_PRPSINFO</strong></dt>
+<dd><p>prpsinfo struct</p>
+</dd>
+<dt><strong>NT_PRXREG</strong></dt>
+<dd><p>prxregset struct</p>
+</dd>
+<dt><strong>NT_TASKSTRUCT</strong></dt>
+<dd><p>task structure</p>
+</dd>
+<dt><strong>NT_PLATFORM</strong></dt>
+<dd><p>String from sysinfo(SI_PLATFORM)</p>
+</dd>
+<dt><strong>NT_AUXV</strong></dt>
+<dd><p>auxv array</p>
+</dd>
+<dt><strong>NT_GWINDOWS</strong></dt>
+<dd><p>gwindows struct</p>
+</dd>
+<dt><strong>NT_ASRS</strong></dt>
+<dd><p>asrset struct</p>
+</dd>
+<dt><strong>NT_PSTATUS</strong></dt>
+<dd><p>pstatus struct</p>
+</dd>
+<dt><strong>NT_PSINFO</strong></dt>
+<dd><p>psinfo struct</p>
+</dd>
+<dt><strong>NT_PRCRED</strong></dt>
+<dd><p>prcred struct</p>
+</dd>
+<dt><strong>NT_UTSNAME</strong></dt>
+<dd><p>utsname struct</p>
+</dd>
+<dt><strong>NT_LWPSTATUS</strong></dt>
+<dd><p>lwpstatus struct</p>
+</dd>
+<dt><strong>NT_LWPSINFO</strong></dt>
+<dd><p>lwpinfo struct</p>
+</dd>
+<dt><strong>NT_PRFPXREG</strong></dt>
+<dd><p>fprxregset struct</p>
+</dd>
+<dt><strong>NT_SIGINFO</strong></dt>
+<dd><p>siginfo_t (size might increase over time)</p>
+</dd>
+<dt><strong>NT_FILE</strong></dt>
+<dd><p>Contains information about mapped files</p>
+</dd>
+<dt><strong>NT_PRXFPREG</strong></dt>
+<dd><p>user_fxsr_struct</p>
+</dd>
+<dt><strong>NT_PPC_VMX</strong></dt>
+<dd><p>PowerPC Altivec/VMX registers</p>
+</dd>
+<dt><strong>NT_PPC_SPE</strong></dt>
+<dd><p>PowerPC SPE/EVR registers</p>
+</dd>
+<dt><strong>NT_PPC_VSX</strong></dt>
+<dd><p>PowerPC VSX registers</p>
+</dd>
+<dt><strong>NT_386_TLS</strong></dt>
+<dd><p>i386 TLS slots (struct user_desc)</p>
+</dd>
+<dt><strong>NT_386_IOPERM</strong></dt>
+<dd><p>x86 io permission bitmap (1=deny)</p>
+</dd>
+<dt><strong>NT_X86_XSTATE</strong></dt>
+<dd><p>x86 extended state using xsave</p>
+</dd>
+<dt><strong>NT_S390_HIGH_GPRS</strong></dt>
+<dd><p>s390 upper register halves</p>
+</dd>
+<dt><strong>NT_S390_TIMER</strong></dt>
+<dd><p>s390 timer register</p>
+</dd>
+<dt><strong>NT_S390_TODCMP</strong></dt>
+<dd><p>s390 time-of-day (TOD) clock comparator register</p>
+</dd>
+<dt><strong>NT_S390_TODPREG</strong></dt>
+<dd><p>s390 time-of-day (TOD) programmable register</p>
+</dd>
+<dt><strong>NT_S390_CTRS</strong></dt>
+<dd><p>s390 control registers</p>
+</dd>
+<dt><strong>NT_S390_PREFIX</strong></dt>
+<dd><p>s390 prefix register</p>
+</dd>
+<dt><strong>NT_S390_LAST_BREAK</strong></dt>
+<dd><p>s390 breaking event address</p>
+</dd>
+<dt><strong>NT_S390_SYSTEM_CALL</strong></dt>
+<dd><p>s390 system call restart data</p>
+</dd>
+<dt><strong>NT_S390_TDB</strong></dt>
+<dd><p>s390 transaction diagnostic block</p>
+</dd>
+<dt><strong>NT_ARM_VFP</strong></dt>
+<dd><p>ARM VFP/NEON registers</p>
+</dd>
+<dt><strong>NT_ARM_TLS</strong></dt>
+<dd><p>ARM TLS register</p>
+</dd>
+<dt><strong>NT_ARM_HW_BREAK</strong></dt>
+<dd><p>ARM hardware breakpoint registers</p>
+</dd>
+<dt><strong>NT_ARM_HW_WATCH</strong></dt>
+<dd><p>ARM hardware watchpoint registers</p>
+</dd>
+<dt><strong>NT_ARM_SYSTEM_CALL</strong></dt>
+<dd><p>ARM system call number</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>n_name = GNU</strong></dt>
+<dd><p>Extensions used by the GNU tool chain.</p>
+<dl>
+<dt><strong>NT_GNU_ABI_TAG</strong></dt>
+<dd><p>Operating system (OS) ABI information. The desc field will be 4 words:</p>
+</dd>
+</dl>
+<blockquote>
+<ul>
+<li><p>word 0: OS descriptor (<strong>ELF_NOTE_OS_LINUX</strong>, <strong>ELF_NOTE_OS_GNU</strong>, and so on)`</p></li>
+<li><p>word 1: major version of the ABI</p></li>
+<li><p>word 2: minor version of the ABI</p></li>
+<li><p>word 3: subminor version of the ABI</p></li>
+</ul>
+</blockquote>
+<dl>
+<dt><strong>NT_GNU_HWCAP</strong></dt>
+<dd><p>Synthetic hwcap information. The desc field begins with two words:</p>
+</dd>
+</dl>
+<blockquote>
+<ul>
+<li><p>word 0: number of entries</p></li>
+<li><p>word 1: bit mask of enabled entries</p></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>Then follow variable-length entries, one byte followed by a null-terminated hwcap name string. The byte gives the bit number to test if enabled, (1U &lt;&lt; bit) &amp; bit mask.</p>
+</blockquote>
+<dl>
+<dt><strong>NT_GNU_BUILD_ID</strong></dt>
+<dd><p>Unique build ID as generated by the GNU <a href='/1/ld'>ld</a>(1) <strong>--build-id</strong> option. The desc consists of any nonzero number of bytes.</p>
+</dd>
+<dt><strong>NT_GNU_GOLD_VERSION</strong></dt>
+<dd><p>The desc contains the GNU Gold linker version used.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Default/unknown namespace (e_type != ET_CORE)</strong></dt>
+<dd><p>These are used when the namespace is the default (i.e., <code>n_namesz</code> will be set to 0), or a fallback when the namespace is unknown.</p>
+<p><strong>NT_VERSION</strong> A version string of some sort.</p>
+<dl>
+<dt><strong>NT_ARCH</strong></dt>
+<dd><p>Architecture information.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>ELF first appeared in System V. The ELF format is an adopted standard.</p>
+<p>The extensions for <code>e_phnum</code>, <code>e_shnum</code>, and <code>e_shstrndx</code> respectively are Linux extensions. Sun, BSD and AMD64 also support them; for further information, look under SEE ALSO.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/as'>as</a>(1), <a href='/1/elfedit'>elfedit</a>(1), <a href='/1/gdb'>gdb</a>(1), <a href='/1/ld'>ld</a>(1), <a href='/1/nm'>nm</a>(1), <a href='/1/objcopy'>objcopy</a>(1), <a href='/1/objdump'>objdump</a>(1), <a href='/1/patchelf'>patchelf</a>(1), <a href='/1/readelf'>readelf</a>(1), <a href='/1/size'>size</a>(1), <a href='/1/strings'>strings</a>(1), <a href='/1/strip'>strip</a>(1), <a href='/2/execve'>execve</a>(2), <a href='/3/dl_iterate_phdr'>dl_iterate_phdr</a>(3), <a href='/5/core'>core</a>(5), <strong><a href="http://ld.so">ld.so</a></strong>(8)</p>
+<p>Hewlett-Packard, <code>Elf-64 Object File Format</code>.</p>
+<p>Santa Cruz Operation, <code>System V Application Binary Interface</code>.</p>
+<p>UNIX System Laboratories, "Object Files", <code>Executable and Linking Format (ELF)</code>.</p>
+<p>Sun Microsystems, <code>Linker and Libraries Guide</code>.</p>
+<p>AMD64 ABI Draft, <code>System V Application Binary Interface AMD64 Architecture Processor Supplement</code>.</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

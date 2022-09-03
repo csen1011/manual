@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>dlclose, <a data-bs-content='This is the man page for &lt;code&gt;dlopen&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>dlopen</a>, dlmopen - open and close a shared object</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;dlfcn.h&gt;</strong></p>
+<p><strong>void *dlopen(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>filename</code><strong>, int </strong><code>flags</code><strong>);</strong></p>
+<p><strong>int dlclose(void *</strong><code>handle</code><strong>);</strong></p>
+<p><strong>#define _GNU_SOURCE</strong><br/>
+<strong>#include &lt;dlfcn.h&gt;</strong></p>
+<p><strong>void *dlmopen(Lmid_t </strong><code>lmid</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>filename</code><strong>, int </strong><code>flags</code><strong>);</strong></p>
+<p>Link with <code>-ldl</code>.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<h2>dlopen()</h2>
+<p>The function <a href='dlopen'>dlopen</a>() loads the dynamic shared object (shared library) file named by the null-terminated string <code>filename</code> and returns an opaque "handle" for the loaded object. This handle is employed with other functions in the dlopen API, such as <a href='/3/dlsym'>dlsym</a>(3), <a href='/3/dladdr'>dladdr</a>(3), <a href='/3/dlinfo'>dlinfo</a>(3), and <a href='dlclose'>dlclose</a>().</p>
+<p>If <code>filename</code> If <code>filename</code> contains a slash ("/"), then it is interpreted as a (relative or absolute) pathname. Otherwise, the dynamic linker searches for the object as follows (see <strong><a href="http://ld.so">ld.so</a></strong>(8) for further details):</p>
+<ol start="15" type="a">
+<li><p>(ELF only) If the calling object (i.e., the shared library or executable from which <a href='dlopen'>dlopen</a>() is called) contains a DT_RPATH tag, and does not contain a DT_RUNPATH tag, then the directories listed in the DT_RPATH tag are searched.</p></li>
+<li><p>If, at the time that the program was started, the environment variable <strong>LD_LIBRARY_PATH</strong> was defined to contain a colon-separated list of directories, then these are searched. (As a security measure, this variable is ignored for set-user-ID and set-group-ID programs.)</p></li>
+<li><p>(ELF only) If the calling object contains a DT_RUNPATH tag, then the directories listed in that tag are searched.</p></li>
+<li><p>The cache file <code>/etc/ld.so.cache</code> (maintained by <a href='/8/ldconfig'>ldconfig</a>(8)) is checked to see whether it contains an entry for <code>filename</code>.</p></li>
+<li><p>The directories <code>/lib</code> and <code>/usr/lib</code> are searched (in that order).</p></li>
+</ol>
+<p>If the object specified by <code>filename</code> has dependencies on other shared objects, then these are also automatically loaded by the dynamic linker using the same rules. (This process may occur recursively, if those objects in turn have dependencies, and so on.)</p>
+<p>One of the following two values must be included in <code>flags</code>:</p>
+<dl>
+<dt><strong>RTLD_LAZY</strong></dt>
+<dd><p>Perform lazy binding. Resolve symbols only as the code that references them is executed. If the symbol is never referenced, then it is never resolved. (Lazy binding is performed only for function references; references to variables are always immediately bound when the shared object is loaded.) Since glibc 2.1.1, this flag is overridden by the effect of the <strong>LD_BIND_NOW</strong> environment variable.</p>
+</dd>
+<dt><strong>RTLD_NOW</strong></dt>
+<dd><p>If this value is specified, or the environment variable <strong>LD_BIND_NOW</strong> is set to a nonempty string, all undefined symbols in the shared object are resolved before <a href='dlopen'>dlopen</a>() returns. If this cannot be done, an error is returned.</p>
+</dd>
+</dl>
+<p>Zero or more of the following values may also be ORed in <code>flags</code>:</p>
+<dl>
+<dt><strong>RTLD_GLOBAL</strong></dt>
+<dd><p>The symbols defined by this shared object will be made available for symbol resolution of subsequently loaded shared objects.</p>
+</dd>
+<dt><strong>RTLD_LOCAL</strong></dt>
+<dd><p>This is the converse of <strong>RTLD_GLOBAL</strong>, and the default if neither flag is specified. Symbols defined in this shared object are not made available to resolve references in subsequently loaded shared objects.</p>
+</dd>
+<dt><strong>RTLD_NODELETE</strong> (since glibc 2.2)</dt>
+<dd><p>Do not unload the shared object during <a href='dlclose'>dlclose</a>(). Consequently, the object's static and global variables are not reinitialized if the object is reloaded with <a href='dlopen'>dlopen</a>() at a later time.</p>
+</dd>
+<dt><strong>RTLD_NOLOAD</strong> (since glibc 2.2)</dt>
+<dd><p>Don't load the shared object. This can be used to test if the object is already resident (<a href='dlopen'>dlopen</a>() returns NULL if it is not, or the object's handle if it is resident). This flag can also be used to promote the flags on a shared object that is already loaded. For example, a shared object that was previously loaded with <strong>RTLD_LOCAL</strong> can be reopened with <strong>RTLD_NOLOAD | RTLD_GLOBAL</strong>. <strong>RTLD_DEEPBIND</strong> (since glibc 2.3.4) Place the lookup scope of the symbols in this shared object ahead of the global scope. This means that a self-contained object will use its own symbols in preference to global symbols with the same name contained in objects that have already been loaded.</p>
+</dd>
+</dl>
+<p>If <code>filename</code> is NULL, then the returned handle is for the main program. When given to <a href='/3/dlsym'>dlsym</a>(3), this handle causes a search for a symbol in the main program, followed by all shared objects loaded at program startup, and then all shared objects loaded by <a href='dlopen'>dlopen</a>() with the flag <strong>RTLD_GLOBAL</strong>.</p>
+<p>Symbol references in the shared object are resolved using (in order): symbols in the link map of objects loaded for the main program and its dependencies; symbols in shared objects (and their dependencies) that were previously opened with <a href='dlopen'>dlopen</a>() using the <strong>RTLD_GLOBAL</strong> flag; and definitions in the shared object itself (and any dependencies that were loaded for that object).</p>
+<p>Any global symbols in the executable that were placed into its dynamic symbol table by <a href='/1/ld'>ld</a>(1) can also be used to resolve references in a dynamically loaded shared object. Symbols may be placed in the dynamic symbol table either because the executable was linked with the flag "-rdynamic" (or, synonymously, "--export-dynamic"), which causes all of the executable's global symbols to be placed in the dynamic symbol table, or because <a href='/1/ld'>ld</a>(1) noted a dependency on a symbol in another object during static linking.</p>
+<p>If the same shared object is opened again with <a href='dlopen'>dlopen</a>(), the same object handle is returned. The dynamic linker maintains reference counts for object handles, so a dynamically loaded shared object is not deallocated until <a href='dlclose'>dlclose</a>() has been called on it as many times as <a href='dlopen'>dlopen</a>() has succeeded on it. Constructors (see below) are called only when the object is actually loaded into memory (i.e., when the reference count increases to 1).</p>
+<p>A subsequent <a href='dlopen'>dlopen</a>() call that loads the same shared object with <strong>RTLD_NOW</strong> may force symbol resolution for a shared object earlier loaded with <strong>RTLD_LAZY</strong>. Similarly, an object that was previously opened with <strong>RTLD_LOCAL</strong> can be promoted to <strong>RTLD_GLOBAL</strong> in a subsequent <a href='dlopen'>dlopen</a>().</p>
+<p>If <a href='dlopen'>dlopen</a>() fails for any reason, it returns NULL. This function performs the same task as <a href='dlopen'>dlopen</a>()—the <code>filename</code> and <code>flags</code> arguments, as well as the return value, are the same, except for the differences noted below.</p>
+<p>The <a href='dlmopen'>dlmopen</a>() function differs from <a href='dlopen'>dlopen</a>() primarily in that it accepts an additional argument, <code>lmid</code>, that specifies the link-map list (also referred to as a <code>namespace</code>) in which the shared object should be loaded. (By comparison, <a href='dlopen'>dlopen</a>() adds the dynamically loaded shared object to the same namespace as the shared object from which the <a href='dlopen'>dlopen</a>() call is made.) The <code>Lmid_t</code> type is an opaque handle that refers to a namespace.</p>
+<p>The <code>lmid</code> argument is either the ID of an existing namespace (which can be obtained using the <a href='/3/dlinfo'>dlinfo</a>(3) <strong>RTLD_DI_LMID</strong> request) or one of the following special values:</p>
+<dl>
+<dt><strong>LM_ID_BASE</strong></dt>
+<dd><p>Load the shared object in the initial namespace (i.e., the application's namespace).</p>
+</dd>
+<dt><strong>LM_ID_NEWLM</strong></dt>
+<dd><p>Create a new namespace and load the shared object in that namespace. The object must have been correctly linked to reference all of the other shared objects that it requires, since the new namespace is initially empty.</p>
+</dd>
+</dl>
+<p>If <code>filename</code> is NULL, then the only permitted value for <code>lmid</code> is <strong>LM_ID_BASE</strong>.</p>
+<h2>dlclose()</h2>
+<p>The function <a href='dlclose'>dlclose</a>() decrements the reference count on the dynamically loaded shared object referred to by <code>handle</code>.</p>
+<p>If the object's reference count drops to zero and no symbols in this object are required by other objects, then the object is unloaded after first calling any destructors defined for the object. (Symbols in this object might be required in another object because this object was opened with the <strong>RTLD_GLOBAL</strong> flag and one of its symbols satisfied a relocation in another object.)</p>
+<p>All shared objects that were automatically loaded when <a href='dlopen'>dlopen</a>() was invoked on the object referred to by <code>handle</code> are recursively closed in the same manner.</p>
+<p>A successful return from <a href='dlclose'>dlclose</a>() does not guarantee that the symbols associated with <code>handle</code> are removed from the caller's address space. In addition to references resulting from explicit <a href='dlopen'>dlopen</a>() calls, a shared object may have been implicitly loaded (and reference counted) because of dependencies in other shared objects. Only when all references have been released can the shared object be removed from the address space.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='dlopen'>dlopen</a>() and <a href='dlmopen'>dlmopen</a>() return a non-NULL handle for the loaded object. On error (file could not be found, was not readable, had the wrong format, or caused errors during loading), these functions return NULL.</p>
+<p>On success, <a href='dlclose'>dlclose</a>() returns 0; on error, it returns a nonzero value.</p>
+<p>Errors from these functions can be diagnosed using <a href='/3/dlerror'>dlerror</a>(3).</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below loads the (glibc) math library, looks up the address of the <a href='/3/cos'>cos</a>(3) function, and prints the cosine of 2.0. The following is an example of building and running the program:</p>
+<pre><code>$ cc dlopen_demo.c -ldl
+$ ./a.out
+-0.416147</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;dlfcn.h&gt;
+#include &lt;gnu/lib-names.h&gt;  /* Defines LIBM_SO (which will be a
+                               string such as "libm.so.6") */
+int
+main(void)
+{
+    void *handle;
+    double (*cosine)(double);
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>error;
+
+    handle = dlopen(LIBM_SO, RTLD_LAZY);
+    if (!handle) {
+        fprintf(stderr, "%s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    dlerror();    /* Clear any existing error */
+
+    cosine = (double (*)(double)) dlsym(handle, "cos");
+
+    /* According to the ISO C standard, casting between function
+       pointers and 'void *', as done above, produces undefined results.
+       POSIX.1-2001 and POSIX.1-2008 accepted this state of affairs and
+       proposed the following workaround:
+
+           *(void **) (&amp;cosine) = dlsym(handle, "cos");
+
+       This (clumsy) cast conforms with the ISO C standard and will
+       avoid any compiler warnings.
+
+       The 2013 Technical Corrigendum 1 to POSIX.1-2008 improved matters
+       by requiring that conforming implementations support casting
+       'void *' to a function pointer.  Nevertheless, some compilers
+       (e.g., gcc with the '-pedantic' option) may complain about the
+       cast used in this program. */
+
+    error = dlerror();
+    if (error != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%f\n", (*cosine)(2.0));
+    dlclose(handle);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='dlopen'>dlopen</a>() and <a href='dlclose'>dlclose</a>() are present in glibc 2.0 and later. <a href='dlmopen'>dlmopen</a>() first appeared in glibc 2.3.4.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='dlopen'>dlopen</a>(), <a href='dlmopen'>dlmopen</a>(), <a href='dlclose'>dlclose</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001 describes <a href='dlclose'>dlclose</a>() and <a href='dlopen'>dlopen</a>(). The <a href='dlmopen'>dlmopen</a>() function is a GNU extension.</p>
+<p>The <strong>RTLD_NOLOAD</strong>, <strong>RTLD_NODELETE</strong>, and <strong>RTLD_DEEPBIND</strong> flags are GNU extensions; the first two of these flags are also present on Solaris.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>dlmopen() and namespaces</h2>
+<p>A link-map list defines an isolated namespace for the resolution of symbols by the dynamic linker. Within a namespace, dependent shared objects are implicitly loaded according to the usual rules, and symbol references are likewise resolved according to the usual rules, but such resolution is confined to the definitions provided by the objects that have been (explicitly and implicitly) loaded into the namespace.</p>
+<p>The <a href='dlmopen'>dlmopen</a>() function permits object-load isolation—the ability to load a shared object in a new namespace without exposing the rest of the application to the symbols made available by the new object. Note that the use of the <strong>RTLD_LOCAL</strong> flag is not sufficient for this purpose, since it prevents a shared object's symbols from being available to <code>any</code> other shared object. In some cases, we may want to make the symbols provided by a dynamically loaded shared object available to (a subset of) other shared objects without exposing those symbols to the entire application. This can be achieved by using a separate namespace and the <strong>RTLD_GLOBAL</strong> flag.</p>
+<p>The <a href='dlmopen'>dlmopen</a>() function also can be used to provide better isolation than the <strong>RTLD_LOCAL</strong> flag. In particular, shared objects loaded with <strong>RTLD_LOCAL</strong> may be promoted to <strong>RTLD_GLOBAL</strong> if they are dependencies of another shared object loaded with <strong>RTLD_GLOBAL</strong>. Thus, <strong>RTLD_LOCAL</strong> is insufficient to isolate a loaded shared object except in the (uncommon) case where one has explicit control over all shared object dependencies.</p>
+<p>Possible uses of <a href='dlmopen'>dlmopen</a>() are plugins where the author of the plugin-loading framework can't trust the plugin authors and does not wish any undefined symbols from the plugin framework to be resolved to plugin symbols. Another use is to load the same object more than once. Without the use of <a href='dlmopen'>dlmopen</a>(), this would require the creation of distinct copies of the shared object file. Using <a href='dlmopen'>dlmopen</a>(), this can be achieved by loading the same shared object file into different namespaces.</p>
+<p>The glibc implementation supports a maximum of 16 namespaces. Shared objects may export functions using the <strong>__attribute__((constructor))</strong> and <strong>__attribute__((destructor))</strong> function attributes. Constructor functions are executed before <a href='dlopen'>dlopen</a>() returns, and destructor functions are executed before <a href='dlclose'>dlclose</a>() returns. A shared object may export multiple constructors and destructors, and priorities can be associated with each function to determine the order in which they are executed. See the <strong>gcc</strong> info pages (under "Function attributes") for further information.</p>
+<p>An older method of (partially) achieving the same result is via the use of two special symbols recognized by the linker: <strong>_init</strong> and <strong>_fini</strong>. If a dynamically loaded shared object exports a routine named <a href='_init'>_init</a>(), then that code is executed after loading a shared object, before <a href='dlopen'>dlopen</a>() returns. If the shared object exports a routine named <a href='_fini'>_fini</a>(), then that routine is called just before the object is unloaded. In this case, one must avoid linking against the system startup files, which contain default versions of these files; this can be done by using the <a href='/1/gcc'>gcc</a>(1) <code>-nostartfiles</code> command-line option.</p>
+<p>Use of <strong>_init</strong> and <strong>_fini</strong> is now deprecated in favor of the aforementioned constructors and destructors, which among other advantages, permit multiple initialization and finalization functions to be defined. Since glibc 2.2.3, <a href='/3/atexit'>atexit</a>(3) can be used to register an exit handler that is automatically called when a shared object is unloaded.</p>
+<h2>History</h2>
+<p>These functions are part of the dlopen API, derived from SunOS.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>As at glibc 2.24, specifying the <strong>RTLD_GLOBAL</strong> flag when calling <a href='dlmopen'>dlmopen</a>() generates an error. Furthermore, specifying <strong>RTLD_GLOBAL</strong> when calling <a href='dlopen'>dlopen</a>() results in a program crash (<strong>SIGSEGV</strong>) if the call is made from any object loaded in a namespace other than the initial namespace.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ld'>ld</a>(1), <a href='/1/ldd'>ldd</a>(1), <a href='/1/pldd'>pldd</a>(1), <a href='/3/dl_iterate_phdr'>dl_iterate_phdr</a>(3), <a href='/3/dladdr'>dladdr</a>(3), <a href='/3/dlerror'>dlerror</a>(3), <a href='/3/dlinfo'>dlinfo</a>(3), <a href='/3/dlsym'>dlsym</a>(3), <a href='/7/rtld-audit'>rtld-audit</a>(7), <strong><a href="http://ld.so">ld.so</a></strong>(8), <a href='/8/ldconfig'>ldconfig</a>(8)</p>
+<p>gcc info pages, ld info pages</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

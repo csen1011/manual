@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>nsenter - run program in different namespaces</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>nsenter</strong> [options] [<code>program</code> [<code>arguments</code>]]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>nsenter</strong> command executes <code>program</code> in the namespace(s) that are specified in the command-line options (described below). If <code>program</code> is not given, then "${SHELL}" is run (default: <code>/bin/sh</code>).</p>
+<p>Enterable namespaces are:</p>
+<p><strong>mount namespace</strong></p>
+<blockquote>
+<p>Mounting and unmounting filesystems will not affect the rest of the system, except for filesystems which are explicitly marked as shared (with <strong>mount --make-shared</strong>; see <code>/proc/self/mountinfo</code> for the <strong>shared</strong> flag). For further details, see <a href='/7/mount_namespaces'>mount_namespaces</a>(7) and the discussion of the <strong>CLONE_NEWNS</strong> flag in <a href='/2/clone'>clone</a>(2).</p>
+</blockquote>
+<p><strong>UTS namespace</strong></p>
+<blockquote>
+<p>Setting hostname or domainname will not affect the rest of the system. For further details, see <a href='/7/uts_namespaces'>uts_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>IPC namespace</strong></p>
+<blockquote>
+<p>The process will have an independent namespace for POSIX message queues as well as System V message queues, semaphore sets and shared memory segments. For further details, see <a href='/7/ipc_namespaces'>ipc_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>network namespace</strong></p>
+<blockquote>
+<p>The process will have independent IPv4 and IPv6 stacks, IP routing tables, firewall rules, the <code>/proc/net</code> and <code>/sys/class/net</code> directory trees, sockets, etc. For further details, see <a href='/7/network_namespaces'>network_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>PID namespace</strong></p>
+<blockquote>
+<p>Children will have a set of PID to process mappings separate from the <strong>nsenter</strong> process. <strong>nsenter</strong> will fork by default if changing the PID namespace, so that the new program and its children share the same PID namespace and are visible to each other. If <strong>--no-fork</strong> is used, the new program will be exec’ed without forking. For further details, see <a href='/7/pid_namespaces'>pid_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>user namespace</strong></p>
+<blockquote>
+<p>The process will have a distinct set of UIDs, GIDs and capabilities. For further details, see <a href='/7/user_namespaces'>user_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>cgroup namespace</strong></p>
+<blockquote>
+<p>The process will have a virtualized view of <code>/proc/self/cgroup</code>, and new cgroup mounts will be rooted at the namespace cgroup root. For further details, see <a href='/7/cgroup_namespaces'>cgroup_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>time namespace</strong></p>
+<blockquote>
+<p>The process can have a distinct view of <strong>CLOCK_MONOTONIC</strong> and/or <strong>CLOCK_BOOTTIME</strong> which can be changed using <code>/proc/self/timens_offsets</code>. For further details, see <a href='/7/time_namespaces'>time_namespaces</a>(7).</p>
+</blockquote>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Various of the options below that relate to namespaces take an optional <code>file</code> argument. This should be one of the <code>/proc/[pid]/ns/*</code> files described in <a href='/7/namespaces'>namespaces</a>(7), or the pathname of a bind mount that was created on one of those files.</p>
+<p><strong>-a</strong>, <strong>--all</strong></p>
+<blockquote>
+<p>Enter all namespaces of the target process by the default <code>/proc/[pid]/ns/*</code> namespace paths. The default paths to the target process namespaces may be overwritten by namespace specific options (e.g., <strong>--all --mount</strong>=[<code>path</code>]).</p>
+<p>The user namespace will be ignored if the same as the caller’s current user namespace. It prevents a caller that has dropped capabilities from regaining those capabilities via a call to setns(). See <a href='/2/setns'>setns</a>(2) for more details.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--target</strong> <code>PID</code></p>
+<blockquote>
+<p>Specify a target process to get contexts from. The paths to the contexts specified by <code>pid</code> are:</p>
+<p><code>/proc/pid/ns/mnt</code></p>
+<blockquote>
+<p>the mount namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/uts</code></p>
+<blockquote>
+<p>the UTS namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/ipc</code></p>
+<blockquote>
+<p>the IPC namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/net</code></p>
+<blockquote>
+<p>the network namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/pid</code></p>
+<blockquote>
+<p>the PID namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/user</code></p>
+<blockquote>
+<p>the user namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/cgroup</code></p>
+<blockquote>
+<p>the cgroup namespace</p>
+</blockquote>
+<p><code>/proc/pid/ns/time</code></p>
+<blockquote>
+<p>the time namespace</p>
+</blockquote>
+<p><code>/proc/pid/root</code></p>
+<blockquote>
+<p>the root directory</p>
+</blockquote>
+<p><code>/proc/pid/cwd</code></p>
+<blockquote>
+<p>the working directory respectively</p>
+</blockquote>
+</blockquote>
+<p><strong>-m</strong>, <strong>--mount</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the mount namespace. If no file is specified, enter the mount namespace of the target process. If <code>file</code> is specified, enter the mount namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--uts</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the UTS namespace. If no file is specified, enter the UTS namespace of the target process. If <code>file</code> is specified, enter the UTS namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-i</strong>, <strong>--ipc</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the IPC namespace. If no file is specified, enter the IPC namespace of the target process. If <code>file</code> is specified, enter the IPC namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--net</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the network namespace. If no file is specified, enter the network namespace of the target process. If <code>file</code> is specified, enter the network namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--pid</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the PID namespace. If no file is specified, enter the PID namespace of the target process. If <code>file</code> is specified, enter the PID namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--user</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the user namespace. If no file is specified, enter the user namespace of the target process. If <code>file</code> is specified, enter the user namespace specified by <code>file</code>. See also the <strong>--setuid</strong> and <strong>--setgid</strong> options.</p>
+</blockquote>
+<p><strong>-C</strong>, <strong>--cgroup</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the cgroup namespace. If no file is specified, enter the cgroup namespace of the target process. If <code>file</code> is specified, enter the cgroup namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--time</strong>[=<code>file</code>]</p>
+<blockquote>
+<p>Enter the time namespace. If no file is specified, enter the time namespace of the target process. If <code>file</code> is specified, enter the time namespace specified by <code>file</code>.</p>
+</blockquote>
+<p><strong>-G</strong>, <strong>--setgid</strong> <code>gid</code></p>
+<blockquote>
+<p>Set the group ID which will be used in the entered namespace and drop supplementary groups. <strong>nsenter</strong> always sets GID for user namespaces, the default is 0.</p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--setuid</strong> <code>uid</code></p>
+<blockquote>
+<p>Set the user ID which will be used in the entered namespace. <strong>nsenter</strong> always sets UID for user namespaces, the default is 0.</p>
+</blockquote>
+<p><strong>--preserve-credentials</strong></p>
+<blockquote>
+<p>Don’t modify UID and GID when enter user namespace. The default is to drops supplementary groups and sets GID and UID to 0.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--root</strong>[=<code>directory</code>]</p>
+<blockquote>
+<p>Set the root directory. If no directory is specified, set the root directory to the root directory of the target process. If directory is specified, set the root directory to the specified directory.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--wd</strong>[=<code>directory</code>]</p>
+<blockquote>
+<p>Set the working directory. If no directory is specified, set the working directory to the working directory of the target process. If directory is specified, set the working directory to the specified directory.</p>
+</blockquote>
+<p><strong>-F</strong>, <strong>--no-fork</strong></p>
+<blockquote>
+<p>Do not fork before exec’ing the specified program. By default, when entering a PID namespace, <strong>nsenter</strong> calls <strong>fork</strong> before calling <strong>exec</strong> so that any children will also be in the newly entered PID namespace.</p>
+</blockquote>
+<p><strong>-Z</strong>, <strong>--follow-context</strong></p>
+<blockquote>
+<p>Set the SELinux security context used for executing a new process according to already running process specified by <strong>--target</strong> PID. (The util-linux has to be compiled with SELinux support otherwise the option is unavailable.)</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clone'>clone</a>(2), <a href='/2/setns'>setns</a>(2), <a href='/7/namespaces'>namespaces</a>(7)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>nsenter</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>quotactl - manipulate disk quotas</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/quota.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;xfs/xqm.h&gt;</a> /* for XFS quotas */
+
+int quotactl(int cmd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>special, int id, caddr_t addr);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The quota system can be used to set per-user, per-group, and per-project limits on the amount of disk space used on a filesystem. For each user and/or group, a soft limit and a hard limit can be set for each filesystem. The hard limit can't be exceeded. The soft limit can be exceeded, but warnings will ensue. Moreover, the user can't exceed the soft limit for more than grace period duration (one week by default) at a time; after this, the soft limit counts as a hard limit.</p>
+<p>The <a href='quotactl'>quotactl</a>() call manipulates disk quotas. The <code>cmd</code> argument indicates a command to be applied to the user or group ID specified in <code>id</code>. To initialize the <code>cmd</code> argument, use the <code>QCMD(subcmd, type)</code> macro. The <code>type</code> value is either <strong>USRQUOTA</strong>, for user quotas, <strong>GRPQUOTA</strong>, for group quotas, or (since Linux 4.1) <strong>PRJQUOTA</strong>, for project quotas. The <code>subcmd</code> value is described below.</p>
+<p>The <code>special</code> argument is a pointer to a null-terminated string containing the pathname of the (mounted) block special device for the filesystem being manipulated.</p>
+<p>The <code>addr</code> argument is the address of an optional, command-specific, data structure that is copied in or out of the system. The interpretation of <code>addr</code> is given with each operation below.</p>
+<p>The <code>subcmd</code> value is one of the following operations:</p>
+<dl>
+<dt><strong>Q_QUOTAON</strong></dt>
+<dd><p>Turn on quotas for a filesystem. The <code>id</code> argument is the identification number of the quota format to be used. Currently, there are three supported quota formats:</p>
+<dl>
+<dt><strong>QFMT_VFS_OLD</strong></dt>
+<dd><p>The original quota format.</p>
+</dd>
+<dt><strong>QFMT_VFS_V0</strong></dt>
+<dd><p>The standard VFS v0 quota format, which can handle 32-bit UIDs and GIDs and quota limits up to 2^42 bytes and 2^32 inodes.</p>
+</dd>
+<dt><strong>QFMT_VFS_V1</strong></dt>
+<dd><p>A quota format that can handle 32-bit UIDs and GIDs and quota limits of 2^64 bytes and 2^64 inodes.</p>
+</dd>
+</dl>
+<p>The <code>addr</code> argument points to the pathname of a file containing the quotas for the filesystem. The quota file must exist; it is normally created with the <a href='/8/quotacheck'>quotacheck</a>(8) program</p>
+<p>Quota information can be also stored in hidden system inodes for ext4, XFS, and other filesystems if the filesystem is configured so. In this case, there are no visible quota files and there is no need to use <a href='/8/quotacheck'>quotacheck</a>(8). Quota information is always kept consistent by the filesystem and the <strong>Q_QUOTAON</strong> operation serves only to enable enforcement of quota limits. The presence of hidden system inodes with quota information is indicated by the <strong>DQF_SYS_FILE</strong> flag in the <code>dqi_flags</code> field returned by the <strong>Q_GETINFO</strong> operation.</p>
+<p>This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>).</p>
+</dd>
+<dt><strong>Q_QUOTAOFF</strong></dt>
+<dd><p>Turn off quotas for a filesystem. The <code>addr</code> and <code>id</code> arguments are ignored. This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>).</p>
+</dd>
+<dt><strong>Q_GETQUOTA</strong></dt>
+<dd><p>Get disk quota limits and current usage for user or group <code>id</code>. The <code>addr</code> argument is a pointer to a <code>dqblk</code> structure defined in <code>&lt;sys/quota.h&gt;</code> as follows:</p>
+<pre><code>/* uint64_t is an unsigned 64-bit integer;
+   uint32_t is an unsigned 32-bit integer */
+
+struct dqblk {      /* Definition since Linux 2.4.22 */
+    uint64_t dqb_bhardlimit;  /* Absolute limit on disk
+                                 quota blocks alloc */
+    uint64_t dqb_bsoftlimit;  /* Preferred limit on
+                                 disk quota blocks */
+    uint64_t dqb_curspace;    /* Current occupied space
+                                 (in bytes) */
+    uint64_t dqb_ihardlimit;  /* Maximum number of
+                                 allocated inodes */
+    uint64_t dqb_isoftlimit;  /* Preferred inode limit */
+    uint64_t dqb_curinodes;   /* Current number of
+                                 allocated inodes */
+    uint64_t dqb_btime;       /* Time limit for excessive
+                                 disk use */
+    uint64_t dqb_itime;       /* Time limit for excessive
+                                 files */
+    uint32_t dqb_valid;       /* Bit mask of QIF_*
+                                 constants */
+};
+
+/* Flags in dqb_valid that indicate which fields in
+   dqblk structure are valid. */
+
+#define QIF_BLIMITS   1
+#define QIF_SPACE     2
+#define QIF_ILIMITS   4
+#define QIF_INODES    8
+#define QIF_BTIME     16
+#define QIF_ITIME     32
+#define QIF_LIMITS    (QIF_BLIMITS | QIF_ILIMITS)
+#define QIF_USAGE     (QIF_SPACE | QIF_INODES)
+#define QIF_TIMES     (QIF_BTIME | QIF_ITIME)
+#define QIF_ALL       (QIF_LIMITS | QIF_USAGE | QIF_TIMES)</code></pre>
+<p>The <code>dqb_valid</code> field is a bit mask that is set to indicate the entries in the <code>dqblk</code> structure that are valid. Currently, the kernel fills in all entries of the <code>dqblk</code> structure and marks them as valid in the <code>dqb_valid</code> field. Unprivileged users may retrieve only their own quotas; a privileged user (<strong>CAP_SYS_ADMIN</strong>) can retrieve the quotas of any user.</p>
+</dd>
+<dt><strong>Q_GETNEXTQUOTA</strong> (since Linux 4.6)</dt>
+<dd><p>This operation is the same as <strong>Q_GETQUOTA</strong>, but it returns quota information for the next ID greater than or equal to <code>id</code> that has a quota set.</p>
+<p>The <code>addr</code> argument is a pointer to a <code>nextdqblk</code> structure whose fields are as for the <code>dqblk</code>, except for the addition of a <code>dqb_id</code> field that is used to return the ID for which quota information is being returned:</p>
+<pre><code>struct nextdqblk {
+    uint64_t dqb_bhardlimit;
+    uint64_t dqb_bsoftlimit;
+    uint64_t dqb_curspace;
+    uint64_t dqb_ihardlimit;
+    uint64_t dqb_isoftlimit;
+    uint64_t dqb_curinodes;
+    uint64_t dqb_btime;
+    uint64_t dqb_itime;
+    uint32_t dqb_valid;
+    uint32_t dqb_id;
+};</code></pre>
+</dd>
+<dt><strong>Q_SETQUOTA</strong></dt>
+<dd><p>Set quota information for user or group <code>id</code>, using the information supplied in the <code>dqblk</code> structure pointed to by <code>addr</code>. The <code>dqb_valid</code> field of the <code>dqblk</code> structure indicates which entries in the structure have been set by the caller. This operation supersedes the <strong>Q_SETQLIM</strong> and <strong>Q_SETUSE</strong> operations in the previous quota interfaces. This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>).</p>
+</dd>
+<dt><strong>Q_GETINFO</strong> (since Linux 2.4.22)</dt>
+<dd><p>Get information (like grace times) about quotafile. The <code>addr</code> argument should be a pointer to a <code>dqinfo</code> structure. This structure is defined in <code>&lt;sys/quota.h&gt;</code> as follows:</p>
+<pre><code>/* uint64_t is an unsigned 64-bit integer;
+   uint32_t is an unsigned 32-bit integer */
+
+struct dqinfo {         /* Defined since kernel 2.4.22 */
+    uint64_t dqi_bgrace;  /* Time before block soft limit
+                             becomes hard limit */
+    uint64_t dqi_igrace;  /* Time before inode soft limit
+                             becomes hard limit */
+    uint32_t dqi_flags;   /* Flags for quotafile
+                             (DQF_*) */
+    uint32_t dqi_valid;
+};
+
+/* Bits for dqi_flags */
+
+/* Quota format QFMT_VFS_OLD */
+
+#define DQF_ROOT_SQUASH (1 &lt;&lt; 0) /* Root squash enabled */
+              /* Before Linux v4.0, this had been defined
+                 privately as V1_DQF_RSQUASH */
+
+/* Quota format QFMT_VFS_V0 / QFMT_VFS_V1 */
+
+#define DQF_SYS_FILE    (1 &lt;&lt; 16)   /* Quota stored in
+                                       a system file */
+
+/* Flags in dqi_valid that indicate which fields in
+   dqinfo structure are valid. */
+
+#define IIF_BGRACE  1
+#define IIF_IGRACE  2
+#define IIF_FLAGS   4
+#define IIF_ALL     (IIF_BGRACE | IIF_IGRACE | IIF_FLAGS)</code></pre>
+<p>The <code>dqi_valid</code> field in the <code>dqinfo</code> structure indicates the entries in the structure that are valid. Currently, the kernel fills in all entries of the <code>dqinfo</code> structure and marks them all as valid in the <code>dqi_valid</code> field. The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_SETINFO</strong> (since Linux 2.4.22)</dt>
+<dd><p>Set information about quotafile. The <code>addr</code> argument should be a pointer to a <code>dqinfo</code> structure. The <code>dqi_valid</code> field of the <code>dqinfo</code> structure indicates the entries in the structure that have been set by the caller. This operation supersedes the <strong>Q_SETGRACE</strong> and <strong>Q_SETFLAGS</strong> operations in the previous quota interfaces. The <code>id</code> argument is ignored. This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>).</p>
+</dd>
+<dt><strong>Q_GETFMT</strong> (since Linux 2.4.22)</dt>
+<dd><p>Get quota format used on the specified filesystem. The <code>addr</code> argument should be a pointer to a 4-byte buffer where the format number will be stored.</p>
+</dd>
+<dt><strong>Q_SYNC</strong></dt>
+<dd><p>Update the on-disk copy of quota usages for a filesystem. If <code>special</code> is NULL, then all filesystems with active quotas are sync'ed. The <code>addr</code> and <code>id</code> arguments are ignored.</p>
+</dd>
+<dt><strong>Q_GETSTATS</strong> (supported up to Linux 2.4.21)</dt>
+<dd><p>Get statistics and other generic information about the quota subsystem. The <code>addr</code> argument should be a pointer to a <code>dqstats</code> structure in which data should be stored. This structure is defined in <code>&lt;sys/quota.h&gt;</code>. The <code>special</code> and <code>id</code> arguments are ignored.</p>
+<p>This operation is obsolete and was removed in Linux 2.4.22. Files in <code>/proc/sys/fs/quota/</code> carry the information instead.</p>
+</dd>
+</dl>
+<p>For XFS filesystems making use of the XFS Quota Manager (XQM), the above operations are bypassed and the following operations are used:</p>
+<dl>
+<dt><strong>Q_XQUOTAON</strong></dt>
+<dd><p>Turn on quotas for an XFS filesystem. XFS provides the ability to turn on/off quota limit enforcement with quota accounting. Therefore, XFS expects <code>addr</code> to be a pointer to an <code>unsigned int</code> that contains a bitwise combination of the following flags (defined in <code>&lt;xfs/xqm.h&gt;</code>):</p>
+<pre><code>XFS_QUOTA_UDQ_ACCT  /* User quota accounting */
+XFS_QUOTA_UDQ_ENFD  /* User quota limits enforcement */
+XFS_QUOTA_GDQ_ACCT  /* Group quota accounting */
+XFS_QUOTA_GDQ_ENFD  /* Group quota limits enforcement */
+XFS_QUOTA_PDQ_ACCT  /* Project quota accounting */
+XFS_QUOTA_PDQ_ENFD  /* Project quota limits enforcement */</code></pre>
+<p>This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>). The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_XQUOTAOFF</strong></dt>
+<dd><p>Turn off quotas for an XFS filesystem. As with <strong>Q_QUOTAON</strong>, XFS filesystems expect a pointer to an <code>unsigned int</code> that specifies whether quota accounting and/or limit enforcement need to be turned off (using the same flags as for <strong>Q_XQUOTAON</strong> operation). This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>). The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_XGETQUOTA</strong></dt>
+<dd><p>Get disk quota limits and current usage for user <code>id</code>. The <code>addr</code> argument is a pointer to an <code>fs_disk_quota</code> structure, which is defined in <code>&lt;xfs/xqm.h&gt;</code> as follows:</p>
+<pre><code>/* All the blk units are in BBs (Basic Blocks) of
+   512 bytes. */
+
+#define FS_DQUOT_VERSION  1  /* fs_disk_quota.d_version */
+
+#define XFS_USER_QUOTA    (1&lt;&lt;0)  /* User quota type */
+#define XFS_PROJ_QUOTA    (1&lt;&lt;1)  /* Project quota type */
+#define XFS_GROUP_QUOTA   (1&lt;&lt;2)  /* Group quota type */
+
+struct fs_disk_quota {
+    int8_t   d_version;   /* Version of this structure */
+    int8_t   d_flags;     /* XFS_{USER,PROJ,GROUP}_QUOTA */
+    uint16_t d_fieldmask; /* Field specifier */
+    uint32_t d_id;        /* User, project, or group ID */
+    uint64_t d_blk_hardlimit; /* Absolute limit on
+                                 disk blocks */
+    uint64_t d_blk_softlimit; /* Preferred limit on
+                                 disk blocks */
+    uint64_t d_ino_hardlimit; /* Maximum # allocated
+                                 inodes */
+    uint64_t d_ino_softlimit; /* Preferred inode limit */
+    uint64_t d_bcount;    /* # disk blocks owned by
+                             the user */
+    uint64_t d_icount;    /* # inodes owned by the user */
+    int32_t  d_itimer;    /* Zero if within inode limits */
+                          /* If not, we refuse service */
+    int32_t  d_btimer;    /* Similar to above; for
+                             disk blocks */
+    uint16_t d_iwarns;    /* # warnings issued with
+                             respect to # of inodes */
+    uint16_t d_bwarns;    /* # warnings issued with
+                             respect to disk blocks */
+    int32_t  d_padding2;  /* Padding - for future use */
+    uint64_t d_rtb_hardlimit; /* Absolute limit on realtime
+                                 (RT) disk blocks */
+    uint64_t d_rtb_softlimit; /* Preferred limit on RT
+                                 disk blocks */
+    uint64_t d_rtbcount;  /* # realtime blocks owned */
+    int32_t  d_rtbtimer;  /* Similar to above; for RT
+                             disk blocks */
+    uint16_t d_rtbwarns;  /* # warnings issued with
+                             respect to RT disk blocks */
+    int16_t  d_padding3;  /* Padding - for future use */
+    char     d_padding4[8];   /* Yet more padding */
+};</code></pre>
+<p>Unprivileged users may retrieve only their own quotas; a privileged user (<strong>CAP_SYS_ADMIN</strong>) may retrieve the quotas of any user.</p>
+</dd>
+<dt><strong>Q_XGETNEXTQUOTA</strong> (since Linux 4.6)</dt>
+<dd><p>This operation is the same as <strong>Q_XGETQUOTA</strong>, but it returns (in the <code>fs_disk_quota</code> structure pointed by <code>addr</code>) quota information for the next ID greater than or equal to <code>id</code> that has a quota set. Note that since <code>fs_disk_quota</code> already has <code>q_id</code> field, no separate structure type is needed (in contrast with <strong>Q_GETQUOTA</strong> and <strong>Q_GETNEXTQUOTA</strong> operations)</p>
+</dd>
+<dt><strong>Q_XSETQLIM</strong></dt>
+<dd><p>Set disk quota limits for user <code>id</code>. The <code>addr</code> argument is a pointer to an <code>fs_disk_quota</code> structure. This operation requires privilege (<strong>CAP_SYS_ADMIN</strong>).</p>
+</dd>
+<dt><strong>Q_XGETQSTAT</strong></dt>
+<dd><p>Returns XFS filesystem-specific quota information in the <code>fs_quota_stat</code> structure pointed by <code>addr</code>. This is useful for finding out how much space is used to store quota information, and also to get the quota on/off status of a given local XFS filesystem. The <code>fs_quota_stat</code> structure itself is defined as follows:</p>
+<pre><code>#define FS_QSTAT_VERSION 1  /* fs_quota_stat.qs_version */
+
+struct fs_qfilestat {
+    uint64_t qfs_ino;       /* Inode number */
+    uint64_t qfs_nblks;     /* Number of BBs
+                               512-byte-blocks */
+    uint32_t qfs_nextents;  /* Number of extents */
+};
+
+struct fs_quota_stat {
+    int8_t   qs_version; /* Version number for
+                            future changes */
+    uint16_t qs_flags; /* XFS_QUOTA_{U,P,G}DQ_{ACCT,ENFD} */
+    int8_t   qs_pad;   /* Unused */
+    struct fs_qfilestat qs_uquota;  /* User quota storage
+                                       information */
+    struct fs_qfilestat qs_gquota;  /* Group quota storage
+                                       information */
+    uint32_t qs_incoredqs;   /* Number of dquots in core */
+    int32_t  qs_btimelimit;  /* Limit for blocks timer */
+    int32_t  qs_itimelimit;  /* Limit for inodes timer */
+    int32_t  qs_rtbtimelimit;/* Limit for RT
+                                blocks timer */
+    uint16_t qs_bwarnlimit;  /* Limit for # of warnings */
+    uint16_t qs_iwarnlimit;  /* Limit for # of warnings */
+};</code></pre>
+<p>The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_XGETQSTATV</strong></dt>
+<dd><p>Returns XFS filesystem-specific quota information in the <code>fs_quota_statv</code> pointed to by <code>addr</code>. This version of the operation uses a structure with proper versioning support, along with appropriate layout (all fields are naturally aligned) and padding to avoiding special compat handling; it also provides the ability to get statistics regarding the project quota file. The <code>fs_quota_statv</code> structure itself is defined as follows:</p>
+<pre><code>#define FS_QSTATV_VERSION1 1 /* fs_quota_statv.qs_version */
+
+struct fs_qfilestatv {
+    uint64_t qfs_ino;       /* Inode number */
+    uint64_t qfs_nblks;     /* Number of BBs
+                               512-byte-blocks */
+    uint32_t qfs_nextents;  /* Number of extents */
+    uint32_t qfs_pad;       /* Pad for 8-byte alignment */
+};
+
+struct fs_quota_statv {
+    int8_t   qs_version;    /* Version for future
+                               changes */
+    uint8_t  qs_pad1;       /* Pad for 16-bit alignment */
+    uint16_t qs_flags;      /* XFS_QUOTA_.* flags */
+    uint32_t qs_incoredqs;  /* Number of dquots incore */
+    struct fs_qfilestatv qs_uquota;  /* User quota
+                                        information */
+    struct fs_qfilestatv qs_gquota;  /* Group quota
+                                        information */
+    struct fs_qfilestatv qs_pquota;  /* Project quota
+                                        information */
+    int32_t  qs_btimelimit;   /* Limit for blocks timer */
+    int32_t  qs_itimelimit;   /* Limit for inodes timer */
+    int32_t  qs_rtbtimelimit; /* Limit for RT blocks
+                                 timer */
+    uint16_t qs_bwarnlimit;   /* Limit for # of warnings */
+    uint16_t qs_iwarnlimit;   /* Limit for # of warnings */
+    uint64_t qs_pad2[8];      /* For future proofing */
+};</code></pre>
+<p>The <code>qs_version</code> field of the structure should be filled with the version of the structure supported by the callee (for now, only <code>FS_QSTAT_VERSION1</code> is supported). The kernel will fill the structure in accordance with version provided. The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_XQUOTARM (since Linux 3.16)</strong></dt>
+<dd><p>Free the disk space taken by disk quotas. The <code>addr</code> argument should be a pointer to an <code>unsigned int</code> value containing flags (the same as in <code>d_flags</code> field of <code>fs_disk_quota</code> structure) which identify what types of quota should be removed. (Note that the quota type passed in the <code>cmd</code> argument is ignored, but should remain valid in order to pass preliminary quotactl syscall handler checks.)</p>
+<p>Quotas must have already been turned off. The <code>id</code> argument is ignored.</p>
+</dd>
+<dt><strong>Q_XQUOTASYNC</strong> (since Linux 2.6.15; no-op since Linux 3.4)</dt>
+<dd><p>This operation was an XFS quota equivalent to <strong>Q_SYNC</strong>, but it is no-op since Linux 3.4, as <a href='/1/sync'>sync</a>(1) writes quota information to disk now (in addition to the other filesystem metadata that it writes out). The <code>special</code>, <code>id</code> and <code>addr</code> arguments are ignored.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='quotactl'>quotactl</a>() returns 0; on error -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_QUOTAON</strong>, and the quota file pointed to by <code>addr</code> exists, but is not a regular file or is not on the filesystem pointed to by <code>special</code>.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_QUOTAON</strong>, but another <strong>Q_QUOTAON</strong> had already been performed.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>addr</code> or <code>special</code> is invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>cmd</code> or <code>type</code> is invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_QUOTAON</strong>, but the specified quota file is corrupted.</p>
+</dd>
+<dt><strong>EINVAL</strong> (since Linux 5.5)</dt>
+<dd><p><code>cmd</code> is <strong>Q_XQUOTARM</strong>, but <code>addr</code> does not point to valid quota types.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>The file specified by <code>special</code> or <code>addr</code> does not exist.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>The kernel has not been compiled with the <strong>CONFIG_QUOTA</strong> option.</p>
+</dd>
+<dt><strong>ENOTBLK</strong></dt>
+<dd><p><code>special</code> is not a block device.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller lacked the required privilege (<strong>CAP_SYS_ADMIN</strong>) for the specified operation.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_SETQUOTA</strong>, but the specified limits are out of the range allowed by the quota format.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>No disk quota is found for the indicated user. Quotas have not been turned on for this filesystem.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_QUOTAON</strong>, but the specified quota format was not found.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p><code>cmd</code> is <strong>Q_GETNEXTQUOTA</strong> or <strong>Q_XGETNEXTQUOTA</strong>, but there is no ID greater than or equal to <code>id</code> that has an active quota.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Instead of <code>&lt;xfs/xqm.h&gt;</code> one can use <code>&lt;linux/dqblk_xfs.h&gt;</code>, taking into account that there are several naming discrepancies:</p>
+<ul>
+<li><p>Quota enabling flags (of format <strong>XFS_QUOTA_[UGP]DQ_{ACCT,ENFD}</strong>) are defined without a leading "X", as <strong>FS_QUOTA_[UGP]DQ_{ACCT,ENFD}</strong>.</p></li>
+<li><p>The same is true for <strong>XFS_{USER,GROUP,PROJ}_QUOTA</strong> quota type flags, which are defined as <strong>FS_{USER,GROUP,PROJ}_QUOTA</strong>.</p></li>
+<li><p>The <code>dqblk_xfs.h</code> header file defines its own <strong>XQM_USRQUOTA</strong>, <strong>XQM_GRPQUOTA</strong>, and <strong>XQM_PRJQUOTA</strong> constants for the available quota types, but their values are the same as for constants without the <strong>XQM_</strong> prefix.</p></li>
+</ul>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/quota'>quota</a>(1), <a href='/2/getrlimit'>getrlimit</a>(2), <a href='/8/quotacheck'>quotacheck</a>(8), <a href='/8/quotaon'>quotaon</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

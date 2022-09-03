@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>flock - manage locks from shell scripts</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>flock</strong> [options] <code>file</code>|<code>directory</code> <code>command</code> [<code>arguments</code>]</p>
+<p><strong>flock</strong> [options] <code>file</code>|<code>directory</code> <strong>-c</strong> <code>command</code></p>
+<p><strong>flock</strong> [options] <code>number</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This utility manages <a href='/2/flock'>flock</a>(2) locks from within shell scripts or from the command line.</p>
+<p>The first and second of the above forms wrap the lock around the execution of a <code>command</code>, in a manner similar to <a href='/1/su'>su</a>(1) or <a href='/1/newgrp'>newgrp</a>(1). They lock a specified <code>file</code> or <code>directory</code>, which is created (assuming appropriate permissions) if it does not already exist. By default, if the lock cannot be immediately acquired, <strong>flock</strong> waits until the lock is available.</p>
+<p>The third form uses an open file by its file descriptor <code>number</code>. See the examples below for how that can be used.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-c</strong>, <strong>--command</strong> <code>command</code></p>
+<blockquote>
+<p>Pass a single <code>command</code>, without arguments, to the shell with <strong>-c</strong>.</p>
+</blockquote>
+<p><strong>-E</strong>, <strong>--conflict-exit-code</strong> <code>number</code></p>
+<blockquote>
+<p>The exit status used when the <strong>-n</strong> option is in use, and the conflicting lock exists, or the <strong>-w</strong> option is in use, and the timeout is reached. The default value is <strong>1</strong>. The <code>number</code> has to be in the range of 0 to 255.</p>
+</blockquote>
+<p><strong>-F</strong>, <strong>--no-fork</strong></p>
+<blockquote>
+<p>Do not fork before executing <code>command</code>. Upon execution the flock process is replaced by <code>command</code> which continues to hold the lock. This option is incompatible with <strong>--close</strong> as there would otherwise be nothing left to hold the lock.</p>
+</blockquote>
+<p><strong>-e</strong>, <strong>-x</strong>, <strong>--exclusive</strong></p>
+<blockquote>
+<p>Obtain an exclusive lock, sometimes called a write lock. This is the default.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--nb</strong>, <strong>--nonblock</strong></p>
+<blockquote>
+<p>Fail rather than wait if the lock cannot be immediately acquired. See the <strong>-E</strong> option for the exit status used.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--close</strong></p>
+<blockquote>
+<p>Close the file descriptor on which the lock is held before executing <code>command</code>. This is useful if <code>command</code> spawns a child process which should not be holding the lock.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--shared</strong></p>
+<blockquote>
+<p>Obtain a shared lock, sometimes called a read lock.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--unlock</strong></p>
+<blockquote>
+<p>Drop a lock. This is usually not required, since a lock is automatically dropped when the file is closed. However, it may be required in special cases, for example if the enclosed command group may have forked a background process which should not be holding the lock.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--wait</strong>, <strong>--timeout</strong> <code>seconds</code></p>
+<blockquote>
+<p>Fail if the lock cannot be acquired within <code>seconds</code>. Decimal fractional values are allowed. See the <strong>-E</strong> option for the exit status used. The zero number of <code>seconds</code> is interpreted as <strong>--nonblock</strong>.</p>
+</blockquote>
+<p><strong>--verbose</strong></p>
+<blockquote>
+<p>Report how long it took to acquire the lock, or why the lock could not be obtained.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>The command uses &lt;sysexits.h&gt; exit status values for everything, except when using either of the options <strong>-n</strong> or <strong>-w</strong> which report a failure to acquire the lock with an exit status given by the <strong>-E</strong> option, or 1 by default. The exit status given by <strong>-E</strong> has to be in the range of 0 to 255.</p>
+<p>When using the <code>command</code> variant, and executing the child worked, then the exit status is that of the child command.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Note that "shell&gt; " in examples is a command line prompt.</p>
+<p>shell1&gt; flock /tmp -c cat; shell2&gt; flock -w .007 /tmp -c echo; /bin/echo $?</p>
+<blockquote>
+<p>Set exclusive lock to directory /tmp and the second command will fail.</p>
+</blockquote>
+<p>shell1&gt; flock -s /tmp -c cat; shell2&gt; flock -s -w .007 /tmp -c echo; /bin/echo $?</p>
+<blockquote>
+<p>Set shared lock to directory /tmp and the second command will not fail. Notice that attempting to get exclusive lock with second command would fail.</p>
+</blockquote>
+<p>shell&gt; flock -x local-lock-file echo 'a b c'</p>
+<blockquote>
+<p>Grab the exclusive lock "local-lock-file" before running echo with 'a b c'.</p>
+</blockquote>
+<p>(; flock -n 9 || exit 1; # ... commands executed under lock ...; ) 9&gt;/var/lock/mylockfile</p>
+<blockquote>
+<p>The form is convenient inside shell scripts. The mode used to open the file doesn’t matter to <strong>flock</strong>; using <code>&gt;</code> or <code>&gt;&gt;</code> allows the lockfile to be created if it does not already exist, however, write permission is required. Using <code>&lt;</code> requires that the file already exists but only read permission is required.</p>
+<p>[ ${FLOCKER} != $0 ] &amp;&amp; exec env FLOCKER="$0 flock -en $0 $0 $@ ||</p>
+<blockquote>
+<p>This is useful boilerplate code for shell scripts. Put it at the top of the shell script you want to lock and it’ll automatically lock itself on the first run. If the env var <strong>$FLOCKER</strong> is not set to the shell script that is being run, then execute <strong>flock</strong> and grab an exclusive non-blocking lock (using the script itself as the lock file) before re-execing itself with the right arguments. It also sets the FLOCKER env var to the right value so it doesn’t run again.</p>
+</blockquote>
+</blockquote>
+<p>shell&gt; exec 4&lt;&gt;/var/lock/mylockfile; shell&gt; flock -n 4</p>
+<blockquote>
+<p>This form is convenient for locking a file without spawning a subprocess. The shell opens the lock file for reading and writing as file descriptor 4, then flock is used to lock the descriptor.</p>
+</blockquote>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2003-2006 H. Peter Anvin. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/flock'>flock</a>(2)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>flock</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

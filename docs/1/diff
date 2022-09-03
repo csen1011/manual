@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>diff - compare files line by line</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>diff</strong> [<code>OPTION</code>]... <code>FILES</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Compare FILES line by line.</p>
+<p>Mandatory arguments to long options are mandatory for short options too.</p>
+<dl>
+<dt><strong>--normal</strong></dt>
+<dd><p>output a normal diff (the default)</p>
+</dd>
+<dt><strong>-q</strong>, <strong>--brief</strong></dt>
+<dd><p>report only when files differ</p>
+</dd>
+<dt><strong>-s</strong>, <strong>--report-identical-files</strong></dt>
+<dd><p>report when two files are the same</p>
+</dd>
+<dt><strong>-c</strong>, <strong>-C</strong> NUM, <strong>--context</strong>[=<code>NUM</code>]</dt>
+<dd><p>output NUM (default 3) lines of copied context</p>
+</dd>
+<dt><strong>-u</strong>, <strong>-U</strong> NUM, <strong>--unified</strong>[=<code>NUM</code>]</dt>
+<dd><p>output NUM (default 3) lines of unified context</p>
+</dd>
+<dt><strong>-e</strong>, <strong>--ed</strong></dt>
+<dd><p>output an ed script</p>
+</dd>
+<dt><strong>-n</strong>, <strong>--rcs</strong></dt>
+<dd><p>output an RCS format diff</p>
+</dd>
+<dt><strong>-y</strong>, <strong>--side-by-side</strong></dt>
+<dd><p>output in two columns</p>
+</dd>
+<dt><strong>-W</strong>, <strong>--width</strong>=<code>NUM</code></dt>
+<dd><p>output at most NUM (default 130) print columns</p>
+</dd>
+<dt><strong>--left-column</strong></dt>
+<dd><p>output only the left column of common lines</p>
+</dd>
+<dt><strong>--suppress-common-lines</strong></dt>
+<dd><p>do not output common lines</p>
+</dd>
+<dt><strong>-p</strong>, <strong>--show-c-function</strong></dt>
+<dd><p>show which C function each change is in</p>
+</dd>
+<dt><strong>-F</strong>, <strong>--show-function-line</strong>=<code>RE</code></dt>
+<dd><p>show the most recent line matching RE</p>
+</dd>
+<dt><strong>--label</strong> LABEL</dt>
+<dd><p>use LABEL instead of file name and timestamp (can be repeated)</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--expand-tabs</strong></dt>
+<dd><p>expand tabs to spaces in output</p>
+</dd>
+<dt><strong>-T</strong>, <strong>--initial-tab</strong></dt>
+<dd><p>make tabs line up by prepending a tab</p>
+</dd>
+<dt><strong>--tabsize</strong>=<code>NUM</code></dt>
+<dd><p>tab stops every NUM (default 8) print columns</p>
+</dd>
+<dt><strong>--suppress-blank-empty</strong></dt>
+<dd><p>suppress space or tab before empty output lines</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--paginate</strong></dt>
+<dd><p>pass output through 'pr' to paginate it</p>
+</dd>
+<dt><strong>-r</strong>, <strong>--recursive</strong></dt>
+<dd><p>recursively compare any subdirectories found</p>
+</dd>
+<dt><strong>--no-dereference</strong></dt>
+<dd><p>don't follow symbolic links</p>
+</dd>
+<dt><strong>-N</strong>, <strong>--new-file</strong></dt>
+<dd><p>treat absent files as empty</p>
+</dd>
+<dt><strong>--unidirectional-new-file</strong></dt>
+<dd><p>treat absent first files as empty</p>
+</dd>
+<dt><strong>--ignore-file-name-case</strong></dt>
+<dd><p>ignore case when comparing file names</p>
+</dd>
+<dt><strong>--no-ignore-file-name-case</strong></dt>
+<dd><p>consider case when comparing file names</p>
+</dd>
+<dt><strong>-x</strong>, <strong>--exclude</strong>=<code>PAT</code></dt>
+<dd><p>exclude files that match PAT</p>
+</dd>
+<dt><strong>-X</strong>, <strong>--exclude-from</strong>=<code>FILE</code></dt>
+<dd><p>exclude files that match any pattern in FILE</p>
+</dd>
+<dt><strong>-S</strong>, <strong>--starting-file</strong>=<code>FILE</code></dt>
+<dd><p>start with FILE when comparing directories</p>
+</dd>
+<dt><strong>--from-file</strong>=<code>FILE1</code></dt>
+<dd><p>compare FILE1 to all operands; FILE1 can be a directory</p>
+</dd>
+<dt><strong>--to-file</strong>=<code>FILE2</code></dt>
+<dd><p>compare all operands to FILE2; FILE2 can be a directory</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--ignore-case</strong></dt>
+<dd><p>ignore case differences in file contents</p>
+</dd>
+<dt><strong>-E</strong>, <strong>--ignore-tab-expansion</strong></dt>
+<dd><p>ignore changes due to tab expansion</p>
+</dd>
+<dt><strong>-Z</strong>, <strong>--ignore-trailing-space</strong></dt>
+<dd><p>ignore white space at line end</p>
+</dd>
+<dt><strong>-b</strong>, <strong>--ignore-space-change</strong></dt>
+<dd><p>ignore changes in the amount of white space</p>
+</dd>
+<dt><strong>-w</strong>, <strong>--ignore-all-space</strong></dt>
+<dd><p>ignore all white space</p>
+</dd>
+<dt><strong>-B</strong>, <strong>--ignore-blank-lines</strong></dt>
+<dd><p>ignore changes where lines are all blank</p>
+</dd>
+<dt><strong>-I</strong>, <strong>--ignore-matching-lines</strong>=<code>RE</code></dt>
+<dd><p>ignore changes where all lines match RE</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--text</strong></dt>
+<dd><p>treat all files as text</p>
+</dd>
+<dt><strong>--strip-trailing-cr</strong></dt>
+<dd><p>strip trailing carriage return on input</p>
+</dd>
+<dt><strong>-D</strong>, <strong>--ifdef</strong>=<code>NAME</code></dt>
+<dd><p>output merged file with '#ifdef NAME' diffs</p>
+</dd>
+<dt><strong>--GTYPE-group-format</strong>=<code>GFMT</code></dt>
+<dd><p>format GTYPE input groups with GFMT</p>
+</dd>
+<dt><strong>--line-format</strong>=<code>LFMT</code></dt>
+<dd><p>format all input lines with LFMT</p>
+</dd>
+<dt><strong>--LTYPE-line-format</strong>=<code>LFMT</code></dt>
+<dd><p>format LTYPE input lines with LFMT</p>
+<p>These format options provide fine-grained control over the output</p>
+<p>of diff, generalizing <strong>-D</strong>/--ifdef.</p>
+</dd>
+<dt>LTYPE is 'old', 'new', or 'unchanged'.</dt>
+<dd><p>GTYPE is LTYPE or 'changed'.</p>
+<p>GFMT (only) may contain:</p>
+</dd>
+<dt>%&lt;</dt>
+<dd><p>lines from FILE1</p>
+</dd>
+<dt>%&gt;</dt>
+<dd><p>lines from FILE2</p>
+</dd>
+<dt>%=</dt>
+<dd><p>lines common to FILE1 and FILE2</p>
+</dd>
+<dt>%[-][WIDTH][.[PREC]]{doxX}LETTER</dt>
+<dd><p>printf-style spec for LETTER</p>
+<p>LETTERs are as follows for new group, lower case for old group:</p>
+</dd>
+<dt>F</dt>
+<dd><p>first line number</p>
+</dd>
+<dt>L</dt>
+<dd><p>last line number</p>
+</dd>
+<dt>N</dt>
+<dd><p>number of lines = L-F+1</p>
+</dd>
+<dt>E</dt>
+<dd><p>F-1</p>
+</dd>
+<dt>M</dt>
+<dd><p>L+1</p>
+</dd>
+<dt>%(A=B?T:E)</dt>
+<dd><p>if A equals B then T else E</p>
+<p>LFMT (only) may contain:</p>
+</dd>
+<dt>%L</dt>
+<dd><p>contents of line</p>
+</dd>
+<dt>%l</dt>
+<dd><p>contents of line, excluding any trailing newline</p>
+</dd>
+<dt>%[-][WIDTH][.[PREC]]{doxX}n</dt>
+<dd><p>printf-style spec for input line number</p>
+<p>Both GFMT and LFMT may contain:</p>
+</dd>
+<dt>%%</dt>
+<dd><p>%</p>
+</dd>
+<dt>%c'C'</dt>
+<dd><p>the single character C</p>
+</dd>
+<dt>%c'\OOO'</dt>
+<dd><p>the character with octal code OOO</p>
+</dd>
+<dt>C</dt>
+<dd><p>the character C (other characters represent themselves)</p>
+</dd>
+<dt><strong>-d</strong>, <strong>--minimal</strong></dt>
+<dd><p>try hard to find a smaller set of changes</p>
+</dd>
+<dt><strong>--horizon-lines</strong>=<code>NUM</code></dt>
+<dd><p>keep NUM lines of the common prefix and suffix</p>
+</dd>
+<dt><strong>--speed-large-files</strong></dt>
+<dd><p>assume large files and many scattered small changes</p>
+</dd>
+<dt><strong>--color</strong>[=<code>WHEN</code>]</dt>
+<dd><p>color output; WHEN is 'never', 'always', or 'auto'; plain <strong>--color</strong> means <strong>--color=</strong>'auto'</p>
+</dd>
+<dt><strong>--palette</strong>=<code>PALETTE</code></dt>
+<dd><p>the colors to use when <strong>--color</strong> is active; PALETTE is a colon-separated list of terminfo capabilities</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<p>FILES are 'FILE1 FILE2' or 'DIR1 DIR2' or 'DIR FILE' or 'FILE DIR'. If <strong>--from-file</strong> or <strong>--to-file</strong> is given, there are no restrictions on FILE(s). If a FILE is '-', read standard input. Exit status is 0 if inputs are the same, 1 if different, 2 if trouble.</p>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by Paul Eggert, Mike Haertel, David Hayes, Richard Stallman, and Len Tower.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>Report bugs to: <a href="mailto:bug-diffutils@gnu.org">bug-diffutils@gnu.org</a><br/>
+GNU diffutils home page: &lt;<a href="https://www.gnu.org/software/diffutils/&amp;gt;">https://www.gnu.org/software/diffutils/&gt;</a><br/>
+General help using GNU software: &lt;<a href="https://www.gnu.org/gethelp/&amp;gt;">https://www.gnu.org/gethelp/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2021 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>wdiff(1), cmp(1), diff3(1), sdiff(1), patch(1)</p>
+<p>The full documentation for <strong>diff</strong> is maintained as a Texinfo manual. If the <strong>info</strong> and <strong>diff</strong> programs are properly installed at your site, the command</p>
+<blockquote>
+<p><strong>info diff</strong></p>
+</blockquote>
+<p>should give you access to the complete manual.</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

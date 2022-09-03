@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.journal-fields - Special journal fields</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Entries in the journal (as written by <a href='/8/systemd-journald.service'>systemd-journald.service</a>(8)) resemble a UNIX process environment block in syntax but with fields that may include binary data. Primarily, fields are formatted UTF-8 text strings, and binary encoding is used only where formatting as UTF-8 text strings makes little sense. New fields may freely be defined by applications, but a few fields have special meanings. All fields with special meanings are optional. In some cases, fields may appear more than once per entry.</p>
+</div></div><h1 id='user-journal-fields'><a href='#user-journal-fields'>USER JOURNAL FIELDS</a></h1><div data-for='user-journal-fields' data-hide><div class='section' data-for='user-journal-fields'><div data-more>
+<p>User fields are fields that are directly passed from clients and stored in the journal.</p>
+<p><code>MESSAGE=</code></p>
+<blockquote>
+<p>The human-readable message string for this entry. This is supposed to be the primary text shown to the user. It is usually not translated (but might be in some cases), and is not supposed to be parsed for metadata.</p>
+</blockquote>
+<p><code>MESSAGE_ID=</code></p>
+<blockquote>
+<p>A 128-bit message identifier ID for recognizing certain message types, if this is desirable. This should contain a 128-bit ID formatted as a lower-case hexadecimal string, without any separating dashes or suchlike. This is recommended to be a UUID-compatible ID, but this is not enforced, and formatted differently. Developers can generate a new ID for this purpose with <strong>systemd-id128 new</strong>.</p>
+</blockquote>
+<p><code>PRIORITY=</code></p>
+<blockquote>
+<p>A priority value between 0 ("emerg") and 7 ("debug") formatted as a decimal string. This field is compatible with syslogs priority concept.</p>
+</blockquote>
+<p><code>CODE_FILE=</code>, <code>CODE_LINE=</code>, <code>CODE_FUNC=</code></p>
+<blockquote>
+<p>The code location generating this message, if known. Contains the source filename, the line number and the function name.</p>
+</blockquote>
+<p><code>ERRNO=</code></p>
+<blockquote>
+<p>The low-level Unix error number causing this entry, if any. Contains the numeric value of <a href='/3/errno'>errno</a>(3) formatted as a decimal string.</p>
+</blockquote>
+<p><code>INVOCATION_ID=</code>, <code>USER_INVOCATION_ID=</code></p>
+<blockquote>
+<p>A randomized, unique 128-bit ID identifying each runtime cycle of the unit. This is different from <code>_SYSTEMD_INVOCATION_ID</code> in that it is only used for messages coming from systemd code (e.g. logs from the system/user manager or from forked processes performing systemd-related setup).</p>
+</blockquote>
+<p><code>SYSLOG_FACILITY=</code>, <code>SYSLOG_IDENTIFIER=</code>, <code>SYSLOG_PID=</code>, <code>SYSLOG_TIMESTAMP=</code></p>
+<blockquote>
+<p>Syslog compatibility fields containing the facility (formatted as decimal string), the identifier string (i.e. "tag"), the client PID, and the timestamp as specified in the original datagram. (Note that the tag is usually derived from glibcs <code>program_invocation_short_name</code> variable, see <a href='/3/program_invocation_short_name'>program_invocation_short_name</a>(3).)</p>
+<p>Note that the journal service does not validate the values of any structured journal fields whose name is not prefixed with an underscore, and this includes any syslog related fields such as these. Hence, applications that supply a facility, PID, or log level are expected to do so properly formatted, i.e. as numeric integers formatted as decimal strings.</p>
+</blockquote>
+<p><code>SYSLOG_RAW=</code></p>
+<blockquote>
+<p>The original contents of the syslog line as received in the syslog datagram. This field is only included if the <code>MESSAGE=</code> field was modified compared to the original payload or the timestamp could not be located properly and is not included in <code>SYSLOG_TIMESTAMP=</code>. Message truncation occurs when when the message contains leading or trailing whitespace (trailing and leading whitespace is stripped), or it contains an embedded <strong>NUL</strong> byte (the <strong>NUL</strong> byte and anything after it is not included). Thus, the original syslog line is either stored as <code>SYSLOG_RAW=</code> or it can be recreated based on the stored priority and facility, timestamp, identifier, and the message payload in <code>MESSAGE=</code>.</p>
+</blockquote>
+<p><code>DOCUMENTATION=</code></p>
+<blockquote>
+<p>A documentation URL with further information about the topic of the log message. Tools such as <strong>journalctl</strong> will include a hyperlink to an URL specified this way in their output. Should be an "http://", "https://", "file:/", "man:" or "info:" URL.</p>
+</blockquote>
+<p><code>TID=</code></p>
+<blockquote>
+<p>The numeric thread ID (TID) the log message originates from.</p>
+</blockquote>
+<p><code>UNIT=</code>, <code>USER_UNIT=</code></p>
+<blockquote>
+<p>The name of a unit. Used by the system and user managers when logging about specific units.</p>
+<p>When <strong>--unit=</strong><code>name</code> or <strong>--user-unit=</strong><code>name</code> are used with <a href='/1/journalctl'>journalctl</a>(1), a match pattern that includes "UNIT=<code>name</code>.service" or "USER_UNIT=<code>name</code>.service" will be generated.</p>
+</blockquote>
+</div></div></div><h1 id='trusted-journal-fields'><a href='#trusted-journal-fields'>TRUSTED JOURNAL FIELDS</a></h1><div data-for='trusted-journal-fields' data-hide><div class='section' data-for='trusted-journal-fields'><div data-more>
+<p>Fields prefixed with an underscore are trusted fields, i.e. fields that are implicitly added by the journal and cannot be altered by client code.</p>
+<p><code>_PID=</code>, <code>_UID=</code>, <code>_GID=</code></p>
+<blockquote>
+<p>The process, user, and group ID of the process the journal entry originates from formatted as a decimal string. Note that entries obtained via "stdout" or "stderr" of forked processes will contain credentials valid for a parent process (that initiated the connection to <strong>systemd-journald</strong>).</p>
+</blockquote>
+<p><code>_COMM=</code>, <code>_EXE=</code>, <code>_CMDLINE=</code></p>
+<blockquote>
+<p>The name, the executable path, and the command line of the process the journal entry originates from.</p>
+</blockquote>
+<p><code>_CAP_EFFECTIVE=</code></p>
+<blockquote>
+<p>The effective <a href='/7/capabilities'>capabilities</a>(7) of the process the journal entry originates from.</p>
+</blockquote>
+<p><code>_AUDIT_SESSION=</code>, <code>_AUDIT_LOGINUID=</code></p>
+<blockquote>
+<p>The session and login UID of the process the journal entry originates from, as maintained by the kernel audit subsystem.</p>
+</blockquote>
+<p><code>_SYSTEMD_CGROUP=</code>, <code>_SYSTEMD_SLICE=</code>, <code>_SYSTEMD_UNIT=</code>, <code>_SYSTEMD_USER_UNIT=</code>, <code>_SYSTEMD_USER_SLICE=</code>, <code>_SYSTEMD_SESSION=</code>, <code>_SYSTEMD_OWNER_UID=</code></p>
+<blockquote>
+<p>The control group path in the systemd hierarchy, the systemd slice unit name, the systemd unit name, the unit name in the systemd user manager (if any), the systemd session ID (if any), and the owner UID of the systemd user unit or systemd session (if any) of the process the journal entry originates from.</p>
+</blockquote>
+<p><code>_SELINUX_CONTEXT=</code></p>
+<blockquote>
+<p>The SELinux security context (label) of the process the journal entry originates from.</p>
+</blockquote>
+<p><code>_SOURCE_REALTIME_TIMESTAMP=</code></p>
+<blockquote>
+<p>The earliest trusted timestamp of the message, if any is known that is different from the reception time of the journal. This is the time in microseconds since the epoch UTC, formatted as a decimal string.</p>
+</blockquote>
+<p><code>_BOOT_ID=</code></p>
+<blockquote>
+<p>The kernel boot ID for the boot the message was generated in, formatted as a 128-bit hexadecimal string.</p>
+</blockquote>
+<p><code>_MACHINE_ID=</code></p>
+<blockquote>
+<p>The machine ID of the originating host, as available in <a href='/5/machine-id'>machine-id</a>(5).</p>
+</blockquote>
+<p><code>_SYSTEMD_INVOCATION_ID=</code></p>
+<blockquote>
+<p>The invocation ID for the runtime cycle of the unit the message was generated in, as available to processes of the unit in <code>$INVOCATION_ID</code> (see <a href='/5/systemd.exec'>systemd.exec</a>(5)).</p>
+</blockquote>
+<p><code>_HOSTNAME=</code></p>
+<blockquote>
+<p>The name of the originating host.</p>
+</blockquote>
+<p><code>_TRANSPORT=</code></p>
+<blockquote>
+<p>How the entry was received by the journal service. Valid transports are:</p>
+<p><strong>audit</strong></p>
+<blockquote>
+<p>for those read from the kernel audit subsystem</p>
+</blockquote>
+<p><strong>driver</strong></p>
+<blockquote>
+<p>for internally generated messages</p>
+</blockquote>
+<p><strong>syslog</strong></p>
+<blockquote>
+<p>for those received via the local syslog socket with the syslog protocol</p>
+</blockquote>
+<p><strong>journal</strong></p>
+<blockquote>
+<p>for those received via the native journal protocol</p>
+</blockquote>
+<p><strong>stdout</strong></p>
+<blockquote>
+<p>for those read from a services standard output or error output</p>
+</blockquote>
+<p><strong>kernel</strong></p>
+<blockquote>
+<p>for those read from the kernel</p>
+</blockquote>
+</blockquote>
+<p><code>_STREAM_ID=</code></p>
+<blockquote>
+<p>Only applies to "_TRANSPORT=stdout" records: specifies a randomized 128bit ID assigned to the stream connection when it was first created. This ID is useful to reconstruct individual log streams from the log records: all log records carrying the same stream ID originate from the same stream.</p>
+</blockquote>
+<p><code>_LINE_BREAK=</code></p>
+<blockquote>
+<p>Only applies to "_TRANSPORT=stdout" records: indicates that the log message in the standard output/error stream was not terminated with a normal newline character ("\n", i.e. ASCII 10). Specifically, when set this field is one of <strong>nul</strong> (in case the line was terminated by a <strong>NUL</strong> byte), <strong>line-max</strong> (in case the maximum log line length was reached, as configured with <code>LineMax=</code> in <a href='/5/journald.conf'>journald.conf</a>(5)), <strong>eof</strong> (if this was the last log record of a stream and the stream ended without a final newline character), or <strong>pid-change</strong> (if the process which generated the log output changed in the middle of a line). Note that this record is not generated when a normal newline character was used for marking the log line end.</p>
+</blockquote>
+<p><code>_NAMESPACE=</code></p>
+<blockquote>
+<p>If this file was written by a <strong>systemd-journald</strong> instance managing a journal namespace that is not the default, this field contains the namespace identifier. See <a href='/8/systemd-journald.service'>systemd-journald.service</a>(8) for details about journal namespaces.</p>
+</blockquote>
+</div></div></div><h1 id='kernel-journal-fields'><a href='#kernel-journal-fields'>KERNEL JOURNAL FIELDS</a></h1><div data-for='kernel-journal-fields' data-hide><div class='section' data-for='kernel-journal-fields'><div data-more>
+<p>Kernel fields are fields that are used by messages originating in the kernel and stored in the journal.</p>
+<p><code>_KERNEL_DEVICE=</code></p>
+<blockquote>
+<p>The kernel device name. If the entry is associated to a block device, contains the major and minor numbers of the device node, separated by ":" and prefixed by "b". Similarly for character devices, but prefixed by "c". For network devices, this is the interface index prefixed by "n". For all other devices, this is the subsystem name prefixed by "+", followed by ":", followed by the kernel device name.</p>
+</blockquote>
+<p><code>_KERNEL_SUBSYSTEM=</code></p>
+<blockquote>
+<p>The kernel subsystem name.</p>
+</blockquote>
+<p><code>_UDEV_SYSNAME=</code></p>
+<blockquote>
+<p>The kernel device name as it shows up in the device tree below /sys/.</p>
+</blockquote>
+<p><code>_UDEV_DEVNODE=</code></p>
+<blockquote>
+<p>The device node path of this device in /dev/.</p>
+</blockquote>
+<p><code>_UDEV_DEVLINK=</code></p>
+<blockquote>
+<p>Additional symlink names pointing to the device node in /dev/. This field is frequently set more than once per entry.</p>
+</blockquote>
+</div></div></div><h1 id='fields-to-log-on-behalf-of-a-different-program'><a href='#fields-to-log-on-behalf-of-a-different-program'>FIELDS TO LOG ON BEHALF OF A DIFFERENT PROGRAM</a></h1><div data-for='fields-to-log-on-behalf-of-a-different-program' data-hide><div class='section' data-for='fields-to-log-on-behalf-of-a-different-program'><div data-more>
+<p>Fields in this section are used by programs to specify that they are logging on behalf of another program or unit.</p>
+<p>Fields used by the <strong>systemd-coredump</strong> coredump kernel helper:</p>
+<p><code>COREDUMP_UNIT=</code>, <code>COREDUMP_USER_UNIT=</code></p>
+<blockquote>
+<p>Used to annotate messages containing coredumps from system and session units. See <a href='/1/coredumpctl'>coredumpctl</a>(1).</p>
+</blockquote>
+<p>Privileged programs (currently UID 0) may attach <code>OBJECT_PID=</code> to a message. This will instruct <strong>systemd-journald</strong> to attach additional fields on behalf of the caller:</p>
+<p><code>OBJECT_PID=PID</code></p>
+<blockquote>
+<p>PID of the program that this message pertains to.</p>
+</blockquote>
+<p><code>OBJECT_UID=</code>, <code>OBJECT_GID=</code>, <code>OBJECT_COMM=</code>, <code>OBJECT_EXE=</code>, <code>OBJECT_CMDLINE=</code>, <code>OBJECT_AUDIT_SESSION=</code>, <code>OBJECT_AUDIT_LOGINUID=</code>, <code>OBJECT_SYSTEMD_CGROUP=</code>, <code>OBJECT_SYSTEMD_SESSION=</code>, <code>OBJECT_SYSTEMD_OWNER_UID=</code>, <code>OBJECT_SYSTEMD_UNIT=</code>, <code>OBJECT_SYSTEMD_USER_UNIT=</code></p>
+<blockquote>
+<p>These are additional fields added automatically by <strong>systemd-journald</strong>. Their meaning is the same as <code>_UID=</code>, <code>_GID=</code>, <code>_COMM=</code>, <code>_EXE=</code>, <code>_CMDLINE=</code>, <code>_AUDIT_SESSION=</code>, <code>_AUDIT_LOGINUID=</code>, <code>_SYSTEMD_CGROUP=</code>, <code>_SYSTEMD_SESSION=</code>, <code>_SYSTEMD_UNIT=</code>, <code>_SYSTEMD_USER_UNIT=</code>, and <code>_SYSTEMD_OWNER_UID=</code> as described above, except that the process identified by <code>PID</code> is described, instead of the process which logged the message.</p>
+</blockquote>
+</div></div></div><h1 id='address-fields'><a href='#address-fields'>ADDRESS FIELDS</a></h1><div data-for='address-fields' data-hide><div class='section' data-for='address-fields'><div data-more>
+<p>During serialization into external formats, such as the <strong>Journal Export Format</strong>[1] or the <strong>Journal JSON Format</strong>[2], the addresses of journal entries are serialized into fields prefixed with double underscores. Note that these are not proper fields when stored in the journal but for addressing metadata of entries. They cannot be written as part of structured log entries via calls such as <a href='/3/sd_journal_send'>sd_journal_send</a>(3). They may also not be used as matches for <a href='/3/sd_journal_add_match'>sd_journal_add_match</a>(3).</p>
+<p><code>__CURSOR=</code></p>
+<blockquote>
+<p>The cursor for the entry. A cursor is an opaque text string that uniquely describes the position of an entry in the journal and is portable across machines, platforms and journal files.</p>
+</blockquote>
+<p><code>__REALTIME_TIMESTAMP=</code></p>
+<blockquote>
+<p>The wallclock time (<strong>CLOCK_REALTIME</strong>) at the point in time the entry was received by the journal, in microseconds since the epoch UTC, formatted as a decimal string. This has different properties from "_SOURCE_REALTIME_TIMESTAMP=", as it is usually a bit later but more likely to be monotonic.</p>
+</blockquote>
+<p><code>__MONOTONIC_TIMESTAMP=</code></p>
+<blockquote>
+<p>The monotonic time (<strong>CLOCK_MONOTONIC</strong>) at the point in time the entry was received by the journal in microseconds, formatted as a decimal string. To be useful as an address for the entry, this should be combined with the boot ID in "_BOOT_ID=".</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/8/systemd-journald.service'>systemd-journald.service</a>(8), <a href='/1/journalctl'>journalctl</a>(1), <a href='/5/journald.conf'>journald.conf</a>(5), <a href='/3/sd-journal'>sd-journal</a>(3), <a href='/1/coredumpctl'>coredumpctl</a>(1), <a href='/7/systemd.directives'>systemd.directives</a>(7)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>Journal Export Format</p>
+<p><a href="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-export-format">https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-export-format</a></p></li>
+<li><p>Journal JSON Format</p>
+<p><a href="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-json-format">https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-json-format</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

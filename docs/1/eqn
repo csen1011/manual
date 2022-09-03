@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>eqn - format equations for troff or MathML</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>eqn</strong> [ <strong>-rvCNR</strong> ] [ <strong>-d</strong> xy ] [ <strong>-T</strong> name ] [ <strong>-M</strong> dir ] [ <strong>-f</strong> F ] [ <strong>-s</strong> n ] [ <strong>-p</strong> n ] [ <strong>-m</strong> n ] [<code>file</code> . . .]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This manual page describes the GNU version of <strong>eqn</strong>, which is part of the groff document formatting system. <strong>eqn</strong> compiles descriptions of equations embedded within <strong>troff</strong> input files into commands that are understood by <strong>troff</strong>. Normally, it should be invoked using the <strong>-e</strong> option of <strong>groff</strong>. The syntax is quite compatible with Unix eqn. The output of GNU <strong>eqn</strong> cannot be processed with Unix troff; it must be processed with GNU troff. If no files are given on the command line, the standard input is read. A filename of <strong>-</strong> causes the standard input to be read.</p>
+<p><strong>eqn</strong> searches for the file <code>eqnrc</code> in the directories given with the <strong>-M</strong> option first, then in <code>/usr/lib/groff/site-tmac</code>, <code>/usr/share/groff/site-tmac</code>, and finally in the standard macro directory <code>/usr/share/groff/1.22.4/tmac</code>. If it exists, <strong>eqn</strong> processes it before the other input files. The <strong>-R</strong> option prevents this.</p>
+<p>GNU <strong>eqn</strong> does not provide the functionality of neqn: it does not support low-resolution, typewriter-like devices (although it may work adequately for very simple input).</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Whitespace is permitted between a command-line option and its argument.</p>
+<dl>
+<dt><strong>-d</strong><code>xy</code></dt>
+<dd><p>Specify delimiters <code>x</code> and  <code>y</code> for the left and right end, respectively, of in-line equations. Any <strong>delim</strong> statements in the source file overrides this.</p>
+</dd>
+<dt><strong>-C</strong></dt>
+<dd><p>Recognize <strong>.EQ</strong> and <strong>.EN</strong> even when followed by a character other than space or newline. Also, the statement ‘<strong>delim on</strong>’ is not handled specially.</p>
+</dd>
+<dt><strong>-N</strong></dt>
+<dd><p>Don't allow newlines within delimiters. This option allows <strong>eqn</strong> to recover better from missing closing delimiters.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Print the version number.</p>
+</dd>
+<dt><strong>-r</strong></dt>
+<dd><p>Only one size reduction.</p>
+</dd>
+<dt><strong>-m</strong><code>n</code></dt>
+<dd><p>The minimum point-size is  <code>n</code>. <strong>eqn</strong> does not reduce the size of subscripts or superscripts to a smaller size than  <code>n</code>.</p>
+</dd>
+<dt><strong>-T</strong><code>name</code></dt>
+<dd><p>The output is for device <code>name</code>. Normally, the only effect of this is to define a macro <code>name</code> with a value of  <strong>1</strong>; <code>eqnrc</code> uses this to provide definitions appropriate for the output device. However, if the specified device is “MathML”, the output is MathML markup rather than troff commands, and <code>eqnrc</code> is not loaded at all. The default output device is <strong>ps</strong>.</p>
+</dd>
+<dt><strong>-M</strong><code>dir</code></dt>
+<dd><p>Search <code>dir</code> for <code>eqnrc</code> before the default directories.</p>
+</dd>
+<dt><strong>-R</strong></dt>
+<dd><p>Don't load <code>eqnrc</code>.</p>
+</dd>
+<dt><strong>-f</strong><code>F</code></dt>
+<dd><p>This is equivalent to a <strong>gfont </strong><code>F</code> command.</p>
+</dd>
+<dt><strong>-s</strong><code>n</code></dt>
+<dd><p>This is equivalent to a <strong>gsize </strong><code>n</code> command. This option is deprecated. <strong>eqn</strong> normally sets equations at whatever the current point size is when the equation is encountered.</p>
+</dd>
+<dt><strong>-p</strong><code>n</code></dt>
+<dd><p>This says that subscripts and superscripts should be <code>n</code> points smaller than the surrounding text. This option is deprecated. Normally <strong>eqn</strong> sets subscripts and superscripts at 70% of the size of the surrounding text.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='usage'><a href='#usage'>USAGE</a></h1><div data-for='usage' data-hide><div class='section' data-for='usage'><div data-more>
+<p>Only the differences between GNU <strong>eqn</strong> and Unix eqn are described here.</p>
+<p>GNU <strong>eqn</strong> emits Presentation MathML output when invoked with the <strong>-T MathML</strong> option.</p>
+<p>GNU eqn sets the input token <strong>"..."</strong> as three periods or low dots, rather than the three centered dots of classic eqn. To get three centered dots, write <strong>cdots</strong> or <strong>cdot cdot cdot</strong>.</p>
+<p>Most of the new features of the GNU <strong>eqn</strong> input language are based on . There are some references to the differences between and GNU <strong>eqn</strong> below; these may safely be ignored if you do not know .</p>
+<h2>Controlling delimiters</h2>
+<p>If not in compatibility mode, <strong>eqn</strong> recognizes</p>
+<blockquote>
+<p><strong>delim on</strong></p>
+</blockquote>
+<p>to restore the delimiters which have been previously disabled with a call to ‘<strong>delim off</strong>’. If delimiters haven't been specified, the call has no effect.</p>
+<h2>Automatic spacing</h2>
+<p><strong>eqn</strong> gives each component of an equation a type, and adjusts the spacing between components using that type. Possible types are described in the table below.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ordinary</td>
+<td style="text-align: left;">an ordinary character such as ‘1’ or ‘<code>x</code>’</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">operator</td>
+<td style="text-align: left;">a large operator such as ‘Σ’</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">binary</td>
+<td style="text-align: left;">a binary operator such as ‘+’</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">relation</td>
+<td style="text-align: left;">a relation such as ‘=’</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">opening</td>
+<td style="text-align: left;">a opening bracket such as ‘(’</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">closing</td>
+<td style="text-align: left;">a closing bracket such as ‘)’</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">punctuation</td>
+<td style="text-align: left;">a punctuation character such as ‘,’</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">inner</td>
+<td style="text-align: left;">a subformula contained within brackets</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">suppress</td>
+<td style="text-align: left;">a type that suppresses automatic spacing adjustment</td>
+</tr>
+</tbody>
+</table>
+<p>Components of an equation get a type in one of two ways.</p>
+<dl>
+<dt><strong>type </strong><code>t e</code></dt>
+<dd><p>This yields an equation component that contains  <code>e</code> but that has type  <code>t</code>, where <code>t</code> is one of the types mentioned above. For example, <strong>times</strong> is defined as</p>
+<blockquote>
+<p><strong>type "binary" \(mu</strong></p>
+</blockquote>
+<p>The name of the type doesn't have to be quoted, but quoting protects from macro expansion.</p>
+</dd>
+<dt><strong>chartype </strong><code>t text</code></dt>
+<dd><p>Unquoted groups of characters are split up into individual characters, and the type of each character is looked up; this changes the type that is stored for each character; it says that the characters in <code>text</code> from now on have type  <code>t</code>. For example,</p>
+<blockquote>
+<p><strong>chartype "punctuation" .,;:</strong></p>
+</blockquote>
+<p>would make the characters ‘.,;:’ have type punctuation whenever they subsequently appeared in an equation. The type  <code>t</code> can also be <strong>letter</strong> or <strong>digit</strong>; in these cases <strong>chartype</strong> changes the font type of the characters. See subsection “Fonts” below.</p>
+</dd>
+</dl>
+<h2>New primitives</h2>
+<dl>
+<dt><strong>big </strong><code>e</code></dt>
+<dd><p>Enlarges the expression it modifies; intended to have semantics like CSS ‘large’. In troff output, the point size is increased by 5; in MathML output, the expression uses</p>
+<pre><code>&lt;mstyle mathsize='big'&gt;</code></pre>
+</dd>
+<dt><code>e1 </code><strong>smallover </strong><code>e2</code></dt>
+<dd><p>This is similar to <strong>over</strong>; <strong>smallover</strong> reduces the size of <code>e1</code> and <code>e2</code>; it also puts less vertical space between <code>e1</code> or <code>e2</code> and the fraction bar. The <strong>over</strong> primitive corresponds to the <strong>\over</strong> primitive in display styles; <strong>smallover</strong> corresponds to <strong>\over</strong> in non-display styles.</p>
+</dd>
+<dt><strong>vcenter </strong><code>e</code></dt>
+<dd><p>This vertically centers <code>e</code> about the math axis. The math axis is the vertical position about which characters such as ‘+’ and ‘−’ are centered; also it is the vertical position used for the bar of fractions. For example, <strong>sum</strong> is defined as</p>
+<blockquote>
+<p><strong>{ type "operator" vcenter size +5 \(*S }</strong></p>
+</blockquote>
+<p>(Note that vcenter is silently ignored when generating MathML.)</p>
+</dd>
+<dt><code>e1 </code><strong>accent </strong><code>e2</code></dt>
+<dd><p>This sets <code>e2</code> as an accent over <code>e1</code>. <code>e2</code> is assumed to be at the correct height for a lowercase letter; <code>e2</code> is moved down according to whether <code>e1</code> is taller or shorter than a lowercase letter. For example, <strong>hat</strong> is defined as</p>
+<blockquote>
+<p><strong>accent { "^" }</strong></p>
+</blockquote>
+<p><strong>dotdot</strong>, <strong>dot</strong>, <strong>tilde</strong>, <strong>vec</strong>, and <strong>dyad</strong> are also defined using the <strong>accent</strong> primitive.</p>
+</dd>
+<dt><code>e1 </code><strong>uaccent </strong><code>e2</code></dt>
+<dd><p>This sets <code>e2</code> as an accent under <code>e1</code>. <code>e2</code> is assumed to be at the correct height for a character without a descender; <code>e2</code> is moved down if <code>e1</code> has a descender. <strong>utilde</strong> is pre-defined using <strong>uaccent</strong> as a tilde accent below the baseline.</p>
+</dd>
+<dt><strong>split "</strong><code>text</code><strong>"</strong></dt>
+<dd><p>This has the same effect as simply</p>
+<blockquote>
+<p><code>text</code></p>
+</blockquote>
+<p>but <code>text</code> is not subject to macro expansion because it is quoted; <code>text</code> is split up and the spacing between individual characters is adjusted.</p>
+</dd>
+<dt><strong>nosplit </strong><code>text</code></dt>
+<dd><p>This has the same effect as</p>
+<blockquote>
+<p><strong>"</strong><code>text</code><strong>"</strong></p>
+</blockquote>
+<p>but because <code>text</code> is not quoted it is subject to macro expansion; <code>text</code> is not split up and the spacing between individual characters is not adjusted.</p>
+</dd>
+<dt><code>e </code><strong>opprime</strong></dt>
+<dd><p>This is a variant of <strong>prime</strong> that acts as an operator on  <code>e</code>. It produces a different result from <strong>prime</strong> in a case such as <strong>A opprime sub 1</strong>: with <strong>opprime</strong> the  <strong>1</strong> is tucked under the prime as a subscript to the  <strong>A</strong> (as is conventional in mathematical typesetting), whereas with <strong>prime</strong> the  <strong>1</strong> is a subscript to the prime character. The precedence of <strong>opprime</strong> is the same as that of <strong>bar</strong> and <strong>under</strong>, which is higher than that of everything except <strong>accent</strong> and <strong>uaccent</strong>. In unquoted text a  <strong>'</strong> that is not the first character is treated like <strong>opprime</strong>.</p>
+</dd>
+<dt><strong>special </strong><code>text e</code></dt>
+<dd><p>This constructs a new object from  <code>e</code> using a <a href='/1/troff'>troff</a>(1) macro named <code>text</code>. When the macro is called, the string <strong>0s</strong> contains the output for  <code>e</code>, and the number registers <strong>0w</strong>, <strong>0h</strong>, <strong>0d</strong>, <strong>0skern</strong>, and <strong>0skew</strong> contain the width, height, depth, subscript kern, and skew of  <code>e</code>. (The <code>subscript kern</code> of an object says how much a subscript on that object should be tucked in; the <code>skew</code> of an object says how far to the right of the center of the object an accent over the object should be placed.) The macro must modify <strong>0s</strong> so that it outputs the desired result with its origin at the current point, and increase the current horizontal position by the width of the object. The number registers must also be modified so that they correspond to the result.</p>
+<p>For example, suppose you wanted a construct that ‘cancels’ an expression by drawing a diagonal line through it.</p>
+<p><br/>
+.EQ<br/>
+define cancel 'special Ca'<br/>
+.EN<br/>
+.de Ca<br/>
+. ds 0s \<br/>
+\Z'\\*(0s'\<br/>
+\v'\\n(0du'\<br/>
+\D'l \\n(0wu -\\n(0hu-\\n(0du'\<br/>
+\v'\\n(0hu'<br/>
+..</p>
+<p>Then you could cancel an expression  <code>e</code> with <strong>cancel { </strong><code>e </code><strong>}</strong></p>
+<p>Here's a more complicated construct that draws a box round an expression:</p>
+<p>.EQ<br/>
+define box 'special Bx'<br/>
+.EN<br/>
+.de Bx<br/>
+. ds 0s \<br/>
+\Z'\h'1n'\\*(0s'\<br/>
+\Z'\<br/>
+\v'\\n(0du+1n'\<br/>
+\D'l \\n(0wu+2n 0'\<br/>
+\D'l 0 -\\n(0hu-\\n(0du-2n'\<br/>
+\D'l -\\n(0wu-2n 0'\<br/>
+\D'l 0 \\n(0hu+\\n(0du+2n'\<br/>
+'\<br/>
+\h'\\n(0wu+2n'<br/>
+. nr 0w +2n<br/>
+. nr 0d +1n<br/>
+. nr 0h +1n<br/>
+..</p>
+</dd>
+<dt><strong>space </strong><code>n</code></dt>
+<dd><p>A positive value of the integer  <code>n</code> (in hundredths of an em) sets the vertical spacing before the equation, a negative value sets the spacing after the equation, replacing the default values. This primitive provides an interface to <strong>groff</strong>'s <strong>\x</strong> escape (but with opposite sign).</p>
+<p>This keyword has no effect if the equation is part of a <strong>pic</strong> picture.</p>
+</dd>
+</dl>
+<h2>Extended primitives</h2>
+<dl>
+<dt><strong>col </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>ccol </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>lcol </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>rcol </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>pile </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>cpile </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>lpile </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong><br/>
+<strong>rpile </strong><code>n </code><strong>{ </strong><code>. . . </code><strong>}</strong></dt>
+<dd><p>The integer value  <code>n</code> (in hundredths of an em) increases the vertical spacing between rows, using <strong>groff</strong>'s <strong>\x</strong> escape (the value has no effect in MathML mode). Negative values are possible but have no effect. If there is more than a single value given in a matrix, the biggest one is used.</p>
+</dd>
+</dl>
+<h2>Customization</h2>
+<p>When <strong>eqn</strong> is generating troff markup, the appearance of equations is controlled by a large number of parameters. They have no effect when generating MathML mode, which pushes typesetting and fine motions downstream to a MathML rendering engine. These parameters can be set using the <strong>set</strong> command.</p>
+<dl>
+<dt><strong>set </strong><code>p n</code></dt>
+<dd><p>This sets parameter  <code>p</code> to value  <code>n</code>; <code>n</code> is an integer. For example,</p>
+<blockquote>
+<p><strong>set x_height 45</strong></p>
+</blockquote>
+<p>says that <strong>eqn</strong> should assume an x height of 0.45 ems.</p>
+<p>Possible parameters are as follows. Values are in units of hundredths of an em unless otherwise stated. These descriptions are intended to be expository rather than definitive.</p>
+<dl>
+<dt><strong>minimum_size</strong></dt>
+<dd><p><strong>eqn</strong> doesn't set anything at a smaller point-size than this. The value is in points.</p>
+</dd>
+<dt><strong>fat_offset</strong></dt>
+<dd><p>The <strong>fat</strong> primitive emboldens an equation by overprinting two copies of the equation horizontally offset by this amount. This parameter is not used in MathML mode; instead, fat text uses</p>
+<pre><code>&lt;mstyle mathvariant='double-struck'&gt;</code></pre>
+</dd>
+<dt><strong>over_hang</strong></dt>
+<dd><p>A fraction bar is longer by twice this amount than the maximum of the widths of the numerator and denominator; in other words, it overhangs the numerator and denominator by at least this amount.</p>
+</dd>
+<dt><strong>accent_width</strong></dt>
+<dd><p>When <strong>bar</strong> or <strong>under</strong> is applied to a single character, the line is this long. Normally, <strong>bar</strong> or <strong>under</strong> produces a line whose length is the width of the object to which it applies; in the case of a single character, this tends to produce a line that looks too long.</p>
+</dd>
+<dt><strong>delimiter_factor</strong></dt>
+<dd><p>Extensible delimiters produced with the <strong>left</strong> and <strong>right</strong> primitives have a combined height and depth of at least this many thousandths of twice the maximum amount by which the sub-equation that the delimiters enclose extends away from the axis.</p>
+</dd>
+<dt><strong>delimiter_shortfall</strong></dt>
+<dd><p>Extensible delimiters produced with the <strong>left</strong> and <strong>right</strong> primitives have a combined height and depth not less than the difference of twice the maximum amount by which the sub-equation that the delimiters enclose extends away from the axis and this amount.</p>
+</dd>
+<dt><strong>null_delimiter_space</strong></dt>
+<dd><p>This much horizontal space is inserted on each side of a fraction.</p>
+</dd>
+<dt><strong>script_space</strong></dt>
+<dd><p>The width of subscripts and superscripts is increased by this amount.</p>
+</dd>
+<dt><strong>thin_space</strong></dt>
+<dd><p>This amount of space is automatically inserted after punctuation characters.</p>
+</dd>
+<dt><strong>medium_space</strong></dt>
+<dd><p>This amount of space is automatically inserted on either side of binary operators.</p>
+</dd>
+<dt><strong>thick_space</strong></dt>
+<dd><p>This amount of space is automatically inserted on either side of relations.</p>
+</dd>
+<dt><strong>x_height</strong></dt>
+<dd><p>The height of lowercase letters without ascenders such as ‘x’.</p>
+</dd>
+<dt><strong>axis_height</strong></dt>
+<dd><p>The height above the baseline of the center of characters such as ‘+’ and ‘−’. It is important that this value is correct for the font you are using.</p>
+</dd>
+<dt><strong>default_rule_thickness</strong></dt>
+<dd><p>This should set to the thickness of the <strong>\(ru</strong> character, or the thickness of horizontal lines produced with the <strong>\D</strong> escape sequence.</p>
+</dd>
+<dt><strong>num1</strong></dt>
+<dd><p>The <strong>over</strong> command shifts up the numerator by at least this amount.</p>
+</dd>
+<dt><strong>num2</strong></dt>
+<dd><p>The <strong>smallover</strong> command shifts up the numerator by at least this amount.</p>
+</dd>
+<dt><strong>denom1</strong></dt>
+<dd><p>The <strong>over</strong> command shifts down the denominator by at least this amount.</p>
+</dd>
+<dt><strong>denom2</strong></dt>
+<dd><p>The <strong>smallover</strong> command shifts down the denominator by at least this amount.</p>
+</dd>
+<dt><strong>sup1</strong></dt>
+<dd><p>Normally superscripts are shifted up by at least this amount.</p>
+</dd>
+<dt><strong>sup2</strong></dt>
+<dd><p>Superscripts within superscripts or upper limits or numerators of <strong>smallover</strong> fractions are shifted up by at least this amount. This is usually less than sup1.</p>
+</dd>
+<dt><strong>sup3</strong></dt>
+<dd><p>Superscripts within denominators or square roots or subscripts or lower limits are shifted up by at least this amount. This is usually less than sup2.</p>
+</dd>
+<dt><strong>sub1</strong></dt>
+<dd><p>Subscripts are normally shifted down by at least this amount.</p>
+</dd>
+<dt><strong>sub2</strong></dt>
+<dd><p>When there is both a subscript and a superscript, the subscript is shifted down by at least this amount.</p>
+</dd>
+<dt><strong>sup_drop</strong></dt>
+<dd><p>The baseline of a superscript is no more than this much amount below the top of the object on which the superscript is set.</p>
+</dd>
+<dt><strong>sub_drop</strong></dt>
+<dd><p>The baseline of a subscript is at least this much below the bottom of the object on which the subscript is set.</p>
+</dd>
+<dt><strong>big_op_spacing1</strong></dt>
+<dd><p>The baseline of an upper limit is at least this much above the top of the object on which the limit is set.</p>
+</dd>
+<dt><strong>big_op_spacing2</strong></dt>
+<dd><p>The baseline of a lower limit is at least this much below the bottom of the object on which the limit is set.</p>
+</dd>
+<dt><strong>big_op_spacing3</strong></dt>
+<dd><p>The bottom of an upper limit is at least this much above the top of the object on which the limit is set.</p>
+</dd>
+<dt><strong>big_op_spacing4</strong></dt>
+<dd><p>The top of a lower limit is at least this much below the bottom of the object on which the limit is set.</p>
+</dd>
+<dt><strong>big_op_spacing5</strong></dt>
+<dd><p>This much vertical space is added above and below limits.</p>
+</dd>
+<dt><strong>baseline_sep</strong></dt>
+<dd><p>The baselines of the rows in a pile or matrix are normally this far apart. In most cases this should be equal to the sum of <strong>num1</strong> and <strong>denom1</strong>.</p>
+</dd>
+<dt><strong>shift_down</strong></dt>
+<dd><p>The midpoint between the top baseline and the bottom baseline in a matrix or pile is shifted down by this much from the axis. In most cases this should be equal to <strong>axis_height</strong>.</p>
+</dd>
+<dt><strong>column_sep</strong></dt>
+<dd><p>This much space is added between columns in a matrix.</p>
+</dd>
+<dt><strong>matrix_side_sep</strong></dt>
+<dd><p>This much space is added at each side of a matrix.</p>
+</dd>
+<dt><strong>draw_lines</strong></dt>
+<dd><p>If this is non-zero, lines are drawn using the <strong>\D</strong> escape sequence, rather than with the <strong>\l</strong> escape sequence and the <strong>\(ru</strong> character.</p>
+</dd>
+<dt><strong>body_height</strong></dt>
+<dd><p>The amount by which the height of the equation exceeds this is added as extra space before the line containing the equation (using <strong>\x</strong>). The default value is 85.</p>
+</dd>
+<dt><strong>body_depth</strong></dt>
+<dd><p>The amount by which the depth of the equation exceeds this is added as extra space after the line containing the equation (using <strong>\x</strong>). The default value is 35.</p>
+</dd>
+<dt><strong>nroff</strong></dt>
+<dd><p>If this is non-zero, then <strong>ndefine</strong> behaves like <strong>define</strong> and <strong>tdefine</strong> is ignored, otherwise <strong>tdefine</strong> behaves like <strong>define</strong> and <strong>ndefine</strong> is ignored. The default value is 0 (This is typically changed to 1 by the <code>eqnrc</code> file for the <strong>ascii</strong>, <strong>latin1</strong>, <strong>utf8</strong>, and <strong>cp1047</strong> devices.)</p>
+</dd>
+</dl>
+<p>A more precise description of the role of many of these parameters can be found in Appendix H of <code>The book</code>.</p>
+</dd>
+</dl>
+<h2>Macros</h2>
+<p>Macros can take arguments. In a macro body, <strong>$</strong><code>n</code> where <code>n</code> is between 1 and 9, is replaced by the <code>n</code>th argument if the macro is called with arguments; if there are fewer than <code>n</code> arguments, it is replaced by nothing. A word containing a left parenthesis where the part of the word before the left parenthesis has been defined using the <strong>define</strong> command is recognized as a macro call with arguments; characters following the left parenthesis up to a matching right parenthesis are treated as comma-separated arguments; commas inside nested parentheses do not terminate an argument.</p>
+<dl>
+<dt><strong>sdefine </strong><code>name X anything X</code></dt>
+<dd><p>This is like the <strong>define</strong> command, but <code>name</code> is not recognized if called with arguments.</p>
+</dd>
+<dt><strong>include "</strong><code>file</code><strong>"</strong><br/>
+<strong>copy "</strong><code>file</code><strong>"</strong></dt>
+<dd><p>Include the contents of <code>file</code> (<strong>include</strong> and <strong>copy</strong> are synonyms). Lines of <code>file</code> beginning with <strong>.EQ</strong> or <strong>.EN</strong> are ignored.</p>
+</dd>
+<dt><strong>ifdef </strong><code>name X anything X</code></dt>
+<dd><p>If <code>name</code> has been defined by <strong>define</strong> (or has been automatically defined because <code>name</code> is the output device) process <code>anything</code>; otherwise ignore <code>anything</code>. <code>X</code> can be any character not appearing in <code>anything</code>.</p>
+</dd>
+<dt><strong>undef </strong><code>name</code></dt>
+<dd><p>Remove definition of <code>name</code>, making it undefined.</p>
+</dd>
+</dl>
+<p>Besides the macros mentioned above, the following definitions are available: <strong>Alpha</strong>, <strong>Beta</strong>, . . ., <strong>Omega</strong> (this is the same as <strong>ALPHA</strong>, <strong>BETA</strong>, . . ., <strong>OMEGA</strong>), <strong>ldots</strong> (three dots on the base line), and <strong>dollar</strong>.</p>
+<h2>Fonts</h2>
+<p><strong>eqn</strong> normally uses at least two fonts to set an equation: an italic font for letters, and a roman font for everything else. The existing <strong>gfont</strong> command changes the font that is used as the italic font. By default this is  <strong>I</strong>. The font that is used as the roman font can be changed using the new <strong>grfont</strong> command.</p>
+<dl>
+<dt><strong>grfont </strong><code>f</code></dt>
+<dd><p>Set the roman font to  <code>f</code>.</p>
+</dd>
+</dl>
+<p>The <strong>italic</strong> primitive uses the current italic font set by <strong>gfont</strong>; the <strong>roman</strong> primitive uses the current roman font set by <strong>grfont</strong>. There is also a new <strong>gbfont</strong> command, which changes the font used by the <strong>bold</strong> primitive. If you only use the <strong>roman</strong>, <strong>italic</strong> and <strong>bold</strong> primitives to changes fonts within an equation, you can change all the fonts used by your equations just by using <strong>gfont</strong>, <strong>grfont</strong> and <strong>gbfont</strong> commands.</p>
+<p>You can control which characters are treated as letters (and therefore set in italics) by using the <strong>chartype</strong> command described above. A type of <strong>letter</strong> causes a character to be set in italic type. A type of <strong>digit</strong> causes a character to be set in roman type.</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/usr/share/groff/1.22.4/tmac/eqnrc</code></dt>
+<dd><p>Initialization file.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='mathml-mode-limitations'><a href='#mathml-mode-limitations'>MATHML MODE LIMITATIONS</a></h1><div data-for='mathml-mode-limitations' data-hide><div class='section' data-for='mathml-mode-limitations'><div data-more>
+<p>MathML is designed on the assumption that it cannot know the exact physical characteristics of the media and devices on which it will be rendered. It does not support fine control of motions and sizes to the same degree troff does. Thus:</p>
+<ul>
+<li><p><strong>eqn</strong> parameters have no effect on the generated MathML.</p></li>
+<li><p>The <strong>special</strong>, <strong>up</strong>, <strong>down</strong>, <strong>fwd</strong>, and <strong>back</strong> operations cannot be implemented, and yield a MathML ‘&lt;merror&gt;’ message instead.</p></li>
+<li><p>The <strong>vcenter</strong> keyword is silently ignored, as centering on the math axis is the MathML default.</p></li>
+<li><p>Characters that <strong>eqn</strong> over troff sets extra large – notably the integral sign – may appear too small and need to have their ‘&lt;mstyle&gt;’ wrappers adjusted by hand.</p></li>
+</ul>
+<p>As in its troff mode, <strong>eqn</strong> in MathML mode leaves the <strong>.EQ</strong> and <strong>.EN</strong> delimiters in place for displayed equations, but emits no explicit delimiters around inline equations. They can, however, be recognized as strings that begin with ‘&lt;math&gt;’ and end with ‘&lt;/math&gt;’ and do not cross line boundaries.</p>
+<p>See section “Bugs” below for translation limits specific to <strong>eqn</strong>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Inline equations are set at the point size that is current at the beginning of the input line.</p>
+<p>In MathML mode, the <strong>mark</strong> and <strong>lineup</strong> features don't work. These could, in theory, be implemented with ‘&lt;maligngroup&gt;’ elements.</p>
+<p>In MathML mode, each digit of a numeric literal gets a separate ‘&lt;mn&gt;&lt;/mn&gt;’ pair, and decimal points are tagged with ‘&lt;mo&gt;&lt;/mo&gt;’. This is allowed by the specification, but inefficient.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/groff'>groff</a>(1), <a href='/1/troff'>troff</a>(1), <a href='/1/pic'>pic</a>(1), <a href='/5/groff_font'>groff_font</a>(5), <code>The book</code></p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

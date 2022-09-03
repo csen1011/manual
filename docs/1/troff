@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>troff - the troff processor of the groff text formatting system</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>troff</strong> [ <strong>-abcivzCERU</strong> ] [ <strong>-d</strong> cs ] [ <strong>-f</strong> fam ] [ <strong>-F</strong> dir ] [ <strong>-I</strong> dir ] [ <strong>-m</strong> name ] [ <strong>-M</strong> dir ] [ <strong>-n</strong> num ] [ <strong>-o</strong> list ] [ <strong>-r</strong> cn ] [ <strong>-T</strong> name ] [ <strong>-w</strong> name ] [ <strong>-W</strong> name ] [<code>file</code> . . .]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This manual page describes the GNU version of <strong>troff</strong>. It is part of the groff document formatting system. It is functionally compatible with Unix troff, but has many extensions, see <a href='/7/groff_diff'>groff_diff</a>(7). Usually it should be invoked using the <a href='/1/groff'>groff</a>(1) command which will also run preprocessors and postprocessors in the appropriate order and with the appropriate options.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Whitespace is permitted between a command-line option and its argument.</p>
+<dl>
+<dt><strong>-a</strong></dt>
+<dd><p>Generate an ASCII approximation of the typeset output.</p>
+</dd>
+<dt><strong>-b</strong></dt>
+<dd><p>Print a backtrace with each warning or error message. This backtrace should help track down the cause of the error. The line numbers given in the backtrace may not always be correct, for <strong>troff</strong>'s idea of line numbers gets confused by <strong>as</strong> or <strong>am</strong> requests.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>Disable color output (always disabled in compatibility mode).</p>
+</dd>
+<dt><strong>-C</strong></dt>
+<dd><p>Enable compatibility mode.</p>
+</dd>
+<dt><strong>-d</strong><code>cs</code><br/>
+<strong>-d</strong><code>name</code><strong>=</strong><code>s</code></dt>
+<dd><p>Define <code>c</code> or <code>name</code> to be a string <code>s</code>; <code>c</code> must be a one letter name.</p>
+</dd>
+<dt><strong>-E</strong></dt>
+<dd><p>Inhibit all error messages of <strong>troff</strong>. Note that this doesn't affect messages output to standard error by macro packages using the <strong>tm</strong> or <strong>tm1</strong> requests.</p>
+</dd>
+<dt><strong>-f</strong><code>fam</code></dt>
+<dd><p>Use <code>fam</code> as the default font family.</p>
+</dd>
+<dt><strong>-F</strong><code>dir</code></dt>
+<dd><p>Search in directory (or directory path) <code>dir</code> for subdirectories <code>dev</code>name (<code>name</code> is the name of the device) and there for the <code>DESC</code> file and font files. <code>dir</code> is scanned before all other font directories.</p>
+</dd>
+<dt><strong>-i</strong></dt>
+<dd><p>Read the standard input after all the named input files have been processed.</p>
+</dd>
+<dt><strong>-I</strong><code>dir</code></dt>
+<dd><p>This option may be used to add a directory to the search path for files (both those on the command line and those named in <strong>.psbb</strong> requests). The search path is initialized with the current directory. This option may be specified more than once; the directories are then searched in the order specified (but before the current directory). If you want to make the current directory be read before other directories, add <strong>-I.</strong> at the appropriate place.</p>
+<p>No directory search is performed for files with an absolute file name.</p>
+</dd>
+<dt><strong>-m</strong><code>name</code></dt>
+<dd><p>Read in the file name<code>.tmac</code>. If it isn't found, try <code>tmac.</code>name instead. It will be first searched for in directories given with the <strong>-M</strong> command-line option, then in directories given in the <code>GROFF_TMAC_PATH</code> environment variable, then in the current directory (only if in unsafe mode), the home directory, <code>/usr/lib/groff/site-tmac</code>, <code>/usr/share/groff/site-tmac</code>, and <code>/usr/share/groff/1.22.4/tmac</code>.</p>
+</dd>
+<dt><strong>-M</strong><code>dir</code></dt>
+<dd><p>Search directory (or directory path) <code>dir</code> for macro files. This is scanned before all other macro directories.</p>
+</dd>
+<dt><strong>-n</strong><code>num</code></dt>
+<dd><p>Number the first page <code>num</code>.</p>
+</dd>
+<dt><strong>-o</strong><code>list</code></dt>
+<dd><p>Output only pages in <code>list</code>, which is a comma-separated list of page ranges; <code>n</code> means print page <code>n</code>, <code>m</code><strong>-</strong><code>n</code> means print every page between <code>m</code> and <code>n</code>, <strong>-</strong><code>n</code> means print every page up to <code>n</code>, <code>n</code><strong>-</strong> means print every page from <code>n</code>. <strong>troff</strong> will exit after printing the last page in the list.</p>
+</dd>
+<dt><strong>-r</strong><code>cn</code><br/>
+<strong>-r</strong><code>name</code><strong>=</strong><code>n</code></dt>
+<dd><p>Set number register <code>c</code> or <code>name</code> to <code>n</code>; <code>c</code> must be a one character name; <code>n</code> can be any troff numeric expression.</p>
+</dd>
+<dt><strong>-R</strong></dt>
+<dd><p>Don't load <code>troffrc</code> and <code>troffrc-end</code>.</p>
+</dd>
+<dt><strong>-T</strong><code>name</code></dt>
+<dd><p>Prepare output for device <code>name</code>, rather than the default <strong>ps</strong>; see <a href='/1/groff'>groff</a>(1) for a more detailed description.</p>
+</dd>
+<dt><strong>-U</strong></dt>
+<dd><p>Unsafe mode. This will enable the following requests: <strong>open</strong>, <strong>opena</strong>, <strong>pso</strong>, <strong>sy</strong>, and <strong>pi</strong>. For security reasons, these potentially dangerous requests are disabled otherwise. It will also add the current directory to the macro search path.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Print the version number.</p>
+</dd>
+<dt><strong>-w</strong><code>name</code></dt>
+<dd><p>Enable warning <code>name</code>. Available warnings are described in section “Warnings” below. To enable most useful warnings use <strong>-w</strong> <strong>all</strong>. To enable absolutely all warnings use <strong>-w w</strong> instead. Multiple <strong>-w</strong> options are allowed.</p>
+</dd>
+<dt><strong>-W</strong><code>name</code></dt>
+<dd><p>Inhibit warning <code>name</code>. Multiple <strong>-W</strong> options are allowed.</p>
+</dd>
+<dt><strong>-z</strong></dt>
+<dd><p>Suppress formatted output.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='warnings'><a href='#warnings'>WARNINGS</a></h1><div data-for='warnings' data-hide><div class='section' data-for='warnings'><div data-more>
+<p>The warnings that can be given by <strong>troff</strong> are divided into the following categories. The name associated with each warning is used by the <strong>-w</strong> and <strong>-W</strong> options; the number is used by the <strong>warn</strong> request, and by the <strong>.warn</strong> register; it is always a power of 2 to allow bitwise composition.</p>
+<p>TABLE</p>
+<dl>
+<dt><strong>break</strong> 4</dt>
+<dd><p>In fill mode, lines which could not be broken so that their length was less than the line length. This is enabled by default.</p>
+</dd>
+<dt><strong>char</strong> 1</dt>
+<dd><p>Non-existent characters. This is enabled by default.</p>
+</dd>
+<dt><strong>color</strong> 524288</dt>
+<dd><p>Color-related warnings.</p>
+</dd>
+<dt><strong>delim</strong> 8</dt>
+<dd><p>Missing or mismatched closing delimiters.</p>
+</dd>
+<dt><strong>di</strong> 256</dt>
+<dd><p>Use of <strong>di</strong> or <strong>da</strong> without an argument when there is no current diversion.</p>
+</dd>
+<dt><strong>el</strong> 16</dt>
+<dd><p>Use of the <strong>el</strong> request with no matching <strong>ie</strong> request.</p>
+</dd>
+<dt><strong>escape</strong> 32768</dt>
+<dd><p>Unrecognized escape sequences. When an unrecognized escape sequence is encountered, the escape character is ignored.</p>
+</dd>
+<dt><strong>file</strong> 1048576</dt>
+<dd><p>Indicates a missing file for the <strong>mso</strong> request. Enabled by default.</p>
+</dd>
+<dt><strong>font</strong> 131072</dt>
+<dd><p>Non-existent fonts. This is enabled by default.</p>
+</dd>
+<dt><strong>ig</strong> 262144</dt>
+<dd><p>Invalid escapes in text ignored with the <strong>ig</strong> request. These are conditions that are errors when they do not occur in ignored text.</p>
+</dd>
+<dt><strong>input</strong> 16384</dt>
+<dd><p>Invalid input characters.</p>
+</dd>
+<dt><strong>mac</strong> 512</dt>
+<dd><p>Use of undefined strings, macros and diversions. When an undefined string, macro or diversion is used, that string is automatically defined as empty. So, in most cases, at most one warning will be given for each name.</p>
+</dd>
+<dt><strong>missing</strong> 8192</dt>
+<dd><p>Requests that are missing non-optional arguments.</p>
+</dd>
+<dt><strong>number</strong> 2</dt>
+<dd><p>Invalid numeric expressions. This is enabled by default.</p>
+</dd>
+<dt><strong>range</strong> 64</dt>
+<dd><p>Out of range arguments.</p>
+</dd>
+<dt><strong>reg</strong> 1024</dt>
+<dd><p>Use of undefined number registers. When an undefined number register is used, that register is automatically defined to have a value of 0. So, in most cases, at most one warning will be given for use of a particular name.</p>
+</dd>
+<dt><strong>right-brace</strong> 4096</dt>
+<dd><p>Use of <strong>\}</strong> where a number was expected.</p>
+</dd>
+<dt><strong>scale</strong> 32</dt>
+<dd><p>Meaningless scaling indicators.</p>
+</dd>
+<dt><strong>space</strong> 65536</dt>
+<dd><p>Missing space between a request or macro and its argument. This warning will be given when an undefined name longer than two characters is encountered, and the first two characters of the name make a defined name. The request or macro will not be invoked. When this warning is given, no macro is automatically defined. This is enabled by default. This warning will never occur in compatibility mode.</p>
+</dd>
+<dt><strong>syntax</strong> 128</dt>
+<dd><p>Dubious syntax in numeric expressions.</p>
+</dd>
+<dt><strong>tab</strong> 2048</dt>
+<dd><p>Inappropriate use of a tab character. Either use of a tab character where a number was expected, or use of tab character in an unquoted macro argument.</p>
+</dd>
+</dl>
+<p>There are also names that can be used to refer to groups of warnings:</p>
+<dl>
+<dt><strong>all</strong></dt>
+<dd><p>All warnings except <strong>di</strong>, <strong>mac</strong>, and <strong>reg</strong>. It is intended that this covers all warnings that are useful with traditional macro packages.</p>
+</dd>
+<dt><strong>w</strong></dt>
+<dd><p>All warnings.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<dl>
+<dt><code>GROFF_TMAC_PATH</code></dt>
+<dd><p>A colon separated list of directories in which to search for macro files. <strong>troff</strong> will scan directories given in the <strong>-M</strong> option before these, and in standard directories (current directory if in unsafe mode, home directory, <code>/usr/lib/groff/site-tmac</code>, <code>/usr/share/groff/site-tmac</code>, <code>/usr/share/groff/1.22.4/tmac</code>) after these.</p>
+</dd>
+<dt><code>GROFF_TYPESETTER</code></dt>
+<dd><p>Default device.</p>
+</dd>
+<dt><code>GROFF_FONT_PATH</code></dt>
+<dd><p>A colon separated list of directories in which to search for the <code>dev</code>name directory. <strong>troff</strong> will scan directories given in the <strong>-F</strong> option before these, and in standard directories (<code>/usr/share/groff/site-font</code>, <code>/usr/share/groff/1.22.4/font</code>, <code>/usr/lib/font</code>) after these.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/usr/share/groff/1.22.4/tmac/troffrc</code></dt>
+<dd><p>Initialization file (called before any other macro package).</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/tmac/troffrc-end</code></dt>
+<dd><p>Initialization file (called after any other macro package).</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/tmac/</code>name<code>.tmac</code><br/>
+<code>/usr/share/groff/1.22.4/tmac/tmac.</code>name</dt>
+<dd><p>Macro files</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/dev</code>name<code>/DESC</code></dt>
+<dd><p>Device description file for device <code>name</code>.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/dev</code>name<code>/</code>F</dt>
+<dd><p>Font file for font <code>F</code> of device <code>name</code>.</p>
+</dd>
+</dl>
+<p>Note that <code>troffrc</code> and <code>troffrc-end</code> are searched for neither in the current nor the home directory by default for security reasons (even if the <strong>-U</strong> option is given). Use the <strong>-M</strong> command-line option or the <code>GROFF_TMAC_PATH</code> environment variable to add these directories to the search path if necessary.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>The GNU version of <code>troff</code> was originally written by James Clark; he also wrote the original version of this document, which was modified by <a href="<a href="mailto:wl@gnu.org">mailto:wl@gnu.org</a>">Werner Lemberg</a> and <a href="<a href="mailto:groff-bernd.warken-72@web.de">mailto:groff-bernd.warken-72@web.de</a>">Bernd Warken</a>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<dl>
+<dt><a href='/1/groff'>groff</a>(1)</dt>
+<dd><p>The main program of the <code>groff</code> system, a wrapper around <code>troff</code>.</p>
+</dd>
+<dt><a href='/7/groff'>groff</a>(7)</dt>
+<dd><p>A description of the <code>groff</code> language, including a short but complete reference of all predefined requests, registers, and escapes of plain <code>groff</code>. From the command line, this is called by</p>
+<blockquote>
+<p><strong>man 7 groff</strong></p>
+</blockquote>
+</dd>
+<dt><a href='/7/groff_diff'>groff_diff</a>(7)</dt>
+<dd><p>The differences of the <code>groff</code> language and the <code>classical troff</code> language. Currently, this is the most actual document of the <code>groff</code> system.</p>
+</dd>
+<dt><a href='/7/roff'>roff</a>(7)</dt>
+<dd><p>An overview over <code>groff</code> and other <code>roff</code> systems, including pointers to further related documentation.</p>
+</dd>
+</dl>
+<p><code>Groff: The GNU Implementation of troff</code>, by Trent A. Fisher and Werner Lemberg, is the primary <code>groff</code> manual. You can browse it interactively with “info groff”.</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>membarrier - issue memory barriers on a set of threads</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;linux/membarrier.h&gt;</a>
+
+int membarrier(int cmd, unsigned int flags, int cpu_id);</code></pre>
+<p><code>Note</code>: There is no glibc wrapper for this system call; see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='membarrier'>membarrier</a>() system call helps reducing the overhead of the memory barrier instructions required to order memory accesses on multi-core systems. However, this system call is heavier than a memory barrier, so using it effectively is <code>not</code> as simple as replacing memory barriers with this system call, but requires understanding of the details below.</p>
+<p>Use of memory barriers needs to be done taking into account that a memory barrier always needs to be either matched with its memory barrier counterparts, or that the architecture's memory model doesn't require the matching barriers.</p>
+<p>There are cases where one side of the matching barriers (which we will refer to as "fast side") is executed much more often than the other (which we will refer to as "slow side"). This is a prime target for the use of <a href='membarrier'>membarrier</a>(). The key idea is to replace, for these matching barriers, the fast-side memory barriers by simple compiler barriers, for example:</p>
+<pre><code>asm volatile ("" : : : "memory")</code></pre>
+<p>and replace the slow-side memory barriers by calls to <a href='membarrier'>membarrier</a>().</p>
+<p>This will add overhead to the slow side, and remove overhead from the fast side, thus resulting in an overall performance increase as long as the slow side is infrequent enough that the overhead of the <a href='membarrier'>membarrier</a>() calls does not outweigh the performance gain on the fast side.</p>
+<p>The <code>cmd</code> argument is one of the following:</p>
+<dl>
+<dt><strong>MEMBARRIER_CMD_QUERY</strong> (since Linux 4.3)</dt>
+<dd><p>Query the set of supported commands. The return value of the call is a bit mask of supported commands. <strong>MEMBARRIER_CMD_QUERY</strong>, which has the value 0, is not itself included in this bit mask. This command is always supported (on kernels where <a href='membarrier'>membarrier</a>() is provided).</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_GLOBAL</strong> (since Linux 4.16)</dt>
+<dd><p>Ensure that all threads from all processes on the system pass through a state where all memory accesses to user-space addresses match program order between entry to and return from the <a href='membarrier'>membarrier</a>() system call. All threads on the system are targeted by this command.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_GLOBAL_EXPEDITED</strong> (since Linux 4.16)</dt>
+<dd><p>Execute a memory barrier on all running threads of all processes that previously registered with <strong>MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED</strong>.</p>
+<p>Upon return from the system call, the calling thread has a guarantee that all running threads have passed through a state where all memory accesses to user-space addresses match program order between entry to and return from the system call (non-running threads are de facto in such a state). This guarantee is provided only for the threads of processes that previously registered with <strong>MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED</strong>.</p>
+<p>Given that registration is about the intent to receive the barriers, it is valid to invoke <strong>MEMBARRIER_CMD_GLOBAL_EXPEDITED</strong> from a process that has not employed <strong>MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED</strong>.</p>
+<p>The "expedited" commands complete faster than the non-expedited ones; they never block, but have the downside of causing extra overhead.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED</strong> (since Linux 4.16)</dt>
+<dd><p>Register the process's intent to receive <strong>MEMBARRIER_CMD_GLOBAL_EXPEDITED</strong> memory barriers.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED</strong> (since Linux 4.14)</dt>
+<dd><p>Execute a memory barrier on each running thread belonging to the same process as the calling thread.</p>
+<p>Upon return from the system call, the calling thread has a guarantee that all its running thread siblings have passed through a state where all memory accesses to user-space addresses match program order between entry to and return from the system call (non-running threads are de facto in such a state). This guarantee is provided only for threads in the same process as the calling thread.</p>
+<p>The "expedited" commands complete faster than the non-expedited ones; they never block, but have the downside of causing extra overhead.</p>
+<p>A process must register its intent to use the private expedited command prior to using it.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED</strong> (since Linux 4.14)</dt>
+<dd><p>Register the process's intent to use <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED</strong>.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE</strong> (since Linux 4.16)</dt>
+<dd><p>In addition to providing the memory ordering guarantees described in <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED</strong>, upon return from system call the calling thread has a guarantee that all its running thread siblings have executed a core serializing instruction. This guarantee is provided only for threads in the same process as the calling thread.</p>
+<p>The "expedited" commands complete faster than the non-expedited ones, they never block, but have the downside of causing extra overhead.</p>
+<p>A process must register its intent to use the private expedited sync core command prior to using it.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_SYNC_CORE</strong> (since Linux 4.16)</dt>
+<dd><p>Register the process's intent to use <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE</strong>.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ</strong> (since Linux 5.10)</dt>
+<dd><p>Ensure the caller thread, upon return from system call, that all its running thread siblings have any currently running rseq critical sections restarted if <code>flags</code> parameter is 0; if <code>flags</code> parameter is <strong>MEMBARRIER_CMD_FLAG_CPU</strong>, then this operation is performed only on CPU indicated by <code>cpu_id</code>. This guarantee is provided only for threads in the same process as the calling thread.</p>
+<p>RSEQ membarrier is only available in the "private expedited" form.</p>
+<p>A process must register its intent to use the private expedited rseq command prior to using it.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ</strong> (since Linux 5.10)</dt>
+<dd><p>Register the process's intent to use <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ</strong>.</p>
+</dd>
+<dt><strong>MEMBARRIER_CMD_SHARED</strong> (since Linux 4.3)</dt>
+<dd><p>This is an alias for <strong>MEMBARRIER_CMD_GLOBAL</strong> that exists for header backward compatibility.</p>
+</dd>
+</dl>
+<p>The <code>flags</code> argument must be specified as 0 unless the command is <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ</strong>, in which case <code>flags</code> can be either 0 or <strong>MEMBARRIER_CMD_FLAG_CPU</strong>.</p>
+<p>The <code>cpu_id</code> argument is ignored unless <code>flags</code> is <strong>MEMBARRIER_CMD_FLAG_CPU</strong>, in which case it must specify the CPU targeted by this membarrier command.</p>
+<p>All memory accesses performed in program order from each targeted thread are guaranteed to be ordered with respect to <a href='membarrier'>membarrier</a>().</p>
+<p>If we use the semantic <code>barrier()</code> to represent a compiler barrier forcing memory accesses to be performed in program order across the barrier, and <code>smp_mb()</code> to represent explicit memory barriers forcing full memory ordering across the barrier, we have the following ordering table for each pairing of <code>barrier()</code>, <a href='membarrier'>membarrier</a>(), and <code>smp_mb()</code>. The pair ordering is detailed as (O: ordered, X: not ordered):</p>
+<p>barrier() smp_mb() membarrier() barrier() X X O smp_mb() X O O membarrier() O O O</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, the <strong>MEMBARRIER_CMD_QUERY</strong> operation returns a bit mask of supported commands, and the <strong>MEMBARRIER_CMD_GLOBAL</strong>, <strong>MEMBARRIER_CMD_GLOBAL_EXPEDITED</strong>, <strong>MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED</strong>, <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED</strong>, <strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED</strong>, <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE</strong>, and <strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_SYNC_CORE</strong> operations return zero. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+<p>For a given command, with <code>flags</code> set to 0, this system call is guaranteed to always return the same value until reboot. Further calls with the same arguments will lead to the same result. Therefore, with <code>flags</code> set to 0, error handling is required only for the first call to <a href='membarrier'>membarrier</a>().</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Assuming a multithreaded application where "fast_path()" is executed very frequently, and where "slow_path()" is executed infrequently, the following code (x86) can be transformed using <a href='membarrier'>membarrier</a>():</p>
+<pre><code>#include &lt;stdlib.h&gt;
+
+static volatile int a, b;
+
+static void
+fast_path(int *read_b)
+{
+    a = 1;
+    asm volatile ("mfence" : : : "memory");
+    *read_b = b;
+}
+
+static void
+slow_path(int *read_a)
+{
+    b = 1;
+    asm volatile ("mfence" : : : "memory");
+    *read_a = a;
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>*argv)
+{
+    int read_a, read_b;
+
+    /*
+     * Real applications would call fast_path() and slow_path()
+     * from different threads. Call those from main() to keep
+     * this example short.
+     */
+
+    slow_path(&amp;read_a);
+    fast_path(&amp;read_b);
+
+    /*
+     * read_b == 0 implies read_a == 1 and
+     * read_a == 0 implies read_b == 1.
+     */
+
+    if (read_b == 0 &amp;&amp; read_a == 0)
+        abort();
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>The code above transformed to use <a href='membarrier'>membarrier</a>() becomes:</p>
+<pre><code>#define _GNU_SOURCE
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/syscall.h&gt;
+#include &lt;linux/membarrier.h&gt;
+
+static volatile int a, b;
+
+static int
+membarrier(int cmd, unsigned int flags, int cpu_id)
+{
+    return syscall(__NR_membarrier, cmd, flags, cpu_id);
+}
+
+static int
+init_membarrier(void)
+{
+    int ret;
+
+    /* Check that membarrier() is supported. */
+
+    ret = membarrier(MEMBARRIER_CMD_QUERY, 0, 0);
+    if (ret &lt; 0) {
+        perror("membarrier");
+        return -1;
+    }
+
+    if (!(ret &amp; MEMBARRIER_CMD_GLOBAL)) {
+        fprintf(stderr,
+            "membarrier does not support MEMBARRIER_CMD_GLOBAL\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+fast_path(int *read_b)
+{
+    a = 1;
+    asm volatile ("" : : : "memory");
+    *read_b = b;
+}
+
+static void
+slow_path(int *read_a)
+{
+    b = 1;
+    membarrier(MEMBARRIER_CMD_GLOBAL, 0, 0);
+    *read_a = a;
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>*argv)
+{
+    int read_a, read_b;
+
+    if (init_membarrier())
+        exit(EXIT_FAILURE);
+
+    /*
+     * Real applications would call fast_path() and slow_path()
+     * from different threads. Call those from main() to keep
+     * this example short.
+     */
+
+    slow_path(&amp;read_a);
+    fast_path(&amp;read_b);
+
+    /*
+     * read_b == 0 implies read_a == 1 and
+     * read_a == 0 implies read_b == 1.
+     */
+
+    if (read_b == 0 &amp;&amp; read_a == 0)
+        abort();
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>cmd</code> is invalid, or <code>flags</code> is nonzero, or the <strong>MEMBARRIER_CMD_GLOBAL</strong> command is disabled because the <code>nohz_full</code> CPU parameter has been set, or the <strong>MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE</strong> and <strong>MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_SYNC_CORE</strong> commands are not implemented by the architecture.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>The <a href='membarrier'>membarrier</a>() system call is not implemented by this kernel.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The current process was not registered prior to using private expedited commands.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='membarrier'>membarrier</a>() system call was added in Linux 4.3.</p>
+<p>Before Linux 5.10, the prototype for <a href='membarrier'>membarrier</a>() was:</p>
+<pre><code>int membarrier(int cmd, int flags);</code></pre>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='membarrier'>membarrier</a>() is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A memory barrier instruction is part of the instruction set of architectures with weakly ordered memory models. It orders memory accesses prior to the barrier and after the barrier with respect to matching barriers on other cores. For instance, a load fence can order loads prior to and following that fence with respect to stores ordered by store fences.</p>
+<p>Program order is the order in which instructions are ordered in the program assembly code.</p>
+<p>Examples where <a href='membarrier'>membarrier</a>() can be useful include implementations of Read-Copy-Update libraries and garbage collectors.</p>
+<p>Glibc does not provide a wrapper for this system call; call it using <a href='/2/syscall'>syscall</a>(2).</p>
+</div></div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>semctl - System V semaphore control operations</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ipc.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/sem.h&gt;</a>
+
+int semctl(int semid, int semnum, int cmd, ...);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='semctl'>semctl</a>() performs the control operation specified by <code>cmd</code> on the System V semaphore set identified by <code>semid</code>, or on the <code>semnum</code>-th semaphore of that set. (The semaphores in a set are numbered starting at 0.)</p>
+<p>This function has three or four arguments, depending on <code>cmd</code>. When there are four, the fourth has the type <code>union semun</code>. The <code>calling program</code> must define this union as follows:</p>
+<pre><code>union semun {
+    int              val;    /* Value for SETVAL */
+    struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+    unsigned short  *array;  /* Array for GETALL, SETALL */
+    struct seminfo  *__buf;  /* Buffer for IPC_INFO
+                                (Linux-specific) */
+};</code></pre>
+<p>The <code>semid_ds</code> data structure is defined in <code>&lt;sys/sem.h&gt;</code> as follows:</p>
+<pre><code>struct semid_ds {
+    struct ipc_perm sem_perm;  /* Ownership and permissions */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>          sem_otime; /* Last semop time */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>          sem_ctime; /* Creation time/time of last
+                                  modification via semctl() */
+    unsigned long   sem_nsems; /* No. of semaphores in set */
+};</code></pre>
+<p>The fields of the <code>semid_ds</code> structure are as follows:</p>
+<dl>
+<dt><code>sem_perm</code></dt>
+<dd><p>This is an <code>ipc_perm</code> structure (see below) that specifies the access permissions on the semaphore set.</p>
+</dd>
+<dt><code>sem_otime</code></dt>
+<dd><p>Time of last <a href='/2/semop'>semop</a>(2) system call.</p>
+</dd>
+<dt><code>sem_ctime</code></dt>
+<dd><p>Time of creation of semaphore set or time of last <a href='semctl'>semctl</a>() <strong>IPCSET</strong>, <strong>SETVAL</strong>, or <strong>SETALL</strong> operation.</p>
+</dd>
+<dt><code>sem_nsems</code></dt>
+<dd><p>Number of semaphores in the set. Each semaphore of the set is referenced by a nonnegative integer ranging from <strong>0</strong> to <code>sem_nsems-1</code>.</p>
+</dd>
+</dl>
+<p>The <code>ipc_perm</code> structure is defined as follows (the highlighted fields are settable using <strong>IPC_SET</strong>):</p>
+<pre><code>struct ipc_perm {
+    key_t          __key; /* Key supplied to semget(2) */
+    uid_t          uid;   /* Effective UID of owner */
+    gid_t          gid;   /* Effective GID of owner */
+    uid_t          cuid;  /* Effective UID of creator */
+    gid_t          cgid;  /* Effective GID of creator */
+    unsigned short mode;  /* Permissions */
+    unsigned short __seq; /* Sequence number */
+};</code></pre>
+<p>The least significant 9 bits of the <code>mode</code> field of the <code>ipc_perm</code> structure define the access permissions for the shared memory segment. The permission bits are as follows:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0400</td>
+<td style="text-align: left;">Read by user</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0200</td>
+<td style="text-align: left;">Write by user</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0040</td>
+<td style="text-align: left;">Read by group</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0020</td>
+<td style="text-align: left;">Write by group</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0004</td>
+<td style="text-align: left;">Read by others</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0002</td>
+<td style="text-align: left;">Write by others</td>
+</tr>
+</tbody>
+</table>
+<p>In effect, "write" means "alter" for a semaphore set. Bits 0100, 0010, and 0001 (the execute bits) are unused by the system.</p>
+<p>Valid values for <code>cmd</code> are:</p>
+<dl>
+<dt><strong>IPC_STAT</strong></dt>
+<dd><p>Copy information from the kernel data structure associated with <code>semid</code> into the <code>semid_ds</code> structure pointed to by <code>arg.buf</code>. The argument <code>semnum</code> is ignored. The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>IPC_SET</strong></dt>
+<dd><p>Write the values of some members of the <code>semid_ds</code> structure pointed to by <code>arg.buf</code> to the kernel data structure associated with this semaphore set, updating also its <code>sem_ctime</code> member.</p>
+<p>The following members of the structure are updated: <code>sem_perm.uid</code>, <code>sem_perm.gid</code>, and (the least significant 9 bits of) <code>sem_perm.mode</code>.</p>
+<p>The effective UID of the calling process must match the owner (<code>sem_perm.uid</code>) or creator (<code>sem_perm.cuid</code>) of the semaphore set, or the caller must be privileged. The argument <code>semnum</code> is ignored.</p>
+</dd>
+<dt><strong>IPC_RMID</strong></dt>
+<dd><p>Immediately remove the semaphore set, awakening all processes blocked in <a href='/2/semop'>semop</a>(2) calls on the set (with an error return and <code>errno</code> set to <strong>EIDRM</strong>). The effective user ID of the calling process must match the creator or owner of the semaphore set, or the caller must be privileged. The argument <code>semnum</code> is ignored.</p>
+</dd>
+<dt><strong>IPC_INFO</strong> (Linux-specific)</dt>
+<dd><p>Return information about system-wide semaphore limits and parameters in the structure pointed to by <code>arg.__buf</code>. This structure is of type <code>seminfo</code>, defined in <code>&lt;sys/sem.h&gt;</code> if the <strong>_GNU_SOURCE</strong> feature test macro is defined:</p>
+<pre><code>struct  seminfo {
+    int semmap;  /* Number of entries in semaphore
+                    map; unused within kernel */
+    int semmni;  /* Maximum number of semaphore sets */
+    int semmns;  /* Maximum number of semaphores in all
+                    semaphore sets */
+    int semmnu;  /* System-wide maximum number of undo
+                    structures; unused within kernel */
+    int semmsl;  /* Maximum number of semaphores in a
+                    set */
+    int semopm;  /* Maximum number of operations for
+                    semop(2) */
+    int semume;  /* Maximum number of undo entries per
+                    process; unused within kernel */
+    int semusz;  /* Size of struct sem_undo */
+    int semvmx;  /* Maximum semaphore value */
+    int semaem;  /* Max. value that can be recorded for
+                    semaphore adjustment (SEM_UNDO) */
+};</code></pre>
+<p>The <code>semmsl</code>, <code>semmns</code>, <code>semopm</code>, and <code>semmni</code> settings can be changed via <code>/proc/sys/kernel/sem</code>; see <a href='/5/proc'>proc</a>(5) for details.</p>
+</dd>
+<dt><strong>SEM_INFO</strong> (Linux-specific)</dt>
+<dd><p>Return a <code>seminfo</code> structure containing the same information as for <strong>IPC_INFO</strong>, except that the following fields are returned with information about system resources consumed by semaphores: the <code>semusz</code> field returns the number of semaphore sets that currently exist on the system; and the <code>semaem</code> field returns the total number of semaphores in all semaphore sets on the system.</p>
+</dd>
+<dt><strong>SEM_STAT</strong> (Linux-specific)</dt>
+<dd><p>Return a <code>semid_ds</code> structure as for <strong>IPC_STAT</strong>. However, the <code>semid</code> argument is not a semaphore identifier, but instead an index into the kernel's internal array that maintains information about all semaphore sets on the system.</p>
+</dd>
+<dt><strong>SEM_STAT_ANY</strong> (Linux-specific, since Linux 4.17)</dt>
+<dd><p>Return a <code>seminfo</code> structure containing the same information as for <strong>SEM_STAT</strong>. However, <code>sem_perm.mode</code> is not checked for read access for <code>semid</code> meaning that any user can employ this operation (just as any user may read <code>/proc/sysvipc/sem</code> to obtain the same information).</p>
+</dd>
+<dt><strong>GETALL</strong></dt>
+<dd><p>Return <strong>semval</strong> (i.e., the current value) for all semaphores of the set into <code>arg.array</code>. The argument <code>semnum</code> is ignored. The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>GETNCNT</strong></dt>
+<dd><p>Return the <strong>semncnt</strong> value for the <code>semnum</code>-th semaphore of the set (i.e., the number of processes waiting for the semaphore's value to increase). The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>GETPID</strong></dt>
+<dd><p>Return the <strong>sempid</strong> value for the <code>semnum</code>-th semaphore of the set. This is the PID of the process that last performed an operation on that semaphore (but see NOTES). The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>GETVAL</strong></dt>
+<dd><p>Return <strong>semval</strong> (i.e., the semaphore value) for the <code>semnum</code>-th semaphore of the set. The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>GETZCNT</strong></dt>
+<dd><p>Return the <strong>semzcnt</strong> value for the <code>semnum</code>-th semaphore of the set (i.e., the number of processes waiting for the semaphore value to become 0). The calling process must have read permission on the semaphore set.</p>
+</dd>
+<dt><strong>SETALL</strong></dt>
+<dd><p>Set the <strong>semval</strong> values for all semaphores of the set using <code>arg.array</code>, updating also the <code>sem_ctime</code> member of the <code>semid_ds</code> structure associated with the set. Undo entries (see <a href='/2/semop'>semop</a>(2)) are cleared for altered semaphores in all processes. If the changes to semaphore values would permit blocked <a href='/2/semop'>semop</a>(2) calls in other processes to proceed, then those processes are woken up. The argument <code>semnum</code> is ignored. The calling process must have alter (write) permission on the semaphore set.</p>
+</dd>
+<dt><strong>SETVAL</strong></dt>
+<dd><p>Set the semaphore value <strong>(</strong>semval<strong>)</strong> to <code>arg.val</code> for the <code>semnum</code>-th semaphore of the set, updating also the <code>sem_ctime</code> member of the <code>semid_ds</code> structure associated with the set. Undo entries are cleared for altered semaphores in all processes. If the changes to semaphore values would permit blocked <a href='/2/semop'>semop</a>(2) calls in other processes to proceed, then those processes are woken up. The calling process must have alter permission on the semaphore set.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On failure, <a href='semctl'>semctl</a>() returns -1 with <code>errno</code> indicating the error.</p>
+<p>Otherwise, the system call returns a nonnegative value depending on <code>cmd</code> as follows:</p>
+<dl>
+<dt><strong>GETNCNT</strong></dt>
+<dd><p>the value of <strong>semncnt</strong>.</p>
+</dd>
+<dt><strong>GETPID</strong></dt>
+<dd><p>the value of <strong>sempid</strong>.</p>
+</dd>
+<dt><strong>GETVAL</strong></dt>
+<dd><p>the value of <strong>semval</strong>.</p>
+</dd>
+<dt><strong>GETZCNT</strong></dt>
+<dd><p>the value of <strong>semzcnt</strong>.</p>
+</dd>
+<dt><strong>IPC_INFO</strong></dt>
+<dd><p>the index of the highest used entry in the kernel's internal array recording information about all semaphore sets. (This information can be used with repeated <strong>SEM_STAT</strong> or <strong>SEM_STAT_ANY</strong> operations to obtain information about all semaphore sets on the system.)</p>
+</dd>
+<dt><strong>SEM_INFO</strong></dt>
+<dd><p>as for <strong>IPC_INFO</strong>.</p>
+</dd>
+<dt><strong>SEM_STAT</strong></dt>
+<dd><p>the identifier of the semaphore set whose index was given in <code>semid</code>.</p>
+</dd>
+<dt><strong>SEM_STAT_ANY</strong></dt>
+<dd><p>as for <strong>SEM_STAT</strong>.</p>
+</dd>
+</dl>
+<p>All other <code>cmd</code> values return 0 on success.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>See <a href='/2/shmop'>shmop</a>(2).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>On failure, <code>errno</code> will be set to one of the following:</p>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The argument <code>cmd</code> has one of the values <strong>GETALL</strong>, <strong>GETPID</strong>, <strong>GETVAL</strong>, <strong>GETNCNT</strong>, <strong>GETZCNT</strong>, <strong>IPC_STAT</strong>, <strong>SEM_STAT</strong>, <strong>SEM_STAT_ANY</strong>, <strong>SETALL</strong>, or <strong>SETVAL</strong> and the calling process does not have the required permissions on the semaphore set and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The address pointed to by <code>arg.buf</code> or <code>arg.array</code> isn't accessible.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p>The semaphore set was removed.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid value for <code>cmd</code> or <code>semid</code>. Or: for a <strong>SEM_STAT</strong> operation, the index value specified in <code>semid</code> referred to an array slot that is currently unused.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The argument <code>cmd</code> has the value <strong>IPC_SET</strong> or <strong>IPC_RMID</strong> but the effective user ID of the calling process is not the creator (as found in <code>sem_perm.cuid</code>) or the owner (as found in <code>sem_perm.uid</code>) of the semaphore set, and the process does not have the <strong>CAP_SYS_ADMIN</strong> capability.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>The argument <code>cmd</code> has the value <strong>SETALL</strong> or <strong>SETVAL</strong> and the value to which <strong>semval</strong> is to be set (for some semaphore of the set) is less than 0 or greater than the implementation limit <strong>SEMVMX</strong>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+<p>POSIX.1 specifies the <code>sem_nsems</code> field of the <code>semid_ds</code> structure as having the type <code>unsigned short</code>, and the field is so defined on most other systems. It was also so defined on Linux 2.2 and earlier, but, since Linux 2.4, the field has the type <code>unsigned long</code>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p>The <strong>IPC_INFO</strong>, <strong>SEM_STAT</strong>, and <strong>SEM_INFO</strong> operations are used by the <a href='/1/ipcs'>ipcs</a>(1) program to provide information on allocated resources. In the future these may modified or moved to a <code>/proc</code> filesystem interface.</p>
+<p>Various fields in a <code>struct semid_ds</code> were typed as <code>short</code> under Linux 2.2 and have become <code>long</code> under Linux 2.4. To take advantage of this, a recompilation under glibc-2.1.91 or later should suffice. (The kernel distinguishes old and new calls by an <strong>IPC_64</strong> flag in <code>cmd</code>.)</p>
+<p>In some earlier versions of glibc, the <code>semun</code> union was defined in <code>&lt;sys/sem.h&gt;</code>, but POSIX.1 requires that the caller define this union. On versions of glibc where this union is <code>not</code> defined, the macro <strong>_SEM_SEMUN_UNDEFINED</strong> is defined in <code>&lt;sys/sem.h&gt;</code>.</p>
+<p>The following system limit on semaphore sets affects a <a href='semctl'>semctl</a>() call:</p>
+<dl>
+<dt><strong>SEMVMX</strong></dt>
+<dd><p>Maximum value for <strong>semval</strong>: implementation dependent (32767).</p>
+</dd>
+</dl>
+<p>For greater portability, it is best to always call <a href='semctl'>semctl</a>() with four arguments. POSIX.1 defines <code>sempid</code> as the "process ID of [the] last operation" on a semaphore, and explicitly notes that this value is set by a successful <a href='/2/semop'>semop</a>(2) call, with the implication that no other interface affects the <code>sempid</code> value.</p>
+<p>While some implementations conform to the behavior specified in POSIX.1, others do not. (The fault here probably lies with POSIX.1 inasmuch as it likely failed to capture the full range of existing implementation behaviors.) Various other implementations also update <code>sempid</code> for the other operations that update the value of a semaphore: the <strong>SETVAL</strong> and <strong>SETALL</strong> operations, as well as the semaphore adjustments performed on process termination as a consequence of the use of the <strong>SEM_UNDO</strong> flag (see <a href='/2/semop'>semop</a>(2)).</p>
+<p>Linux also updates <code>sempid</code> for <strong>SETVAL</strong> operations and semaphore adjustments. However, somewhat inconsistently, up to and including Linux 4.5, the kernel did not update <code>sempid</code> for <strong>SETALL</strong> operations. This was rectified in Linux 4.6.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/ipc'>ipc</a>(2), <a href='/2/semget'>semget</a>(2), <a href='/2/semop'>semop</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/sem_overview'>sem_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

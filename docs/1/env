@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>env - run a program in a modified environment</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>env</strong> [<code>OPTION</code>]... [<code>-</code>] [<code>NAME=VALUE</code>]... [<code>COMMAND </code>[<code>ARG</code>]...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Set each NAME to VALUE in the environment and run COMMAND.</p>
+<p>Mandatory arguments to long options are mandatory for short options too.</p>
+<dl>
+<dt><strong>-i</strong>, <strong>--ignore-environment</strong></dt>
+<dd><p>start with an empty environment</p>
+</dd>
+<dt><strong>-0</strong>, <strong>--null</strong></dt>
+<dd><p>end each output line with NUL, not newline</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--unset</strong>=<code>NAME</code></dt>
+<dd><p>remove variable from the environment</p>
+</dd>
+<dt><strong>-C</strong>, <strong>--chdir</strong>=<code>DIR</code></dt>
+<dd><p>change working directory to DIR</p>
+</dd>
+<dt><strong>-S</strong>, <strong>--split-string</strong>=<code>S</code></dt>
+<dd><p>process and split S into separate arguments; used to pass multiple arguments on shebang lines</p>
+</dd>
+<dt><strong>--block-signal</strong>[=<code>SIG</code>]</dt>
+<dd><p>block delivery of SIG signal(s) to COMMAND</p>
+</dd>
+<dt><strong>--default-signal</strong>[=<code>SIG</code>]</dt>
+<dd><p>reset handling of SIG signal(s) to the default</p>
+</dd>
+<dt><strong>--ignore-signal</strong>[=<code>SIG</code>]</dt>
+<dd><p>set handling of SIG signals(s) to do nothing</p>
+</dd>
+<dt><strong>--list-signal-handling</strong></dt>
+<dd><p>list non default signal handling to stderr</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--debug</strong></dt>
+<dd><p>print verbose information for each processing step</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<p>A mere - implies <strong>-i</strong>. If no COMMAND, print the resulting environment.</p>
+<p>SIG may be a signal name like 'PIPE', or a signal number like '13'. Without SIG, all known signals are included. Multiple signals can be comma-separated.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<h2>-S/--split-string usage in scripts</h2>
+<p>The <strong>-S</strong> option allows specifying multiple parameters in a script. Running a script named <strong><a href="http://1.pl">1.pl</a></strong> containing the following first line:</p>
+<blockquote>
+<pre><code>#!/usr/bin/env -S perl -w -T
+...</code></pre>
+</blockquote>
+<p>Will execute <strong>perl -w -T <a href="http://1.pl">1.pl</a> .</strong></p>
+<p>Without the <strong>'-S'</strong> parameter the script will likely fail with:</p>
+<blockquote>
+<pre><code>/usr/bin/env: 'perl -w -T': No such file or directory</code></pre>
+</blockquote>
+<p>See the full documentation for more details.</p>
+<h2>--default-signal[=SIG] usage</h2>
+<p>This option allows setting a signal handler to its default action, which is not possible using the traditional shell trap command. The following example ensures that seq will be terminated by SIGPIPE no matter how this signal is being handled in the process invoking the command.</p>
+<blockquote>
+<pre><code>sh -c 'env --default-signal=PIPE seq inf | head -n1'</code></pre>
+</blockquote>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>POSIX's exec(2) pages says:</p>
+<blockquote>
+<p>"many existing applications wrongly assume that they start with certain signals set to the default action and/or unblocked.... Therefore, it is best not to block or ignore signals across execs without explicit reason to do so, and especially not to block signals across execs of arbitrary (not closely cooperating) programs."</p>
+</blockquote>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by Richard Mlynarik, David MacKenzie, and Assaf Gordon.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>GNU coreutils online help: &lt;<a href="https://www.gnu.org/software/coreutils/&amp;gt;">https://www.gnu.org/software/coreutils/&gt;</a><br/>
+Report any translation bugs to &lt;<a href="https://translationproject.org/team/&amp;gt;">https://translationproject.org/team/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2020 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>sigaction(2), sigprocmask(2), signal(7)</p>
+<p><br/>
+Full documentation &lt;<a href="https://www.gnu.org/software/coreutils/env&amp;gt;">https://www.gnu.org/software/coreutils/env&gt;</a><br/>
+or available locally via: info '(coreutils) env invocation'</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

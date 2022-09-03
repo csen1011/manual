@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>chmod - change file mode bits</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>chmod</strong> [<code>OPTION</code>]... <code>MODE</code>[<code>,MODE</code>]... <code>FILE</code>...<br/>
+<strong>chmod</strong> [<code>OPTION</code>]... <code>OCTAL-MODE FILE</code>...<br/>
+<strong>chmod</strong> [<code>OPTION</code>]... <code>--reference=RFILE FILE</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This manual page documents the GNU version of <strong>chmod</strong>. <strong>chmod</strong> changes the file mode bits of each given file according to <code>mode</code>, which can be either a symbolic representation of changes to make, or an octal number representing the bit pattern for the new mode bits.</p>
+<p>The format of a symbolic mode is [ <strong>ugoa</strong>. . .][[<strong>-+=</strong>][<code>perms</code>. . .]. . .], where <code>perms</code> is either zero or more letters from the set <strong>rwxXst</strong>, or a single letter from the set <strong>ugo</strong>. Multiple symbolic modes can be given, separated by commas.</p>
+<p>A combination of the letters <strong>ugoa</strong> controls which users' access to the file will be changed: the user who owns it (<strong>u</strong>), other users in the file's group (<strong>g</strong>), other users not in the file's group (<strong>o</strong>), or all users (<strong>a</strong>). If none of these are given, the effect is as if (<strong>a</strong>) were given, but bits that are set in the umask are not affected.</p>
+<p>The operator <strong>+</strong> causes the selected file mode bits to be added to the existing file mode bits of each file; <strong>-</strong> causes them to be removed; and <strong>=</strong> causes them to be added and causes unmentioned bits to be removed except that a directory's unmentioned set user and group ID bits are not affected.</p>
+<p>The letters <strong>rwxXst</strong> select file mode bits for the affected users: read (<strong>r</strong>), write (<strong>w</strong>), execute (or search for directories) (<strong>x</strong>), execute/search only if the file is a directory or already has execute permission for some user (<strong>X</strong>), set user or group ID on execution (<strong>s</strong>), restricted deletion flag or sticky bit (<strong>t</strong>). Instead of one or more of these letters, you can specify exactly one of the letters <strong>ugo</strong>: the permissions granted to the user who owns the file (<strong>u</strong>), the permissions granted to other users who are members of the file's group (<strong>g</strong>), and the permissions granted to users that are in neither of the two preceding categories (<strong>o</strong>).</p>
+<p>A numeric mode is from one to four octal digits (0-7), derived by adding up the bits with values 4, 2, and 1. Omitted digits are assumed to be leading zeros. The first digit selects the set user ID (4) and set group ID (2) and restricted deletion or sticky (1) attributes. The second digit selects permissions for the user who owns the file: read (4), write (2), and execute (1); the third selects permissions for other users in the file's group, with the same values; and the fourth for other users not in the file's group, with the same values.</p>
+<p><strong>chmod</strong> never changes the permissions of symbolic links; the <strong>chmod</strong> system call cannot change their permissions. This is not a problem since the permissions of symbolic links are never used. However, for each symbolic link listed on the command line, <strong>chmod</strong> changes the permissions of the pointed-to file. In contrast, <strong>chmod</strong> ignores symbolic links encountered during recursive directory traversals.</p>
+</div></div><h1 id='setuid-and-setgid-bits'><a href='#setuid-and-setgid-bits'>SETUID AND SETGID BITS</a></h1><div data-for='setuid-and-setgid-bits' data-hide><div class='section' data-for='setuid-and-setgid-bits'><div data-more>
+<p><strong>chmod</strong> clears the set-group-ID bit of a regular file if the file's group ID does not match the user's effective group ID or one of the user's supplementary group IDs, unless the user has appropriate privileges. Additional restrictions may cause the set-user-ID and set-group-ID bits of <code>MODE</code> or <code>RFILE</code> to be ignored. This behavior depends on the policy and functionality of the underlying <strong>chmod</strong> system call. When in doubt, check the underlying system behavior.</p>
+<p>For directories <strong>chmod</strong> preserves set-user-ID and set-group-ID bits unless you explicitly specify otherwise. You can set or clear the bits with symbolic modes like <strong>u+s</strong> and <strong>g-s</strong>. To clear these bits for directories with a numeric mode requires an additional leading zero, or leading = like <strong>00755</strong> , or <strong>=755</strong></p>
+</div></div></div><h1 id='restricted-deletion-flag-or-sticky-bit'><a href='#restricted-deletion-flag-or-sticky-bit'>RESTRICTED DELETION FLAG OR STICKY BIT</a></h1><div data-for='restricted-deletion-flag-or-sticky-bit' data-hide><div class='section' data-for='restricted-deletion-flag-or-sticky-bit'><div data-more>
+<p>The restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type. For directories, it prevents unprivileged users from removing or renaming a file in the directory unless they own the file or the directory; this is called the <code>restricted deletion flag</code> for the directory, and is commonly found on world-writable directories like <strong>/tmp</strong>. For regular files on some older systems, the bit saves the program's text image on the swap device so it will load more quickly when run; this is called the <code>sticky bit</code>.</p>
+</div></div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Change the mode of each FILE to MODE. With <strong>--reference</strong>, change the mode of each FILE to that of RFILE.</p>
+<dl>
+<dt><strong>-c</strong>, <strong>--changes</strong></dt>
+<dd><p>like verbose but report only when a change is made</p>
+</dd>
+<dt><strong>-f</strong>, <strong>--silent</strong>, <strong>--quiet</strong></dt>
+<dd><p>suppress most error messages</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--verbose</strong></dt>
+<dd><p>output a diagnostic for every file processed</p>
+</dd>
+<dt><strong>--no-preserve-root</strong></dt>
+<dd><p>do not treat '/' specially (the default)</p>
+</dd>
+<dt><strong>--preserve-root</strong></dt>
+<dd><p>fail to operate recursively on '/'</p>
+</dd>
+<dt><strong>--reference</strong>=<code>RFILE</code></dt>
+<dd><p>use RFILE's mode instead of MODE values</p>
+</dd>
+<dt><strong>-R</strong>, <strong>--recursive</strong></dt>
+<dd><p>change files and directories recursively</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<p>Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by David MacKenzie and Jim Meyering.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>GNU coreutils online help: &lt;<a href="https://www.gnu.org/software/coreutils/&amp;gt;">https://www.gnu.org/software/coreutils/&gt;</a><br/>
+Report any translation bugs to &lt;<a href="https://translationproject.org/team/&amp;gt;">https://translationproject.org/team/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2020 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>chmod(2)</p>
+<p><br/>
+Full documentation &lt;<a href="https://www.gnu.org/software/coreutils/chmod&amp;gt;">https://www.gnu.org/software/coreutils/chmod&gt;</a><br/>
+or available locally via: info '(coreutils) chmod invocation'</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

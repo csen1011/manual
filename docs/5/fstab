@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fstab - static information about the filesystems</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><code>/etc/fstab</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The file <strong>fstab</strong> contains descriptive information about the filesystems the system can mount. <strong>fstab</strong> is only read by programs, and not written; it is the duty of the system administrator to properly create and maintain this file. The order of records in <strong>fstab</strong> is important because <a href='/8/fsck'>fsck</a>(8), <a href='/8/mount'>mount</a>(8), and <a href='/8/umount'>umount</a>(8) sequentially iterate through <strong>fstab</strong> doing their thing.</p>
+<p>Each filesystem is described on a separate line. Fields on each line are separated by tabs or spaces. Lines starting with '#' are comments. Blank lines are ignored.</p>
+<p>The following is a typical example of an <strong>fstab</strong> entry:</p>
+<blockquote>
+<pre><code>LABEL=t-home2   /home      ext4    defaults,auto_da_alloc      0  2</code></pre>
+</blockquote>
+<h2>The first field (<code>fs_spec</code>).</h2>
+<p>This field describes the block special device, remote filesystem or filesystem image for loop device to be mounted or swap file or swap partition to be enabled.</p>
+<p>For ordinary mounts, it will hold (a link to) a block special device node (as created by <a href='/2/mknod'>mknod</a>(2)) for the device to be mounted, like <code>/dev/cdrom</code> or <code>/dev/sdb7</code>. For NFS mounts, this field is <code>&lt;host&gt;:&lt;dir&gt;</code>, e.g., <code><a href="http://knuth.aeb.nl">knuth.aeb.nl</a>:/</code>. For filesystems with no storage, any string can be used, and will show up in <a href='/1/df'>df</a>(1) output, for example. Typical usage is <code>proc</code> for <strong>procfs</strong>; <code>mem</code>, <code>none</code>, or <code>tmpfs</code> for <strong>tmpfs</strong>. Other special filesystems, like <strong>udev</strong> and <strong>sysfs</strong>, are typically not listed in <strong>fstab</strong>.</p>
+<p>LABEL=&lt;label&gt; or UUID=&lt;uuid&gt; may be given instead of a device name. This is the recommended method, as device names are often a coincidence of hardware detection order, and can change when other disks are added or removed. For example, 'LABEL=Boot' or 'UUID=3e6be9de-8139-11d1-9106-a43f08d823a6'. (Use a filesystem-specific tool like <a href='/8/e2label'>e2label</a>(8), <a href='/8/xfs_admin'>xfs_admin</a>(8), or <a href='/8/fatlabel'>fatlabel</a>(8) to set LABELs on filesystems).</p>
+<p>It’s also possible to use <strong>PARTUUID=</strong> and <strong>PARTLABEL=</strong>. These partitions identifiers are supported for example for GUID Partition Table (GPT).</p>
+<p>See <a href='/8/mount'>mount</a>(8), <a href='/8/blkid'>blkid</a>(8) or <a href='/8/lsblk'>lsblk</a>(8) for more details about device identifiers.</p>
+<p>Note that <a href='/8/mount'>mount</a>(8) uses UUIDs as strings. The string representation of the UUID should be based on lower case characters. But when specifying the volume ID of FAT or NTFS file systems upper case characters are used (e.g UUID="A40D-85E7" or UUID="61DB7756DB7779B3").</p>
+<h2>The second field (<code>fs_file</code>).</h2>
+<p>This field describes the mount point (target) for the filesystem. For swap partitions, this field should be specified as `none'. If the name of the mount point contains spaces or tabs these can be escaped as `\040' and '\011' respectively.</p>
+<h2>The third field (<code>fs_vfstype</code>).</h2>
+<p>This field describes the type of the filesystem. Linux supports many filesystem types: ext4, xfs, btrfs, f2fs, vfat, ntfs, hfsplus, tmpfs, sysfs, proc, iso9660, udf, squashfs, nfs, cifs, and many more. For more details, see <a href='/8/mount'>mount</a>(8).</p>
+<p>An entry <code>swap</code> denotes a file or partition to be used for swapping, cf. <a href='/8/swapon'>swapon</a>(8). An entry <code>none</code> is useful for bind or move mounts.</p>
+<p>More than one type may be specified in a comma-separated list.</p>
+<p><a href='/8/mount'>mount</a>(8) and <a href='/8/umount'>umount</a>(8) support filesystem <code>subtypes</code>. The subtype is defined by '.subtype' suffix. For example 'fuse.sshfs'. It’s recommended to use subtype notation rather than add any prefix to the first fstab field (for example 'sshfs#<a href="http://example.com">example.com</a>' is deprecated).</p>
+<h2>The fourth field (<code>fs_mntops</code>).</h2>
+<p>This field describes the mount options associated with the filesystem.</p>
+<p>It is formatted as a comma-separated list of options. It contains at least the type of mount (<strong>ro</strong> or <strong>rw</strong>), plus any additional options appropriate to the filesystem type (including performance-tuning options). For details, see <a href='/8/mount'>mount</a>(8) or <a href='/8/swapon'>swapon</a>(8).</p>
+<p>Basic filesystem-independent options are:</p>
+<p><strong>defaults</strong></p>
+<blockquote>
+<p>use default options: rw, suid, dev, exec, auto, nouser, and async.</p>
+</blockquote>
+<p><strong>noauto</strong></p>
+<blockquote>
+<p>do not mount when <strong>mount -a</strong> is given (e.g., at boot time)</p>
+</blockquote>
+<p><strong>user</strong></p>
+<blockquote>
+<p>allow a user to mount</p>
+</blockquote>
+<p><strong>owner</strong></p>
+<blockquote>
+<p>allow device owner to mount</p>
+</blockquote>
+<p><strong>comment</strong></p>
+<blockquote>
+<p>or <strong>x-&lt;name&gt;</strong> for use by fstab-maintaining programs</p>
+</blockquote>
+<p><strong>nofail</strong></p>
+<blockquote>
+<p>do not report errors for this device if it does not exist.</p>
+</blockquote>
+<h2>The fifth field (<code>fs_freq</code>).</h2>
+<p>This field is used by <a href='/8/dump'>dump</a>(8) to determine which filesystems need to be dumped. Defaults to zero (don’t dump) if not present.</p>
+<h2>The sixth field (<code>fs_passno</code>).</h2>
+<p>This field is used by <a href='/8/fsck'>fsck</a>(8) to determine the order in which filesystem checks are done at boot time. The root filesystem should be specified with a <code>fs_passno</code> of 1. Other filesystems should have a <code>fs_passno</code> of 2. Filesystems within a drive will be checked sequentially, but filesystems on different drives will be checked at the same time to utilize parallelism available in the hardware. Defaults to zero (don’t check the filesystem) if not present.</p>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/etc/fstab</code>, <code>&lt;fstab.h&gt;</code></p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The proper way to read records from <strong>fstab</strong> is to use the routines <a href='/3/getmntent'>getmntent</a>(3) or <strong>libmount</strong>.</p>
+<p>The keyword <strong>ignore</strong> as a filesystem type (3rd field) is no longer supported by the pure libmount based mount utility (since util-linux v2.22).</p>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>The ancestor of this <strong>fstab</strong> file format appeared in 4.0BSD.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getmntent'>getmntent</a>(3), <a href='/5/fs'>fs</a>(5), <a href='/8/findmnt'>findmnt</a>(8), <a href='/8/mount'>mount</a>(8), <a href='/8/swapon'>swapon</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p><strong>fstab</strong> is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

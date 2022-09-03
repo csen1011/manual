@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fallocate - manipulate file space</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a>
+
+int fallocate(int fd, int mode, off_t offset, off_t len);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This is a nonportable, Linux-specific system call. For the portable, POSIX.1-specified method of ensuring that space is allocated for a file, see <a href='/3/posix_fallocate'>posix_fallocate</a>(3).</p>
+<p><a href='fallocate'>fallocate</a>() allows the caller to directly manipulate the allocated disk space for the file referred to by <code>fd</code> for the byte range starting at <code>offset</code> and continuing for <code>len</code> bytes.</p>
+<p>The <code>mode</code> argument determines the operation to be performed on the given range. Details of the supported operations are given in the subsections below.</p>
+<h2>Allocating disk space</h2>
+<p>The default operation (i.e., <code>mode</code> is zero) of <a href='fallocate'>fallocate</a>() allocates the disk space within the range specified by <code>offset</code> and <code>len</code>. The file size (as reported by <a href='/2/stat'>stat</a>(2)) will be changed if <code>offset</code>+<code>len</code> is greater than the file size. Any subregion within the range specified by <code>offset</code> and <code>len</code> that did not contain data before the call will be initialized to zero. This default behavior closely resembles the behavior of the <a href='/3/posix_fallocate'>posix_fallocate</a>(3) library function, and is intended as a method of optimally implementing that function.</p>
+<p>After a successful call, subsequent writes into the range specified by <code>offset</code> and <code>len</code> are guaranteed not to fail because of lack of disk space.</p>
+<p>If the <strong>FALLOC_FL_KEEP_SIZE</strong> flag is specified in <code>mode</code>, the behavior of the call is similar, but the file size will not be changed even if <code>offset</code>+<code>len</code> is greater than the file size. Preallocating zeroed blocks beyond the end of the file in this manner is useful for optimizing append workloads.</p>
+<p>If the <strong>FALLOC_FL_UNSHARE</strong> flag is specified in <code>mode</code>, shared file data extents will be made private to the file to guarantee that a subsequent write will not fail due to lack of space. Typically, this will be done by performing a copy-on-write operation on all shared data in the file. This flag may not be supported by all filesystems.</p>
+<p>Because allocation is done in block size chunks, <a href='fallocate'>fallocate</a>() may allocate a larger range of disk space than was specified.</p>
+<h2>Deallocating file space</h2>
+<p>Specifying the <strong>FALLOC_FL_PUNCH_HOLE</strong> flag (available since Linux 2.6.38) in <code>mode</code> deallocates space (i.e., creates a hole) in the byte range starting at <code>offset</code> and continuing for <code>len</code> bytes. Within the specified range, partial filesystem blocks are zeroed, and whole filesystem blocks are removed from the file. After a successful call, subsequent reads from this range will return zeros.</p>
+<p>The <strong>FALLOC_FL_PUNCH_HOLE</strong> flag must be ORed with <strong>FALLOC_FL_KEEP_SIZE</strong> in <code>mode</code>; in other words, even when punching off the end of the file, the file size (as reported by <a href='/2/stat'>stat</a>(2)) does not change.</p>
+<p>Not all filesystems support <strong>FALLOC_FL_PUNCH_HOLE</strong>; if a filesystem doesn't support the operation, an error is returned. The operation is supported on at least the following filesystems:</p>
+<ul>
+<li><p>XFS (since Linux 2.6.38)</p></li>
+<li><p>ext4 (since Linux 3.0)</p></li>
+<li><p>Btrfs (since Linux 3.7)</p></li>
+<li><p><a href='/5/tmpfs'>tmpfs</a>(5) (since Linux 3.5)</p></li>
+<li><p><a href='/5/gfs2'>gfs2</a>(5) (since Linux 4.16)</p></li>
+</ul>
+<h2>Collapsing file space</h2>
+<p>Specifying the <strong>FALLOC_FL_COLLAPSE_RANGE</strong> flag (available since Linux 3.15) in <code>mode</code> removes a byte range from a file, without leaving a hole. The byte range to be collapsed starts at <code>offset</code> and continues for <code>len</code> bytes. At the completion of the operation, the contents of the file starting at the location <code>offset+len</code> will be appended at the location <code>offset</code>, and the file will be <code>len</code> bytes smaller.</p>
+<p>A filesystem may place limitations on the granularity of the operation, in order to ensure efficient implementation. Typically, <code>offset</code> and <code>len</code> must be a multiple of the filesystem logical block size, which varies according to the filesystem type and configuration. If a filesystem has such a requirement, <a href='fallocate'>fallocate</a>() fails with the error <strong>EINVAL</strong> if this requirement is violated.</p>
+<p>If the region specified by <code>offset</code> plus <code>len</code> reaches or passes the end of file, an error is returned; instead, use <a href='/2/ftruncate'>ftruncate</a>(2) to truncate a file.</p>
+<p>No other flags may be specified in <code>mode</code> in conjunction with <strong>FALLOC_FL_COLLAPSE_RANGE</strong>.</p>
+<p>As at Linux 3.15, <strong>FALLOC_FL_COLLAPSE_RANGE</strong> is supported by ext4 (only for extent-based files) and XFS.</p>
+<h2>Zeroing file space</h2>
+<p>Specifying the <strong>FALLOC_FL_ZERO_RANGE</strong> flag (available since Linux 3.15) in <code>mode</code> zeros space in the byte range starting at <code>offset</code> and continuing for <code>len</code> bytes. Within the specified range, blocks are preallocated for the regions that span the holes in the file. After a successful call, subsequent reads from this range will return zeros.</p>
+<p>Zeroing is done within the filesystem preferably by converting the range into unwritten extents. This approach means that the specified range will not be physically zeroed out on the device (except for partial blocks at the either end of the range), and I/O is (otherwise) required only to update metadata.</p>
+<p>If the <strong>FALLOC_FL_KEEP_SIZE</strong> flag is additionally specified in <code>mode</code>, the behavior of the call is similar, but the file size will not be changed even if <code>offset</code>+<code>len</code> is greater than the file size. This behavior is the same as when preallocating space with <strong>FALLOC_FL_KEEP_SIZE</strong> specified.</p>
+<p>Not all filesystems support <strong>FALLOC_FL_ZERO_RANGE</strong>; if a filesystem doesn't support the operation, an error is returned. The operation is supported on at least the following filesystems:</p>
+<ul>
+<li><p>XFS (since Linux 3.15)</p></li>
+<li><p>ext4, for extent-based files (since Linux 3.15)</p></li>
+<li><p>SMB3 (since Linux 3.17)</p></li>
+<li><p>Btrfs (since Linux 4.16)</p></li>
+</ul>
+<h2>Increasing file space</h2>
+<p>Specifying the <strong>FALLOC_FL_INSERT_RANGE</strong> flag (available since Linux 4.1) in <code>mode</code> increases the file space by inserting a hole within the file size without overwriting any existing data. The hole will start at <code>offset</code> and continue for <code>len</code> bytes. When inserting the hole inside file, the contents of the file starting at <code>offset</code> will be shifted upward (i.e., to a higher file offset) by <code>len</code> bytes. Inserting a hole inside a file increases the file size by <code>len</code> bytes.</p>
+<p>This mode has the same limitations as <strong>FALLOC_FL_COLLAPSE_RANGE</strong> regarding the granularity of the operation. If the granularity requirements are not met, <a href='fallocate'>fallocate</a>() fails with the error <strong>EINVAL</strong>. If the <code>offset</code> is equal to or greater than the end of file, an error is returned. For such operations (i.e., inserting a hole at the end of file), <a href='/2/ftruncate'>ftruncate</a>(2) should be used.</p>
+<p>No other flags may be specified in <code>mode</code> in conjunction with <strong>FALLOC_FL_INSERT_RANGE</strong>.</p>
+<p><strong>FALLOC_FL_INSERT_RANGE</strong> requires filesystem support. Filesystems that support this operation include XFS (since Linux 4.1) and ext4 (since Linux 4.2).</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='fallocate'>fallocate</a>() returns zero. On error, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not a valid file descriptor, or is not opened for writing.</p>
+</dd>
+<dt><strong>EFBIG</strong></dt>
+<dd><p><code>offset</code>+<code>len</code> exceeds the maximum file size.</p>
+</dd>
+<dt><strong>EFBIG</strong></dt>
+<dd><p><code>mode</code> is <strong>FALLOC_FL_INSERT_RANGE</strong>, and the current file size+<code>len</code> exceeds the maximum file size.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>A signal was caught during execution; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>offset</code> was less than 0, or <code>len</code> was less than or equal to 0.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> is <strong>FALLOC_FL_COLLAPSE_RANGE</strong> and the range specified by <code>offset</code> plus <code>len</code> reaches or passes the end of the file.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> is <strong>FALLOC_FL_INSERT_RANGE</strong> and the range specified by <code>offset</code> reaches or passes the end of the file.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> is <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong>, but either <code>offset</code> or <code>len</code> is not a multiple of the filesystem block size.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> contains one of <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong> and also other flags; no other flags are permitted with <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>mode</code> is <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_ZERO_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong>, but the file referred to by <code>fd</code> is not a regular file.</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>An I/O error occurred while reading from or writing to a filesystem.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p><code>fd</code> does not refer to a regular file or a directory. (If <code>fd</code> is a pipe or FIFO, a different error results.)</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>There is not enough space left on the device containing the file referred to by <code>fd</code>.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>This kernel does not implement <a href='fallocate'>fallocate</a>().</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>The filesystem containing the file referred to by <code>fd</code> does not support this operation; or the <code>mode</code> is not supported by the filesystem containing the file referred to by <code>fd</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The file referred to by <code>fd</code> is marked immutable (see <a href='/1/chattr'>chattr</a>(1)).</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p><code>mode</code> specifies <strong>FALLOC_FL_PUNCH_HOLE</strong> or <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong> and the file referred to by <code>fd</code> is marked append-only (see <a href='/1/chattr'>chattr</a>(1)).</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The operation was prevented by a file seal; see <a href='/2/fcntl'>fcntl</a>(2).</p>
+</dd>
+<dt><strong>ESPIPE</strong></dt>
+<dd><p><code>fd</code> refers to a pipe or FIFO.</p>
+</dd>
+<dt><strong>ETXTBSY</strong></dt>
+<dd><p><code>mode</code> specifies <strong>FALLOC_FL_COLLAPSE_RANGE</strong> or <strong>FALLOC_FL_INSERT_RANGE</strong>, but the file referred to by <code>fd</code> is currently being executed.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='fallocate'>fallocate</a>() is available on Linux since kernel 2.6.23. Support is provided by glibc since version 2.10. The <strong>FALLOC_FL_*</strong> flags are defined in glibc headers only since version 2.18.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='fallocate'>fallocate</a>() is Linux-specific.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/fallocate'>fallocate</a>(1), <a href='/2/ftruncate'>ftruncate</a>(2), <a href='/3/posix_fadvise'>posix_fadvise</a>(3), <a href='/3/posix_fallocate'>posix_fallocate</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

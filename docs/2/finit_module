@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>init_module, finit_module - load a kernel module</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>int init_module(void *module_image, unsigned long len,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>param_values);
+
+int finit_module(int fd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>param_values,
+ int flags);</code></pre>
+<p><code>Note</code>: glibc provides no header file declaration of <a href='init_module'>init_module</a>() and no wrapper function for <a href='finit_module'>finit_module</a>(); see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='init_module'>init_module</a>() loads an ELF image into kernel space, performs any necessary symbol relocations, initializes module parameters to values provided by the caller, and then runs the module's <code>init</code> function. This system call requires privilege.</p>
+<p>The <code>module_image</code> argument points to a buffer containing the binary image to be loaded; <code>len</code> specifies the size of that buffer. The module image should be a valid ELF image, built for the running kernel.</p>
+<p>The <code>param_values</code> argument is a string containing space-delimited specifications of the values for module parameters (defined inside the module using <a href='module_param'>module_param</a>() and <a href='module_param_array'>module_param_array</a>()). The kernel parses this string and initializes the specified parameters. Each of the parameter specifications has the form:</p>
+<p><code>name</code>[ <strong>=</strong><code>value</code> [<strong>,</strong> <code>value</code>...]]</p>
+<p>The parameter <code>name</code> is one of those defined within the module using <code>module_param</code>() (see the Linux kernel source file <code>include/linux/moduleparam.h</code>). The parameter <code>value</code> is optional in the case of <code>bool</code> and <code>invbool</code> parameters. Values for array parameters are specified as a comma-separated list.</p>
+<h2>finit_module()</h2>
+<p>The <a href='finit_module'>finit_module</a>() system call is like <a href='init_module'>init_module</a>(), but reads the module to be loaded from the file descriptor <code>fd</code>. It is useful when the authenticity of a kernel module can be determined from its location in the filesystem; in cases where that is possible, the overhead of using cryptographically signed modules to determine the authenticity of a module can be avoided. The <code>param_values</code> argument is as for <a href='init_module'>init_module</a>().</p>
+<p>The <code>flags</code> argument modifies the operation of <a href='finit_module'>finit_module</a>(). It is a bit mask value created by ORing together zero or more of the following flags:</p>
+<dl>
+<dt><strong>MODULE_INIT_IGNORE_MODVERSIONS</strong></dt>
+<dd><p>Ignore symbol version hashes.</p>
+</dd>
+<dt><strong>MODULE_INIT_IGNORE_VERMAGIC</strong></dt>
+<dd><p>Ignore kernel version magic.</p>
+</dd>
+</dl>
+<p>There are some safety checks built into a module to ensure that it matches the kernel against which it is loaded. These checks are recorded when the module is built and verified when the module is loaded. First, the module records a "vermagic" string containing the kernel version number and prominent features (such as the CPU type). Second, if the module was built with the <strong>CONFIG_MODVERSIONS</strong> configuration option enabled, a version hash is recorded for each symbol the module uses. This hash is based on the types of the arguments and return value for the function named by the symbol. In this case, the kernel version number within the "vermagic" string is ignored, as the symbol version hashes are assumed to be sufficiently reliable.</p>
+<p>Using the <strong>MODULE_INIT_IGNORE_VERMAGIC</strong> flag indicates that the "vermagic" string is to be ignored, and the <strong>MODULE_INIT_IGNORE_MODVERSIONS</strong> flag indicates that the symbol version hashes are to be ignored. If the kernel is built to permit forced loading (i.e., configured with <strong>CONFIG_MODULE_FORCE_LOAD</strong>), then loading continues, otherwise it fails with the error <strong>ENOEXEC</strong> as expected for malformed modules.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, these system calls return 0. On error, -1 is returned and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADMSG</strong> (since Linux 3.7)</dt>
+<dd><p>Module signature is misformatted.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p>Timeout while trying to resolve a symbol reference by this module.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>An address argument referred to a location that is outside the process's accessible address space.</p>
+</dd>
+<dt><strong>ENOKEY</strong> (since Linux 3.7)</dt>
+<dd><p>Module signature is invalid or the kernel does not have a key for this module. This error is returned only if the kernel was configured with <strong>CONFIG_MODULE_SIG_FORCE</strong>; if the kernel was not configured with this option, then an invalid or unsigned module simply taints the kernel.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller was not privileged (did not have the <strong>CAP_SYS_MODULE</strong> capability), or module loading is disabled (see <code>/proc/sys/kernel/modules_disabled</code> in <a href='/5/proc'>proc</a>(5)).</p>
+</dd>
+</dl>
+<p>The following errors may additionally occur for <a href='init_module'>init_module</a>():</p>
+<dl>
+<dt><strong>EEXIST</strong></dt>
+<dd><p>A module with this name is already loaded.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>param_values</code> is invalid, or some part of the ELF image in <code>module_image</code> contains inconsistencies.</p>
+</dd>
+<dt><strong>ENOEXEC</strong></dt>
+<dd><p>The binary image supplied in <code>module_image</code> is not an ELF image, or is an ELF image that is invalid or for a different architecture.</p>
+</dd>
+</dl>
+<p>The following errors may additionally occur for <a href='finit_module'>finit_module</a>():</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p>The file referred to by <code>fd</code> is not opened for reading.</p>
+</dd>
+<dt><strong>EFBIG</strong></dt>
+<dd><p>The file referred to by <code>fd</code> is too large.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> is invalid.</p>
+</dd>
+<dt><strong>ENOEXEC</strong></dt>
+<dd><p><code>fd</code> does not refer to an open file.</p>
+</dd>
+</dl>
+<p>In addition to the above errors, if the module's <code>init</code> function is executed and returns an error, then <a href='init_module'>init_module</a>() or <a href='finit_module'>finit_module</a>() fails and <code>errno</code> is set to the value returned by the <code>init</code> function.</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='finit_module'>finit_module</a>() is available since Linux 3.8.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='init_module'>init_module</a>() and <a href='finit_module'>finit_module</a>() are Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The <a href='init_module'>init_module</a>() system call is not supported by glibc. No declaration is provided in glibc headers, but, through a quirk of history, glibc versions before 2.23 did export an ABI for this system call. Therefore, in order to employ this system call, it is (before glibc 2.23) sufficient to manually declare the interface in your code; alternatively, you can invoke the system call using <a href='/2/syscall'>syscall</a>(2).</p>
+<p>Glibc does not provide a wrapper for <a href='finit_module'>finit_module</a>(); call it using <a href='/2/syscall'>syscall</a>(2).</p>
+<p>Information about currently loaded modules can be found in <code>/proc/modules</code> and in the file trees under the per-module subdirectories under <code>/sys/module</code>.</p>
+<p>See the Linux kernel source file <code>include/linux/module.h</code> for some useful background information.</p>
+<h2>Linux 2.4 and earlier</h2>
+<p>In Linux 2.4 and earlier, the <a href='init_module'>init_module</a>() system call was rather different:</p>
+<p><strong> #include &lt;linux/module.h&gt;</strong></p>
+<p><strong> int init_module(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>name</code><strong>, struct module *</strong><code>image</code><strong>);</strong></p>
+<p>(User-space applications can detect which version of <a href='init_module'>init_module</a>() is available by calling <a href='query_module'>query_module</a>(); the latter call fails with the error <strong>ENOSYS</strong> on Linux 2.6 and later.)</p>
+<p>The older version of the system call loads the relocated module image pointed to by <code>image</code> into kernel space and runs the module's <code>init</code> function. The caller is responsible for providing the relocated image (since Linux 2.6, the <a href='init_module'>init_module</a>() system call does the relocation).</p>
+<p>The module image begins with a module structure and is followed by code and data as appropriate. Since Linux 2.2, the module structure is defined as follows:</p>
+<pre><code>struct module {
+    unsigned long         size_of_struct;
+    struct module        *next;
+    const char           *name;
+    unsigned long         size;
+    long                  usecount;
+    unsigned long         flags;
+    unsigned int          nsyms;
+    unsigned int          ndeps;
+    struct module_symbol *syms;
+    struct module_ref    *deps;
+    struct module_ref    *refs;
+    int                 (*init)(void);
+    void                (*cleanup)(void);
+    const struct exception_table_entry *ex_table_start;
+    const struct exception_table_entry *ex_table_end;
+#ifdef __alpha__
+    unsigned long gp;
+#endif
+};</code></pre>
+<p>All of the pointer fields, with the exception of <code>next</code> and <code>refs</code>, are expected to point within the module body and be initialized as appropriate for kernel space, that is, relocated with the rest of the module.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/create_module'>create_module</a>(2), <a href='/2/delete_module'>delete_module</a>(2), <a href='/2/query_module'>query_module</a>(2), <a href='/8/lsmod'>lsmod</a>(8), <a href='/8/modprobe'>modprobe</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><strong><a data-bs-content='This is the man page for &lt;code&gt;infocmp&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>infocmp</a></strong> - compare or print out <code>terminfo</code> descriptions</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>infocmp</strong> [<strong>-1CDEFGIKLTUVWcdegilnpqrtux</strong>]<br/>
+[<strong>-v</strong> <code>n</code>] [<strong>-s d</strong>| <strong>i</strong>| <strong>l</strong>| <strong>c</strong>] [<strong>-Q</strong> <code>n</code>] [<strong>-R subset</strong>]<br/>
+[<strong>-w</strong> <code>width</code>] [<strong>-A</strong> <code>directory</code>] [<strong>-B</strong> <code>directory</code>]<br/>
+[<code>termname</code>...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>infocmp</strong> can be used to compare a binary <strong>terminfo</strong> entry with other terminfo entries, rewrite a <strong>terminfo</strong> description to take advantage of the <strong>use=</strong> terminfo field, or print out a <strong>terminfo</strong> description from the binary file (<strong>term</strong>) in a variety of formats. In all cases, the boolean fields will be printed first, followed by the numeric fields, followed by the string fields.</p>
+<h2>Default Options</h2>
+<p>If no options are specified and zero or one <code>termnames</code> are specified, the <strong>-I</strong> option will be assumed. If more than one <code>termname</code> is specified, the <strong>-d</strong> option will be assumed.</p>
+<h2>Comparison Options [-d] [-c] [-n]</h2>
+<p><strong>infocmp</strong> compares the <strong>terminfo</strong> description of the first terminal <code>termname</code> with each of the descriptions given by the entries for the other terminal's <code>termnames</code>. If a capability is defined for only one of the terminals, the value returned depends on the type of the capability:</p>
+<ul>
+<li><p><strong>F</strong> for missing boolean variables</p></li>
+<li><p><strong>NULL</strong> for missing integer or string variables</p></li>
+</ul>
+<p>Use the <strong>-q</strong> option to show the distinction between <code>absent</code> and <code>cancelled</code> capabilities.</p>
+<p>These options produce a list which you can use to compare two or more terminal descriptions:</p>
+<dl>
+<dt><strong>-d</strong></dt>
+<dd><p>produces a list of each capability that is <code>different</code> between two entries. Each item in the list shows : after the capability name, followed by the capability values, separated by a comma.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>produces a list of each capability that is <code>common</code> between two or more entries. Missing capabilities are ignored. Each item in the list shows = after the capability name, followed by the capability value.</p>
+<p>The <strong>-u</strong> option provides a related output, showing the first terminal description rewritten to use the second as a building block via the use= clause.</p>
+</dd>
+<dt><strong>-n</strong></dt>
+<dd><p>produces a list of each capability that is in <code>none</code> of the given entries. Each item in the list shows ! before the capability name.</p>
+<p>Normally only the conventional capabilities are shown. Use the <strong>-x</strong> option to add the BSD-compatibility capabilities (names prefixed with OT).</p>
+<p>If no <code>termnames</code> are given, <strong>infocmp</strong> uses the environment variable <strong>TERM</strong> for each of the <code>termnames</code>.</p>
+</dd>
+</dl>
+<h2>Source Listing Options [-I] [-L] [-C] [-r]</h2>
+<p>The <strong>-I</strong>, <strong>-L</strong>, and <strong>-C</strong> options will produce a source listing for each terminal named.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>-I</strong></td>
+<td style="text-align: left;">use the <strong>terminfo</strong> names</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>-L</strong></td>
+<td style="text-align: left;">use the long C variable name listed in &lt;<strong>term.h</strong>&gt;</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>-C</strong></td>
+<td style="text-align: left;">use the <strong>termcap</strong> names</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>-r</strong></td>
+<td style="text-align: left;">when using <strong>-C</strong>, put out all capabilities in <strong>termcap</strong> form</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>-K</strong></td>
+<td style="text-align: left;">modifies the <strong>-C</strong> option, improving BSD-compatibility.</td>
+</tr>
+</tbody>
+</table>
+<p>If no <code>termnames</code> are given, the environment variable <strong>TERM</strong> will be used for the terminal name.</p>
+<p>The source produced by the <strong>-C</strong> option may be used directly as a <strong>termcap</strong> entry, but not all parameterized strings can be changed to the <strong>termcap</strong> format. <strong>infocmp</strong> will attempt to convert most of the parameterized information, and anything not converted will be plainly marked in the output and commented out. These should be edited by hand.</p>
+<p>For best results when converting to <strong>termcap</strong> format, you should use both <strong>-C</strong> and <strong>-r</strong>. Normally a termcap description is limited to 1023 bytes. <strong>infocmp</strong> trims away less essential parts to make it fit. If you are converting to one of the (rare) termcap implementations which accept an unlimited size of termcap, you may want to add the <strong>-T</strong> option. More often however, you must help the termcap implementation, and trim excess whitespace (use the <strong>-0</strong> option for that).</p>
+<p>All padding information for strings will be collected together and placed at the beginning of the string where <strong>termcap</strong> expects it. Mandatory padding (padding information with a trailing /) will become optional.</p>
+<p>All <strong>termcap</strong> variables no longer supported by <strong>terminfo</strong>, but which are derivable from other <strong>terminfo</strong> variables, will be output. Not all <strong>terminfo</strong> capabilities will be translated; only those variables which were part of <strong>termcap</strong> will normally be output. Specifying the <strong>-r</strong> option will take off this restriction, allowing all capabilities to be output in <code>termcap</code> form. Normally you would use both the <strong>-C</strong> and <strong>-r</strong> options. The actual format used incorporates some improvements for escaped characters from terminfo format. For a stricter BSD-compatible translation, use the <strong>-K</strong> option rather than <strong>-C</strong>.</p>
+<p>Note that because padding is collected to the beginning of the capability, not all capabilities are output. Mandatory padding is not supported. Because <strong>termcap</strong> strings are not as flexible, it is not always possible to convert a <strong>terminfo</strong> string capability into an equivalent <strong>termcap</strong> format. A subsequent conversion of the <strong>termcap</strong> file back into <strong>terminfo</strong> format will not necessarily reproduce the original <strong>terminfo</strong> source.</p>
+<p>Some common <strong>terminfo</strong> parameter sequences, their <strong>termcap</strong> equivalents, and some terminal types which commonly have such sequences, are:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>terminfo</strong></th>
+<th style="text-align: center;">termcap</th>
+<th style="text-align: left;">Representative Terminals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>%p1%c</strong></td>
+<td style="text-align: center;">%.</td>
+<td style="text-align: left;">adm</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>%p1%d</strong></td>
+<td style="text-align: center;">%d</td>
+<td style="text-align: left;">hp, ANSI standard, vt100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>%p1%'x'%+%c</strong></td>
+<td style="text-align: center;">%+x</td>
+<td style="text-align: left;">concept</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>%i</strong></td>
+<td style="text-align: center;">%iq</td>
+<td style="text-align: left;">ANSI standard, vt100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>%p1%?%'x'%&gt;%t%p1%'y'%+%;</strong></td>
+<td style="text-align: center;">%&gt;xy</td>
+<td style="text-align: left;">concept</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>%p2</strong> is printed before <strong>%p1</strong></td>
+<td style="text-align: center;">%r</td>
+<td style="text-align: left;">hp</td>
+</tr>
+</tbody>
+</table>
+<h2>Use= Option [-u]</h2>
+<p>The <strong>-u</strong> option produces a <strong>terminfo</strong> source description of the first terminal <code>termname</code> which is relative to the sum of the descriptions given by the entries for the other terminals <code>termnames</code>. It does this by analyzing the differences between the first <code>termname</code> and the other <code>termnames</code> and producing a description with <strong>use=</strong> fields for the other terminals. In this manner, it is possible to retrofit generic terminfo entries into a terminal's description. Or, if two similar terminals exist, but were coded at different times or by different people so that each description is a full description, using <strong>infocmp</strong> will show what can be done to change one description to be relative to the other.</p>
+<p>A capability will be printed with an at-sign (@) if it no longer exists in the first <code>termname</code>, but one of the other <code>termname</code> entries contains a value for it. A capability's value will be printed if the value in the first <code>termname</code> is not found in any of the other <code>termname</code> entries, or if the first of the other <code>termname</code> entries that has this capability gives a different value for the capability than that in the first <code>termname</code>.</p>
+<p>The order of the other <code>termname</code> entries is significant. Since the terminfo compiler <strong>tic</strong> does a left-to-right scan of the capabilities, specifying two <strong>use=</strong> entries that contain differing entries for the same capabilities will produce different results depending on the order that the entries are given in. <strong>infocmp</strong> will flag any such inconsistencies between the other <code>termname</code> entries as they are found.</p>
+<p>Alternatively, specifying a capability <code>after</code> a <strong>use=</strong> entry that contains that capability will cause the second specification to be ignored. Using <strong>infocmp</strong> to recreate a description can be a useful check to make sure that everything was specified correctly in the original source description.</p>
+<p>Another error that does not cause incorrect compiled files, but will slow down the compilation time, is specifying extra <strong>use=</strong> fields that are superfluous. <strong>infocmp</strong> will flag any other <code>termname use=</code> fields that were not needed.</p>
+<h2>Changing Databases [-A <code>directory</code>] [-B <code>directory</code>]</h2>
+<p>Like other <strong>ncurses</strong> utilities, <strong>infocmp</strong> looks for the terminal descriptions in several places. You can use the <strong>TERMINFO</strong> and <strong>TERMINFO_DIRS</strong> environment variables to override the compiled-in default list of places to search (see <strong>curses</strong>(3X) for details).</p>
+<p>You can also use the options <strong>-A</strong> and <strong>-B</strong> to override the list of places to search when comparing terminal descriptions:</p>
+<ul>
+<li><p>The <strong>-A</strong> option sets the location for the first <code>termname</code></p></li>
+<li><p>The <strong>-B</strong> option sets the location for the other <code>termnames</code>.</p></li>
+</ul>
+<p>Using these options, it is possible to compare descriptions for a terminal with the same name located in two different databases. For instance, you can use this feature for comparing descriptions for the same terminal created by different people.</p>
+<h2>Other Options</h2>
+<dl>
+<dt><strong>-0</strong></dt>
+<dd><p>causes the fields to be printed on one line, without wrapping.</p>
+</dd>
+<dt><strong>-1</strong></dt>
+<dd><p>causes the fields to be printed out one to a line. Otherwise, the fields will be printed several to a line to a maximum width of 60 characters.</p>
+</dd>
+<dt><strong>-a</strong></dt>
+<dd><p>tells <strong>infocmp</strong> to retain commented-out capabilities rather than discarding them. Capabilities are commented by prefixing them with a period.</p>
+</dd>
+<dt><strong>-D</strong></dt>
+<dd><p>tells <strong>infocmp</strong> to print the database locations that it knows about, and exit.</p>
+</dd>
+<dt><strong>-E</strong></dt>
+<dd><p>Dump the capabilities of the given terminal as tables, needed in the C initializer for a TERMTYPE structure (the terminal capability structure in the <strong>&lt;term.h&gt;</strong>). This option is useful for preparing versions of the curses library hardwired for a given terminal type. The tables are all declared static, and are named according to the type and the name of the corresponding terminal entry.</p>
+</dd>
+</dl>
+<p>Before ncurses 5.0, the split between the <strong>-e</strong> and <strong>-E</strong> options was not needed; but support for extended names required making the arrays of terminal capabilities separate from the TERMTYPE structure.</p>
+<dl>
+<dt><strong>-e</strong></dt>
+<dd><p>Dump the capabilities of the given terminal as a C initializer for a TERMTYPE structure (the terminal capability structure in the <strong>&lt;term.h&gt;</strong>). This option is useful for preparing versions of the curses library hardwired for a given terminal type.</p>
+</dd>
+<dt><strong>-F</strong></dt>
+<dd><p>compare terminfo files. This assumes that two following arguments are filenames. The files are searched for pairwise matches between entries, with two entries considered to match if any of their names do. The report printed to standard output lists entries with no matches in the other file, and entries with more than one match. For entries with exactly one match it includes a difference report. Normally, to reduce the volume of the report, use references are not resolved before looking for differences, but resolution can be forced by also specifying <strong>-r</strong>.</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Display complex terminfo strings which contain if/then/else/endif expressions indented for readability.</p>
+</dd>
+<dt><strong>-G</strong></dt>
+<dd><p>Display constant literals in decimal form rather than their character equivalents.</p>
+</dd>
+<dt><strong>-g</strong></dt>
+<dd><p>Display constant character literals in quoted form rather than their decimal equivalents.</p>
+</dd>
+<dt><strong>-i</strong></dt>
+<dd><p>Analyze the initialization (<strong>is1</strong>, <strong>is2</strong>, <strong>is3</strong>), and reset (<strong>rs1</strong>, <strong>rs2</strong>, <strong>rs3</strong>), strings in the entry, as well as those used for starting/stopping cursor-positioning mode (<strong>smcup</strong>, <strong>rmcup</strong>) as well as starting/stopping keymap mode (<strong>smkx</strong>, <strong>rmkx</strong>).</p>
+<p>For each string, the code tries to analyze it into actions in terms of the other capabilities in the entry, certain X3.64/ISO 6429/ECMA-48 capabilities, and certain DEC VT-series private modes (the set of recognized special sequences has been selected for completeness over the existing terminfo database). Each report line consists of the capability name, followed by a colon and space, followed by a printable expansion of the capability string with sections matching recognized actions translated into {}-bracketed descriptions.</p>
+<p>Here is a list of the DEC/ANSI special sequences recognized:</p>
+</dd>
+</dl>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">RIS</td>
+<td style="text-align: left;">full reset</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SC</td>
+<td style="text-align: left;">save cursor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RC</td>
+<td style="text-align: left;">restore cursor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LL</td>
+<td style="text-align: left;">home-down</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RSR</td>
+<td style="text-align: left;">reset scroll region</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DECSTR</td>
+<td style="text-align: left;">soft reset (VT320)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S7C1T</td>
+<td style="text-align: left;">7-bit controls (VT220)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ISO DEC G0</td>
+<td style="text-align: left;">enable DEC graphics for G0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ISO UK G0</td>
+<td style="text-align: left;">enable UK chars for G0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ISO US G0</td>
+<td style="text-align: left;">enable US chars for G0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ISO DEC G1</td>
+<td style="text-align: left;">enable DEC graphics for G1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ISO UK G1</td>
+<td style="text-align: left;">enable UK chars for G1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ISO US G1</td>
+<td style="text-align: left;">enable US chars for G1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DECPAM</td>
+<td style="text-align: left;">application keypad mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DECPNM</td>
+<td style="text-align: left;">normal keypad mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DECANSI</td>
+<td style="text-align: left;">enter ANSI mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ECMA[+-]AM</td>
+<td style="text-align: left;">keyboard action mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ECMA[+-]IRM</td>
+<td style="text-align: left;">insert replace mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ECMA[+-]SRM</td>
+<td style="text-align: left;">send receive mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ECMA[+-]LNM</td>
+<td style="text-align: left;">linefeed mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DEC[+-]CKM</td>
+<td style="text-align: left;">application cursor keys</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DEC[+-]ANM</td>
+<td style="text-align: left;">set VT52 mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DEC[+-]COLM</td>
+<td style="text-align: left;">132-column mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DEC[+-]SCLM</td>
+<td style="text-align: left;">smooth scroll</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DEC[+-]SCNM</td>
+<td style="text-align: left;">reverse video mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DEC[+-]OM</td>
+<td style="text-align: left;">origin mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DEC[+-]AWM</td>
+<td style="text-align: left;">wraparound mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DEC[+-]ARM</td>
+<td style="text-align: left;">auto-repeat mode</td>
+</tr>
+</tbody>
+</table>
+<p>It also recognizes a SGR action corresponding to ANSI/ISO 6429/ECMA Set Graphics Rendition, with the values NORMAL, BOLD, UNDERLINE, BLINK, and REVERSE. All but NORMAL may be prefixed with</p>
+<blockquote>
+<ul>
+<li><p>+ (turn on) or</p></li>
+<li><p>- (turn off).</p></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>An SGR0 designates an empty highlight sequence (equivalent to {SGR:NORMAL}).</p>
+</blockquote>
+<dl>
+<dt><strong>-l</strong></dt>
+<dd><p>Set output format to terminfo.</p>
+</dd>
+<dt><strong>-p</strong></dt>
+<dd><p>Ignore padding specifications when comparing strings.</p>
+</dd>
+<dt><strong>-Q</strong> <code>n</code></dt>
+<dd><p>Rather than show source in terminfo (text) format, print the compiled (binary) format in hexadecimal or base64 form, depending on the option's value:</p>
+<dl>
+<dt>1</dt>
+<dd><p>hexadecimal</p>
+</dd>
+<dt>2</dt>
+<dd><p>base64</p>
+</dd>
+<dt>3</dt>
+<dd><p>hexadecimal and base64</p>
+</dd>
+</dl>
+<p>For example, this prints the compiled terminfo value as a string which could be assigned to the <strong>TERMINFO</strong> environment variable:</p>
+</dd>
+</dl>
+<pre><code>infocmp -0 -q -Q2</code></pre>
+<dl>
+<dt><strong>-q</strong></dt>
+<dd><p>This makes the output a little shorter:</p>
+<ul>
+<li><p>Make the comparison listing shorter by omitting subheadings, and using - for absent capabilities, @ for canceled rather than NULL.</p></li>
+<li><p>However, show differences between absent and cancelled capabilities.</p></li>
+<li><p>Omit the Reconstructed from comment for source listings.</p></li>
+</ul>
+</dd>
+<dt><strong>-R</strong><code>subset</code></dt>
+<dd><p>Restrict output to a given subset. This option is for use with archaic versions of terminfo like those on SVr1, Ultrix, or HP-UX that do not support the full set of SVR4/XSI Curses terminfo; and variants such as AIX that have their own extensions incompatible with SVr4/XSI.</p>
+<ul>
+<li><p>Available terminfo subsets are SVr1, Ultrix, HP, and AIX; see <a href='/5/terminfo'>terminfo</a>(5) for details.</p></li>
+<li><p>You can also choose the subset BSD which selects only capabilities with termcap equivalents recognized by 4.4BSD. The <strong>-C</strong> option sets the BSD subset as a side-effect.</p></li>
+<li><p>If you select any other value for <strong>-R</strong>, it is the same as no subset, i.e., all capabilities are used. The <strong>-I</strong> option likewise selects no subset as a side-effect.</p></li>
+</ul>
+</dd>
+<dt><strong>-s </strong><code>[d|i|l|c]</code></dt>
+<dd><p>The <strong>-s</strong> option sorts the fields within each type according to the argument below:<br/>
+</p>
+<dl>
+<dt><strong>d</strong></dt>
+<dd><p>leave fields in the order that they are stored in the <code>terminfo</code> database.</p>
+</dd>
+<dt><strong>i</strong></dt>
+<dd><p>sort by <code>terminfo</code> name.</p>
+</dd>
+<dt><strong>l</strong></dt>
+<dd><p>sort by the long C variable name.</p>
+</dd>
+<dt><strong>c</strong></dt>
+<dd><p>sort by the <code>termcap</code> name.</p>
+</dd>
+</dl>
+<p>If the <strong>-s</strong> option is not given, the fields printed out will be sorted alphabetically by the <strong>terminfo</strong> name within each type, except in the case of the <strong>-C</strong> or the <strong>-L</strong> options, which cause the sorting to be done by the <strong>termcap</strong> name or the long C variable name, respectively.</p>
+</dd>
+<dt><strong>-T</strong></dt>
+<dd><p>eliminates size-restrictions on the generated text. This is mainly useful for testing and analysis, since the compiled descriptions are limited (e.g., 1023 for termcap, 4096 for terminfo).</p>
+</dd>
+<dt><strong>-t</strong></dt>
+<dd><p>tells <strong>tic</strong> to discard commented-out capabilities. Normally when translating from terminfo to termcap, untranslatable capabilities are commented-out.</p>
+</dd>
+<dt><strong>-U</strong></dt>
+<dd><p>tells <strong>infocmp</strong> to not post-process the data after parsing the source file. This feature helps when comparing the actual contents of two source files, since it excludes the inferences that <strong>infocmp</strong> makes to fill in missing data.</p>
+</dd>
+<dt><strong>-V</strong></dt>
+<dd><p>reports the version of ncurses which was used in this program, and exits.</p>
+</dd>
+<dt><strong>-v</strong> <code>n</code></dt>
+<dd><p>prints out tracing information on standard error as the program runs.</p>
+<p>The optional parameter <code>n</code> is a number from 1 to 10, inclusive, indicating the desired level of detail of information. If ncurses is built without tracing support, the optional parameter is ignored.</p>
+</dd>
+<dt><strong>-W</strong></dt>
+<dd><p>By itself, the <strong>-w</strong> option will not force long strings to be wrapped. Use the <strong>-W</strong> option to do this.</p>
+</dd>
+<dt><strong>-w</strong> <code>width</code></dt>
+<dd><p>changes the output to <code>width</code> characters.</p>
+</dd>
+<dt><strong>-x</strong></dt>
+<dd><p>print information for user-defined capabilities (see <strong>user_caps(5)</strong>. These are extensions to the terminfo repertoire which can be loaded using the <strong>-x</strong> option of <strong>tic</strong>.</p>
+</dd>
+</dl>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt>/etc/terminfo</dt>
+<dd><p>Compiled terminal description database.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>Although System V Release 2 provided a terminfo library, it had no documented tool for decompiling the terminal descriptions. Tony Hansen (AT&amp;T) wrote the first <strong>infocmp</strong> in early 1984, for System V Release 3.</p>
+<p>Eric Raymond used the AT&amp;T documentation in 1995 to provide an equivalent <strong>infocmp</strong> for ncurses. In addition, he added a few new features such as:</p>
+<ul>
+<li><p>the <strong>-e</strong> option, to support <code>fallback</code> (compiled-in) terminal descriptions</p></li>
+<li><p>the <strong>-i</strong> option, to help with analysis</p></li>
+</ul>
+<p>Later, Thomas Dickey added the <strong>-x</strong> (user-defined capabilities) option, and the <strong>-E</strong> option to support fallback entries with user-defined capabilities.</p>
+<p>For a complete list, see the <code>EXTENSIONS</code> section.</p>
+<p>In 2010, Roy Marples provided an <strong>infocmp</strong> program for NetBSD. It is less capable than the SVr4 or ncurses versions (e.g., it lacks the sorting options documented in X/Open), but does include the <strong>-x</strong> option adapted from ncurses.</p>
+</div></div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<p>X/Open Curses, Issue 7 (2009) provides a description of <strong>infocmp</strong>. It does not mention the options used for converting to termcap format.</p>
+</div></div></div><h1 id='extensions'><a href='#extensions'>EXTENSIONS</a></h1><div data-for='extensions' data-hide><div class='section' data-for='extensions'><div data-more>
+<p>The <strong>-0</strong>, <strong>-1</strong>, <strong>-E</strong>, <strong>-F</strong>, <strong>-G</strong>, <strong>-Q</strong>, <strong>-R</strong>, <strong>-T</strong>, <strong>-V</strong>, <strong>-a</strong>, <strong>-e</strong>, <strong>-f</strong>, <strong>-g</strong>, <strong>-i</strong>, <strong>-l</strong>, <strong>-p</strong>, <strong>-q</strong> and <strong>-t</strong> options are not supported in SVr4 curses.</p>
+<p>SVr4 infocmp does not distinguish between absent and cancelled capabilities. Also, it shows missing integer capabilities as <strong>-1</strong> (the internal value used to represent missing integers). This implementation shows those as NULL, for consistency with missing strings.</p>
+<p>The <strong>-r</strong> option's notion of termcap capabilities is System V Release 4's. Actual BSD curses versions will have a more restricted set. To see only the 4.4BSD set, use <strong>-r</strong> <strong>-RBSD</strong>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The <strong>-F</strong> option of <a href='/1/infocmp'>infocmp</a>(1) should be a <a href='/1/toe'>toe</a>(1) mode.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/captoinfo'>captoinfo</a>(1), <a href='/1/infotocap'>infotocap</a>(1), <a href='/1/tic'>tic</a>(1), <a href='/1/toe'>toe</a>(1), <strong>ncurses</strong>(3NCURSES), <a href='/5/terminfo'>terminfo</a>(5). <a href='/5/user_caps'>user_caps</a>(5).</p>
+<p><a href="https://invisible-island.net/ncurses/tctest.html">https://invisible-island.net/ncurses/tctest.html</a></p>
+<p>This describes <strong>ncurses</strong> version 6.3 (patch 20211021).</p>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Eric S. Raymond &lt;<a href="mailto:esr@snark.thyrsus.com">esr@snark.thyrsus.com</a>&gt; and<br/>
+Thomas E. Dickey &lt;<a href="mailto:dickey@invisible-island.net">dickey@invisible-island.net</a>&gt;</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

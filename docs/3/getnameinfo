@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getnameinfo - address-to-name translation in protocol-independent manner</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/socket.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;netdb.h&gt;</a>
+
+int getnameinfo(const struct sockaddr *addr, socklen_t addrlen,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>host, socklen_t hostlen,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>serv, socklen_t servlen, int flags);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getnameinfo'>getnameinfo</a>(): Since glibc 2.22: _POSIX_C_SOURCE &gt;= 200112L Glibc 2.21 and earlier: _POSIX_C_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getnameinfo'>getnameinfo</a>() function is the inverse of <a href='/3/getaddrinfo'>getaddrinfo</a>(3): it converts a socket address to a corresponding host and service, in a protocol-independent manner. It combines the functionality of <a href='/3/gethostbyaddr'>gethostbyaddr</a>(3) and <a href='/3/getservbyport'>getservbyport</a>(3), but unlike those functions, <a href='getnameinfo'>getnameinfo</a>() is reentrant and allows programs to eliminate IPv4-versus-IPv6 dependencies.</p>
+<p>The <code>addr</code> argument is a pointer to a generic socket address structure (of type <code>sockaddr_in</code> or <code>sockaddr_in6</code>) of size <code>addrlen</code> that holds the input IP address and port number. The arguments <code>host</code> and <code>serv</code> are pointers to caller-allocated buffers (of size <code>hostlen</code> and <code>servlen</code> respectively) into which <a href='getnameinfo'>getnameinfo</a>() places null-terminated strings containing the host and service names respectively.</p>
+<p>The caller can specify that no hostname (or no service name) is required by providing a NULL <code>host</code> (or <code>serv</code>) argument or a zero <code>hostlen</code> (or <code>servlen</code>) argument. However, at least one of hostname or service name must be requested.</p>
+<p>The <code>flags</code> argument modifies the behavior of <a href='getnameinfo'>getnameinfo</a>() as follows:</p>
+<dl>
+<dt><strong>NI_NAMEREQD</strong></dt>
+<dd><p>If set, then an error is returned if the hostname cannot be determined.</p>
+</dd>
+<dt><strong>NI_DGRAM</strong></dt>
+<dd><p>If set, then the service is datagram (UDP) based rather than stream (TCP) based. This is required for the few ports (512–514) that have different services for UDP and TCP.</p>
+</dd>
+<dt><strong>NI_NOFQDN</strong></dt>
+<dd><p>If set, return only the hostname part of the fully qualified domain name for local hosts.</p>
+</dd>
+<dt><strong>NI_NUMERICHOST</strong></dt>
+<dd><p>If set, then the numeric form of the hostname is returned. (When not set, this will still happen in case the node's name cannot be determined.)</p>
+</dd>
+<dt><strong>NI_NUMERICSERV</strong></dt>
+<dd><p>If set, then the numeric form of the service address is returned. (When not set, this will still happen in case the service's name cannot be determined.)</p>
+</dd>
+</dl>
+<h2>Extensions to getnameinfo() for Internationalized Domain Names</h2>
+<p>Starting with glibc 2.3.4, <a href='getnameinfo'>getnameinfo</a>() has been extended to selectively allow hostnames to be transparently converted to and from the Internationalized Domain Name (IDN) format (see RFC 3490, <code>Internationalizing Domain Names in Applications (IDNA)</code>). Three new flags are defined:</p>
+<dl>
+<dt><strong>NI_IDN</strong></dt>
+<dd><p>If this flag is used, then the name found in the lookup process is converted from IDN format to the locale's encoding if necessary. ASCII-only names are not affected by the conversion, which makes this flag usable in existing programs and environments.</p>
+</dd>
+<dt><strong>NI_IDN_ALLOW_UNASSIGNED</strong>, <strong>NI_IDN_USE_STD3_ASCII_RULES</strong></dt>
+<dd><p>Setting these flags will enable the IDNA_ALLOW_UNASSIGNED (allow unassigned Unicode code points) and IDNA_USE_STD3_ASCII_RULES (check output to make sure it is a STD3 conforming hostname) flags respectively to be used in the IDNA handling.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, 0 is returned, and node and service names, if requested, are filled with null-terminated strings, possibly truncated to fit the specified buffer lengths. On error, one of the following nonzero error codes is returned:</p>
+<dl>
+<dt><strong>EAI_AGAIN</strong></dt>
+<dd><p>The name could not be resolved at this time. Try again later.</p>
+</dd>
+<dt><strong>EAI_BADFLAGS</strong></dt>
+<dd><p>The <code>flags</code> argument has an invalid value.</p>
+</dd>
+<dt><strong>EAI_FAIL</strong></dt>
+<dd><p>A nonrecoverable error occurred.</p>
+</dd>
+<dt><strong>EAI_FAMILY</strong></dt>
+<dd><p>The address family was not recognized, or the address length was invalid for the specified family.</p>
+</dd>
+<dt><strong>EAI_MEMORY</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>EAI_NONAME</strong></dt>
+<dd><p>The name does not resolve for the supplied arguments. <strong>NI_NAMEREQD</strong> is set and the host's name cannot be located, or neither hostname nor service name were requested.</p>
+</dd>
+<dt><strong>EAI_OVERFLOW</strong></dt>
+<dd><p>The buffer pointed to by <code>host</code> or <code>serv</code> was too small.</p>
+</dd>
+<dt><strong>EAI_SYSTEM</strong></dt>
+<dd><p>A system error occurred. The error code can be found in <code>errno</code>.</p>
+</dd>
+</dl>
+<p>The <a href='/3/gai_strerror'>gai_strerror</a>(3) function translates these error codes to a human readable string, suitable for error reporting.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following code tries to get the numeric hostname and service name, for a given socket address. Note that there is no hardcoded reference to a particular address family.</p>
+<pre><code>struct sockaddr *addr;     /* input */
+socklen_t addrlen;         /* input */
+char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
+if (getnameinfo(addr, addrlen, hbuf, sizeof(hbuf), sbuf,
+            sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0)
+    printf("host=%s, serv=%s\n", hbuf, sbuf);</code></pre>
+<p>The following version checks if the socket address has a reverse address mapping.</p>
+<pre><code>struct sockaddr *addr;     /* input */
+socklen_t addrlen;         /* input */
+char hbuf[NI_MAXHOST];
+
+if (getnameinfo(addr, addrlen, hbuf, sizeof(hbuf),
+            NULL, 0, NI_NAMEREQD))
+    printf("could not resolve hostname");
+else
+    printf("host=%s\n", hbuf);</code></pre>
+<p>An example program using <a href='getnameinfo'>getnameinfo</a>() can be found in <a href='/3/getaddrinfo'>getaddrinfo</a>(3).</p>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/etc/hosts</code><br/>
+<code>/etc/nsswitch.conf</code><br/>
+<code>/etc/resolv.conf</code></p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='getnameinfo'>getnameinfo</a>() is provided in glibc since version 2.1.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getnameinfo'>getnameinfo</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe env locale</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, RFC 2553.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>In order to assist the programmer in choosing reasonable sizes for the supplied buffers, <code>&lt;netdb.h&gt;</code> defines the constants</p>
+<pre><code>#define NI_MAXHOST      1025
+#define NI_MAXSERV      32</code></pre>
+<p>Since glibc 2.8, these definitions are exposed only if suitable feature test macros are defined, namely: <strong>_GNU_SOURCE</strong>, <strong>_DEFAULT_SOURCE</strong> (since glibc 2.19), or (in glibc versions up to and including 2.19) <strong>_BSD_SOURCE</strong> or <strong>_SVID_SOURCE</strong>.</p>
+<p>The former is the constant <strong>MAXDNAME</strong> in recent versions of BIND's <code>&lt;arpa/nameser.h&gt;</code> header file. The latter is a guess based on the services listed in the current Assigned Numbers RFC.</p>
+<p>Before glibc version 2.2, the <code>hostlen</code> and <code>servlen</code> arguments were typed as <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/accept'>accept</a>(2), <a href='/2/getpeername'>getpeername</a>(2), <a href='/2/getsockname'>getsockname</a>(2), <a href='/2/recvfrom'>recvfrom</a>(2), <a href='/2/socket'>socket</a>(2), <a href='/3/getaddrinfo'>getaddrinfo</a>(3), <a href='/3/gethostbyaddr'>gethostbyaddr</a>(3), <a href='/3/getservbyname'>getservbyname</a>(3), <a href='/3/getservbyport'>getservbyport</a>(3), <a href='/3/inet_ntop'>inet_ntop</a>(3), <a href='/5/hosts'>hosts</a>(5), <a href='/5/services'>services</a>(5), <a href='/7/hostname'>hostname</a>(7), <a href='/8/named'>named</a>(8)</p>
+<p>R. Gilligan, S. Thomson, J. Bound and W. Stevens, <code>Basic Socket Interface Extensions for IPv6</code>, RFC 2553, March 1999.</p>
+<p>Tatsuya Jinmei and Atsushi Onoe, <code>An Extension of Format for IPv6 Scoped Addresses</code>, internet draft, work in progress <a href="<a href="ftp://ftp.ietf.org/internet-drafts/draft-ietf-ipngwg-scopedaddr-format-02.txt">ftp://ftp.ietf.org/internet-drafts/draft-ietf-ipngwg-scopedaddr-format-02.txt</a>"></a>.</p>
+<p>Craig Metz, <code>Protocol Independence Using the Sockets API</code>, Proceedings of the freenix track: 2000 USENIX annual technical conference, June 2000</p>
+<p><a href="<a href="http://www.usenix.org/publications/library/proceedings/usenix2000/freenix/metzprotocol.html">http://www.usenix.org/publications/library/proceedings/usenix2000/freenix/metzprotocol.html</a>"></a>.</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

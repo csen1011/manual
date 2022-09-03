@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>pkg-config - Return metainformation about installed libraries</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>pkg-config</strong> [--modversion] [--version] [--help] [--atleast-pkgconfig-version=VERSION] [--print-errors] [--short-errors] [--silence-errors] [--errors-to-stdout] [--debug] [--cflags] [--libs] [--libs-only-L] [--libs-only-l] [--cflags-only-I] [--libs-only-other] [--cflags-only-other] [--variable=VARIABLENAME] [--define-variable=VARIABLENAME=VARIABLEVALUE] [--print-variables] [--uninstalled] [--exists] [--atleast-version=VERSION] [--exact-version=VERSION] [--max-version=VERSION] [--validate] [--list-all] [--print-provides] [--print-requires] [--print-requires-private] [LIBRARIES...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <code>pkg-config</code> program is used to retrieve information about installed libraries in the system. It is typically used to compile and link against one or more libraries. Here is a typical usage scenario in a Makefile:</p>
+<pre><code>program: program.c
+	cc program.c `pkg-config --cflags --libs gnomeui`</code></pre>
+<p><code>pkg-config</code> retrieves information about packages from special metadata files. These files are named after the package, and has a <code>.pc</code> extension. On most systems, <code>pkg-config</code> looks in <code>/usr/lib/pkgconfig, /usr/share/pkgconfig, /usr/local/lib/pkgconfig</code> and <code>/usr/local/share/pkgconfig</code> for these files. It will additionally look in the colon-separated (on Windows, semicolon-separated) list of directories specified by the PKG_CONFIG_PATH environment variable.</p>
+<p>The package name specified on the <code>pkg-config</code> command line is defined to be the name of the metadata file, minus the <code>.pc</code> extension. If a library can install multiple versions simultaneously, it must give each version its own name (for example, GTK 1.2 might have the package name "gtk+" while GTK 2.0 has "gtk+-2.0").</p>
+<p>In addition to specifying a package name on the command line, the full path to a given <code>.pc</code> file may be given instead. This allows a user to directly query a particular <code>.pc</code> file. The following options are supported:</p>
+<dl>
+<dt><code>--modversion</code></dt>
+<dd><p>Requests that the version information of the libraries specified on the command line be displayed. If <code>pkg-config</code> can find all the libraries on the command line, each library's version string is printed to stdout, one version per line. In this case <code>pkg-config</code> exits successfully. If one or more libraries is unknown, <code>pkg-config</code> exits with a nonzero code, and the contents of stdout are undefined.</p>
+</dd>
+<dt><code>--version</code></dt>
+<dd><p>Displays the version of <code>pkg-config</code> and terminates.</p>
+</dd>
+<dt><code>--atleast-pkgconfig-version=VERSION</code></dt>
+<dd><p>Requires at least the given version of pkg-config.</p>
+</dd>
+<dt><code>--help</code></dt>
+<dd><p>Displays a help message and terminates.</p>
+</dd>
+<dt><code>--print-errors</code></dt>
+<dd><p>If one or more of the modules on the command line, or their dependencies, are not found, or if an error occurs in parsing a <code>.pc</code> file, then this option will cause errors explaining the problem to be printed. With "predicate" options such as "--exists" <code>pkg-config</code> runs silently by default, because it's usually used in scripts that want to control what's output. This option can be used alone (to just print errors encountered locating modules on the command line) or with other options. The PKG_CONFIG_DEBUG_SPEW environment variable overrides this option.</p>
+</dd>
+<dt><code>--short-errors</code></dt>
+<dd><p>Print short error messages.</p>
+</dd>
+<dt><code>--silence-errors</code></dt>
+<dd><p>If one or more of the modules on the command line, or their dependencies, are not found, or if an error occurs in parsing a a <code>.pc</code> file, then this option will keep errors explaining the problem from being printed. With "predicate" options such as "--exists" <code>pkg-config</code> runs silently by default, because it's usually used in scripts that want to control what's output. So this option is only useful with options such as "--cflags" or "--modversion" that print errors by default. The PKG_CONFIG_DEBUG_SPEW environment variable overrides this option.</p>
+</dd>
+<dt><code>--errors-to-stdout</code></dt>
+<dd><p>If printing errors, print them to stdout rather than the default stderr</p>
+</dd>
+<dt><code>--debug</code></dt>
+<dd><p>Print debugging information. This is slightly different than the PKG_CONFIG_DEBUG_SPEW environment variable, which also enable "--print-errors".</p>
+</dd>
+</dl>
+<p>The following options are used to compile and link programs:</p>
+<dl>
+<dt><code>--cflags</code></dt>
+<dd><p>This prints pre-processor and compile flags required to compile the packages on the command line, including flags for all their dependencies. Flags are "compressed" so that each identical flag appears only once. <code>pkg-config</code> exits with a nonzero code if it can't find metadata for one or more of the packages on the command line.</p>
+</dd>
+<dt><code>--cflags-only-I</code></dt>
+<dd><p>This prints the -I part of "--cflags". That is, it defines the header search path but doesn't specify anything else.</p>
+</dd>
+<dt><code>--cflags-only-other</code></dt>
+<dd><p>This prints parts of "--cflags" not covered by "--cflags-only-I".</p>
+</dd>
+<dt><code>--libs</code></dt>
+<dd><p>This option is identical to "--cflags", only it prints the link flags. As with "--cflags", duplicate flags are merged (maintaining proper ordering), and flags for dependencies are included in the output.</p>
+</dd>
+<dt><code>--libs-only-L</code></dt>
+<dd><p>This prints the -L/-R part of "--libs". That is, it defines the library search path but doesn't specify which libraries to link with.</p>
+</dd>
+<dt><code>--libs-only-l</code></dt>
+<dd><p>This prints the -l part of "--libs" for the libraries specified on the command line. Note that the union of "--libs-only-l" and "--libs-only-L" may be smaller than "--libs", due to flags such as -rdynamic.</p>
+</dd>
+<dt><code>--libs-only-other</code></dt>
+<dd><p>This prints the parts of "--libs" not covered by "--libs-only-L" and "--libs-only-l", such as "--pthread".</p>
+</dd>
+<dt><code>--variable=VARIABLENAME</code></dt>
+<dd><p>This returns the value of a variable defined in a package's <code>.pc</code> file. Most packages define the variable "prefix", for example, so you can say:</p>
+</dd>
+</dl>
+<pre><code>  $ pkg-config --variable=prefix glib-2.0
+  /usr/</code></pre>
+<dl>
+<dt><code>--define-variable=VARIABLENAME=VARIABLEVALUE</code></dt>
+<dd><p>This sets a global value for a variable, overriding the value in any <code>.pc</code> files. Most packages define the variable "prefix", for example, so you can say:</p>
+</dd>
+</dl>
+<pre><code>  $ pkg-config --print-errors --define-variable=prefix=/foo \
+               --variable=prefix glib-2.0
+  /foo</code></pre>
+<dl>
+<dt><code>--print-variables</code></dt>
+<dd><p>Returns a list of all variables defined in the package.</p>
+</dd>
+</dl>
+<dl>
+<dt><code>--uninstalled</code></dt>
+<dd><p>Normally if you request the package "foo" and the package "foo-uninstalled" exists, <code>pkg-config</code> will prefer the "-uninstalled" variant. This allows compilation/linking against uninstalled packages. If you specify the "--uninstalled" option, <code>pkg-config</code> will return successfully if any "-uninstalled" packages are being used, and return failure (false) otherwise. (The PKG_CONFIG_DISABLE_UNINSTALLED environment variable keeps <code>pkg-config</code> from implicitly choosing "-uninstalled" packages, so if that variable is set, they will only have been used if you pass a name like "foo-uninstalled" on the command line explicitly.)</p>
+</dd>
+<dt><code>--exists</code></dt>
+<dd>
+</dd>
+<dt><code>--atleast-version=VERSION</code></dt>
+<dd>
+</dd>
+<dt><code>--exact-version=VERSION</code></dt>
+<dd>
+</dd>
+<dt><code>--max-version=VERSION</code></dt>
+<dd><p>These options test whether the package or list of packages on the command line are known to <code>pkg-config</code>, and optionally whether the version number of a package meets certain constraints. If all packages exist and meet the specified version constraints, <code>pkg-config</code> exits successfully. Otherwise it exits unsuccessfully. Only the first VERSION comparing option will be honored. Subsequent options of this type will be ignored.</p>
+</dd>
+</dl>
+<p>Rather than using the version-test options, you can simply give a version constraint after each package name, for example:</p>
+<pre><code>  $ pkg-config --exists 'glib-2.0 &gt;= 1.3.4 libxml = 1.8.3'</code></pre>
+<p>Remember to use --print-errors if you want error messages. When no output options are supplied to <code>pkg-config</code>, --exists is implied.</p>
+<dl>
+<dt><code>--validate</code></dt>
+<dd><p>Checks the syntax of a package's <code>.pc</code> file for validity. This is the same as --exists except that dependencies are not verified. This can be useful for package developers to test their <code>.pc</code> file prior to release:</p>
+</dd>
+</dl>
+<pre><code>  $ pkg-config --validate ./my-package.pc</code></pre>
+<dl>
+<dt><code>--msvc-syntax</code></dt>
+<dd><p>This option is available only on Windows. It causes <code>pkg-config</code> to output -l and -L flags in the form recognized by the Microsoft Visual C++ command-line compiler, <code>cl</code>. Specifically, instead of <code>-Lx:/some/path</code> it prints <code>/libpath:x/some/path</code>, and instead of <code>-lfoo</code> it prints <code>foo.lib</code>. Note that the --libs output consists of flags for the linker, and should be placed on the cl command line after a /link switch.</p>
+</dd>
+<dt><code>--define-prefix</code><br/>
+<code>--dont-define-prefix</code></dt>
+<dd><p>These options control whether <code>pkg-config</code> overrides the value of the variable <code>prefix</code> in each .pc file. With --define-prefix, <code>pkg-config</code> uses the installed location of the .pc file to determine the prefix. --dont-define-prefix prevents this behavior. The default is usually --define-prefix.</p>
+</dd>
+</dl>
+<p>When this feature is enabled and a .pc file is found in a directory named <code>pkgconfig</code>, the prefix for that package is assumed to be the grandparent of the directory where the file was found, and the <code>prefix</code> variable is overridden for that file accordingly.</p>
+<p>If the value of a variable in a .pc file begins with the original, non-overridden, value of the <code>prefix</code> variable, then the overridden value of <code>prefix</code> is used instead. This allows the feature to work even when the variables have been expanded in the .pc file.</p>
+<dl>
+<dt><code>--prefix-variable=PREFIX</code></dt>
+<dd><p>Set the name of the variable that <code>pkg-config</code> overrides instead of <code>prefix</code> when using the --define-prefix feature.</p>
+</dd>
+<dt><code>--static</code></dt>
+<dd><p>Output libraries suitable for static linking. That means including any private libraries in the output. This relies on proper tagging in the .pc files, else a too large number of libraries will ordinarily be output.</p>
+</dd>
+<dt><code>--list-all</code></dt>
+<dd><p>List all modules found in the <code>pkg-config</code> path.</p>
+</dd>
+<dt><code>--print-provides</code></dt>
+<dd><p>List all modules the given packages provides.</p>
+</dd>
+<dt><code>--print-requires</code></dt>
+<dd><p>List all modules the given packages requires.</p>
+</dd>
+<dt><code>--print-requires-private</code></dt>
+<dd><p>List all modules the given packages requires for static linking (see --static).</p>
+</dd>
+<dt><code>PKG_CONFIG_PATH</code></dt>
+<dd><p>A colon-separated (on Windows, semicolon-separated) list of directories to search for .pc files. The default directory will always be searched after searching the path; the default is <code>libdir/<em>pkgconfig:datadir/pkgconfig</code> where <code>libdir</code> is</em> the libdir for <code>pkg-config and datadir is the datadir</code> for <code>pkg-config when it was installed.</code></p>
+</dd>
+<dt><code>PKG_CONFIG_DEBUG_SPEW</code></dt>
+<dd><p>If set, causes <code>pkg-config to print all kinds of</code> debugging information and report all errors.</p>
+</dd>
+<dt><code>PKG_CONFIG_TOP_BUILD_DIR</code></dt>
+<dd><p>A value to set for the magic variable <code>pc_top_builddir</code> which may appear in <code>.pc files. If the environment variable is</code> not set, the default value '$(top_builddir)' will be used. This variable should refer to the top builddir of the Makefile where the compile/link flags reported by <code>pkg-config will be used.</code> This only matters when compiling/linking against a package that hasn't yet been installed.</p>
+</dd>
+<dt><code>PKG_CONFIG_DISABLE_UNINSTALLED</code></dt>
+<dd><p>Normally if you request the package "foo" and the package "foo-uninstalled" exists, <code>pkg-config will prefer the </code> "-uninstalled" variant. This allows compilation/linking against uninstalled packages. If this environment variable is set, it disables said behavior.</p>
+</dd>
+<dt><code>PKG_CONFIG_SYSTEM_INCLUDE_PATH</code></dt>
+<dd><p>A path variable containing system directories searched by the compiler. This is normally <code>/usr/include</code>.</p>
+</dd>
+<dt><code>CPATH</code><br/>
+<code>C_INCLUDE_PATH</code><br/>
+<code>CPLUS_INCLUDE_PATH</code></dt>
+<dd><p>Additional paths to append to <code>PKG_CONFIG_SYSTEM_INCLUDE_PATH</code>. These correspond to environment variables used by many compilers to affect the header search path. These are ignored on Windows builds when --msvc-syntax is in use.</p>
+</dd>
+<dt><code>INCLUDE</code></dt>
+<dd><p>Additional paths to append to <code>PKG_CONFIG_SYSTEM_INCLUDE_PATH</code> on Windows builds when --msvc-syntax is in use. This corresponds to the environment variable used by MSVC to add directories to the include file search path.</p>
+</dd>
+<dt><code>PKG_CONFIG_ALLOW_SYSTEM_CFLAGS</code></dt>
+<dd><p>Don't strip system paths out of Cflags. See <code>PKG_CONFIG_SYSTEM_INCLUDE_PATH</code> for the definition of system paths.</p>
+</dd>
+<dt><code>PKG_CONFIG_SYSTEM_LIBRARY_PATH</code></dt>
+<dd><p>A path variable containing system directories searched by the linker. This is normally <code>/usr/lib:/lib</code> but is dependent on the <code>pkg-config</code> build and can contain other directories such as <code>/usr/lib64</code>.</p>
+</dd>
+<dt><code>PKG_CONFIG_ALLOW_SYSTEM_LIBS</code></dt>
+<dd><p>Don't strip system paths out of Libs. See <code>PKG_CONFIG_SYSTEM_LIBRARY_PATH</code> for the definition of system paths.</p>
+</dd>
+<dt><code>PKG_CONFIG_SYSROOT_DIR</code></dt>
+<dd><p>Modify -I and -L to use the directories located in target sysroot. this option is useful when cross-compiling packages that use pkg-config to determine CFLAGS and LDFLAGS. -I and -L are modified to point to the new system root. this means that a -I/usr/include/libfoo will become -I/var/target/usr/include/libfoo with a PKG_CONFIG_SYSROOT_DIR equal to /var/target (same rule apply to -L)</p>
+</dd>
+<dt><code>PKG_CONFIG_LIBDIR</code></dt>
+<dd><p>Replaces the default <code>pkg-config</code> search directory, usually <code>/usr/lib/pkgconfig</code>:<code>/usr/share/pkgconfig</code>.</p>
+</dd>
+<dt><code>PKG_CONFIG_$PACKAGE_$VARIABLE</code></dt>
+<dd><p>Overrides the variable VARIABLE in the package PACKAGE. The environment variable should have the package name and package variable upper cased with non-alphanumeric characters converted to underscores. For example, setting PKG_CONFIG_GLADEUI_2_0_CATALOGDIR will override the variable "catalogdir" in the "gladeui-2.0" package. <code>pkg-config</code> sets a few metadata variables that can be used in .pc files or queried at runtime.</p>
+</dd>
+<dt><code>pc_path</code></dt>
+<dd><p>The default search path used by <code>pkg-config</code> when searching for .pc files. This can be used in a query for the <code>pkg-config</code> module itself itself:</p>
+</dd>
+</dl>
+<pre><code>  $ pkg-config --variable pc_path pkg-config</code></pre>
+<dl>
+<dt><code>pcfiledir</code></dt>
+<dd><p>The installed location of the .pc file. This can be used to query the location of the .pc file for a particular module, but it can also be used to make .pc files relocatable. For instance:</p>
+</dd>
+</dl>
+<pre><code>prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include</code></pre>
+<dl>
+<dt><code>pc_sysrootdir</code></dt>
+<dd><p>The sysroot directory set by the user. When the sysroot directory has not been set, this value is <code>/</code>. See the <code>PKG_CONFIG_SYSROOT_DIR</code> environment variable for more details.</p>
+</dd>
+<dt><code>pc_top_builddir</code></dt>
+<dd><p>Location of the user's top build directory when calling <code>pkg-config.</code> This is useful to dynamically set paths in uninstalled .pc files. See the <code>PKG_CONFIG_TOP_BUILD_DIR</code> environment variable for more details. The <code>pkg-config</code> default search path is ignored on Windows. Instead, the search path is constructed by using the installed directory of <code>pkg-config</code> and then appending <code>lib\pkgconfig</code> and <code>share\pkgconfig</code>. This can be augmented or replaced using the standard environment variables described above.</p>
+</dd>
+<dt><code>PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES [,ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND]])</code></dt>
+<dd>
+</dd>
+</dl>
+<p>The macro PKG_CHECK_MODULES can be used in <code><a href="http://configure.ac">configure.ac</a> to </code> check whether modules exist. A typical usage would be:</p>
+<pre><code> PKG_CHECK_MODULES([MYSTUFF], [gtk+-2.0 &gt;= 1.3.5 libxml = 1.8.4])</code></pre>
+<p>This would result in MYSTUFF_LIBS and MYSTUFF_CFLAGS substitution variables, set to the libs and cflags for the given module list. If a module is missing or has the wrong version, by default configure will abort with a message. To replace the default action, specify an ACTION-IF-NOT-FOUND. PKG_CHECK_MODULES will not print any error messages if you specify your own ACTION-IF-NOT-FOUND. However, it will set the variable MYSTUFF_PKG_ERRORS, which you can use to display what went wrong.</p>
+<p>Note that if there is a possibility the first call to PKG_CHECK_MODULES might not happen, you should be sure to include an explicit call to PKG_PROG_PKG_CONFIG in your <a href="http://configure.ac">configure.ac</a>.</p>
+<p>Also note that repeated usage of VARIABLE-PREFIX is not recommended. After the first successful usage, subsequent calls with the same VARIABLE-PREFIX will simply use the _LIBS and _CFLAGS variables set from the previous usage without calling <code>pkg-config again.</code> <code>PKG_PREREQ(MIN-VERSION)</code> Checks that the version of the pkg-config autoconf macros in use is at least MIN-VERSION. This can be used to ensure a particular pkg-config macro will be available. <code>PKG_PROG_PKG_CONFIG([MIN-VERSION])</code></p>
+<p>Defines the PKG_CONFIG variable to the best pkg-config available, useful if you need pkg-config but don't want to use PKG_CHECK_MODULES.</p>
+<p>If the first call to PKG_PROG_PKG_CONFIG is conditional, then it will not work correctly in all cases. Since many of the other macros such as PKG_CHECK_MODULES require PKG_PROG_PKG_CONFIG to know which pkg-config program to run, PKG_PROG_PKG_CONFIG may be run for the first time from a conditional from one of these macros. Therefore, if any of the pkg-config macros will be used under a conditional, it's best to run PKG_PROG_PKG_CONFIG before any of the other macros are used.</p>
+<dl>
+<dt><code>PKG_CHECK_MODULES_STATIC(VARIABLE-PREFIX, MODULES [,ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND]])</code></dt>
+<dd><p>Enables static linking through --static prior to calling PKG_CHECK_MODULES.</p>
+</dd>
+<dt><code>PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])</code></dt>
+<dd>
+</dd>
+</dl>
+<p>Check to see whether a particular set of modules exists. Similar to PKG_CHECK_MODULES(), but does not set variables or print errors.</p>
+<p>Similar to PKG_CHECK_MODULES, make sure that the first instance of this or PKG_CHECK_MODULES is called, or make sure to call PKG_PROG_PKGCONFIG manually.</p>
+<dl>
+<dt><code>PKG_INSTALLDIR(DIRECTORY)</code></dt>
+<dd>
+</dd>
+</dl>
+<p>Substitutes the variable pkgconfigdir as the location where a module should install pkg-config .pc files. By default the directory is $libdir/pkgconfig, but the default can be changed by passing DIRECTORY. The user can override through the --with-pkgconfigdir parameter.</p>
+<dl>
+<dt><code>PKG_NOARCH_INSTALLDIR(DIRECTORY)</code></dt>
+<dd>
+</dd>
+</dl>
+<p>Substitutes the variable noarch_pkgconfigdir as the location where a module should install arch-independent pkg-config .pc files. By default the directory is $datadir/pkgconfig, but the default can be changed by passing DIRECTORY. The user can override through the --with-noarch-pkgconfigdir parameter.</p>
+<dl>
+<dt><code>PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])</code></dt>
+<dd>
+</dd>
+</dl>
+<p>Retrieves the value of the pkg-config variable CONFIG-VARIABLE from MODULE and stores it in VARIABLE. Note that repeated usage of VARIABLE is not recommended as the check will be skipped if the variable is already set.</p>
+</div></div><h1 id='metadata-file-syntax'><a href='#metadata-file-syntax'>METADATA FILE SYNTAX</a></h1><div data-for='metadata-file-syntax' data-hide><div class='section' data-for='metadata-file-syntax'><div data-more>
+<p>To add a library to the set of packages <code>pkg-config knows about,</code> simply install a <code>.pc file. You should install this file to </code> <code>libdir<em>/pkgconfig.</code></em></p>
+<p>Here is an example file:</p>
+<pre><code># This is a comment
+prefix=/home/hp/unst   # this defines a variable
+exec_prefix=${prefix}  # defining another variable in terms of the first
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: GObject                            # human-readable name
+Description: Object/type system for GLib # human-readable description
+Version: 1.3.1
+URL: <a href="http://www.gtk.org">http://www.gtk.org</a>
+Requires: glib-2.0 = 1.3.1
+Conflicts: foobar &lt;= 4.5
+Libs: -L${libdir} -lgobject-1.3
+Libs.private: -lm
+Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib/include </code></pre>
+<p>You would normally generate the file using configure, so that the prefix, etc. are set to the proper values. The GNU Autoconf manual recommends generating files like .pc files at build time rather than configure time, so when you build the .pc file is a matter of taste and preference.</p>
+<p>Files have two kinds of line: keyword lines start with a keyword plus a colon, and variable definitions start with an alphanumeric string plus an equals sign. Keywords are defined in advance and have special meaning to <code>pkg-config; variables do not, you can have any</code> variables that you wish (however, users may expect to retrieve the usual directory name variables).</p>
+<p>Note that variable references are written "${foo}"; you can escape literal "${" as "$${".</p>
+<dl>
+<dt><code>Name:</code></dt>
+<dd><p>This field should be a human-readable name for the package. Note that it is not the name passed as an argument to <code>pkg-config.</code></p>
+</dd>
+<dt><code>Description:</code></dt>
+<dd><p>This should be a brief description of the package</p>
+</dd>
+<dt><code>URL:</code></dt>
+<dd><p>An URL where people can get more information about and download the package</p>
+</dd>
+<dt><code>Version:</code></dt>
+<dd><p>This should be the most-specific-possible package version string.</p>
+</dd>
+<dt><code>Requires:</code></dt>
+<dd><p>This is a comma-separated list of packages that are required by your package. Flags from dependent packages will be merged in to the flags reported for your package. Optionally, you can specify the version of the required package (using the operators =, &lt;, &gt;, &gt;=, &lt;=); specifying a version allows <code>pkg-config to perform extra sanity</code> checks. You may only mention the same package one time on the <code>Requires:</code> line. If the version of a package is unspecified, any version will be used with no checking.</p>
+</dd>
+<dt><code>Requires.private:</code></dt>
+<dd><p>A list of packages required by this package. The difference from <code>Requires</code> is that the packages listed under <code>Requires.private</code> are not taken into account when a flag list is computed for dynamically linked executable (i.e., when --static was not specified). In the situation where each .pc file corresponds to a library, <code>Requires.private</code> shall be used exclusively to specify the dependencies between the libraries.</p>
+</dd>
+<dt><code>Conflicts:</code></dt>
+<dd><p>This optional line allows <code>pkg-config to perform additional</code> sanity checks, primarily to detect broken user installations. The syntax is the same as <code>Requires:</code> except that you can list the same package more than once here, for example "foobar = 1.2.3, foobar = 1.2.5, foobar &gt;= 1.3", if you have reason to do so. If a version isn't specified, then your package conflicts with all versions of the mentioned package. If a user tries to use your package and a conflicting package at the same time, then <code>pkg-config will complain.</code></p>
+</dd>
+<dt><code>Libs:</code></dt>
+<dd><p>This line should give the link flags specific to your package. Don't add any flags for required packages; <code>pkg-config will </code> add those automatically.</p>
+</dd>
+<dt><code>Libs.private:</code></dt>
+<dd><p>This line should list any private libraries in use. Private libraries are libraries which are not exposed through your library, but are needed in the case of static linking. This differs from <code>Requires.private</code> in that it references libraries that do not have package files installed.</p>
+</dd>
+<dt><code>Cflags:</code></dt>
+<dd><p>This line should list the compile flags specific to your package. Don't add any flags for required packages; <code>pkg-config will </code> add those automatically.</p>
+</dd>
+</dl>
+<p><code>pkg-config</code> was written by James Henstridge, rewritten by Martijn van Beers, and rewritten again by Havoc Pennington. Tim Janik, Owen Taylor, and Raja Harinath submitted suggestions and some code. <code>gnome-config</code> was written by Miguel de Icaza, Raja Harinath and various hackers in the GNOME team. It was inspired by Owen Taylor's <code>gtk-config</code> program.</p>
+<p><code>pkg-config does not handle mixing of parameters with and without</code> = well. Stick with one.</p>
+<p>Bugs can be reported at <a href="http://bugs.freedesktop.org/">http://bugs.freedesktop.org/</a> under the <code>pkg-config</code> component.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;makecontext&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>makecontext</a>, swapcontext - manipulate user context</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;ucontext.h&gt;</strong></p>
+<p><strong>void makecontext(ucontext_t *</strong><code>ucp</code><strong>, void (*</strong><code>func</code><strong>)(),</strong> <strong>int </strong><code>argc</code><strong>, ...);</strong></p>
+<p><strong>int swapcontext(ucontext_t *</strong><code>oucp</code><strong>, const ucontext_t *</strong><code>ucp</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>In a System V-like environment, one has the type <code>ucontext_t</code> (defined in <code>&lt;ucontext.h&gt;</code> and described in <a href='/3/getcontext'>getcontext</a>(3)) and the four functions <a href='/3/getcontext'>getcontext</a>(3), <a href='/3/setcontext'>setcontext</a>(3), <a href='makecontext'>makecontext</a>(), and <a href='swapcontext'>swapcontext</a>() that allow user-level context switching between multiple threads of control within a process.</p>
+<p>The <a href='makecontext'>makecontext</a>() function modifies the context pointed to by <code>ucp</code> (which was obtained from a call to <a href='/3/getcontext'>getcontext</a>(3)). Before invoking <a href='makecontext'>makecontext</a>(), the caller must allocate a new stack for this context and assign its address to <code>ucp-&gt;uc_stack</code>, and define a successor context and assign its address to <code>ucp-&gt;uc_link</code>.</p>
+<p>When this context is later activated (using <a href='/3/setcontext'>setcontext</a>(3) or <a href='swapcontext'>swapcontext</a>()) the function <code>func</code> is called, and passed the series of integer (<code>int</code>) arguments that follow <code>argc</code>; the caller must specify the number of these arguments in <code>argc</code>. When this function returns, the successor context is activated. If the successor context pointer is NULL, the thread exits.</p>
+<p>The <a href='swapcontext'>swapcontext</a>() function saves the current context in the structure pointed to by <code>oucp</code>, and then activates the context pointed to by <code>ucp</code>.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>When successful, <a href='swapcontext'>swapcontext</a>() does not return. (But we may return later, in case <code>oucp</code> is activated, in which case it looks like <a href='swapcontext'>swapcontext</a>() returns 0.) On error, <a href='swapcontext'>swapcontext</a>() returns -1 and sets <code>errno</code> appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The example program below demonstrates the use of <a href='/3/getcontext'>getcontext</a>(3), <a href='makecontext'>makecontext</a>(), and <a href='swapcontext'>swapcontext</a>(). Running the program produces the following output:</p>
+<pre><code>$ ./a.out
+main: swapcontext(&amp;uctx_main, &amp;uctx_func2)
+func2: started
+func2: swapcontext(&amp;uctx_func2, &amp;uctx_func1)
+func1: started
+func1: swapcontext(&amp;uctx_func1, &amp;uctx_func2)
+func2: returning
+func1: returning
+main: exiting</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;ucontext.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static ucontext_t uctx_main, uctx_func1, uctx_func2;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+func1(void)
+{
+    printf("func1: started\n");
+    printf("func1: swapcontext(&amp;uctx_func1, &amp;uctx_func2)\n");
+    if (swapcontext(&amp;uctx_func1, &amp;uctx_func2) == -1)
+        handle_error("swapcontext");
+    printf("func1: returning\n");
+}
+
+static void
+func2(void)
+{
+    printf("func2: started\n");
+    printf("func2: swapcontext(&amp;uctx_func2, &amp;uctx_func1)\n");
+    if (swapcontext(&amp;uctx_func2, &amp;uctx_func1) == -1)
+        handle_error("swapcontext");
+    printf("func2: returning\n");
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    char func1_stack[16384];
+    char func2_stack[16384];
+
+    if (getcontext(&amp;uctx_func1) == -1)
+        handle_error("getcontext");
+    uctx_func1.uc_stack.ss_sp = func1_stack;
+    uctx_func1.uc_stack.ss_size = sizeof(func1_stack);
+    uctx_func1.uc_link = &amp;uctx_main;
+    makecontext(&amp;uctx_func1, func1, 0);
+
+    if (getcontext(&amp;uctx_func2) == -1)
+        handle_error("getcontext");
+    uctx_func2.uc_stack.ss_sp = func2_stack;
+    uctx_func2.uc_stack.ss_size = sizeof(func2_stack);
+    /* Successor context is f1(), unless argc &gt; 1 */
+    uctx_func2.uc_link = (argc &gt; 1) ? NULL : &amp;uctx_func1;
+    makecontext(&amp;uctx_func2, func2, 0);
+
+    printf("main: swapcontext(&amp;uctx_main, &amp;uctx_func2)\n");
+    if (swapcontext(&amp;uctx_main, &amp;uctx_func2) == -1)
+        handle_error("swapcontext");
+
+    printf("main: exiting\n");
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient stack space left.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='makecontext'>makecontext</a>() and <a href='swapcontext'>swapcontext</a>() are provided in glibc since version 2.1.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='makecontext'>makecontext</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe race:ucp</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='swapcontext'>swapcontext</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe race:oucp race:ucp</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>SUSv2, POSIX.1-2001. POSIX.1-2008 removes the specifications of <a href='makecontext'>makecontext</a>() and <a href='swapcontext'>swapcontext</a>(), citing portability issues, and recommending that applications be rewritten to use POSIX threads instead.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The interpretation of <code>ucp-&gt;uc_stack</code> is just as in <a href='/2/sigaltstack'>sigaltstack</a>(2), namely, this struct contains the start and length of a memory area to be used as the stack, regardless of the direction of growth of the stack. Thus, it is not necessary for the user program to worry about this direction.</p>
+<p>On architectures where <code>int</code> and pointer types are the same size (e.g., x86-32, where both types are 32 bits), you may be able to get away with passing pointers as arguments to <a href='makecontext'>makecontext</a>() following <code>argc</code>. However, doing this is not guaranteed to be portable, is undefined according to the standards, and won't work on architectures where pointers are larger than <code>int</code>s. Nevertheless, starting with version 2.8, glibc makes some changes to <a href='makecontext'>makecontext</a>(), to permit this on some 64-bit architectures (e.g., x86-64).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/sigaction'>sigaction</a>(2), <a href='/2/sigaltstack'>sigaltstack</a>(2), <a href='/2/sigprocmask'>sigprocmask</a>(2), <a href='/3/getcontext'>getcontext</a>(3), <a href='/3/sigsetjmp'>sigsetjmp</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

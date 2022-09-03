@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getlogin, <a data-bs-content='This is the man page for &lt;code&gt;getlogin_r&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>getlogin_r</a>, cuserid - get username</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>getlogin(void);</strong><br/>
+<strong>int getlogin_r(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a></strong><code>buf</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> </strong><code>bufsize</code><strong>);</strong></p>
+<p><strong>#include &lt;stdio.h&gt;</strong></p>
+<p><strong><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>cuserid(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a></strong><code>string</code><strong>);</strong></p>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getlogin_r'>getlogin_r</a>(): _POSIX_C_SOURCE &gt;= 199506L</p>
+<p><a href='cuserid'>cuserid</a>():</p>
+<pre><code>    Since glibc 2.24:
+        (_XOPEN_SOURCE &amp;&amp; ! (_POSIX_C_SOURCE &gt;= 200112L)
+        || _GNU_SOURCE
+    Up to and including glibc 2.23:
+        _XOPEN_SOURCE</code></pre>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='getlogin'>getlogin</a>() returns a pointer to a string containing the name of the user logged in on the controlling terminal of the process, or a null pointer if this information cannot be determined. The string is statically allocated and might be overwritten on subsequent calls to this function or to <a href='cuserid'>cuserid</a>().</p>
+<p><a href='getlogin_r'>getlogin_r</a>() returns this same username in the array <code>buf</code> of size <code>bufsize</code>.</p>
+<p><a href='cuserid'>cuserid</a>() returns a pointer to a string containing a username associated with the effective user ID of the process. If <code>string</code> is not a null pointer, it should be an array that can hold at least <strong>L_cuserid</strong> characters; the string is returned in this array. Otherwise, a pointer to a string in a static area is returned. This string is statically allocated and might be overwritten on subsequent calls to this function or to <a href='getlogin'>getlogin</a>().</p>
+<p>The macro <strong>L_cuserid</strong> is an integer constant that indicates how long an array you might need to store a username. <strong>L_cuserid</strong> is declared in <code>&lt;stdio.h&gt;</code>.</p>
+<p>These functions let your program identify positively the user who is running (<a href='cuserid'>cuserid</a>()) or the user who logged in this session (<a href='getlogin'>getlogin</a>()). (These can differ when set-user-ID programs are involved.)</p>
+<p>For most purposes, it is more useful to use the environment variable <strong>LOGNAME</strong> to find out who the user is. This is more flexible precisely because the user can set <strong>LOGNAME</strong> arbitrarily.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='getlogin'>getlogin</a>() returns a pointer to the username when successful, and NULL on failure, with <code>errno</code> set to indicate the cause of the error. <a href='getlogin_r'>getlogin_r</a>() returns 0 when successful, and nonzero on failure.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>POSIX specifies:</p>
+<dl>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENXIO</strong></dt>
+<dd><p>The calling process has no controlling terminal.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>(getlogin_r) The length of the username, including the terminating null byte ('\0'), is larger than <code>bufsize</code>.</p>
+</dd>
+</dl>
+<p>Linux/glibc also has:</p>
+<dl>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>There was no corresponding entry in the utmp-file.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient memory to allocate passwd structure.</p>
+</dd>
+<dt><strong>ENOTTY</strong></dt>
+<dd><p>Standard input didn't refer to a terminal. (See <a href='#bugs'>BUGS</a>.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/etc/passwd</code></dt>
+<dd><p>password database file</p>
+</dd>
+<dt><code>/var/run/utmp</code></dt>
+<dd><p>(traditionally <code>/etc/utmp</code>; some libc versions used <code>/var/adm/utmp</code>)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getlogin'>getlogin</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:getlogin race:utent<br/>
+sig:ALRM timer locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='getlogin_r'>getlogin_r</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:utent sig:ALRM timer<br/>
+locale</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='cuserid'>cuserid</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:cuserid/!string locale</td>
+</tr>
+</tbody>
+</table>
+<p>In the above table, <code>utent</code> in <code>race:utent</code> signifies that if any of the functions <a href='/3/setutent'>setutent</a>(3), <a href='/3/getutent'>getutent</a>(3), or <a href='/3/endutent'>endutent</a>(3) are used in parallel in different threads of a program, then data races could occur. <a href='getlogin'>getlogin</a>() and <a href='getlogin_r'>getlogin_r</a>() call those functions, so we use race:utent to remind users.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='getlogin'>getlogin</a>() and <a href='getlogin_r'>getlogin_r</a>(): POSIX.1-2001, POSIX.1-2008.</p>
+<p>System V has a <a href='cuserid'>cuserid</a>() function which uses the real user ID rather than the effective user ID. The <a href='cuserid'>cuserid</a>() function was included in the 1988 version of POSIX, but removed from the 1990 version. It was present in SUSv2, but removed in POSIX.1-2001.</p>
+<p>OpenBSD has <a href='getlogin'>getlogin</a>() and <a href='setlogin'>setlogin</a>(), and a username associated with a session, even if it has no controlling terminal.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Unfortunately, it is often rather easy to fool <a href='getlogin'>getlogin</a>(). Sometimes it does not work at all, because some program messed up the utmp file. Often, it gives only the first 8 characters of the login name. The user currently logged in on the controlling terminal of our program need not be the user who started it. Avoid <a href='getlogin'>getlogin</a>() for security-related purposes.</p>
+<p>Note that glibc does not follow the POSIX specification and uses <code>stdin</code> instead of <code>/dev/tty</code>. A bug. (Other recent systems, like SunOS 5.8 and HP-UX 11.11 and FreeBSD 4.8 all return the login name also when <code>stdin</code> is redirected.)</p>
+<p>Nobody knows precisely what <a href='cuserid'>cuserid</a>() does; avoid it in portable programs. Or avoid it altogether: use <code>getpwuid(geteuid())</code> instead, if that is what you meant. <strong>Do not use</strong> <a href='cuserid'>cuserid</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/logname'>logname</a>(1), <a href='/2/geteuid'>geteuid</a>(2), <a href='/2/getuid'>getuid</a>(2), <a href='/5/utmp'>utmp</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

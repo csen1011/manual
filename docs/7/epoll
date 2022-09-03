@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>epoll - I/O event notification facility</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/epoll.h&gt;</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>epoll</strong> API performs a similar task to <a href='/2/poll'>poll</a>(2): monitoring multiple file descriptors to see if I/O is possible on any of them. The <strong>epoll</strong> API can be used either as an edge-triggered or a level-triggered interface and scales well to large numbers of watched file descriptors.</p>
+<p>The central concept of the <strong>epoll</strong> API is the <strong>epoll</strong> <code>instance</code>, an in-kernel data structure which, from a user-space perspective, can be considered as a container for two lists:</p>
+<ul>
+<li><p>The <code>interest</code> list (sometimes also called the <strong>epoll</strong> set): the set of file descriptors that the process has registered an interest in monitoring.</p></li>
+<li><p>The <code>ready</code> list: the set of file descriptors that are "ready" for I/O. The ready list is a subset of (or, more precisely, a set of references to) the file descriptors in the interest list. The ready list is dynamically populated by the kernel as a result of I/O activity on those file descriptors.</p></li>
+</ul>
+<p>The following system calls are provided to create and manage an <strong>epoll</strong> instance:</p>
+<ul>
+<li><p><a href='/2/epoll_create'>epoll_create</a>(2) creates a new <strong>epoll</strong> instance and returns a file descriptor referring to that instance. (The more recent <a href='/2/epoll_create1'>epoll_create1</a>(2) extends the functionality of <a href='/2/epoll_create'>epoll_create</a>(2).)</p></li>
+<li><p>Interest in particular file descriptors is then registered via <a href='/2/epoll_ctl'>epoll_ctl</a>(2), which adds items to the interest list of the <strong>epoll</strong> instance.</p></li>
+<li><p><a href='/2/epoll_wait'>epoll_wait</a>(2) waits for I/O events, blocking the calling thread if no events are currently available. (This system call can be thought of as fetching items from the ready list of the <strong>epoll</strong> instance.) The <strong>epoll</strong> event distribution interface is able to behave both as edge-triggered (ET) and as level-triggered (LT). The difference between the two mechanisms can be described as follows. Suppose that this scenario happens:</p></li>
+</ul>
+<ol type="1">
+<li><p>The file descriptor that represents the read side of a pipe (<code>rfd</code>) is registered on the <strong>epoll</strong> instance.</p></li>
+<li><p>A pipe writer writes 2 kB of data on the write side of the pipe.</p></li>
+<li><p>A call to <a href='/2/epoll_wait'>epoll_wait</a>(2) is done that will return <code>rfd</code> as a ready file descriptor.</p></li>
+<li><p>The pipe reader reads 1 kB of data from <code>rfd</code>.</p></li>
+<li><p>A call to <a href='/2/epoll_wait'>epoll_wait</a>(2) is done.</p></li>
+</ol>
+<p>If the <code>rfd</code> file descriptor has been added to the <strong>epoll</strong> interface using the <strong>EPOLLET</strong> (edge-triggered) flag, the call to <a href='/2/epoll_wait'>epoll_wait</a>(2) done in step <strong>5</strong> will probably hang despite the available data still present in the file input buffer; meanwhile the remote peer might be expecting a response based on the data it already sent. The reason for this is that edge-triggered mode delivers events only when changes occur on the monitored file descriptor. So, in step <strong>5</strong> the caller might end up waiting for some data that is already present inside the input buffer. In the above example, an event on <code>rfd</code> will be generated because of the write done in <strong>2</strong> and the event is consumed in <strong>3</strong>. Since the read operation done in <strong>4</strong> does not consume the whole buffer data, the call to <a href='/2/epoll_wait'>epoll_wait</a>(2) done in step <strong>5</strong> might block indefinitely.</p>
+<p>An application that employs the <strong>EPOLLET</strong> flag should use nonblocking file descriptors to avoid having a blocking read or write starve a task that is handling multiple file descriptors. The suggested way to use <strong>epoll</strong> as an edge-triggered (<strong>EPOLLET</strong>) interface is as follows:</p>
+<ol type="a">
+<li><p>with nonblocking file descriptors; and</p></li>
+<li><p>by waiting for an event only after <a href='/2/read'>read</a>(2) or <a href='/2/write'>write</a>(2) return <strong>EAGAIN</strong>.</p></li>
+</ol>
+<p>By contrast, when used as a level-triggered interface (the default, when <strong>EPOLLET</strong> is not specified), <strong>epoll</strong> is simply a faster <a href='/2/poll'>poll</a>(2), and can be used wherever the latter is used since it shares the same semantics.</p>
+<p>Since even with edge-triggered <strong>epoll</strong>, multiple events can be generated upon receipt of multiple chunks of data, the caller has the option to specify the <strong>EPOLLONESHOT</strong> flag, to tell <strong>epoll</strong> to disable the associated file descriptor after the receipt of an event with <a href='/2/epoll_wait'>epoll_wait</a>(2). When the <strong>EPOLLONESHOT</strong> flag is specified, it is the caller's responsibility to rearm the file descriptor using <a href='/2/epoll_ctl'>epoll_ctl</a>(2) with <strong>EPOLL_CTL_MOD</strong>.</p>
+<p>If multiple threads (or processes, if child processes have inherited the <strong>epoll</strong> file descriptor across <a href='/2/fork'>fork</a>(2)) are blocked in <a href='/2/epoll_wait'>epoll_wait</a>(2) waiting on the same epoll file descriptor and a file descriptor in the interest list that is marked for edge-triggered (<strong>EPOLLET</strong>) notification becomes ready, just one of the threads (or processes) is awoken from <a href='/2/epoll_wait'>epoll_wait</a>(2). This provides a useful optimization for avoiding "thundering herd" wake-ups in some scenarios. If the system is in <strong>autosleep</strong> mode via <code>/sys/power/autosleep</code> and an event happens which wakes the device from sleep, the device driver will keep the device awake only until that event is queued. To keep the device awake until the event has been processed, it is necessary to use the <a href='/2/epoll_ctl'>epoll_ctl</a>(2) <strong>EPOLLWAKEUP</strong> flag.</p>
+<p>When the <strong>EPOLLWAKEUP</strong> flag is set in the <strong>events</strong> field for a <code>struct epoll_event</code>, the system will be kept awake from the moment the event is queued, through the <a href='/2/epoll_wait'>epoll_wait</a>(2) call which returns the event until the subsequent <a href='/2/epoll_wait'>epoll_wait</a>(2) call. If the event should keep the system awake beyond that time, then a separate <code>wake_lock</code> should be taken before the second <a href='/2/epoll_wait'>epoll_wait</a>(2) call.</p>
+<h2>/proc interfaces</h2>
+<p>The following interfaces can be used to limit the amount of kernel memory consumed by epoll:</p>
+<dl>
+<dt><code>/proc/sys/fs/epoll/max_user_watches</code> (since Linux 2.6.28)</dt>
+<dd><p>This specifies a limit on the total number of file descriptors that a user can register across all epoll instances on the system. The limit is per real user ID. Each registered file descriptor costs roughly 90 bytes on a 32-bit kernel, and roughly 160 bytes on a 64-bit kernel. Currently, the default value for <code>max_user_watches</code> is 1/25 (4%) of the available low memory, divided by the registration cost in bytes.</p>
+</dd>
+</dl>
+<h2>Example for suggested usage</h2>
+<p>While the usage of <strong>epoll</strong> when employed as a level-triggered interface does have the same semantics as <a href='/2/poll'>poll</a>(2), the edge-triggered usage requires more clarification to avoid stalls in the application event loop. In this example, listener is a nonblocking socket on which <a href='/2/listen'>listen</a>(2) has been called. The function <code>do_use_fd()</code> uses the new ready file descriptor until <strong>EAGAIN</strong> is returned by either <a href='/2/read'>read</a>(2) or <a href='/2/write'>write</a>(2). An event-driven state machine application should, after having received <strong>EAGAIN</strong>, record its current state so that at the next call to <code>do_use_fd()</code> it will continue to <a href='/2/read'>read</a>(2) or <a href='/2/write'>write</a>(2) from where it stopped before.</p>
+<pre><code>#define MAX_EVENTS 10
+struct epoll_event ev, events[MAX_EVENTS];
+int listen_sock, conn_sock, nfds, epollfd;
+
+/* Code to set up listening socket, 'listen_sock',
+   (socket(), bind(), listen()) omitted */
+
+epollfd = epoll_create1(0);
+if (epollfd == -1) {
+    perror("epoll_create1");
+    exit(EXIT_FAILURE);
+}
+
+ev.events = EPOLLIN;
+ev.data.fd = listen_sock;
+if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &amp;ev) == -1) {
+    perror("epoll_ctl: listen_sock");
+    exit(EXIT_FAILURE);
+}
+
+for (;;) {
+    nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
+    if (nfds == -1) {
+        perror("epoll_wait");
+        exit(EXIT_FAILURE);
+    }
+
+    for (n = 0; n &lt; nfds; ++n) {
+        if (events[n].data.fd == listen_sock) {
+            conn_sock = accept(listen_sock,
+                               (struct sockaddr *) &amp;addr, &amp;addrlen);
+            if (conn_sock == -1) {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+            setnonblocking(conn_sock);
+            ev.events = EPOLLIN | EPOLLET;
+            ev.data.fd = conn_sock;
+            if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,
+                        &amp;ev) == -1) {
+                perror("epoll_ctl: conn_sock");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            do_use_fd(events[n].data.fd);
+        }
+    }
+}</code></pre>
+<p>When used as an edge-triggered interface, for performance reasons, it is possible to add the file descriptor inside the <strong>epoll</strong> interface (<strong>EPOLL_CTL_ADD</strong>) once by specifying (<strong>EPOLLIN</strong>|<strong>EPOLLOUT</strong>). This allows you to avoid continuously switching between <strong>EPOLLIN</strong> and <strong>EPOLLOUT</strong> calling <a href='/2/epoll_ctl'>epoll_ctl</a>(2) with <strong>EPOLL_CTL_MOD</strong>.</p>
+<h2>Questions and answers</h2>
+<ol start="0" type="1">
+<li><p>What is the key used to distinguish the file descriptors registered in an interest list?</p>
+<p>The key is the combination of the file descriptor number and the open file description (also known as an "open file handle", the kernel's internal representation of an open file).</p></li>
+<li><p>What happens if you register the same file descriptor on an <strong>epoll</strong> instance twice?</p>
+<p>You will probably get <strong>EEXIST</strong>. However, it is possible to add a duplicate (<a href='/2/dup'>dup</a>(2), <a href='/2/dup2'>dup2</a>(2), <a href='/2/fcntl'>fcntl</a>(2) <strong>F_DUPFD</strong>) file descriptor to the same <strong>epoll</strong> instance. This can be a useful technique for filtering events, if the duplicate file descriptors are registered with different <code>events</code> masks.</p></li>
+<li><p>Can two <strong>epoll</strong> instances wait for the same file descriptor? If so, are events reported to both <strong>epoll</strong> file descriptors?</p>
+<p>Yes, and events would be reported to both. However, careful programming may be needed to do this correctly.</p></li>
+<li><p>Is the <strong>epoll</strong> file descriptor itself poll/epoll/selectable?</p>
+<p>Yes. If an <strong>epoll</strong> file descriptor has events waiting, then it will indicate as being readable.</p></li>
+<li><p>What happens if one attempts to put an <strong>epoll</strong> file descriptor into its own file descriptor set?</p>
+<p>The <a href='/2/epoll_ctl'>epoll_ctl</a>(2) call fails (<strong>EINVAL</strong>). However, you can add an <strong>epoll</strong> file descriptor inside another <strong>epoll</strong> file descriptor set.</p></li>
+<li><p>Can I send an <strong>epoll</strong> file descriptor over a UNIX domain socket to another process?</p>
+<p>Yes, but it does not make sense to do this, since the receiving process would not have copies of the file descriptors in the interest list.</p></li>
+<li><p>Will closing a file descriptor cause it to be removed from all <strong>epoll</strong> interest lists?</p>
+<p>Yes, but be aware of the following point. A file descriptor is a reference to an open file description (see <a href='/2/open'>open</a>(2)). Whenever a file descriptor is duplicated via <a href='/2/dup'>dup</a>(2), <a href='/2/dup2'>dup2</a>(2), <a href='/2/fcntl'>fcntl</a>(2) <strong>F_DUPFD</strong>, or <a href='/2/fork'>fork</a>(2), a new file descriptor referring to the same open file description is created. An open file description continues to exist until all file descriptors referring to it have been closed.</p>
+<p>A file descriptor is removed from an interest list only after all the file descriptors referring to the underlying open file description have been closed. This means that even after a file descriptor that is part of an interest list has been closed, events may be reported for that file descriptor if other file descriptors referring to the same underlying file description remain open. To prevent this happening, the file descriptor must be explicitly removed from the interest list (using <a href='/2/epoll_ctl'>epoll_ctl</a>(2) <strong>EPOLL_CTL_DEL</strong>) before it is duplicated. Alternatively, the application must ensure that all file descriptors are closed (which may be difficult if file descriptors were duplicated behind the scenes by library functions that used <a href='/2/dup'>dup</a>(2) or <a href='/2/fork'>fork</a>(2)).</p></li>
+<li><p>If more than one event occurs between <a href='/2/epoll_wait'>epoll_wait</a>(2) calls, are they combined or reported separately?</p>
+<p>They will be combined.</p></li>
+<li><p>Does an operation on a file descriptor affect the already collected but not yet reported events?</p>
+<p>You can do two operations on an existing file descriptor. Remove would be meaningless for this case. Modify will reread available I/O.</p></li>
+<li><p>Do I need to continuously read/write a file descriptor until <strong>EAGAIN</strong> when using the <strong>EPOLLET</strong> flag (edge-triggered behavior)?</p>
+<p>Receiving an event from <a href='/2/epoll_wait'>epoll_wait</a>(2) should suggest to you that such file descriptor is ready for the requested I/O operation. You must consider it ready until the next (nonblocking) read/write yields <strong>EAGAIN</strong>. When and how you will use the file descriptor is entirely up to you.</p>
+<p>For packet/token-oriented files (e.g., datagram socket, terminal in canonical mode), the only way to detect the end of the read/write I/O space is to continue to read/write until <strong>EAGAIN</strong>.</p>
+<p>For stream-oriented files (e.g., pipe, FIFO, stream socket), the condition that the read/write I/O space is exhausted can also be detected by checking the amount of data read from / written to the target file descriptor. For example, if you call <a href='/2/read'>read</a>(2) by asking to read a certain amount of data and <a href='/2/read'>read</a>(2) returns a lower number of bytes, you can be sure of having exhausted the read I/O space for the file descriptor. The same is true when writing using <a href='/2/write'>write</a>(2). (Avoid this latter technique if you cannot guarantee that the monitored file descriptor always refers to a stream-oriented file.)</p></li>
+</ol>
+<h2>Possible pitfalls and ways to avoid them</h2>
+<dl>
+<dt><strong>o Starvation (edge-triggered)</strong></dt>
+<dd>
+</dd>
+</dl>
+<p>If there is a large amount of I/O space, it is possible that by trying to drain it the other files will not get processed causing starvation. (This problem is not specific to <strong>epoll</strong>.)</p>
+<p>The solution is to maintain a ready list and mark the file descriptor as ready in its associated data structure, thereby allowing the application to remember which files need to be processed but still round robin amongst all the ready files. This also supports ignoring subsequent events you receive for file descriptors that are already ready.</p>
+<dl>
+<dt><strong>o If using an event cache...</strong></dt>
+<dd>
+</dd>
+</dl>
+<p>If you use an event cache or store all the file descriptors returned from <a href='/2/epoll_wait'>epoll_wait</a>(2), then make sure to provide a way to mark its closure dynamically (i.e., caused by a previous event's processing). Suppose you receive 100 events from <a href='/2/epoll_wait'>epoll_wait</a>(2), and in event #47 a condition causes event #13 to be closed. If you remove the structure and <a href='/2/close'>close</a>(2) the file descriptor for event #13, then your event cache might still say there are events waiting for that file descriptor causing confusion.</p>
+<p>One solution for this is to call, during the processing of event 47, <strong>epoll_ctl</strong>(<strong>EPOLL_CTL_DEL</strong>) to delete file descriptor 13 and <a href='/2/close'>close</a>(2), then mark its associated data structure as removed and link it to a cleanup list. If you find another event for file descriptor 13 in your batch processing, you will discover the file descriptor had been previously removed and there will be no confusion.</p>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <strong>epoll</strong> API was introduced in Linux kernel 2.5.44. Support was added to glibc in version 2.3.2.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <strong>epoll</strong> API is Linux-specific. Some other systems provide similar mechanisms, for example, FreeBSD has <code>kqueue</code>, and Solaris has <code>/dev/poll</code>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The set of file descriptors that is being monitored via an epoll file descriptor can be viewed via the entry for the epoll file descriptor in the process's <code>/proc/[pid]/fdinfo</code> directory. See <a href='/5/proc'>proc</a>(5) for further details.</p>
+<p>The <a href='/2/kcmp'>kcmp</a>(2) <strong>KCMP_EPOLL_TFD</strong> operation can be used to test whether a file descriptor is present in an epoll instance.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/epoll_create'>epoll_create</a>(2), <a href='/2/epoll_create1'>epoll_create1</a>(2), <a href='/2/epoll_ctl'>epoll_ctl</a>(2), <a href='/2/epoll_wait'>epoll_wait</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/2/select'>select</a>(2)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

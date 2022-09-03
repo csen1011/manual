@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>gzip, gunzip, zcat - compress or expand files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>gzip</strong> [<strong> -acdfhklLnNrtvV19 </strong>] [<strong>-S suffix</strong>] [ <code>name ...</code> ]</p>
+<p><br/>
+<strong>gunzip</strong> [<strong> -acfhklLnNrtvV </strong>] [<strong>-S suffix</strong>] [ <code>name ...</code> ]<br/>
+<strong>zcat</strong> [<strong> -fhLV </strong>] [ <code>name ...</code> ]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><code>Gzip</code> reduces the size of the named files using Lempel-Ziv coding (LZ77). Whenever possible, each file is replaced by one with the extension <strong>.gz</strong>, while keeping the same ownership modes, access and modification times. (The default extension is <strong>z</strong> for MSDOS, OS/2 FAT, Windows NT FAT and Atari.) If no files are specified, or if a file name is "-", the standard input is compressed to the standard output. <code>Gzip</code> will only attempt to compress regular files. In particular, it will ignore symbolic links.</p>
+<p>If the compressed file name is too long for its file system, <code>gzip</code> truncates it. <code>Gzip</code> attempts to truncate only the parts of the file name longer than 3 characters. (A part is delimited by dots.) If the name consists of small parts only, the longest parts are truncated. For example, if file names are limited to 14 characters, gzip.msdos.exe is compressed to gzi.msd.exe.gz. Names are not truncated on systems which do not have a limit on file name length.</p>
+<p>By default, <code>gzip</code> keeps the original file name and timestamp in the compressed file. These are used when decompressing the file with the <strong>-N</strong> option. This is useful when the compressed file name was truncated or when the timestamp was not preserved after a file transfer.</p>
+<p>Compressed files can be restored to their original form using <code>gzip -d</code> or <code>gunzip</code> or <code>zcat</code>. If the original name saved in the compressed file is not suitable for its file system, a new name is constructed from the original one to make it legal.</p>
+<p><code>gunzip</code> takes a list of files on its command line and replaces each file whose name ends with .gz, -gz, .z, -z, or _z (ignoring case) and which begins with the correct magic number with an uncompressed file without the original extension. <code>gunzip</code> also recognizes the special extensions <strong>.tgz</strong> and <strong>.taz</strong> as shorthands for <strong>.tar.gz</strong> and <strong>.tar.Z</strong> respectively. When compressing, <code>gzip</code> uses the <strong>.tgz</strong> extension if necessary instead of truncating a file with a <strong>.tar</strong> extension.</p>
+<p><code>gunzip</code> can currently decompress files created by <code>gzip</code>, <code>zip</code>, <code>compress</code>, <code>compress -H</code> or <code>pack</code>. The detection of the input format is automatic. When using the first two formats, <code>gunzip</code> checks a 32 bit CRC. For <code>pack</code> and <code>gunzip</code> checks the uncompressed length. The standard <code>compress</code> format was not designed to allow consistency checks. However <code>gunzip</code> is sometimes able to detect a bad .Z file. If you get an error when uncompressing a .Z file, do not assume that the .Z file is correct simply because the standard <code>uncompress</code> does not complain. This generally means that the standard <code>uncompress</code> does not check its input, and happily generates garbage output. The SCO compress -H format (lzh compression method) does not include a CRC but also allows some consistency checks.</p>
+<p>Files created by <code>zip</code> can be uncompressed by gzip only if they have a single member compressed with the 'deflation' method. This feature is only intended to help conversion of tar.zip files to the tar.gz format. To extract a <code>zip</code> file with a single member, use a command like <code>gunzip &lt;foo.zip</code> or <code>gunzip -S .zip foo.zip</code>. To extract zip files with several members, use <code>unzip</code> instead of <code>gunzip</code>.</p>
+<p><code>zcat</code> is identical to <code>gunzip</code> <strong>-c</strong>. (On some systems, <code>zcat</code> may be installed as <code>gzcat</code> to preserve the original link to <code>compress</code>.) <code>zcat</code> uncompresses either a list of files on the command line or its standard input and writes the uncompressed data on standard output. <code>zcat</code> will uncompress files that have the correct magic number whether they have a <strong>.gz</strong> suffix or not.</p>
+<p><code>Gzip</code> uses the Lempel-Ziv algorithm used in <code>zip</code> and PKZIP. The amount of compression obtained depends on the size of the input and the distribution of common substrings. Typically, text such as source code or English is reduced by 60-70%. Compression is generally much better than that achieved by LZW (as used in <code>compress</code>), Huffman coding (as used in <code>pack</code>), or adaptive Huffman coding (<code>compact</code>).</p>
+<p>Compression is always performed, even if the compressed file is slightly larger than the original. The worst case expansion is a few bytes for the gzip file header, plus 5 bytes every 32K block, or an expansion ratio of 0.015% for large files. Note that the actual number of used disk blocks almost never increases. <code>gzip</code> preserves the mode, ownership and timestamps of files when compressing or decompressing.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-a --ascii</strong></dt>
+<dd><p>Ascii text mode: convert end-of-lines using local conventions. This option is supported only on some non-Unix systems. For MSDOS, CR LF is converted to LF when compressing, and LF is converted to CR LF when decompressing.</p>
+</dd>
+<dt><strong>-c --stdout --to-stdout</strong></dt>
+<dd><p>Write output on standard output; keep original files unchanged. If there are several input files, the output consists of a sequence of independently compressed members. To obtain better compression, concatenate all input files before compressing them.</p>
+</dd>
+<dt><strong>-d --decompress --uncompress</strong></dt>
+<dd><p>Decompress.</p>
+</dd>
+<dt><strong>-f --force</strong></dt>
+<dd><p>Force compression or decompression even if the file has multiple links or the corresponding file already exists, or if the compressed data is read from or written to a terminal. If the input data is not in a format recognized by <code>gzip</code>, and if the option --stdout is also given, copy the input data without change to the standard output: let <code>zcat</code> behave as <code>cat</code>. If <strong>-f</strong> is not given, and when not running in the background, <code>gzip</code> prompts to verify whether an existing file should be overwritten.</p>
+</dd>
+<dt><strong>-h --help</strong></dt>
+<dd><p>Display a help screen and quit.</p>
+</dd>
+<dt><strong>-k --keep</strong></dt>
+<dd><p>Keep (don't delete) input files during compression or decompression.</p>
+</dd>
+<dt><strong>-l --list</strong></dt>
+<dd><p>For each compressed file, list the following fields:</p>
+</dd>
+</dl>
+<p>compressed size: size of the compressed file uncompressed size: size of the uncompressed file ratio: compression ratio (0.0% if unknown) uncompressed_name: name of the uncompressed file</p>
+<p>The uncompressed size is given as -1 for files not in gzip format, such as compressed .Z files. To get the uncompressed size for such a file, you can use:</p>
+<p>zcat file.Z | wc -c</p>
+<p>In combination with the --verbose option, the following fields are also displayed:</p>
+<p>method: compression method crc: the 32-bit CRC of the uncompressed data date &amp; time: timestamp for the uncompressed file</p>
+<p>The compression methods currently supported are deflate, compress, lzh (SCO compress -H) and pack. The crc is given as ffffffff for a file not in gzip format.</p>
+<p>With --name, the uncompressed name, date and time are those stored within the compress file if present.</p>
+<p>With --verbose, the size totals and compression ratio for all files is also displayed, unless some sizes are unknown. With --quiet, the title and totals lines are not displayed.</p>
+<dl>
+<dt><strong>-L --license</strong></dt>
+<dd><p>Display the <code>gzip</code> license and quit.</p>
+</dd>
+<dt><strong>-n --no-name</strong></dt>
+<dd><p>When compressing, do not save the original file name and timestamp by default. (The original name is always saved if the name had to be truncated.) When decompressing, do not restore the original file name if present (remove only the <code>gzip</code> suffix from the compressed file name) and do not restore the original timestamp if present (copy it from the compressed file). This option is the default when decompressing.</p>
+</dd>
+<dt><strong>-N --name</strong></dt>
+<dd><p>When compressing, always save the original file name and timestamp; this is the default. When decompressing, restore the original file name and timestamp if present. This option is useful on systems which have a limit on file name length or when the timestamp has been lost after a file transfer.</p>
+</dd>
+<dt><strong>-q --quiet</strong></dt>
+<dd><p>Suppress all warnings.</p>
+</dd>
+<dt><strong>-r --recursive</strong></dt>
+<dd><p>Travel the directory structure recursively. If any of the file names specified on the command line are directories, <code>gzip</code> will descend into the directory and compress all the files it finds there (or decompress them in the case of <code>gunzip</code> ).</p>
+</dd>
+<dt><strong>-S .suf --suffix .suf</strong></dt>
+<dd><p>When compressing, use suffix .suf instead of .gz. Any non-empty suffix can be given, but suffixes other than .z and .gz should be avoided to avoid confusion when files are transferred to other systems.</p>
+</dd>
+</dl>
+<p>When decompressing, add .suf to the beginning of the list of suffixes to try, when deriving an output file name from an input file name.</p>
+<dl>
+<dt><strong>--synchronous</strong></dt>
+<dd><p>Use synchronous output. With this option, <code>gzip</code> is less likely to lose data during a system crash, but it can be considerably slower.</p>
+</dd>
+<dt><strong>-t --test</strong></dt>
+<dd><p>Test. Check the compressed file integrity.</p>
+</dd>
+<dt><strong>-v --verbose</strong></dt>
+<dd><p>Verbose. Display the name and percentage reduction for each file compressed or decompressed.</p>
+</dd>
+<dt><strong>-V --version</strong></dt>
+<dd><p>Version. Display the version number and compilation options then quit.</p>
+</dd>
+<dt><strong>-# --fast --best</strong></dt>
+<dd><p>Regulate the speed of compression using the specified digit <code>#</code>, where <strong>-1</strong> or <strong>--fast</strong> indicates the fastest compression method (less compression) and <strong>-9</strong> or <strong>--best</strong> indicates the slowest compression method (best compression). The default compression level is <strong>-6</strong> (that is, biased towards high compression at expense of speed).</p>
+</dd>
+<dt><strong>--rsyncable</strong></dt>
+<dd><p>When you synchronize a compressed file between two computers, this option allows rsync to transfer only files that were changed in the archive instead of the entire archive. Normally, after a change is made to any file in the archive, the compression algorithm can generate a new version of the archive that does not match the previous version of the archive. In this case, rsync transfers the entire new version of the archive to the remote computer. With this option, rsync can transfer only the changed files as well as a small amount of metadata that is required to update the archive structure in the area that was changed.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='advanced-usage'><a href='#advanced-usage'>ADVANCED USAGE</a></h1><div data-for='advanced-usage' data-hide><div class='section' data-for='advanced-usage'><div data-more>
+<p>Multiple compressed files can be concatenated. In this case, <code>gunzip</code> will extract all members at once. For example:</p>
+<p>gzip -c file1 &gt; foo.gz gzip -c file2 &gt;&gt; foo.gz</p>
+<p>Then</p>
+<p>gunzip -c foo</p>
+<p>is equivalent to</p>
+<p>cat file1 file2</p>
+<p>In case of damage to one member of a .gz file, other members can still be recovered (if the damaged member is removed). However, you can get better compression by compressing all members at once:</p>
+<p>cat file1 file2 | gzip &gt; foo.gz</p>
+<p>compresses better than</p>
+<p>gzip -c file1 file2 &gt; foo.gz</p>
+<p>If you want to recompress concatenated files to get better compression, do:</p>
+<p>gzip -cd old.gz | gzip &gt; new.gz</p>
+<p>If a compressed file consists of several members, the uncompressed size and CRC reported by the --list option applies to the last member only. If you need the uncompressed size for all members, you can use:</p>
+<p>gzip -cd file.gz | wc -c</p>
+<p>If you wish to create a single archive file with multiple members so that members can later be extracted independently, use an archiver such as tar or zip. GNU tar supports the -z option to invoke gzip transparently. gzip is designed as a complement to tar, not as a replacement.</p>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>The obsolescent environment variable <strong>GZIP</strong> can hold a set of default options for <code>gzip</code>. These options are interpreted first and can be overwritten by explicit command line parameters. As this can cause problems when using scripts, this feature is supported only for options that are reasonably likely to not cause too much harm, and <code>gzip</code> warns if it is used. This feature will be removed in a future release of <code>gzip</code>.</p>
+<p>You can use an alias or script instead. For example, if <code>gzip</code> is in the directory <strong>/usr/bin</strong> you can prepend <strong>$HOME/bin</strong> to your <strong>PATH</strong> and create an executable script <strong>$HOME/bin/gzip</strong> containing the following:</p>
+<p>#! /bin/sh export PATH=/usr/bin exec gzip -9 "$@"</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>znew(1), zcmp(1), zmore(1), zforce(1), gzexe(1), zip(1), unzip(1), compress(1)</p>
+<p>The <code>gzip</code> file format is specified in P. Deutsch, GZIP file format specification version 4.3, <strong>&lt;<a href="https://www.ietf.org/rfc/rfc1952.txt&amp;gt;">https://www.ietf.org/rfc/rfc1952.txt&gt;</a></strong>, Internet RFC 1952 (May 1996). The <code>zip</code> deflation format is specified in P. Deutsch, DEFLATE Compressed Data Format Specification version 1.3, <strong>&lt;<a href="https://www.ietf.org/rfc/rfc1951.txt&amp;gt;">https://www.ietf.org/rfc/rfc1951.txt&gt;</a></strong>, Internet RFC 1951 (May 1996).</p>
+</div></div><h1 id='diagnostics'><a href='#diagnostics'>DIAGNOSTICS</a></h1><div data-for='diagnostics' data-hide><div class='section' data-for='diagnostics'><div data-more>
+<p>Exit status is normally 0; if an error occurs, exit status is 1. If a warning occurs, exit status is 2.</p>
+<dl>
+<dt>Usage: gzip [-cdfhklLnNrtvV19] [-S suffix] [file ...]</dt>
+<dd><p>Invalid options were specified on the command line.</p>
+</dd>
+<dt><code>file</code> : not in gzip format</dt>
+<dd><p>The file specified to <code>gunzip</code> has not been compressed.</p>
+</dd>
+<dt><code>file</code> : Corrupt input. Use zcat to recover some data.</dt>
+<dd><p>The compressed file has been damaged. The data up to the point of failure can be recovered using</p>
+</dd>
+</dl>
+<p>zcat <code>file</code> &gt; recover</p>
+<dl>
+<dt><code>file</code> : compressed with <code>xx</code> bits, can only handle <code>yy</code> bits</dt>
+<dd><p><code>File</code> was compressed (using LZW) by a program that could deal with more <code>bits</code> than the decompress code on this machine. Recompress the file with gzip, which compresses better and uses less memory.</p>
+</dd>
+<dt><code>file</code> : already has .gz suffix -- unchanged</dt>
+<dd><p>The file is assumed to be already compressed. Rename the file and try again.</p>
+</dd>
+<dt><code>file</code> already exists; do you wish to overwrite (y or n)?</dt>
+<dd><p>Respond "y" if you want the output file to be replaced; "n" if not.</p>
+</dd>
+<dt>gunzip: corrupt input</dt>
+<dd><p>A SIGSEGV violation was detected which usually means that the input file has been corrupted.</p>
+</dd>
+<dt><code>xx.x%</code> Percentage of the input saved by compression.</dt>
+<dd><p>(Relevant only for <strong>-v</strong> and <strong>-l</strong>`)</p>
+</dd>
+<dt>-- not a regular file or directory: ignored</dt>
+<dd><p>When the input file is not a regular file or directory, (e.g. a symbolic link, socket, FIFO, device file), it is left unaltered.</p>
+</dd>
+<dt>-- has <code>xx</code> other links: unchanged</dt>
+<dd><p>The input file has links; it is left unchanged. See <code>ln</code>(1) for more information. Use the <strong>-f</strong> flag to force compression of multiply-linked files.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='caveats'><a href='#caveats'>CAVEATS</a></h1><div data-for='caveats' data-hide><div class='section' data-for='caveats'><div data-more>
+<p>When writing compressed data to a tape, it is generally necessary to pad the output with zeroes up to a block boundary. When the data is read and the whole block is passed to <code>gunzip</code> for decompression, <code>gunzip</code> detects that there is extra trailing garbage after the compressed data and emits a warning by default. You can use the --quiet option to suppress the warning.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The gzip format represents the input size modulo 2^32, so the --list option reports incorrect uncompressed sizes and compression ratios for uncompressed files 4 GB and larger. To work around this problem, you can use the following command to discover a large uncompressed file's true size:</p>
+<p>zcat file.gz | wc -c</p>
+<p>The --list option reports sizes as -1 and crc as ffffffff if the compressed file is on a non seekable media.</p>
+<p>In some rare cases, the --best option gives worse compression than the default compression level (-6). On some highly redundant files, <code>compress</code> compresses better than <code>gzip</code>.</p>
+</div></div></div><h1 id='copyright-notice'><a href='#copyright-notice'>COPYRIGHT NOTICE</a></h1><div data-for='copyright-notice' data-hide><div class='section' data-for='copyright-notice'><div data-more>
+<p>Copyright © 1998-1999, 2001-2002, 2012, 2015-2018 Free Software Foundation, Inc.<br/>
+Copyright © 1992, 1993 Jean-loup Gailly</p>
+<p>Permission is granted to make and distribute verbatim copies of this manual provided the copyright notice and this permission notice are preserved on all copies.</p>
+<p>Permission is granted to process this file through troff and print the results, provided the printed document carries copying permission notice identical to this one except for the removal of this paragraph (this paragraph not being relevant to the printed manual).</p>
+<p>Permission is granted to copy and distribute modified versions of this manual under the conditions for verbatim copying, provided that the entire resulting derived work is distributed under the terms of a permission notice identical to this one.</p>
+<p>Permission is granted to copy and distribute translations of this manual into another language, under the above conditions for modified versions, except that this permission notice may be stated in a translation approved by the Foundation.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

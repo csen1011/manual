@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>grotty - groff driver for typewriter-like devices</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>grotty</strong> [ <strong>-bBcdfhioruUv</strong> ] [ <strong>-F</strong> dir ] [<code>file</code> . . .]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>grotty</strong> translates the output of GNU <strong>troff</strong> into a form suitable for typewriter-like devices. Normally <strong>grotty</strong> should be invoked by using the <strong>groff</strong> command with a <strong>-Tascii</strong>, <strong>-Tlatin1</strong> or <strong>-Tutf8</strong> option on ASCII based systems, and with <strong>-Tcp1047</strong> and <strong>-Tutf8</strong> on EBCDIC based hosts. If no files are given, <strong>grotty</strong> reads the standard input. A filename of <strong>-</strong> also causes <strong>grotty</strong> to read the standard input. Output is written to the standard output.</p>
+<p>By default, <strong>grotty</strong> emits SGR escape sequences (from ISO 6429, also called ANSI color escapes) to change text attributes (bold, italic, colors). This makes it possible to have eight different background and foreground colors; additionally, bold and italic attributes can be used <code><strong>at the same time</strong></code> (by using the BI font).</p>
+<p>The following colors are defined in <strong>tty.tmac</strong>: black, white, red, green, blue, yellow, magenta, cyan. Unknown colors are mapped to the default color (which is dependent on the settings of the terminal; in most cases, this is black for the foreground and white for the background).</p>
+<p>Use the <strong>-c</strong> switch to revert to the old behaviour, printing a bold character <code>c</code> with the sequence “<code>c</code> BACKSPACE <code>c</code>” and an italic character <code>c</code> by the sequence “<strong>_</strong> BACKSPACE <code>c</code>”. At the same time, color output is disabled. The same effect can be achieved by setting either the <code>GROFF_NO_SGR</code> environment variable or using the ‘sgr’ X command (see below).</p>
+<p>(Debian-specific: The old behaviour is the default when using the <strong>man</strong> and <strong>mdoc</strong> macro packages, because most pagers either fail to cope with SGR escape sequences or need special options to do so. SGR output can be re-enabled permanently by editing <code>/etc/groff/man.local</code> and <code>/etc/groff/mdoc.local</code>, or temporarily by setting the <code>GROFF_SGR</code> environment variable to something non-empty.)</p>
+<p>For SGR support, it is necessary to use the <strong>-R</strong> option of <a href='/1/less'>less</a>(1) to disable the interpretation of <strong>grotty</strong>'s old output format. Consequently, all programs which use <strong>less</strong> as the pager program have to pass this option to it. For <a href='/1/man'>man</a>(1) in particular, either add <strong>-R</strong> to the <code>PAGER</code> environment variable, e.g.</p>
+<blockquote>
+<p><strong>PAGER="/usr/bin/less -R"</strong><br/>
+<strong>export PAGER</strong></p>
+</blockquote>
+<p>or use the <strong>-P</strong> option of <strong>man</strong> to set the pager executable and its options, or modify the configuration file of <strong>man</strong> in a similar fashion. Note that with some <a href='/1/man'>man</a>(1) versions, you have to use the <code>MANPAGER</code> environment variable instead.</p>
+<p><strong>grotty</strong>'s old output format can be displayed on a terminal by piping through <a href='/1/ul'>ul</a>(1). Pagers such as <a href='/1/more'>more</a>(1) or <a href='/1/less'>less</a>(1) are also able to display these sequences. Use either <strong>-B</strong> or <strong>-U</strong> when piping into <a href='/1/less'>less</a>(1); use <strong>-b</strong> when piping into <a href='/1/more'>more</a>(1). There is no need to filter the output through <a href='/1/col'>col</a>(1) since <strong>grotty</strong> never outputs reverse line feeds.</p>
+<p>The font description file may contain a command</p>
+<blockquote>
+<p><strong>internalname </strong><code>n</code></p>
+</blockquote>
+<p>where <code>n</code> is a decimal integer. If the 01 bit in <code>n</code> is set, then the font is treated as an italic font; if the 02 bit is set, then it is treated as a bold font. The code field in the font description field gives the code which is used to output the character. This code can also be used in the <strong>\N</strong> escape sequence in <strong>troff</strong>.</p>
+<p>If the <code>DESC</code> file contains the keyword <strong>unicode</strong>, <strong>grotty</strong> emits Unicode characters in UTF-8 encoding. Otherwise, it emits characters in a single-byte encoding depending on the data in the font description files. See the <a href='/5/groff_font'>groff_font</a>(5) man page for more details.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Whitespace is permitted between a command-line option and its argument.</p>
+<dl>
+<dt><strong>-b</strong></dt>
+<dd><p>Suppress the use of overstriking for bold characters. Ignored if <strong>-c</strong> isn't used.</p>
+</dd>
+<dt><strong>-B</strong></dt>
+<dd><p>Use only overstriking for bold-italic characters. Ignored if <strong>-c</strong> isn't used.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>Use <strong>grotty</strong>'s old output format (see above). This also disables color output. (Debian-specific: This option is enabled by default when using the <strong>man</strong> and <strong>mdoc</strong> macro packages. It can be disabled by default permanently by editing <code>/etc/groff/man.local</code> and <code>/etc/groff/mdoc.local</code>, or temporarily by setting the <code>GROFF_SGR</code> environment variable to something non-empty.)</p>
+</dd>
+<dt><strong>-d</strong></dt>
+<dd><p>Ignore all <strong>\D</strong> commands. Without this <strong>grotty</strong> renders <strong>\D'l . . .'</strong> commands that have at least one zero argument (and so are either horizontal or vertical) using <strong>-</strong>, <strong>|</strong>, and <strong>+</strong> characters. In a similar way, <strong>grotty</strong> handles <strong>\D'p . . .'</strong> commands which consist entirely of horizontal and vertical lines.</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Use form feeds in the output. A form feed is output at the end of each page that has no output on its last line.</p>
+</dd>
+<dt><strong>-F</strong><code>dir</code></dt>
+<dd><p>Prepend directory dir<code>/dev</code>name to the search path for font and device description files; <code>name</code> is the name of the device, usually <strong>ascii</strong>, <strong>latin1</strong>, <strong>utf8</strong>, or <strong>cp1047</strong>.</p>
+</dd>
+<dt><strong>-h</strong></dt>
+<dd><p>Use horizontal tabs in the output. Tabs are assumed to be set every 8 columns.</p>
+</dd>
+<dt><strong>-i</strong></dt>
+<dd><p>Use escape sequences to set the italic text attribute instead of the underline attribute for italic fonts (‘I’ and ‘BI’). Note that most terminals (including xterm) don't support this. Ignored if <strong>-c</strong> is active.</p>
+</dd>
+<dt><strong>-o</strong></dt>
+<dd><p>Suppress overstriking (other than for bold or underlined characters in case the old output format has been activated with <strong>-c</strong>).</p>
+</dd>
+<dt><strong>-r</strong></dt>
+<dd><p>Use escape sequences to set the reverse text attribute instead of the underline attribute for italic fonts (‘I’ and ‘BI’). Ignored if <strong>-c</strong> is active.</p>
+</dd>
+<dt><strong>-u</strong></dt>
+<dd><p>Suppress the use of underlining for italic characters. Ignored if <strong>-c</strong> isn't used.</p>
+</dd>
+<dt><strong>-U</strong></dt>
+<dd><p>Use only underlining for bold-italic characters. Ignored if <strong>-c</strong> isn't used.</p>
+</dd>
+<dt><strong>-v</strong></dt>
+<dd><p>Print the version number.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='usage'><a href='#usage'>USAGE</a></h1><div data-for='usage' data-hide><div class='section' data-for='usage'><div data-more>
+<p><strong>grotty</strong> understands a single X command produced using the <strong>\X</strong> escape sequence.</p>
+<dl>
+<dt><strong>\X'tty: sgr </strong><code>n</code><strong>'</strong></dt>
+<dd><p>If <code>n</code> is non-zero or missing, enable SGR output (this is the default), otherwise use the old drawing scheme for bold and underline.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<dl>
+<dt><code>GROFF_NO_SGR</code></dt>
+<dd><p>If set, the old drawing scheme for bold and underline (using the backspace character) is active. Colors are disabled.</p>
+</dd>
+<dt><code>GROFF_FONT_PATH</code></dt>
+<dd><p>A list of directories in which to search for the <code>dev</code>name directory in addition to the default ones. See <a href='/1/troff'>troff</a>(1) and <a href='/5/groff_font'>groff_font</a>(5) for more details.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/usr/share/groff/1.22.4/font/devascii/DESC</code></dt>
+<dd><p>Device description file for the <strong>ascii</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devascii/</code>F</dt>
+<dd><p>Font description file for font <code>F</code> of the <strong>ascii</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devlatin1/DESC</code></dt>
+<dd><p>Device description file for the <strong>latin1</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devlatin1/</code>F</dt>
+<dd><p>Font description file for font <code>F</code> of the <strong>latin1</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devutf8/DESC</code></dt>
+<dd><p>Device description file for the <strong>utf8</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devutf8/</code>F</dt>
+<dd><p>Font description file for font <code>F</code> of the <strong>utf8</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devcp1047/DESC</code></dt>
+<dd><p>Device description file for the <strong>cp1047</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/font/devcp1047/</code>F</dt>
+<dd><p>Font description file for font <code>F</code> of the <strong>cp1047</strong> device.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/tmac/tty.tmac</code></dt>
+<dd><p>Macros for use with <strong>grotty</strong>.</p>
+</dd>
+<dt><code>/usr/share/groff/1.22.4/tmac/tty-char.tmac</code></dt>
+<dd><p>Additional character definitions for use with <strong>grotty</strong>.</p>
+</dd>
+</dl>
+<p>Note that on EBCDIC hosts, only files for the <strong>cp1047</strong> device is installed.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p><strong>grotty</strong> is intended only for simple documents.</p>
+<p>There is no support for fractional horizontal or vertical motions.</p>
+<p>There is no support for <strong>\D</strong> commands other than horizontal and vertical lines.</p>
+<p>Characters above the first line (i.e. with a vertical position of 0) cannot be printed.</p>
+<p>Color handling differs from <a href='/1/grops'>grops</a>(1). <strong>\M</strong> doesn't set the fill color for closed graphic objects (which <strong>grotty</strong> doesn't support anyway) but changes the background color of the character cell, affecting all subsequent operations.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/groff'>groff</a>(1), <a href='/1/troff'>troff</a>(1), <a href='/5/groff_out'>groff_out</a>(5), <a href='/5/groff_font'>groff_font</a>(5), <a href='/7/groff_char'>groff_char</a>(7), <a href='/1/ul'>ul</a>(1), <a href='/1/more'>more</a>(1), <a href='/1/man'>man</a>(1), <a href='/1/less'>less</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

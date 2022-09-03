@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>org.freedesktop.portable1 - The D-Bus interface of systemd-portabled</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p><a href='/8/systemd-portabled.service'>systemd-portabled.service</a>(8) is a system service that may be used to attach, detach and inspect portable services. This page describes the D-Bus interface.</p>
+</div></div></div><h1 id='the-manager-object'><a href='#the-manager-object'>THE MANAGER OBJECT</a></h1><div data-for='the-manager-object' data-hide><div class='section' data-for='the-manager-object'><div data-more>
+<p>The service exposes the following interfaces on the Manager object on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/portable1 {
+  interface org.freedesktop.portable1.Manager {
+    methods:
+      GetImage(in  s image,
+               out o object);
+      ListImages(out a(ssbtttso) images);
+      GetImageOSRelease(in  s image,
+                        out a{ss} os_release);
+      GetImageMetadata(in  s image,
+                       in  as matches,
+                       out s image,
+                       out ay os_release,
+                       out a{say} units);
+      GetImageMetadataWithExtensions(in  s image,
+                                     in  as extensions,
+                                     in  as matches,
+                                     in  t flags,
+                                     out s image,
+                                     out ay os_release,
+                                     out a{say} extensions,
+                                     out a{say} units);
+      GetImageState(in  s image,
+                    out s state);
+      AttachImage(in  s image,
+                  in  as matches,
+                  in  s profile,
+                  in  b runtime,
+                  in  s copy_mode,
+                  out a(sss) changes);
+      AttachImageWithExtensions(in  s image,
+                                in  as extensions,
+                                in  as matches,
+                                in  s profile,
+                                in  s copy_mode,
+                                in  t flags,
+                                out a(sss) changes);
+      DetachImage(in  s image,
+                  in  b runtime,
+                  out a(sss) changes);
+      DetachImageWithExtensions(in  s image,
+                                in  as extensions,
+                                in  t flags,
+                                out a(sss) changes);
+      ReattachImage(in  s image,
+                    in  as matches,
+                    in  s profile,
+                    in  b runtime,
+                    in  s copy_mode,
+                    out a(sss) changes_removed,
+                    out a(sss) changes_updated);
+      ReattachImageWithExtensions(in  s image,
+                                  in  as extensions,
+                                  in  as matches,
+                                  in  s profile,
+                                  in  s copy_mode,
+                                  in  t flags,
+                                  out a(sss) changes_removed,
+                                  out a(sss) changes_updated);
+      RemoveImage(in  s image);
+      MarkImageReadOnly(in  s image,
+                        in  b read_only);
+      SetImageLimit(in  s image,
+                    in  t limit);
+      SetPoolLimit(in  t limit);
+    properties:
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s PoolPath = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t PoolUsage = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t PoolLimit = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly as Profiles = [..., ...];
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p><strong>GetImage()</strong> may be used to get the image object path of the image with the specified name.</p>
+<p><strong>ListImages()</strong> returns an array of all currently known images. The structures in the array consist of the following fields: image name, type, read-only flag, creation time, modification time, current disk space, usage and image object path.</p>
+<p><strong>GetImageOSRelease()</strong> retrieves the OS release information of an image. This method returns an array of key value pairs read from the <a href='/5/os-release'>os-release</a>(5) file in the image and is useful to identify the operating system used in a portable service.</p>
+<p><strong>GetImageMetadata()</strong> retrieves metadata associated with an image. This method returns the image name, the images <a href='/5/os-release'>os-release</a>(5) content in the form of a (streamable) array of bytes, and a list of portable units contained in the image, in the form of a string (unit name) and an array of bytes with the content.</p>
+<p><strong>GetImageMetadataWithExtensions()</strong> retrieves metadata associated with an image. This method is a superset of <strong>GetImageMetadata()</strong> with the addition of a list of extensions as input parameter, which were overlaid on top of the main image via <strong>AttachImageWithExtensions()</strong>. The path of each extension and an array of bytes with the content of the respective extension-release file are returned, one such structure for each extension named in the input arguments.</p>
+<p><strong>GetImageState()</strong> retrieves the image state as one of the following strings:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>detached</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>attached</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>attached-runtime</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>enabled</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>enabled-runtime</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>running</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>running-runtime</p>
+</blockquote>
+<p><strong>AttachImage()</strong> attaches a portable image to the system. This method takes an image path or name, a list of strings that will be used to search for unit files inside the image (partial or complete matches), a string indicating which portable profile to use for the image (see <code>Profiles</code> property for a list of available profiles), a boolean indicating whether to attach the image only for the current boot session, and a string representing the preferred copy mode (whether to copy the image or to just symlink it) with the following possible values:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>(null)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>copy</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>symlink</p>
+</blockquote>
+<p>This method returns the list of changes applied to the system (for example, which unit was added and is now available as a system service). Each change is represented as a triplet of strings: the type of change applied, the path on which it was applied, and the source (if any). The type of change applied will be one of the following possible values:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>copy</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>symlink</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>write</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>mkdir</p>
+</blockquote>
+<p>Note that an image cannot be attached if a unit that it contains is already present on the system.</p>
+<p><strong>AttachImageWithExtensions()</strong> attaches a portable image to the system. This method is a superset of <strong>AttachImage()</strong> with the addition of a list of extensions as input parameter, which will be overlaid on top of the main image. When this method is used, detaching must be done by passing the same arguments via the <strong>DetachImageWithExtensions()</strong> method. For more details on this functionality, see the <code>MountImages=</code> entry on <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/8/systemd-sysext'>systemd-sysext</a>(8). The <code>flag</code> parameter is currently unused and reserved for future purposes.</p>
+<p><strong>DetachImage()</strong> detaches a portable image from the system. This method takes an image path or name, and a boolean indicating whether the image to detach was attached only for the current boot session or persistently. This method returns the list of changes applied to the system (for example, which unit was removed and is no longer available as a system service). Each change is represented as a triplet of strings: the type of change applied, the path on which it was applied, and the source (if any). The type of change applied will be one of the following possible values:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>unlink</p>
+</blockquote>
+<p>Note that an image cannot be detached if a unit that it contains is running.</p>
+<p><strong>DetachImageWithExtensions()</strong> detaches a portable image from the system. This method is a superset of <strong>DetachImage()</strong> with the addition of a list of extensions as input parameter, which were overlaid on top of the main image via <strong>AttachImageWithExtensions()</strong>. The <code>flag</code> parameter is currently unused and reserved for future purposes.</p>
+<p><strong>ReattachImage()</strong> combines the effects of the <strong>AttachImage()</strong> method and the <strong>DetachImage()</strong> method. The difference is that it is allowed to reattach an image while one or more of its units are running. The reattach operation will fail if no matching image is attached. The input parameters match the <strong>AttachImage()</strong> method, and the return parameters are the combination of the return parameters of the <strong>DetachImage()</strong> method (first array, units that were removed) and the <strong>AttachImage()</strong> method (second array, units that were updated or added).</p>
+<p><strong>ReattachImageWithExtensions()</strong> reattaches a portable image to the system. This method is a superset of <strong>ReattachImage()</strong> with the addition of a list of extensions as input parameter, which will be overlaid on top of the main image. For more details on this functionality, see the <code>MountImages=</code> entry on <a href='/5/systemd.exec'>systemd.exec</a>(5) and <a href='/8/systemd-sysext'>systemd-sysext</a>(8). The <code>flag</code> parameter is currently unused and reserved for future purposes</p>
+<p><strong>RemoveImage()</strong> removes the image with the specified name.</p>
+<p><strong>MarkImageReadOnly()</strong> toggles the read-only flag of an image.</p>
+<p><strong>SetPoolLimit()</strong> sets an overall quota limit on the pool of images.</p>
+<p><strong>SetImageLimit()</strong> sets a per-image quota limit.</p>
+<p>The <strong>AttachImageWithExtensions()</strong>, <strong>DetachImageWithExtensions()</strong> and <strong>ReattachImageWithExtensions()</strong> methods take in options as flags instead of booleans to allow for extendability, defined as follows:</p>
+<p>.RS 4</p>
+<pre><code>#define SD_SYSTEMD_PORTABLE_RUNTIME  (UINT64_C(1) &lt;&lt; 0)
+      </code></pre>
+<p>.RE</p>
+<h2>Properties</h2>
+<p><code>PoolPath</code> specifies the file system path where images are written to.</p>
+<p><code>PoolUsage</code> specifies the current usage size of the image pool in bytes.</p>
+<p><code>PoolLimit</code> specifies the size limit of the image pool in bytes.</p>
+<p><code>Profiles</code> specifies the available runtime profiles for portable services.</p>
+</div></div></div><h1 id='the-image-object'><a href='#the-image-object'>THE IMAGE OBJECT</a></h1><div data-for='the-image-object' data-hide><div class='section' data-for='the-image-object'><div data-more>
+<p>The service exposes the following interfaces on the Image object on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/portable1 {
+  interface org.freedesktop.portable1.Image {
+    methods:
+      GetOSRelease(out a{ss} os_release);
+      GetMetadata(in  as matches,
+                  out s image,
+                  out ay os_release,
+                  out a{say} units);
+      GetMetadataWithExtensions(in  as extensions,
+                                in  as matches,
+                                in  t flags,
+                                out s image,
+                                out ay os_release,
+                                out a{say} extensions,
+                                out a{say} units);
+      GetState(out s state);
+      Attach(in  as matches,
+             in  s profile,
+             in  b runtime,
+             in  s copy_mode,
+             out a(sss) changes);
+      AttachWithExtensions(in  as extensions,
+                           in  as matches,
+                           in  s profile,
+                           in  s copy_mode,
+                           in  t flags,
+                           out a(sss) changes);
+      Detach(in  b runtime,
+             out a(sss) changes);
+      DetachWithExtensions(in  as extensions,
+                           in  t flags,
+                           out a(sss) changes);
+      Reattach(in  as matches,
+               in  s profile,
+               in  b runtime,
+               in  s copy_mode,
+               out a(sss) changes_removed,
+               out a(sss) changes_updated);
+      ReattacheWithExtensions(in  as extensions,
+                              in  as matches,
+                              in  s profile,
+                              in  s copy_mode,
+                              in  t flags,
+                              out a(sss) changes_removed,
+                              out a(sss) changes_updated);
+      Remove();
+      MarkReadOnly(in  b read_only);
+      SetLimit(in  t limit);
+    properties:
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s Name = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s Path = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s Type = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly b ReadOnly = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t CreationTimestamp = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t ModificationTimestamp = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t Usage = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t Limit = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t UsageExclusive = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t LimitExclusive = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p>The following methods implement the same operation as the respective methods on the Manager object (see above). However, these methods operate on the image object and hence does not take an image name parameter. Invoking the methods directly on the Manager object has the advantage of not requiring a <strong>GetImage()</strong> call to get the image object for a specific image name. Calling the methods on the Manager object is hence a round trip optimization. List of methods:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>GetOSRelease()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>GetMetadata()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>GetMetadataWithExtensions()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>GetState()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Attach()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>AttachWithExtensions()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Detach()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>DetachWithExtensions()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Reattach()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>ReattacheWithExtensions()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Remove()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>MarkReadOnly()</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>SetLimit()</p>
+</blockquote>
+<h2>Properties</h2>
+<p><code>Name</code> specifies the image name.</p>
+<p><code>Path</code> specifies the file system path where image is stored.</p>
+<p><code>Type</code> specifies the image type.</p>
+<p><code>ReadOnly</code> specifies whether the image is read-only.</p>
+<p><code>CreationTimestamp</code> specifies the image creation timestamp.</p>
+<p><code>ModificationTimestamp</code> specifies the image modification timestamp.</p>
+<p><code>Usage</code> specifies the image disk usage.</p>
+<p><code>Limit</code> specifies the image disk usage limit.</p>
+<p><code>UsageExclusive</code> specifies the image disk usage (exclusive).</p>
+<p><code>LimitExclusive</code> specifies the image disk usage limit (exclusive).</p>
+</div></div></div><h1 id='versioning'><a href='#versioning'>VERSIONING</a></h1><div data-for='versioning' data-hide><div class='section' data-for='versioning'><div data-more>
+<p>These D-Bus interfaces follow <strong>the usual interface versioning guidelines</strong>[1].</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>the usual interface versioning guidelines</p>
+<p><a href="http://0pointer.de/blog/projects/versioning-dbus.html">http://0pointer.de/blog/projects/versioning-dbus.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

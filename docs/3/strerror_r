@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>strerror, strerrorname_np, strerrordesc_np, <a data-bs-content='This is the man page for &lt;code&gt;strerror_r&lt;/code&gt; and 4 related functions.' data-bs-toggle='popover' tabindex='0'>strerror_r</a>, strerror_l - return string describing error number</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;string.h&gt;</a>
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>strerror(int errnum);
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>strerrorname_np(int errnum);
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>strerrordesc_np(int errnum);
+
+int strerror_r(int errnum, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen);
+            /* XSI-compliant */
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>strerror_r(int errnum, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> buflen);
+            /* GNU-specific */
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>strerror_l(int errnum, locale_t locale);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='strerrorname_np'>strerrorname_np</a>(), <a href='strerrordesc_np'>strerrordesc_np</a>(): _GNU_SOURCE</p>
+<p><a href='strerror_r'>strerror_r</a>():</p>
+<blockquote>
+<p>The XSI-compliant version is provided if:<br/>
+(_POSIX_C_SOURCE &gt;= 200112L) &amp;&amp; ! _GNU_SOURCE<br/>
+Otherwise, the GNU-specific version is provided.</p>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='strerror'>strerror</a>() function returns a pointer to a string that describes the error code passed in the argument <code>errnum</code>, possibly using the <strong>LC_MESSAGES</strong> part of the current locale to select the appropriate language. (For example, if <code>errnum</code> is <strong>EINVAL</strong>, the returned description will be "Invalid argument".) This string must not be modified by the application, but may be modified by a subsequent call to <a href='strerror'>strerror</a>() or <a href='strerror_l'>strerror_l</a>(). No other library function, including <a href='/3/perror'>perror</a>(3), will modify this string.</p>
+<p>Like <a href='strerror'>strerror</a>(), the <a href='strerrordesc_np'>strerrordesc_np</a>() function returns a pointer to a string that describes the error code passed in the argument <code>errnum</code>, with the difference that the returned string is not translated according to the current locale.</p>
+<p>The <a href='strerrorname_np'>strerrorname_np</a>() function returns a pointer to a string containing the name of the error code passed in the argument <code>errnum</code>. For example, given <strong>EPERM</strong> as an argument, this function returns a pointer to the string "EPERM". The <a href='strerror_r'>strerror_r</a>() function is similar to <a href='strerror'>strerror</a>(), but is thread safe. This function is available in two versions: an XSI-compliant version specified in POSIX.1-2001 (available since glibc 2.3.4, but not POSIX-compliant until glibc 2.13), and a GNU-specific version (available since glibc 2.0). The XSI-compliant version is provided with the feature test macros settings shown in the SYNOPSIS; otherwise the GNU-specific version is provided. If no feature test macros are explicitly defined, then (since glibc 2.4) <strong>_POSIX_C_SOURCE</strong> is defined by default with the value 200112L, so that the XSI-compliant version of <a href='strerror_r'>strerror_r</a>() is provided by default.</p>
+<p>The XSI-compliant <a href='strerror_r'>strerror_r</a>() is preferred for portable applications. It returns the error string in the user-supplied buffer <code>buf</code> of length <code>buflen</code>.</p>
+<p>The GNU-specific <a href='strerror_r'>strerror_r</a>() returns a pointer to a string containing the error message. This may be either a pointer to a string that the function stores in <code>buf</code>, or a pointer to some (immutable) static string (in which case <code>buf</code> is unused). If the function stores a string in <code>buf</code>, then at most <code>buflen</code> bytes are stored (the string may be truncated if <code>buflen</code> is too small and <code>errnum</code> is unknown). The string always includes a terminating null byte ('\0'). <a href='strerror_l'>strerror_l</a>() is like <a href='strerror'>strerror</a>(), but maps <code>errnum</code> to a locale-dependent error message in the locale specified by <code>locale</code>. The behavior of <a href='strerror_l'>strerror_l</a>() is undefined if <code>locale</code> is the special locale object <strong>LC_GLOBAL_LOCALE</strong> or is not a valid locale object handle.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The <a href='strerror'>strerror</a>(), <a href='strerror_l'>strerror_l</a>(), and the GNU-specific <a href='strerror_r'>strerror_r</a>() functions return the appropriate error description string, or an "Unknown error nnn" message if the error number is unknown.</p>
+<p>On success, <a href='strerrorname_np'>strerrorname_np</a>() and <a href='strerrordesc_np'>strerrordesc_np</a>() return the appropriate error description string. If <code>errnum</code> is an invalid error number, these functions return NULL.</p>
+<p>The XSI-compliant <a href='strerror_r'>strerror_r</a>() function returns 0 on success. On error, a (positive) error number is returned (since glibc 2.13), or -1 is returned and <code>errno</code> is set to indicate the error (glibc versions before 2.13).</p>
+<p>POSIX.1-2001 and POSIX.1-2008 require that a successful call to <a href='strerror'>strerror</a>() or <a href='strerror_l'>strerror_l</a>() shall leave <code>errno</code> unchanged, and note that, since no function return value is reserved to indicate an error, an application that wishes to check for errors should initialize <code>errno</code> to zero before the call, and then check <code>errno</code> after the call.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The value of <code>errnum</code> is not a valid error number.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>Insufficient storage was supplied to contain the error description string.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='strerror_l'>strerror_l</a>() function first appeared in glibc 2.6.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='strerror'>strerror</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:strerror</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='strerrorname_np'>strerrorname_np</a>(), <a href='strerrordesc_np'>strerrordesc_np</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='strerror_r'>strerror_r</a>(),<br/>
+<a href='strerror_l'>strerror_l</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='strerror'>strerror</a>() is specified by POSIX.1-2001, POSIX.1-2008, C89, and C99. <a href='strerror_r'>strerror_r</a>() is specified by POSIX.1-2001 and POSIX.1-2008.</p>
+<p><a href='strerror_l'>strerror_l</a>() is specified in POSIX.1-2008.</p>
+<p>The GNU-specific functions <a href='strerror_r'>strerror_r</a>(), <a href='strerrorname_np'>strerrorname_np</a>(), and <a href='strerrordesc_np'>strerrordesc_np</a>() are nonstandard extensions.</p>
+<p>POSIX.1-2001 permits <a href='strerror'>strerror</a>() to set <code>errno</code> if the call encounters an error, but does not specify what value should be returned as the function result in the event of an error. On some systems, <a href='strerror'>strerror</a>() returns NULL if the error number is unknown. On other systems, <a href='strerror'>strerror</a>() returns a string something like "Error nnn occurred" and sets <code>errno</code> to <strong>EINVAL</strong> if the error number is unknown. C99 and POSIX.1-2008 require the return value to be non-NULL.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The GNU C Library uses a buffer of 1024 characters for <a href='strerror'>strerror</a>(). This buffer size therefore should be sufficient to avoid an <strong>ERANGE</strong> error when calling <a href='strerror_r'>strerror_r</a>().</p>
+<p><a href='strerrorname_np'>strerrorname_np</a>() and <a href='strerrordesc_np'>strerrordesc_np</a>() are thread-safe and async-signal-safe.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/err'>err</a>(3), <a href='/3/errno'>errno</a>(3), <a href='/3/error'>error</a>(3), <a href='/3/perror'>perror</a>(3), <a href='/3/strsignal'>strsignal</a>(3), <a href='/7/locale'>locale</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

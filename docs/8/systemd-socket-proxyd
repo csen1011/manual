@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-socket-proxyd - Bidirectionally proxy local sockets to another (possibly remote) socket</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>systemd-socket-proxyd</strong> [<code>OPTIONS</code>...] <code>HOST</code>:<code>PORT</code></p>
+<p><strong>systemd-socket-proxyd</strong> [<code>OPTIONS</code>...] <code>UNIX-DOMAIN-SOCKET-PATH</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-socket-proxyd</strong> is a generic socket-activated network socket forwarder proxy daemon for IPv4, IPv6 and UNIX stream sockets. It may be used to bi-directionally forward traffic from a local listening socket to a local or remote destination socket.</p>
+<p>One use of this tool is to provide socket activation support for services that do not natively support socket activation. On behalf of the service to activate, the proxy inherits the socket from systemd, accepts each client connection, opens a connection to a configured server for each client, and then bidirectionally forwards data between the two.</p>
+<p>This utilitys behavior is similar to <a href='/1/socat'>socat</a>(1). The main differences for <strong>systemd-socket-proxyd</strong> are support for socket activation with "Accept=no" and an event-driven design that scales better with the number of connections.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The following options are understood:</p>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Print a short help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Print a short version string and exit.</p>
+</blockquote>
+<p><strong>--connections-max=</strong>, <strong>-c</strong></p>
+<blockquote>
+<p>Sets the maximum number of simultaneous connections, defaults to 256. If the limit of concurrent connections is reached further connections will be refused.</p>
+</blockquote>
+<p><strong>--exit-idle-time=</strong></p>
+<blockquote>
+<p>Sets the time before exiting when there are no connections, defaults to <strong>infinity</strong>. Takes a unit-less value in seconds, or a time span value such as "5min 20s".</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>On success, 0 is returned, a non-zero failure code otherwise.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<h2>Simple Example</h2>
+<p>Use two services with a dependency and no namespace isolation.</p>
+<p><strong>Example 1. proxy-to-nginx.socket</strong></p>
+<p>.RS 4</p>
+<pre><code>[Socket]
+ListenStream=80
+
+[Install]
+WantedBy=sockets.target</code></pre>
+<p>.RE</p>
+<p><strong>Example 2. proxy-to-nginx.service</strong></p>
+<p>.RS 4</p>
+<pre><code>[Unit]
+Requires=nginx.service
+After=nginx.service
+Requires=proxy-to-nginx.socket
+After=proxy-to-nginx.socket
+
+[Service]
+ExecStart=/lib/systemd/systemd-socket-proxyd /run/nginx/socket
+PrivateTmp=yes
+PrivateNetwork=yes</code></pre>
+<p>.RE</p>
+<p><strong>Example 3. nginx.conf</strong></p>
+<p>.RS 4</p>
+<pre><code>[...]
+server {
+    listen       unix:/run/nginx/socket;
+    [...]</code></pre>
+<p>.RE</p>
+<p><strong>Example 4. Enabling the proxy</strong></p>
+<p>.RS 4</p>
+<pre><code># systemctl enable --now proxy-to-nginx.socket
+$ curl http://localhost:80/</code></pre>
+<p>.RE</p>
+<p>If nginx.service has <code>StopWhenUnneeded=</code> set, then passing <strong>--exit-idle-time=</strong> to <strong>systemd-socket-proxyd</strong> allows both services to stop during idle periods.</p>
+<h2>Namespace Example</h2>
+<p>Similar as above, but runs the socket proxy and the main service in the same private namespace, assuming that nginx.service has <code>PrivateTmp=</code> and <code>PrivateNetwork=</code> set, too.</p>
+<p><strong>Example 5. proxy-to-nginx.socket</strong></p>
+<p>.RS 4</p>
+<pre><code>[Socket]
+ListenStream=80
+
+[Install]
+WantedBy=sockets.target</code></pre>
+<p>.RE</p>
+<p><strong>Example 6. proxy-to-nginx.service</strong></p>
+<p>.RS 4</p>
+<pre><code>[Unit]
+Requires=nginx.service
+After=nginx.service
+Requires=proxy-to-nginx.socket
+After=proxy-to-nginx.socket
+JoinsNamespaceOf=nginx.service
+
+[Service]
+ExecStart=/lib/systemd/systemd-socket-proxyd 127.0.0.1:8080
+PrivateTmp=yes
+PrivateNetwork=yes</code></pre>
+<p>.RE</p>
+<p><strong>Example 7. nginx.conf</strong></p>
+<p>.RS 4</p>
+<pre><code>[...]
+server {
+    listen       8080;
+    [...]</code></pre>
+<p>.RE</p>
+<p><strong>Example 8. Enabling the proxy</strong></p>
+<p>.RS 4</p>
+<pre><code># systemctl enable --now proxy-to-nginx.socket
+$ curl http://localhost:80/</code></pre>
+<p>.RE</p>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/5/systemd.socket'>systemd.socket</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/1/systemctl'>systemctl</a>(1), <a href='/1/socat'>socat</a>(1), <a href='/1/nginx'>nginx</a>(1), <a href='/1/curl'>curl</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

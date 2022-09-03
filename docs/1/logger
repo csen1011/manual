@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>logger - enter messages into the system log</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>logger</strong> [options] <code>message</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>logger</strong> makes entries in the system log.</p>
+<p>When the optional <code>message</code> argument is present, it is written to the log. If it is not present, and the <strong>-f</strong> option is not given either, then standard input is logged.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-d</strong>, <strong>--udp</strong></p>
+<blockquote>
+<p>Use datagrams (UDP) only. By default the connection is tried to the syslog port defined in <code>/etc/services</code>, which is often 514.</p>
+<p>See also <strong>--server</strong> and <strong>--socket</strong> to specify where to connect.</p>
+</blockquote>
+<p><strong>-e</strong>, <strong>--skip-empty</strong></p>
+<blockquote>
+<p>Ignore empty lines when processing files. An empty line is defined to be a line without any characters. Thus a line consisting only of whitespace is NOT considered empty. Note that when the <strong>--prio-prefix</strong> option is specified, the priority is not part of the line. Thus an empty line in this mode is a line that does not have any characters after the priority prefix (e.g., <strong>&lt;13&gt;</strong>).</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--file</strong> <code>file</code></p>
+<blockquote>
+<p>Log the contents of the specified <code>file</code>. This option cannot be combined with a command-line message.</p>
+</blockquote>
+<p><strong>-i</strong></p>
+<blockquote>
+<p>Log the PID of the <strong>logger</strong> process with each line.</p>
+</blockquote>
+<p><strong>--id</strong>[<strong>=</strong><code>id</code>]</p>
+<blockquote>
+<p>Log the PID of the <strong>logger</strong> process with each line. When the optional argument <code>id</code> is specified, then it is used instead of the <strong>logger</strong> command’s PID. The use of <strong>--id=$$</strong> (PPID) is recommended in scripts that send several messages.</p>
+<p>Note that the system logging infrastructure (for example <strong>systemd</strong> when listening on <code>/dev/log</code>) may follow local socket credentials to overwrite the PID specified in the message. <a href='/1/logger'>logger</a>(1) is able to set those socket credentials to the given <code>id</code>, but only if you have root permissions and a process with the specified PID exists, otherwise the socket credentials are not modified and the problem is silently ignored.</p>
+</blockquote>
+<p><strong>--journald</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Write a systemd journal entry. The entry is read from the given <code>file</code>, when specified, otherwise from standard input. Each line must begin with a field that is accepted by journald; see <a href='/7/systemd.journal-fields'>systemd.journal-fields</a>(7) for details. The use of a MESSAGE_ID field is generally a good idea, as it makes finding entries easy. Examples:</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<pre><code>logger --journald &lt;&lt;end
+MESSAGE_ID=67feb6ffbaf24c5cbec13c008dd72309
+MESSAGE=The dogs bark, but the caravan goes on.
+DOGS=bark
+CARAVAN=goes on
+end</code></pre>
+</blockquote>
+<blockquote>
+<pre><code>logger --journald=entry.txt</code></pre>
+</blockquote>
+<p><br/>
+</p>
+</blockquote>
+<p>Notice that <strong>--journald</strong> will ignore values of other options, such as priority. If priority is needed it must be within input, and use PRIORITY field. The simple execution of <a href='/1/journalctl'>journalctl</a>(1) will display MESSAGE field. Use <strong>journalctl --output json-pretty</strong> to see rest of the fields.</p>
+<p>+ To include newlines in MESSAGE, specify MESSAGE several times. This is handled as a special case, other fields will be stored as an array in the journal if they appear multiple times.</p>
+<p><strong>--msgid</strong> <code>msgid</code></p>
+<blockquote>
+<p>Sets the <code>RFC 5424</code> &lt;<a href="https://tools.ietf.org/html/rfc5424&amp;gt;">https://tools.ietf.org/html/rfc5424&gt;</a> MSGID field. Note that the space character is not permitted inside of <code>msgid</code>. This option is only used if <strong>--rfc5424</strong> is specified as well; otherwise, it is silently ignored.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--server</strong> <code>server</code></p>
+<blockquote>
+<p>Write to the specified remote syslog <code>server</code> instead of to the system log socket. Unless <strong>--udp</strong> or <strong>--tcp</strong> is specified, <strong>logger</strong> will first try to use UDP, but if this fails a TCP connection is attempted.</p>
+</blockquote>
+<p><strong>--no-act</strong></p>
+<blockquote>
+<p>Causes everything to be done except for writing the log message to the system log, and removing the connection or the journal. This option can be used together with <strong>--stderr</strong> for testing purposes.</p>
+</blockquote>
+<p><strong>--octet-count</strong></p>
+<blockquote>
+<p>Use the <code>RFC 6587</code> &lt;<a href="https://tools.ietf.org/html/rfc6587&amp;gt;">https://tools.ietf.org/html/rfc6587&gt;</a> octet counting framing method for sending messages. When this option is not used, the default is no framing on UDP, and RFC6587 non-transparent framing (also known as octet stuffing) on TCP.</p>
+</blockquote>
+<p><strong>-P</strong>, <strong>--port</strong> <code>port</code></p>
+<blockquote>
+<p>Use the specified <code>port</code>. When this option is not specified, the port defaults to syslog for udp and to syslog-conn for tcp connections.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--priority</strong> <code>priority</code></p>
+<blockquote>
+<p>Enter the message into the log with the specified <code>priority</code>. The priority may be specified numerically or as a <code>facility</code>.<code>level</code> pair. For example, <strong>-p <a href="http://local3.info">local3.info</a></strong> logs the message as informational in the local3 facility. The default is <strong>user.notice</strong>.</p>
+</blockquote>
+<p><strong>--prio-prefix</strong></p>
+<blockquote>
+<p>Look for a syslog prefix on every line read from standard input. This prefix is a decimal number within angle brackets that encodes both the facility and the level. The number is constructed by multiplying the facility by 8 and then adding the level. For example, <strong><a href="http://local0.info">local0.info</a></strong>, meaning facility=16 and level=6, becomes <strong>&lt;134&gt;</strong>.</p>
+<p>If the prefix contains no facility, the facility defaults to what is specified by the <strong>-p</strong> option. Similarly, if no prefix is provided, the line is logged using the <code>priority</code> given with <strong>-p</strong>.</p>
+<p>This option doesn’t affect a command-line message.</p>
+</blockquote>
+<p><strong>--rfc3164</strong></p>
+<blockquote>
+<p>Use the <code>RFC 3164</code> &lt;<a href="https://tools.ietf.org/html/rfc3164&amp;gt;">https://tools.ietf.org/html/rfc3164&gt;</a> BSD syslog protocol to submit messages to a remote server.</p>
+</blockquote>
+<p><strong>--rfc5424</strong>[<strong>=</strong><code>without</code>]</p>
+<blockquote>
+<p>Use the <code>RFC 5424</code> &lt;<a href="https://tools.ietf.org/html/rfc5424&amp;gt;">https://tools.ietf.org/html/rfc5424&gt;</a> syslog protocol to submit messages to a remote server. The optional <code>without</code> argument can be a comma-separated list of the following values: <strong>notq</strong>, <strong>notime</strong>, <strong>nohost</strong>.</p>
+<p>The <strong>notq</strong> value suppresses the time-quality structured data from the submitted message. The time-quality information shows whether the local clock was synchronized plus the maximum number of microseconds the timestamp might be off. The time quality is also automatically suppressed when <strong>--sd-id timeQuality</strong> is specified.</p>
+<p>The <strong>notime</strong> value (which implies <strong>notq</strong>) suppresses the complete sender timestamp that is in ISO-8601 format, including microseconds and timezone.</p>
+<p>The <strong>nohost</strong> value suppresses <a href='/2/gethostname'>gethostname</a>(2) information from the message header.</p>
+<p>The RFC 5424 protocol has been the default for <strong>logger</strong> since version 2.26.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--stderr</strong></p>
+<blockquote>
+<p>Output the message to standard error as well as to the system log.</p>
+</blockquote>
+<p><strong>--sd-id</strong> <code>name</code>[<strong>@</strong><code>digits</code>]</p>
+<blockquote>
+<p>Specifies a structured data element ID for an RFC 5424 message header. The option has to be used before <strong>--sd-param</strong> to introduce a new element. The number of structured data elements is unlimited. The ID (<code>name</code> plus possibly <strong>@</strong><code>digits</code>) is case-sensitive and uniquely identifies the type and purpose of the element. The same ID must not exist more than once in a message. The <strong>@</strong><code>digits</code> part is required for user-defined non-standardized IDs.</p>
+<p><strong>logger</strong> currently generates the <strong>timeQuality</strong> standardized element only. RFC 5424 also describes the elements <strong>origin</strong> (with parameters ip, enterpriseId, software and swVersion) and <strong>meta</strong> (with parameters sequenceId, sysUpTime and language). These element IDs may be specified without the <strong>@</strong><code>digits</code> suffix.</p>
+</blockquote>
+<p><strong>--sd-param</strong> <code>name</code>=<code>value</code></p>
+<blockquote>
+<p>Specifies a structured data element parameter, a name and value pair. The option has to be used after <strong>--sd-id</strong> and may be specified more than once for the same element. Note that the quotation marks around <code>value</code> are required and must be escaped on the command line.</p>
+<blockquote>
+<pre><code>    logger --rfc5424 --sd-id zoo@123             \
+                     --sd-param tiger="hungry"   \
+                     --sd-param zebra="running"  \
+                     --sd-id manager@123         \
+                     --sd-param onMeeting="yes"  \
+                     "this is message"</code></pre>
+</blockquote>
+<p>produces:</p>
+<p><strong>&lt;13&gt;1 2015-10-01T14:07:59.168662+02:00 ws kzak - - [timeQuality tzKnown="1" isSynced="1" syncAccuracy="218616"][zoo@123 tiger="hungry" zebra="running"][manager@123 onMeeting="yes"] this is message</strong></p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--size</strong> <code>size</code></p>
+<blockquote>
+<p>Sets the maximum permitted message size to <code>size</code>. The default is 1KiB characters, which is the limit traditionally used and specified in RFC 3164. With RFC 5424, this limit has become flexible. A good assumption is that RFC 5424 receivers can at least process 4KiB messages.</p>
+<p>Most receivers accept messages larger than 1KiB over any type of syslog protocol. As such, the <strong>--size</strong> option affects <strong>logger</strong> in all cases (not only when <strong>--rfc5424</strong> was used).</p>
+<p>Note: the message-size limit limits the overall message size, including the syslog header. Header sizes vary depending on the selected options and the hostname length. As a rule of thumb, headers are usually not longer than 50 to 80 characters. When selecting a maximum message size, it is important to ensure that the receiver supports the max size as well, otherwise messages may become truncated. Again, as a rule of thumb two to four KiB message size should generally be OK, whereas anything larger should be verified to work.</p>
+</blockquote>
+<p><strong>--socket-errors</strong>[<strong>=</strong><code>mode</code>]</p>
+<blockquote>
+<p>Print errors about Unix socket connections. The <code>mode</code> can be a value of <strong>off</strong>, <strong>on</strong>, or <strong>auto</strong>. When the mode is <strong>auto</strong>, then <strong>logger</strong> will detect if the init process is <a href='/1/systemd'>systemd</a>(1), and if so assumption is made <code>/dev/log</code> can be used early at boot. Other init systems lack of <code>/dev/log</code> will not cause errors that is identical with messaging using <a href='/3/openlog'>openlog</a>(3) system call. The <a href='/1/logger'>logger</a>(1) before version 2.26 used openlog, and hence was unable to detected loss of messages sent to Unix sockets.</p>
+<p>The default mode is <strong>auto</strong>. When errors are not enabled lost messages are not communicated and will result to successful exit status of <a href='/1/logger'>logger</a>(1) invocation.</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--tcp</strong></p>
+<blockquote>
+<p>Use stream (TCP) only. By default the connection is tried to the <code>syslog-conn</code> port defined in <code>/etc/services</code>, which is often <code>601</code>.</p>
+<p>See also <strong>--server</strong> and <strong>--socket</strong> to specify where to connect.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--tag</strong> <code>tag</code></p>
+<blockquote>
+<p>Mark every line to be logged with the specified <code>tag</code>. The default tag is the name of the user logged in on the terminal (or a user name based on effective user ID).</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--socket</strong> <code>socket</code></p>
+<blockquote>
+<p>Write to the specified <code>socket</code> instead of to the system log socket.</p>
+</blockquote>
+<p><strong>--</strong></p>
+<blockquote>
+<p>End the argument list. This allows the <code>message</code> to start with a hyphen (-).</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>The <strong>logger</strong> utility exits 0 on success, and &gt;0 if an error occurs.</p>
+</div></div></div><h1 id='facilities-and-levels'><a href='#facilities-and-levels'>FACILITIES AND LEVELS</a></h1><div data-for='facilities-and-levels' data-hide><div class='section' data-for='facilities-and-levels'><div data-more>
+<p>Valid facility names are:</p>
+<p><strong>auth</strong><br/>
+<strong>authpriv</strong> for security information of a sensitive nature<br/>
+<strong>cron</strong><br/>
+</p>
+<p><strong>daemon</strong><br/>
+<strong>ftp</strong><br/>
+<strong>kern</strong> cannot be generated from userspace process, automatically converted to <strong>user</strong><br/>
+</p>
+<p><strong>lpr</strong><br/>
+<strong>mail</strong><br/>
+<strong>news</strong><br/>
+<strong>syslog</strong><br/>
+<strong>user</strong><br/>
+<strong>uucp</strong><br/>
+<strong>local0</strong><br/>
+to<br/>
+<strong>local7</strong><br/>
+<strong>security</strong> deprecated synonym for <strong>auth</strong></p>
+<p>Valid level names are:</p>
+<p><strong>emerg</strong><br/>
+<strong>alert</strong><br/>
+<strong>crit</strong><br/>
+<strong>err</strong><br/>
+<strong>warning</strong><br/>
+<strong>notice</strong><br/>
+<strong>info</strong><br/>
+<strong>debug</strong><br/>
+<strong>panic</strong> deprecated synonym for <strong>emerg</strong><br/>
+<strong>error</strong> deprecated synonym for <strong>err</strong><br/>
+<strong>warn</strong> deprecated synonym for <strong>warning</strong><br/>
+</p>
+<p>For the priority order and intended purposes of these facilities and levels, see <a href='/3/syslog'>syslog</a>(3).</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <strong>logger</strong> command is expected to be IEEE Std 1003.2 ("POSIX.2") compatible.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>logger System rebooted</strong> <strong>logger -p local0.notice -t HOSTIDM -f /dev/idmc</strong> <strong>logger -n <a href="http://loghost.example.com">loghost.example.com</a> System rebooted</strong></p>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>The <strong>logger</strong> command was originally written by University of California in 1983-1993 and later rewritten by</p>
+<p>and</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/journalctl'>journalctl</a>(1), <a href='/3/syslog'>syslog</a>(3), <a href='/7/systemd.journal-fields'>systemd.journal-fields</a>(7)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>logger</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

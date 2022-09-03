@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ioctl_fat - manipulating the FAT filesystem</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;linux/msdos_fs.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ioctl.h&gt;</a>
+
+int ioctl(int fd, FAT_IOCTL_GET_ATTRIBUTES, uint32_t *attr);
+int ioctl(int fd, FAT_IOCTL_SET_ATTRIBUTES, uint32_t *attr);
+int ioctl(int fd, FAT_IOCTL_GET_VOLUME_ID, uint32_t *id);
+int ioctl(int fd, VFAT_IOCTL_READDIR_BOTH,
+ struct __fat_dirent[2] entry);
+int ioctl(int fd, VFAT_IOCTL_READDIR_SHORT,
+ struct __fat_dirent[2] entry);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='/2/ioctl'>ioctl</a>(2) system call can be used to read and write metadata of FAT filesystems that are not accessible using other system calls.</p>
+<h2>Reading and setting file attributes</h2>
+<p>Files and directories in the FAT filesystem possess an attribute bit mask that can be read with <strong>FAT_IOCTL_GET_ATTRIBUTES</strong> and written with <strong>FAT_IOCTL_SET_ATTRIBUTES</strong>.</p>
+<p>The <code>fd</code> argument contains a file descriptor for a file or directory. It is sufficient to create the file descriptor by calling <a href='/2/open'>open</a>(2) with the <strong>O_RDONLY</strong> flag.</p>
+<p>The <code>attr</code> argument contains a pointer to a bit mask. The bits of the bit mask are:</p>
+<dl>
+<dt><strong>ATTR_RO</strong></dt>
+<dd><p>This bit specifies that the file or directory is read-only.</p>
+</dd>
+<dt><strong>ATTR_HIDDEN</strong></dt>
+<dd><p>This bit specifies that the file or directory is hidden.</p>
+</dd>
+<dt><strong>ATTR_SYS</strong></dt>
+<dd><p>This bit specifies that the file is a system file.</p>
+</dd>
+<dt><strong>ATTR_VOLUME</strong></dt>
+<dd><p>This bit specifies that the file is a volume label. This attribute is read-only.</p>
+</dd>
+<dt><strong>ATTR_DIR</strong></dt>
+<dd><p>This bit specifies that this is a directory. This attribute is read-only.</p>
+</dd>
+<dt><strong>ATTR_ARCH</strong></dt>
+<dd><p>This bit indicates that this file or directory should be archived. It is set when a file is created or modified. It is reset by an archiving system.</p>
+</dd>
+</dl>
+<p>The zero value <strong>ATTR_NONE</strong> can be used to indicate that no attribute bit is set.</p>
+<h2>Reading the volume ID</h2>
+<p>FAT filesystems are identified by a volume ID. The volume ID can be read with <strong>FAT_IOCTL_GET_VOLUME_ID</strong>.</p>
+<p>The <code>fd</code> argument can be a file descriptor for any file or directory of the filesystem. It is sufficient to create the file descriptor by calling <a href='/2/open'>open</a>(2) with the <strong>O_RDONLY</strong> flag.</p>
+<p>The <code>id</code> argument is a pointer to the field that will be filled with the volume ID. Typically the volume ID is displayed to the user as a group of two 16-bit fields:</p>
+<pre><code>printf("Volume ID %04x-%04x\n", id &gt;&gt; 16, id &amp; 0xFFFF);</code></pre>
+<h2>Reading short filenames of a directory</h2>
+<p>A file or directory on a FAT filesystem always has a short filename consisting of up to 8 capital letters, optionally followed by a period and up to 3 capital letters for the file extension. If the actual filename does not fit into this scheme, it is stored as a long filename of up to 255 UTF-16 characters.</p>
+<p>The short filenames in a directory can be read with <strong>VFAT_IOCTL_READDIR_SHORT</strong>. <strong>VFAT_IOCTL_READDIR_BOTH</strong> reads both the short and the long filenames.</p>
+<p>The <code>fd</code> argument must be a file descriptor for a directory. It is sufficient to create the file descriptor by calling <a href='/2/open'>open</a>(2) with the <strong>O_RDONLY</strong> flag. The file descriptor can be used only once to iterate over the directory entries by calling <a href='/2/ioctl'>ioctl</a>(2) repeatedly.</p>
+<p>The <code>entry</code> argument is a two-element array of the following structures:</p>
+<pre><code>struct __fat_dirent {
+    long            d_ino;
+    __kernel_off_t  d_off;
+    uint32_t short  d_reclen;
+    char            d_name[256];
+};</code></pre>
+<p>The first entry in the array is for the short filename. The second entry is for the long filename.</p>
+<p>The <code>d_ino</code> and <code>d_off</code> fields are filled only for long filenames. The <code>d_ino</code> field holds the inode number of the directory. The <code>d_off</code> field holds the offset of the file entry in the directory. As these values are not available for short filenames, the user code should simply ignore them.</p>
+<p>The field <code>d_reclen</code> contains the length of the filename in the field <code>d_name</code>. To keep backward compatibility, a length of 0 for the short filename signals that the end of the directory has been reached. However, the preferred method for detecting the end of the directory is to test the <a href='/2/ioctl'>ioctl</a>(2) return value. If no long filename exists, field <code>d_reclen</code> is set to 0 and <code>d_name</code> is a character string of length 0 for the long filename.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On error, -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+<p>For <strong>VFAT_IOCTL_READDIR_BOTH</strong> and <strong>VFAT_IOCTL_READDIR_SHORT</strong> a return value of 1 signals that a new directory entry has been read and a return value of 0 signals that the end of the directory has been reached.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<h2>Toggling the archive flag</h2>
+<p>The following program demonstrates the usage of <a href='/2/ioctl'>ioctl</a>(2) to manipulate file attributes. The program reads and displays the archive attribute of a file. After inverting the value of the attribute, the program reads and displays the attribute again.</p>
+<p>The following was recorded when applying the program for the file <code>/mnt/user/foo</code>:</p>
+<pre><code># ./toggle_fat_archive_flag /mnt/user/foo
+Archive flag is set
+Toggling archive flag
+Archive flag is not set</code></pre>
+<h2>Program source (toggle_fat_archive_flag.c)</h2>
+<pre><code>#include &lt;fcntl.h&gt;
+#include &lt;linux/msdos_fs.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;unistd.h&gt;
+
+/*
+ * Read file attributes of a file on a FAT filesystem.
+ * Output the state of the archive flag.
+ */
+static uint32_t
+readattr(int fd)
+{
+    uint32_t attr;
+    int ret;
+
+    ret = ioctl(fd, FAT_IOCTL_GET_ATTRIBUTES, &amp;attr);
+    if (ret == -1) {
+        perror("ioctl");
+        exit(EXIT_FAILURE);
+    }
+
+    if (attr &amp; ATTR_ARCH)
+        printf("Archive flag is set\n");
+    else
+        printf("Archive flag is not set\n");
+
+    return attr;
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    uint32_t attr;
+    int fd;
+    int ret;
+
+    if (argc != 2) {
+        printf("Usage: %s FILENAME\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Read and display the FAT file attributes.
+     */
+    attr = readattr(fd);
+
+    /*
+     * Invert archive attribute.
+     */
+    printf("Toggling archive flag\n");
+    attr ^= ATTR_ARCH;
+
+    /*
+     * Write the changed FAT file attributes.
+     */
+    ret = ioctl(fd, FAT_IOCTL_SET_ATTRIBUTES, &amp;attr);
+    if (ret == -1) {
+        perror("ioctl");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Read and display the FAT file attributes.
+     */
+    readattr(fd);
+
+    close(fd);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>The following program demonstrates the use of <a href='/2/ioctl'>ioctl</a>(2) to display the volume ID of a FAT filesystem.</p>
+<p>The following output was recorded when applying the program for directory <code>/mnt/user</code>:</p>
+<pre><code>$ ./display_fat_volume_id /mnt/user
+Volume ID 6443-6241</code></pre>
+<h2>Program source (display_fat_volume_id.c)</h2>
+<pre><code>#include &lt;fcntl.h&gt;
+#include &lt;linux/msdos_fs.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;unistd.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    uint32_t id;
+    int fd;
+    int ret;
+
+    if (argc != 2) {
+        printf("Usage: %s FILENAME\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Read volume ID.
+     */
+    ret = ioctl(fd, FAT_IOCTL_GET_VOLUME_ID, &amp;id);
+    if (ret == -1) {
+        perror("ioctl");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Format the output as two groups of 16 bits each.
+     */
+    printf("Volume ID %04x-%04x\n", id &gt;&gt; 16, id &amp; 0xFFFF);
+
+    close(fd);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<p>The following program demonstrates the use of <a href='/2/ioctl'>ioctl</a>(2) to list a directory.</p>
+<p>The following was recorded when applying the program to the directory <code>/mnt/user</code>:</p>
+<pre><code>$ ./fat_dir /mnt/user
+� -&gt; ''
+�. -&gt; ''
+ALONGF~1.TXT -&gt; 'a long filename.txt'
+UPPER.TXT -&gt; ''
+LOWER.TXT -&gt; 'lower.txt'</code></pre>
+<pre><code>#include &lt;fcntl.h&gt;
+#include &lt;linux/msdos_fs.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;unistd.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct __fat_dirent entry[2];
+    int fd;
+    int ret;
+
+    if (argc != 2) {
+        printf("Usage: %s DIRECTORY\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Open file descriptor for the directory.
+     */
+    fd = open(argv[1], O_RDONLY | O_DIRECTORY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    for (;;) {
+
+        /*
+         * Read next directory entry.
+         */
+        ret = ioctl( fd, VFAT_IOCTL_READDIR_BOTH, entry);
+
+        /*
+         * If an error occurs, the return value is -1.
+         * If the end of the directory list has been reached,
+         * the return value is 0.
+         * For backward compatibility the end of the directory
+         * list is also signaled by d_reclen == 0.
+         */
+        if (ret &lt; 1)
+            break;
+
+        /*
+         * Write both the short name and the long name.
+         */
+        printf("%s -&gt; '%s'\n", entry[0].d_name, entry[1].d_name);
+    }
+
+    if (ret == -1) {
+        perror("VFAT_IOCTL_READDIR_BOTH");
+        exit(EXIT_FAILURE);
+    }
+
+    /*
+     * Close the file descriptor.
+     */
+    close(fd);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>This error is returned by <strong>VFAT_IOCTL_READDIR_BOTH</strong> and <strong>VFAT_IOCTL_READDIR_SHORT</strong> if the file descriptor <code>fd</code> refers to a removed, but still open directory.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>This error is returned by <strong>VFAT_IOCTL_READDIR_BOTH</strong> and <strong>VFAT_IOCTL_READDIR_SHORT</strong> if the file descriptor <code>fd</code> does not refer to a directory.</p>
+</dd>
+<dt><strong>ENOTTY</strong></dt>
+<dd><p>The file descriptor <code>fd</code> does not refer to an object in a FAT filesystem.</p>
+</dd>
+</dl>
+<p>For further error values, see <a href='/2/ioctl'>ioctl</a>(2).</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><strong>VFAT_IOCTL_READDIR_BOTH</strong> and <strong>VFAT_IOCTL_READDIR_SHORT</strong> first appeared in Linux 2.0.</p>
+<p><strong>FAT_IOCTL_GET_ATTRIBUTES</strong> and <strong>FAT_IOCTL_SET_ATTRIBUTES</strong> first appeared in Linux 2.6.12.</p>
+<p><strong>FAT_IOCTL_GET_VOLUME_ID</strong> was introduced in version 3.11 of the Linux kernel.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This API is Linux-specific.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/ioctl'>ioctl</a>(2)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

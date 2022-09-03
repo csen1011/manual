@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;readlink&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>readlink</a>, readlinkat - read value of a symbolic link</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+ssize_t readlink(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> bufsiz);
+
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a> /* Definition of AT_* constants */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+ssize_t readlinkat(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> bufsiz);
+</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='readlink'>readlink</a>():</p>
+<blockquote>
+<p>_XOPEN_SOURCE &gt;= 500 || _POSIX_C_SOURCE &gt;= 200112L || /* Glibc versions &lt;= 2.19: */ _BSD_SOURCE</p>
+</blockquote>
+<p><a href='readlinkat'>readlinkat</a>():</p>
+<blockquote>
+<dl>
+<dt>Since glibc 2.10:</dt>
+<dd><p>_POSIX_C_SOURCE &gt;= 200809L</p>
+</dd>
+<dt>Before glibc 2.10:</dt>
+<dd><p>_ATFILE_SOURCE</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='readlink'>readlink</a>() places the contents of the symbolic link <code>pathname</code> in the buffer <code>buf</code>, which has size <code>bufsiz</code>. <a href='readlink'>readlink</a>() does not append a null byte to <code>buf</code>. It will (silently) truncate the contents (to a length of <code>bufsiz</code> characters), in case the buffer is too small to hold all of the contents.</p>
+<h2>readlinkat()</h2>
+<p>The <a href='readlinkat'>readlinkat</a>() system call operates in exactly the same way as <a href='readlink'>readlink</a>(), except for the differences described here.</p>
+<p>If the pathname given in <code>pathname</code> is relative, then it is interpreted relative to the directory referred to by the file descriptor <code>dirfd</code> (rather than relative to the current working directory of the calling process, as is done by <a href='readlink'>readlink</a>() for a relative pathname).</p>
+<p>If <code>pathname</code> is relative and <code>dirfd</code> is the special value <strong>AT_FDCWD</strong>, then <code>pathname</code> is interpreted relative to the current working directory of the calling process (like <a href='readlink'>readlink</a>()).</p>
+<p>If <code>pathname</code> is absolute, then <code>dirfd</code> is ignored.</p>
+<p>Since Linux 2.6.39, <code>pathname</code> can be an empty string, in which case the call operates on the symbolic link referred to by <code>dirfd</code> (which should have been obtained using <a href='/2/open'>open</a>(2) with the <strong>O_PATH</strong> and <strong>O_NOFOLLOW</strong> flags).</p>
+<p>See <a href='/2/openat'>openat</a>(2) for an explanation of the need for <a href='readlinkat'>readlinkat</a>().</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, these calls return the number of bytes placed in <code>buf</code>. (If the returned value equals <code>bufsiz</code>, then truncation may have occurred.) On error, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program allocates the buffer needed by <a href='readlink'>readlink</a>() dynamically from the information provided by <a href='/2/lstat'>lstat</a>(2), falling back to a buffer of size <strong>PATH_MAX</strong> in cases where <a href='/2/lstat'>lstat</a>(2) reports a size of zero.</p>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct stat sb;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>buf;
+    ssize_t nbytes, bufsiz;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;pathname&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (lstat(argv[1], &amp;sb) == -1) {
+        perror("lstat");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Add one to the link size, so that we can determine whether
+       the buffer returned by readlink() was truncated. */
+
+    bufsiz = sb.st_size + 1;
+
+    /* Some magic symlinks under (for example) /proc and /sys
+       report 'st_size' as zero. In that case, take PATH_MAX as
+       a "good enough" estimate. */
+
+    if (sb.st_size == 0)
+        bufsiz = PATH_MAX;
+
+    buf = malloc(bufsiz);
+    if (buf == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    nbytes = readlink(argv[1], buf, bufsiz);
+    if (nbytes == -1) {
+        perror("readlink");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("'%s' points to '%.*s'\n", argv[1], (int) nbytes, buf);
+
+    /* If the return value was equal to the buffer size, then the
+       the link target was larger than expected (perhaps because the
+       target was changed between the call to lstat() and the call to
+       readlink()). Warn the user that the returned target may have
+       been truncated. */
+
+    if (nbytes == bufsiz)
+        printf("(Returned buffer may have been truncated)\n");
+
+    free(buf);
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Search permission is denied for a component of the path prefix. (See also <a href='/7/path_resolution'>path_resolution</a>(7).)</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>buf</code> extends outside the process's allocated address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>bufsiz</code> is not positive.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The named file (i.e., the final filename component of <code>pathname</code>) is not a symbolic link.</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>An I/O error occurred while reading from the filesystem.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p>Too many symbolic links were encountered in translating the pathname.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p>A pathname, or a component of a pathname, was too long.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>The named file does not exist.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient kernel memory was available.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>A component of the path prefix is not a directory.</p>
+</dd>
+</dl>
+<p>The following additional errors can occur for <a href='readlinkat'>readlinkat</a>():</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>dirfd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p><code>pathname</code> is relative and <code>dirfd</code> is a file descriptor referring to a file other than a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='readlinkat'>readlinkat</a>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='readlink'>readlink</a>(): 4.4BSD (<a href='readlink'>readlink</a>() first appeared in 4.2BSD), POSIX.1-2001, POSIX.1-2008.</p>
+<p><a href='readlinkat'>readlinkat</a>(): POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>In versions of glibc up to and including glibc 2.4, the return type of <a href='readlink'>readlink</a>() was declared as <code>int</code>. Nowadays, the return type is declared as <code>ssize_t</code>, as (newly) required in POSIX.1-2001.</p>
+<p>Using a statically sized buffer might not provide enough room for the symbolic link contents. The required size for the buffer can be obtained from the <code>stat.st_size</code> value returned by a call to <a href='/2/lstat'>lstat</a>(2) on the link. However, the number of bytes written by <a href='readlink'>readlink</a>() and <a href='readlinkat'>readlinkat</a>() should be checked to make sure that the size of the symbolic link did not increase between the calls. Dynamically allocating the buffer for <a href='readlink'>readlink</a>() and <a href='readlinkat'>readlinkat</a>() also addresses a common portability problem when using <strong>PATH_MAX</strong> for the buffer size, as this constant is not guaranteed to be defined per POSIX if the system does not have such limit.</p>
+<h2>Glibc notes</h2>
+<p>On older kernels where <a href='readlinkat'>readlinkat</a>() is unavailable, the glibc wrapper function falls back to the use of <a href='readlink'>readlink</a>(). When <code>pathname</code> is a relative pathname, glibc constructs a pathname based on the symbolic link in <code>/proc/self/fd</code> that corresponds to the <code>dirfd</code> argument.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/readlink'>readlink</a>(1), <a href='/2/lstat'>lstat</a>(2), <a href='/2/stat'>stat</a>(2), <a href='/2/symlink'>symlink</a>(2), <a href='/3/realpath'>realpath</a>(3), <a href='/7/path_resolution'>path_resolution</a>(7), <a href='/7/symlink'>symlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getutent, getutid, getutline, <a data-bs-content='This is the man page for &lt;code&gt;pututline&lt;/code&gt; and 6 related functions.' data-bs-toggle='popover' tabindex='0'>pututline</a>, setutent, endutent, utmpname - access utmp file entries</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;utmp.h&gt;</strong></p>
+<p><strong>struct utmp *getutent(void);</strong><br/>
+<strong>struct utmp *getutid(const struct utmp *</strong><code>ut</code><strong>);</strong><br/>
+<strong>struct utmp *getutline(const struct utmp *</strong><code>ut</code><strong>);</strong></p>
+<p><strong>struct utmp *pututline(const struct utmp *</strong><code>ut</code><strong>);</strong></p>
+<p><strong>void setutent(void);</strong><br/>
+<strong>void endutent(void);</strong></p>
+<p><strong>int utmpname(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>file</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>New applications should use the POSIX.1-specified "utmpx" versions of these functions; see CONFORMING TO.</p>
+<p><a href='utmpname'>utmpname</a>() sets the name of the utmp-format file for the other utmp functions to access. If <a href='utmpname'>utmpname</a>() is not used to set the filename before the other functions are used, they assume <strong>_PATH_UTMP</strong>, as defined in <code>&lt;paths.h&gt;</code>.</p>
+<p><a href='setutent'>setutent</a>() rewinds the file pointer to the beginning of the utmp file. It is generally a good idea to call it before any of the other functions.</p>
+<p><a href='endutent'>endutent</a>() closes the utmp file. It should be called when the user code is done accessing the file with the other functions.</p>
+<p><a href='getutent'>getutent</a>() reads a line from the current file position in the utmp file. It returns a pointer to a structure containing the fields of the line. The definition of this structure is shown in <a href='/5/utmp'>utmp</a>(5).</p>
+<p><a href='getutid'>getutid</a>() searches forward from the current file position in the utmp file based upon <code>ut</code>. If <code>ut-&gt;ut_type</code> is one of <strong>RUN_LVL</strong>, <strong>BOOT_TIME</strong>, <strong>NEW_TIME</strong>, or <strong>OLD_TIME</strong>, <a href='getutid'>getutid</a>() will find the first entry whose <code>ut_type</code> field matches <code>ut-&gt;ut_type</code>. If <code>ut-&gt;ut_type</code> is one of <strong>INIT_PROCESS</strong>, <strong>LOGIN_PROCESS</strong>, <strong>USER_PROCESS</strong>, or <strong>DEAD_PROCESS</strong>, <a href='getutid'>getutid</a>() will find the first entry whose <code>ut_id</code> field matches <code>ut-&gt;ut_id</code>.</p>
+<p><a href='getutline'>getutline</a>() searches forward from the current file position in the utmp file. It scans entries whose <code>ut_type</code> is <strong>USER_PROCESS</strong> or <strong>LOGIN_PROCESS</strong> and returns the first one whose <code>ut_line</code> field matches <code>ut-&gt;ut_line</code>.</p>
+<p><a href='pututline'>pututline</a>() writes the <code>utmp</code> structure <code>ut</code> into the utmp file. It uses <a href='getutid'>getutid</a>() to search for the proper place in the file to insert the new entry. If it cannot find an appropriate slot for <code>ut</code>, <a href='pututline'>pututline</a>() will append the new entry to the end of the file.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='getutent'>getutent</a>(), <a href='getutid'>getutid</a>(), and <a href='getutline'>getutline</a>() return a pointer to a <code>struct utmp</code> on success, and NULL on failure (which includes the "record not found" case). This <code>struct utmp</code> is allocated in static storage, and may be overwritten by subsequent calls.</p>
+<p>On success <a href='pututline'>pututline</a>() returns <code>ut</code>; on failure, it returns NULL.</p>
+<p><a href='utmpname'>utmpname</a>() returns 0 if the new name was successfully stored, or -1 on failure.</p>
+<p>In the event of an error, these functions <code>errno</code> set to indicate the cause.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following example adds and removes a utmp record, assuming it is run from within a pseudo terminal. For usage in a real application, you should check the return values of <a href='/3/getpwuid'>getpwuid</a>(3) and <a href='/3/ttyname'>ttyname</a>(3).</p>
+<pre><code>#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pwd.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;utmp.h&gt;
+#include &lt;time.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct utmp entry;
+
+    system("echo before adding entry:;who");
+
+    entry.ut_type = USER_PROCESS;
+    entry.ut_pid = getpid();
+    strcpy(entry.ut_line, ttyname(STDIN_FILENO) + strlen("/dev/"));
+    /* only correct for ptys named /dev/tty[pqr][0-9a-z] */
+    strcpy(entry.ut_id, ttyname(STDIN_FILENO) + strlen("/dev/tty"));
+    time(&amp;entry.ut_time);
+    strcpy(entry.ut_user, getpwuid(getuid())-&gt;pw_name);
+    memset(entry.ut_host, 0, UT_HOSTSIZE);
+    entry.ut_addr = 0;
+    setutent();
+    pututline(&amp;entry);
+
+    system("echo after adding entry:;who");
+
+    entry.ut_type = DEAD_PROCESS;
+    memset(entry.ut_line, 0, UT_LINESIZE);
+    entry.ut_time = 0;
+    memset(entry.ut_user, 0, UT_NAMESIZE);
+    setutent();
+    pututline(&amp;entry);
+
+    system("echo after removing entry:;who");
+
+    endutent();
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>Record not found.</p>
+</dd>
+</dl>
+<p><a href='setutent'>setutent</a>(), <a href='pututline'>pututline</a>(), and the <a href='getut*'>getut*</a>() functions can also fail for the reasons described in <a href='/2/open'>open</a>(2).</p>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/var/run/utmp</code></dt>
+<dd><p>database of currently logged-in users</p>
+</dd>
+<dt><code>/var/log/wtmp</code></dt>
+<dd><p>database of past user logins</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getutent'>getutent</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe init race:utent<br/>
+race:utentbuf sig:ALRM timer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='getutid'>getutid</a>(),<br/>
+<a href='getutline'>getutline</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe init race:utent<br/>
+sig:ALRM timer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='pututline'>pututline</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:utent<br/>
+sig:ALRM timer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='setutent'>setutent</a>(),<br/>
+<a href='endutent'>endutent</a>(),<br/>
+<a href='utmpname'>utmpname</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:utent</td>
+</tr>
+</tbody>
+</table>
+<p>In the above table, <code>utent</code> in <code>race:utent</code> signifies that if any of the functions <a href='setutent'>setutent</a>(), <a href='getutent'>getutent</a>(), <a href='getutid'>getutid</a>(), <a href='getutline'>getutline</a>(), <a href='pututline'>pututline</a>(), <a href='utmpname'>utmpname</a>(), or <a href='endutent'>endutent</a>() are used in parallel in different threads of a program, then data races could occur.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>XPG2, SVr4.</p>
+<p>In XPG2 and SVID 2 the function <a href='pututline'>pututline</a>() is documented to return void, and that is what it does on many systems (AIX, HP-UX). HP-UX introduces a new function <a href='_pututline'>_pututline</a>() with the prototype given above for <a href='pututline'>pututline</a>().</p>
+<p>All these functions are obsolete now on non-Linux systems. POSIX.1-2001 and POSIX.1-2008, following SUSv1, does not have any of these functions, but instead uses</p>
+<blockquote>
+<pre><code>#include &lt;utmpx.h&gt;
+
+struct utmpx *getutxent(void);
+struct utmpx *getutxid(const struct utmpx *);
+struct utmpx *getutxline(const struct utmpx *);
+struct utmpx *pututxline(const struct utmpx *);
+void setutxent(void);
+void endutxent(void);</code></pre>
+</blockquote>
+<p>These functions are provided by glibc, and perform the same task as their equivalents without the "x", but use <code>struct utmpx</code>, defined on Linux to be the same as <code>struct utmp</code>. For completeness, glibc also provides <a href='utmpxname'>utmpxname</a>(), although this function is not specified by POSIX.1.</p>
+<p>On some other systems, the <code>utmpx</code> structure is a superset of the <code>utmp</code> structure, with additional fields, and larger versions of the existing fields, and parallel files are maintained, often <code>/var/*/utmpx</code> and <code>/var/*/wtmpx</code>.</p>
+<p>Linux glibc on the other hand does not use a parallel <code>utmpx</code> file since its <code>utmp</code> structure is already large enough. The "x" functions listed above are just aliases for their counterparts without the "x" (e.g., <a href='getutxent'>getutxent</a>() is an alias for <a href='getutent'>getutent</a>()).</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<h2>Glibc notes</h2>
+<p>The above functions are not thread-safe. Glibc adds reentrant versions</p>
+<pre><code>#include &lt;utmp.h&gt;
+
+int getutent_r(struct utmp *ubuf, struct utmp **ubufp);
+int getutid_r(struct utmp *ut,
+ struct utmp *ubuf, struct utmp **ubufp);
+int getutline_r(struct utmp *ut,
+ struct utmp *ubuf, struct utmp **ubufp);</code></pre>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+<p><a href='getutent_r'>getutent_r</a>(), <a href='getutid_r'>getutid_r</a>(), <a href='getutline_r'>getutline_r</a>():</p>
+<pre><code>    _GNU_SOURCE
+    || /* since glibc 2.19: */ _DEFAULT_SOURCE
+    || /* glibc &lt;= 2.19: */    _SVID_SOURCE || _BSD_SOURCE</code></pre>
+<p>These functions are GNU extensions, analogs of the functions of the same name without the _r suffix. The <code>ubuf</code> argument gives these functions a place to store their result. On success, they return 0, and a pointer to the result is written in <code>*ubufp</code>. On error, these functions return -1. There are no utmpx equivalents of the above functions. (POSIX.1 does not specify such functions.)</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getutmp'>getutmp</a>(3), <a href='/5/utmp'>utmp</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

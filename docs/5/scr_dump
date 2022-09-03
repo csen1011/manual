@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>scr_dump - format of curses screen-dumps.</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>scr_dump</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The curses library provides applications with the ability to write the contents of a window to an external file using <strong>scr_dump</strong> or <strong>putwin</strong>, and read it back using <strong>scr_restore</strong> or <strong>getwin</strong>.</p>
+<p>The <strong>putwin</strong> and <strong>getwin</strong> functions do the work; while <strong>scr_dump</strong> and <strong>scr_restore</strong> conveniently save and restore the whole screen, i.e., <strong>stdscr</strong>.</p>
+<h2>ncurses6</h2>
+<p>A longstanding implementation of screen-dump was revised with ncurses6 to remedy problems with the earlier approach:</p>
+<ul>
+<li><p>A magic number is written to the beginning of the dump file, allowing applications (such as <a href='/1/file'>file</a>(1)) to recognize curses dump files.</p>
+<p>Because ncurses6 uses a new format, that requires a new magic number was unused by other applications. This 16-bit number was unused:</p></li>
+</ul>
+<pre><code>0x8888 (octal \210\210)</code></pre>
+<blockquote>
+<p>but to be more certain, this 32-bit number was chosen:</p>
+</blockquote>
+<pre><code>0x88888888 (octal \210\210\210\210)</code></pre>
+<blockquote>
+<p>This is the pattern submitted to the maintainers of the <strong>file</strong> program:</p>
+</blockquote>
+<pre><code>#
+# ncurses5 (and before) did not use a magic number,
+# making screen dumps "data".
+#
+# ncurses6 (2015) uses this format, ignoring byte-order
+0    string    \210\210\210\210ncurses    ncurses6 screen image
+#</code></pre>
+<ul>
+<li><p>The screen dumps are written in textual form, so that internal data sizes are not directly related to the dump-format, and enabling the library to read dumps from either narrow- or wide-character- configurations.</p>
+<p>The <code>narrow</code> library configuration holds characters and video attributes in a 32-bit <strong>chtype</strong>, while the <code>wide-character</code> library stores this information in the <strong>cchar_t</strong> structure, which is much larger than 32-bits.</p></li>
+<li><p>It is possible to read a screen dump into a terminal with a different screen-size, because the library truncates or fills the screen as necessary.</p></li>
+<li><p>The ncurses6 <strong>getwin</strong> reads the legacy screen dumps from ncurses5.</p></li>
+</ul>
+<h2>ncurses5 (legacy)</h2>
+<p>The screen-dump feature was added to ncurses in June 1995. While there were fixes and improvements in succeeding years, the basic scheme was unchanged:</p>
+<ul>
+<li><p>The <strong>WINDOW</strong> structure was written in binary form.</p></li>
+<li><p>The <strong>WINDOW</strong> structure refers to lines of data, which were written as an array of binary data following the <strong>WINDOW</strong>.</p></li>
+<li><p>When <strong>getwin</strong> restored the window, it would keep track of offsets into the array of line-data and adjust the <strong>WINDOW</strong> structure which was read back into memory.</p></li>
+</ul>
+<p>This is similar to Unix SystemV, but does not write a magic number to identify the file format.</p>
+</div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<p>There is no standard format for <strong>putwin</strong>. This section gives a brief description of the existing formats.</p>
+<h2>X/Open Curses</h2>
+<p>Refer to <code>X/Open Curses, Issue 7</code> (2009).</p>
+<p>X/Open's documentation for <code>enhanced curses</code> says only:</p>
+<blockquote>
+<p>The <code>getwin( ) </code>function reads window-related data stored in the file by <code>putwin( )</code>. The function then creates and initializes a new window using that data.</p>
+<p>The <code>putwin( )</code> function writes all data associated with <code>win</code> into the <code>stdio</code> stream to which <code>filep</code> points, using an <strong>unspecified format</strong>. This information can be retrieved later using <code>getwin( )</code>.</p>
+</blockquote>
+<p>In the mid-1990s when the X/Open Curses document was written, there were still systems using older, less capable curses libraries (aside from the BSD curses library which was not relevant to X/Open because it did not meet the criteria for <code>base curses</code>). The document explained the term enhanced as follows:</p>
+<blockquote>
+<ul>
+<li><p>Shading is used to identify <code>X/Open Enhanced Curses</code> material, relating to interfaces included to provide enhanced capabilities for applications originally written to be compiled on systems based on the UNIX operating system. Therefore, the features described may not be present on systems that conform to <strong>XPG4 or to earlier XPG releases</strong>. The relevant reference pages may provide additional or more specific portability warnings about use of the material.</p></li>
+</ul>
+</blockquote>
+<p>In the foregoing, emphasis was added to <strong>unspecified format</strong> and to <strong>XPG4 or to earlier XPG releases</strong>, for clarity.</p>
+<h2>Unix SystemV</h2>
+<p>Unix SystemV curses identified the file format by writing a magic number at the beginning of the dump. The <strong>WINDOW</strong> data and the lines of text follow, all in binary form.</p>
+<p>The Solaris curses source has these definitions:</p>
+<pre><code>/* terminfo magic number */
+#define MAGNUM  0432
+
+/* curses screen dump magic number */
+#define SVR2_DUMP_MAGIC_NUMBER  0433
+#define SVR3_DUMP_MAGIC_NUMBER  0434</code></pre>
+<p>That is, the feature was likely introduced in SVr2 (1984), and improved in SVr3 (1987). The Solaris curses source has no magic number for SVr4 (1989). Other operating systems (AIX and HPUX) use a magic number which would correspond to this definition:</p>
+<pre><code>/* curses screen dump magic number */
+#define SVR4_DUMP_MAGIC_NUMBER  0435</code></pre>
+<p>That octal number in bytes is 001, 035. Because most Unix vendors use big-endian hardware, the magic number is written with the high-order byte first, e.g.,</p>
+<pre><code> 01 35</code></pre>
+<p>After the magic number, the <strong>WINDOW</strong> structure and line-data are written in binary format. While the magic number used by the Unix systems can be seen using <a href='/1/od'>od</a>(1), none of the Unix systems documents the format used for screen-dumps.</p>
+<p>The Unix systems do not use identical formats. While collecting information for for this manual page, the <code>savescreen</code> test-program produced dumps of different size (all on 64-bit hardware, on 40x80 screens):</p>
+<ul>
+<li><p>AIX (51817 bytes)</p></li>
+<li><p>HPUX (90093 bytes)</p></li>
+<li><p>Solaris 10 (13273 bytes)</p></li>
+<li><p>ncurses5 (12888 bytes)</p></li>
+</ul>
+<h2>Solaris</h2>
+<p>As noted above, Solaris curses has no magic number corresponding to SVr4 curses. This is odd since Solaris was the first operating system to pass the SVr4 guidelines. Solaris has two versions of curses:</p>
+<ul>
+<li><p>The default curses library uses the SVr3 magic number.</p></li>
+<li><p>There is an alternate curses library in <strong>/usr/xpg4</strong>. This uses a textual format with no magic number.</p>
+<p>According to the copyright notice, the <code>xpg4</code> Solaris curses library was developed by MKS (Mortice Kern Systems) from 1990 to 1995.</p>
+<p>Like ncurses6, there is a file-header with parameters. Unlike ncurses6, the contents of the window are written piecemeal, with coordinates and attributes for each chunk of text rather than writing the whole window from top to bottom.</p></li>
+</ul>
+<h2>PDCurses</h2>
+<p>PDCurses added support for screen dumps in version 2.7 (2005). Like Unix SystemV and ncurses5, it writes the <strong>WINDOW</strong> structure in binary, but begins the file with its three-byte identifier PDC, followed by a one-byte version, e.g.,</p>
+<pre><code>	PDC\001</code></pre>
+<h2>NetBSD</h2>
+<p>As of April 2017, NetBSD curses does not support <strong>scr_dump</strong> and <strong>scr_restore</strong> (or <strong>scr_init</strong>, <strong>scr_set</strong>), although it has <strong>putwin</strong> and <strong>getwin</strong>.</p>
+<p>Like ncurses5, NetBSD <strong>putwin</strong> does not identify its dumps with a useful magic number. It writes</p>
+<ul>
+<li><p>the curses shared library major and minor versions as the first two bytes (e.g., 7 and 1),</p></li>
+<li><p>followed by a binary dump of the <strong>WINDOW</strong>,</p></li>
+<li><p>some data for wide-characters referenced by the <strong>WINDOW</strong> structure, and</p></li>
+<li><p>finally, lines as done by other implementations.</p></li>
+</ul>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p>Given a simple program which writes text to the screen (and for the sake of example, limiting the screen-size to 10x20):</p>
+<pre><code>#include &lt;curses.h&gt;
+
+int
+main(void)
+{
+    putenv("LINES=10");
+    putenv("COLUMNS=20");
+    initscr();
+    start_color();
+    init_pair(1, COLOR_WHITE, COLOR_BLUE);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    bkgd(COLOR_PAIR(1));
+    move(4, 5);
+    attron(A_BOLD);
+    addstr("Hello");
+    move(5, 5);
+    attroff(A_BOLD);
+    attrset(A_REVERSE | COLOR_PAIR(2));
+    addstr("World!");
+    refresh();
+    scr_dump("foo.out");
+    endwin();
+    return 0;
+}</code></pre>
+<p>When run using ncurses6, the output looks like this:</p>
+<pre><code>\210\210\210\210ncurses 6.0.20170415
+_cury=5
+_curx=11
+_maxy=9
+_maxx=19
+_flags=14
+_attrs=\{REVERSE|C2}
+flag=_idcok
+_delay=-1
+_regbottom=9
+_bkgrnd=\{NORMAL|C1}\s
+rows:
+1:\{NORMAL|C1}\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+2:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+3:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+4:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+5:\s\s\s\s\s\{BOLD}Hello\{NORMAL}\s\s\s\s\s\s\s\s\s\s
+6:\s\s\s\s\s\{REVERSE|C2}World!\{NORMAL|C1}\s\s\s\s\s\s\s\s\s
+7:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+8:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+9:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+10:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s</code></pre>
+<p>The first four octal escapes are actually nonprinting characters, while the remainder of the file is printable text. You may notice:</p>
+<ul>
+<li><p>The actual color pair values are not written to the file.</p></li>
+<li><p>All characters are shown in printable form; spaces are \s to ensure they are not overlooked.</p></li>
+<li><p>Attributes are written in escaped curly braces, e.g., \{BOLD}, and may include a color-pair (C1 or C2 in this example).</p></li>
+<li><p>The parameters in the header are written out only if they are nonzero. When reading back, order does not matter.</p></li>
+</ul>
+<p>Running the same program with Solaris <code>xpg4</code> curses gives this dump:</p>
+<pre><code>MAX=10,20
+BEG=0,0
+SCROLL=0,10
+VMIN=1
+VTIME=0
+FLAGS=0x1000
+FG=0,0
+BG=0,0,
+0,0,0,1,
+0,19,0,0,
+1,0,0,1,
+1,19,0,0,
+2,0,0,1,
+2,19,0,0,
+3,0,0,1,
+3,19,0,0,
+4,0,0,1,
+4,5,0x20,0,Hello
+4,10,0,1,
+4,19,0,0,
+5,0,0,1,
+5,5,0x4,2,World!
+5,11,0,1,
+5,19,0,0,
+6,0,0,1,
+6,19,0,0,
+7,0,0,1,
+7,19,0,0,
+8,0,0,1,
+8,19,0,0,
+9,0,0,1,
+9,19,0,0,
+CUR=11,5</code></pre>
+<p>Solaris <strong>getwin</strong> requires that all parameters are present, and in the same order. The <code>xpg4</code> curses library does not know about the <strong>bce</strong> (back color erase) capability, and does not color the window background.</p>
+<p>On the other hand, the SVr4 curses library does know about the background color. However, its screen dumps are in binary. Here is the corresponding dump (using od -t x1):</p>
+<pre><code>0000000 1c 01 c3 d6 f3 58 05 00 0b 00 0a 00 14 00 00 00
+0000020 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00
+0000040 00 00 b8 1a 06 08 cc 1a 06 08 00 00 09 00 10 00
+0000060 00 00 00 80 00 00 20 00 00 00 ff ff ff ff 00 00
+0000100 ff ff ff ff 00 00 00 00 20 80 00 00 20 80 00 00
+0000120 20 80 00 00 20 80 00 00 20 80 00 00 20 80 00 00
+*
+0000620 20 80 00 00 20 80 00 00 20 80 00 00 48 80 00 04
+0000640 65 80 00 04 6c 80 00 04 6c 80 00 04 6f 80 00 04
+0000660 20 80 00 00 20 80 00 00 20 80 00 00 20 80 00 00
+*
+0000740 20 80 00 00 20 80 00 00 20 80 00 00 57 00 81 00
+0000760 6f 00 81 00 72 00 81 00 6c 00 81 00 64 00 81 00
+0001000 21 00 81 00 20 80 00 00 20 80 00 00 20 80 00 00
+0001020 20 80 00 00 20 80 00 00 20 80 00 00 20 80 00 00
+*
+0001540 20 80 00 00 20 80 00 00 00 00 f6 d1 01 00 f6 d1
+0001560 08 00 00 00 40 00 00 00 00 00 00 00 00 00 00 07
+0001600 00 04 00 01 00 01 00 00 00 01 00 00 00 00 00 00
+0001620 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+*
+0002371</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>scr_dump</strong>(3NCURSES), <strong>util</strong>(3NCURSES).</p>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>Thomas E. Dickey<br/>
+extended screen-dump format for ncurses 6.0 (2015)</p>
+<p>Eric S. Raymond<br/>
+screen dump feature in ncurses 1.9.2d (1995)</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

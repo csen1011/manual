@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getauxval - retrieve a value from the auxiliary vector</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/auxv.h&gt;</a>
+
+unsigned long getauxval(unsigned long type);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getauxval'>getauxval</a>() function retrieves values from the auxiliary vector, a mechanism that the kernel's ELF binary loader uses to pass certain information to user space when a program is executed.</p>
+<p>Each entry in the auxiliary vector consists of a pair of values: a type that identifies what this entry represents, and a value for that type. Given the argument <code>type</code>, <a href='getauxval'>getauxval</a>() returns the corresponding value.</p>
+<p>The value returned for each <code>type</code> is given in the following list. Not all <code>type</code> values are present on all architectures.</p>
+<dl>
+<dt><strong>AT_BASE</strong></dt>
+<dd><p>The base address of the program interpreter (usually, the dynamic linker).</p>
+</dd>
+<dt><strong>AT_BASE_PLATFORM</strong></dt>
+<dd><p>A pointer to a string (PowerPC and MIPS only). On PowerPC, this identifies the real platform; may differ from <strong>AT_PLATFORM</strong>. On MIPS, this identifies the ISA level (since Linux 5.7).</p>
+</dd>
+<dt><strong>AT_CLKTCK</strong></dt>
+<dd><p>The frequency with which <a href='/2/times'>times</a>(2) counts. This value can also be obtained via <code>sysconf(_SC_CLK_TCK)</code>.</p>
+</dd>
+<dt><strong>AT_DCACHEBSIZE</strong></dt>
+<dd><p>The data cache block size.</p>
+</dd>
+<dt><strong>AT_EGID</strong></dt>
+<dd><p>The effective group ID of the thread.</p>
+</dd>
+<dt><strong>AT_ENTRY</strong></dt>
+<dd><p>The entry address of the executable.</p>
+</dd>
+<dt><strong>AT_EUID</strong></dt>
+<dd><p>The effective user ID of the thread.</p>
+</dd>
+<dt><strong>AT_EXECFD</strong></dt>
+<dd><p>File descriptor of program.</p>
+</dd>
+<dt><strong>AT_EXECFN</strong></dt>
+<dd><p>A pointer to a string containing the pathname used to execute the program.</p>
+</dd>
+<dt><strong>AT_FLAGS</strong></dt>
+<dd><p>Flags (unused).</p>
+</dd>
+<dt><strong>AT_FPUCW</strong></dt>
+<dd><p>Used FPU control word (SuperH architecture only). This gives some information about the FPU initialization performed by the kernel.</p>
+</dd>
+<dt><strong>AT_GID</strong></dt>
+<dd><p>The real group ID of the thread.</p>
+</dd>
+<dt><strong>AT_HWCAP</strong></dt>
+<dd><p>An architecture and ABI dependent bit-mask whose settings indicate detailed processor capabilities. The contents of the bit mask are hardware dependent (for example, see the kernel source file <code>arch/x86/include/asm/cpufeature.h</code> for details relating to the Intel x86 architecture; the value returned is the first 32-bit word of the array described there). A human-readable version of the same information is available via <code>/proc/cpuinfo</code>.</p>
+</dd>
+<dt><strong>AT_HWCAP2</strong> (since glibc 2.18)</dt>
+<dd><p>Further machine-dependent hints about processor capabilities.</p>
+</dd>
+<dt><strong>AT_ICACHEBSIZE</strong></dt>
+<dd><p>The instruction cache block size.</p>
+</dd>
+<dt><strong>AT_L1D_CACHEGEOMETRY</strong></dt>
+<dd><p>Geometry of the L1 data cache, encoded with the cache line size in bytes in the bottom 16 bits and the cache associativity in the next 16 bits. The associativity is such that if N is the 16-bit value, the cache is N-way set associative.</p>
+</dd>
+<dt><strong>AT_L1D_CACHESIZE</strong></dt>
+<dd><p>The L1 data cache size.</p>
+</dd>
+<dt><strong>AT_L1I_CACHEGEOMETRY</strong></dt>
+<dd><p>Geometry of the L1 instruction cache, encoded as for <strong>AT_L1D_CACHEGEOMETRY</strong>.</p>
+</dd>
+<dt><strong>AT_L1I_CACHESIZE</strong></dt>
+<dd><p>The L1 instruction cache size.</p>
+</dd>
+<dt><strong>AT_L2_CACHEGEOMETRY</strong></dt>
+<dd><p>Geometry of the L2 cache, encoded as for <strong>AT_L1D_CACHEGEOMETRY</strong>.</p>
+</dd>
+<dt><strong>AT_L2_CACHESIZE</strong></dt>
+<dd><p>The L2 cache size.</p>
+</dd>
+<dt><strong>AT_L3_CACHEGEOMETRY</strong></dt>
+<dd><p>Geometry of the L3 cache, encoded as for <strong>AT_L1D_CACHEGEOMETRY</strong>.</p>
+</dd>
+<dt><strong>AT_L3_CACHESIZE</strong></dt>
+<dd><p>The L3 cache size.</p>
+</dd>
+<dt><strong>AT_PAGESZ</strong></dt>
+<dd><p>The system page size (the same value returned by <code>sysconf(_SC_PAGESIZE)</code>).</p>
+</dd>
+<dt><strong>AT_PHDR</strong></dt>
+<dd><p>The address of the program headers of the executable.</p>
+</dd>
+<dt><strong>AT_PHENT</strong></dt>
+<dd><p>The size of program header entry.</p>
+</dd>
+<dt><strong>AT_PHNUM</strong></dt>
+<dd><p>The number of program headers.</p>
+</dd>
+<dt><strong>AT_PLATFORM</strong></dt>
+<dd><p>A pointer to a string that identifies the hardware platform that the program is running on. The dynamic linker uses this in the interpretation of <code>rpath</code> values.</p>
+</dd>
+<dt><strong>AT_RANDOM</strong></dt>
+<dd><p>The address of sixteen bytes containing a random value.</p>
+</dd>
+<dt><strong>AT_SECURE</strong></dt>
+<dd><p>Has a nonzero value if this executable should be treated securely. Most commonly, a nonzero value indicates that the process is executing a set-user-ID or set-group-ID binary (so that its real and effective UIDs or GIDs differ from one another), or that it gained capabilities by executing a binary file that has capabilities (see <a href='/7/capabilities'>capabilities</a>(7)). Alternatively, a nonzero value may be triggered by a Linux Security Module. When this value is nonzero, the dynamic linker disables the use of certain environment variables (see <strong><a href="http://ld-linux.so">ld-linux.so</a></strong>(8)) and glibc changes other aspects of its behavior. (See also <a href='/3/secure_getenv'>secure_getenv</a>(3).)</p>
+</dd>
+<dt><strong>AT_SYSINFO</strong></dt>
+<dd><p>The entry point to the system call function in the vDSO. Not present/needed on all architectures (e.g., absent on x86-64).</p>
+</dd>
+<dt><strong>AT_SYSINFO_EHDR</strong></dt>
+<dd><p>The address of a page containing the virtual Dynamic Shared Object (vDSO) that the kernel creates in order to provide fast implementations of certain system calls.</p>
+</dd>
+<dt><strong>AT_UCACHEBSIZE</strong></dt>
+<dd><p>The unified cache block size.</p>
+</dd>
+<dt><strong>AT_UID</strong></dt>
+<dd><p>The real user ID of the thread.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='getauxval'>getauxval</a>() returns the value corresponding to <code>type</code>. If <code>type</code> is not found, 0 is returned.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>ENOENT</strong> (since glibc 2.19)</dt>
+<dd><p>No entry corresponding to <code>type</code> could be found in the auxiliary vector.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='getauxval'>getauxval</a>() function was added to glibc in version 2.16.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getauxval'>getauxval</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This function is a nonstandard glibc extension.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The primary consumer of the information in the auxiliary vector is the dynamic linker, <strong><a href="http://ld-linux.so">ld-linux.so</a></strong>(8). The auxiliary vector is a convenient and efficient shortcut that allows the kernel to communicate a certain set of standard information that the dynamic linker usually or always needs. In some cases, the same information could be obtained by system calls, but using the auxiliary vector is cheaper.</p>
+<p>The auxiliary vector resides just above the argument list and environment in the process address space. The auxiliary vector supplied to a program can be viewed by setting the <strong>LD_SHOW_AUXV</strong> environment variable when running a program:</p>
+<pre><code>$ LD_SHOW_AUXV=1 sleep 1</code></pre>
+<p>The auxiliary vector of any process can (subject to file permissions) be obtained via <code>/proc/[pid]/auxv</code>; see <a href='/5/proc'>proc</a>(5) for more information.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Before the addition of the <strong>ENOENT</strong> error in glibc 2.19, there was no way to unambiguously distinguish the case where <code>type</code> could not be found from the case where the value corresponding to <code>type</code> was zero.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/secure_getenv'>secure_getenv</a>(3), <a href='/7/vdso'>vdso</a>(7), <strong><a href="http://ld-linux.so">ld-linux.so</a></strong>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

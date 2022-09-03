@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>spu_create - create a new spu context</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/spu.h&gt;</a>
+
+int spu_create(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, int flags, mode_t mode,
+ int neighbor_fd);</code></pre>
+<p><code>Note</code>: There is no glibc wrapper for this system call; see NOTES.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='spu_create'>spu_create</a>() system call is used on PowerPC machines that implement the Cell Broadband Engine Architecture in order to access Synergistic Processor Units (SPUs). It creates a new logical context for an SPU in <code>pathname</code> and returns a file descriptor associated with it. <code>pathname</code> must refer to a nonexistent directory in the mount point of the SPU filesystem (<strong>spufs</strong>). If <a href='spu_create'>spu_create</a>() is successful, a directory is created at <code>pathname</code> and it is populated with the files described in <a href='/7/spufs'>spufs</a>(7).</p>
+<p>When a context is created, the returned file descriptor can only be passed to <a href='/2/spu_run'>spu_run</a>(2), used as the <code>dirfd</code> argument to the <strong>*at</strong> family of system calls (e.g., <a href='/2/openat'>openat</a>(2)), or closed; other operations are not defined. A logical SPU context is destroyed (along with all files created within the context's <code>pathname</code> directory) once the last reference to the context has gone; this usually occurs when the file descriptor returned by <a href='spu_create'>spu_create</a>() is closed.</p>
+<p>The <code>mode</code> argument (minus any bits set in the process's <a href='/2/umask'>umask</a>(2)) specifies the permissions used for creating the new directory in <strong>spufs</strong>. See <a href='/2/stat'>stat</a>(2) for a full list of the possible <code>mode</code> values.</p>
+<p>The <code>neighbor_fd</code> is used only when the <strong>SPU_CREATE_AFFINITY_SPU</strong> flag is specified; see below.</p>
+<p>The <code>flags</code> argument can be zero or any bitwise OR-ed combination of the following constants:</p>
+<dl>
+<dt><strong>SPU_CREATE_EVENTS_ENABLED</strong></dt>
+<dd><p>Rather than using signals for reporting DMA errors, use the <code>event</code> argument to <a href='/2/spu_run'>spu_run</a>(2).</p>
+</dd>
+<dt><strong>SPU_CREATE_GANG</strong></dt>
+<dd><p>Create an SPU gang instead of a context. (A gang is a group of SPU contexts that are functionally related to each other and which share common scheduling parameters—priority and policy. In the future, gang scheduling may be implemented causing the group to be switched in and out as a single unit.)</p>
+<p>A new directory will be created at the location specified by the <code>pathname</code> argument. This gang may be used to hold other SPU contexts, by providing a pathname that is within the gang directory to further calls to <a href='spu_create'>spu_create</a>().</p>
+</dd>
+<dt><strong>SPU_CREATE_NOSCHED</strong></dt>
+<dd><p>Create a context that is not affected by the SPU scheduler. Once the context is run, it will not be scheduled out until it is destroyed by the creating process.</p>
+<p>Because the context cannot be removed from the SPU, some functionality is disabled for <strong>SPU_CREATE_NOSCHED</strong> contexts. Only a subset of the files will be available in this context directory in <strong>spufs</strong>. Additionally, <strong>SPU_CREATE_NOSCHED</strong> contexts cannot dump a core file when crashing.</p>
+<p>Creating <strong>SPU_CREATE_NOSCHED</strong> contexts requires the <strong>CAP_SYS_NICE</strong> capability.</p>
+</dd>
+<dt><strong>SPU_CREATE_ISOLATE</strong></dt>
+<dd><p>Create an isolated SPU context. Isolated contexts are protected from some PPE (PowerPC Processing Element) operations, such as access to the SPU local store and the NPC register.</p>
+<p>Creating <strong>SPU_CREATE_ISOLATE</strong> contexts also requires the <strong>SPU_CREATE_NOSCHED</strong> flag.</p>
+</dd>
+<dt><strong>SPU_CREATE_AFFINITY_SPU</strong> (since Linux 2.6.23)</dt>
+<dd><p>Create a context with affinity to another SPU context. This affinity information is used within the SPU scheduling algorithm. Using this flag requires that a file descriptor referring to the other SPU context be passed in the <code>neighbor_fd</code> argument.</p>
+</dd>
+<dt><strong>SPU_CREATE_AFFINITY_MEM</strong> (since Linux 2.6.23)</dt>
+<dd><p>Create a context with affinity to system memory. This affinity information is used within the SPU scheduling algorithm.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='spu_create'>spu_create</a>() returns a new file descriptor. On error, -1 is returned, and <code>errno</code> is set to one of the error codes listed below.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>See <a href='/2/spu_run'>spu_run</a>(2) for an example of the use of <a href='spu_create'>spu_create</a>()</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The current user does not have write access to the <a href='/7/spufs'>spufs</a>(7) mount point.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p>An SPU context already exists at the given pathname.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>pathname</code> is not a valid string pointer in the calling process's address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>pathname</code> is not a directory in the <a href='/7/spufs'>spufs</a>(7) mount point, or invalid flags have been provided.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p>Too many symbolic links were found while resolving <code>pathname</code>.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p><code>pathname</code> is too long.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>An isolated context was requested, but the hardware does not support SPU isolation.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>Part of <code>pathname</code> could not be resolved.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>The kernel could not allocate all resources required.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>There are not enough SPU resources available to create a new context or the user-specific limit for the number of SPU contexts has been reached.</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>The functionality is not provided by the current system, because either the hardware does not provide SPUs or the spufs module is not loaded.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>A part of <code>pathname</code> is not a directory.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The <strong>SPU_CREATE_NOSCHED</strong> flag has been given, but the user does not have the <strong>CAP_SYS_NICE</strong> capability.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>pathname</code> must point to a location beneath the mount point of <strong>spufs</strong>. By convention, it gets mounted in <code>/spu</code>.</p>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='spu_create'>spu_create</a>() system call was added to Linux in kernel 2.6.16.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This call is Linux-specific and implemented only on the PowerPC architecture. Programs using this system call are not portable.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Glibc does not provide a wrapper for this system call; call it using <a href='/2/syscall'>syscall</a>(2). Note however, that <a href='spu_create'>spu_create</a>() is meant to be used from libraries that implement a more abstract interface to SPUs, not to be used from regular applications. See <a href="<a href="http://www.bsc.es/projects/deepcomputing/linuxoncell/">http://www.bsc.es/projects/deepcomputing/linuxoncell/</a>"></a> for the recommended libraries.</p>
+<p>Prior to the addition of the <strong>SPU_CREATE_AFFINITY_SPU</strong> flag in Linux 2.6.23, the <a href='spu_create'>spu_create</a>() system call took only three arguments (i.e., there was no <code>neighbor_fd</code> argument).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/close'>close</a>(2), <a href='/2/spu_run'>spu_run</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/spufs'>spufs</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

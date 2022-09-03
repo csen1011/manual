@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fork - create a child process</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/types.h&gt;</strong><br/>
+<strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong>pid_t fork(void);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='fork'>fork</a>() creates a new process by duplicating the calling process. The new process is referred to as the <code>child</code> process. The calling process is referred to as the <code>parent</code> process.</p>
+<p>The child process and the parent process run in separate memory spaces. At the time of <a href='fork'>fork</a>() both memory spaces have the same content. Memory writes, file mappings (<a href='/2/mmap'>mmap</a>(2)), and unmappings (<a href='/2/munmap'>munmap</a>(2)) performed by one of the processes do not affect the other.</p>
+<p>The child process is an exact duplicate of the parent process except for the following points:</p>
+<ul>
+<li><p>The child has its own unique process ID, and this PID does not match the ID of any existing process group (<a href='/2/setpgid'>setpgid</a>(2)) or session.</p></li>
+<li><p>The child's parent process ID is the same as the parent's process ID.</p></li>
+<li><p>The child does not inherit its parent's memory locks (<a href='/2/mlock'>mlock</a>(2), <a href='/2/mlockall'>mlockall</a>(2)).</p></li>
+<li><p>Process resource utilizations (<a href='/2/getrusage'>getrusage</a>(2)) and CPU time counters (<a href='/2/times'>times</a>(2)) are reset to zero in the child.</p></li>
+<li><p>The child's set of pending signals is initially empty (<a href='/2/sigpending'>sigpending</a>(2)).</p></li>
+<li><p>The child does not inherit semaphore adjustments from its parent (<a href='/2/semop'>semop</a>(2)).</p></li>
+<li><p>The child does not inherit process-associated record locks from its parent (<a href='/2/fcntl'>fcntl</a>(2)). (On the other hand, it does inherit <a href='/2/fcntl'>fcntl</a>(2) open file description locks and <a href='/2/flock'>flock</a>(2) locks from its parent.)</p></li>
+<li><p>The child does not inherit timers from its parent (<a href='/2/setitimer'>setitimer</a>(2), <a href='/2/alarm'>alarm</a>(2), <a href='/2/timer_create'>timer_create</a>(2)).</p></li>
+<li><p>The child does not inherit outstanding asynchronous I/O operations from its parent (<a href='/3/aio_read'>aio_read</a>(3), <a href='/3/aio_write'>aio_write</a>(3)), nor does it inherit any asynchronous I/O contexts from its parent (see <a href='/2/io_setup'>io_setup</a>(2)).</p></li>
+</ul>
+<p>The process attributes in the preceding list are all specified in POSIX.1. The parent and child also differ with respect to the following Linux-specific process attributes:</p>
+<ul>
+<li><p>The child does not inherit directory change notifications (dnotify) from its parent (see the description of <strong>F_NOTIFY</strong> in <a href='/2/fcntl'>fcntl</a>(2)).</p></li>
+<li><p>The <a href='/2/prctl'>prctl</a>(2) <strong>PR_SET_PDEATHSIG</strong> setting is reset so that the child does not receive a signal when its parent terminates.</p></li>
+<li><p>The default timer slack value is set to the parent's current timer slack value. See the description of <strong>PR_SET_TIMERSLACK</strong> in <a href='/2/prctl'>prctl</a>(2).</p></li>
+<li><p>Memory mappings that have been marked with the <a href='/2/madvise'>madvise</a>(2) <strong>MADV_DONTFORK</strong> flag are not inherited across a <a href='fork'>fork</a>().</p></li>
+<li><p>Memory in address ranges that have been marked with the <a href='/2/madvise'>madvise</a>(2) <strong>MADV_WIPEONFORK</strong> flag is zeroed in the child after a <a href='fork'>fork</a>(). (The <strong>MADV_WIPEONFORK</strong> setting remains in place for those address ranges in the child.)</p></li>
+<li><p>The termination signal of the child is always <strong>SIGCHLD</strong> (see <a href='/2/clone'>clone</a>(2)).</p></li>
+<li><p>The port access permission bits set by <a href='/2/ioperm'>ioperm</a>(2) are not inherited by the child; the child must turn on any bits that it requires using <a href='/2/ioperm'>ioperm</a>(2).</p></li>
+</ul>
+<p>Note the following further points:</p>
+<ul>
+<li><p>The child process is created with a single thread—the one that called <a href='fork'>fork</a>(). The entire virtual address space of the parent is replicated in the child, including the states of mutexes, condition variables, and other pthreads objects; the use of <a href='/3/pthread_atfork'>pthread_atfork</a>(3) may be helpful for dealing with problems that this can cause.</p></li>
+<li><p>After a <a href='fork'>fork</a>() in a multithreaded program, the child can safely call only async-signal-safe functions (see <a href='/7/signal-safety'>signal-safety</a>(7)) until such time as it calls <a href='/2/execve'>execve</a>(2).</p></li>
+<li><p>The child inherits copies of the parent's set of open file descriptors. Each file descriptor in the child refers to the same open file description (see <a href='/2/open'>open</a>(2)) as the corresponding file descriptor in the parent. This means that the two file descriptors share open file status flags, file offset, and signal-driven I/O attributes (see the description of <strong>F_SETOWN</strong> and <strong>F_SETSIG</strong> in <a href='/2/fcntl'>fcntl</a>(2)).</p></li>
+<li><p>The child inherits copies of the parent's set of open message queue descriptors (see <a href='/7/mq_overview'>mq_overview</a>(7)). Each file descriptor in the child refers to the same open message queue description as the corresponding file descriptor in the parent. This means that the two file descriptors share the same flags (<code>mq_flags</code>).</p></li>
+<li><p>The child inherits copies of the parent's set of open directory streams (see <a href='/3/opendir'>opendir</a>(3)). POSIX.1 says that the corresponding directory streams in the parent and child <code>may</code> share the directory stream positioning; on Linux/glibc they do not.</p></li>
+</ul>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, the PID of the child process is returned in the parent, and 0 is returned in the child. On failure, -1 is returned in the parent, no child process is created, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>See <a href='/2/pipe'>pipe</a>(2) and <a href='/2/wait'>wait</a>(2).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>A system-imposed limit on the number of threads was encountered. There are a number of limits that may trigger this error:</p>
+<ul>
+<li><p>the <strong>RLIMIT_NPROC</strong> soft resource limit (set via <a href='/2/setrlimit'>setrlimit</a>(2)), which limits the number of processes and threads for a real user ID, was reached;</p></li>
+<li><p>the kernel's system-wide limit on the number of processes and threads, <code>/proc/sys/kernel/threads-max</code>, was reached (see <a href='/5/proc'>proc</a>(5));</p></li>
+<li><p>the maximum number of PIDs, <code>/proc/sys/kernel/pid_max</code>, was reached (see <a href='/5/proc'>proc</a>(5)); or</p></li>
+<li><p>the PID limit (<code>pids.max</code>) imposed by the cgroup "process number" (PIDs) controller was reached.</p></li>
+</ul>
+</dd>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The caller is operating under the <strong>SCHED_DEADLINE</strong> scheduling policy and does not have the reset-on-fork flag set. See <a href='/7/sched'>sched</a>(7).</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p><a href='fork'>fork</a>() failed to allocate the necessary kernel structures because memory is tight.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>An attempt was made to create a child process in a PID namespace whose "init" process has terminated. See <a href='/7/pid_namespaces'>pid_namespaces</a>(7).</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p><a href='fork'>fork</a>() is not supported on this platform (for example, hardware without a Memory-Management Unit).</p>
+</dd>
+<dt><strong>ERESTARTNOINTR</strong> (since Linux 2.6.17)</dt>
+<dd><p>System call was interrupted by a signal and will be restarted. (This can be seen only during a trace.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Under Linux, <a href='fork'>fork</a>() is implemented using copy-on-write pages, so the only penalty that it incurs is the time and memory required to duplicate the parent's page tables, and to create a unique task structure for the child.</p>
+<h2>C library/kernel differences</h2>
+<p>Since version 2.3.3, rather than invoking the kernel's <a href='fork'>fork</a>() system call, the glibc <a href='fork'>fork</a>() wrapper that is provided as part of the NPTL threading implementation invokes <a href='/2/clone'>clone</a>(2) with flags that provide the same effect as the traditional system call. (A call to <a href='fork'>fork</a>() is equivalent to a call to <a href='/2/clone'>clone</a>(2) specifying <code>flags</code> as just <strong>SIGCHLD</strong>.) The glibc wrapper invokes any fork handlers that have been established using <a href='/3/pthread_atfork'>pthread_atfork</a>(3).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clone'>clone</a>(2), <a href='/2/execve'>execve</a>(2), <a href='/2/exit'>exit</a>(2), <a href='/2/setrlimit'>setrlimit</a>(2), <a href='/2/unshare'>unshare</a>(2), <a href='/2/vfork'>vfork</a>(2), <a href='/2/wait'>wait</a>(2), <a href='/3/daemon'>daemon</a>(3), <a href='/3/pthread_atfork'>pthread_atfork</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/credentials'>credentials</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

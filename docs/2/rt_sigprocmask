@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sigprocmask, rt_sigprocmask - examine and change blocked signals</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;signal.h&gt;</strong></p>
+<pre><code>/* Prototype for the glibc wrapper function */
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+
+/* Prototype for the underlying system call */
+int rt_sigprocmask(int how, const kernel_sigset_t *set,
+ kernel_sigset_t *oldset, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> sigsetsize);
+
+/* Prototype for the legacy system call (deprecated) */
+int sigprocmask(int how, const old_kernel_sigset_t *set,
+ old_kernel_sigset_t *oldset);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='sigprocmask'>sigprocmask</a>(): _POSIX_C_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='sigprocmask'>sigprocmask</a>() is used to fetch and/or change the signal mask of the calling thread. The signal mask is the set of signals whose delivery is currently blocked for the caller (see also <a href='/7/signal'>signal</a>(7) for more details).</p>
+<p>The behavior of the call is dependent on the value of <code>how</code>, as follows.</p>
+<dl>
+<dt><strong>SIG_BLOCK</strong></dt>
+<dd><p>The set of blocked signals is the union of the current set and the <code>set</code> argument.</p>
+</dd>
+<dt><strong>SIG_UNBLOCK</strong></dt>
+<dd><p>The signals in <code>set</code> are removed from the current set of blocked signals. It is permissible to attempt to unblock a signal which is not blocked.</p>
+</dd>
+<dt><strong>SIG_SETMASK</strong></dt>
+<dd><p>The set of blocked signals is set to the argument <code>set</code>.</p>
+</dd>
+</dl>
+<p>If <code>oldset</code> is non-NULL, the previous value of the signal mask is stored in <code>oldset</code>.</p>
+<p>If <code>set</code> is NULL, then the signal mask is unchanged (i.e., <code>how</code> is ignored), but the current value of the signal mask is nevertheless returned in <code>oldset</code> (if it is not NULL).</p>
+<p>A set of functions for modifying and inspecting variables of type <code>sigset_t</code> ("signal sets") is described in <a href='/3/sigsetops'>sigsetops</a>(3).</p>
+<p>The use of <a href='sigprocmask'>sigprocmask</a>() is unspecified in a multithreaded process; see <a href='/3/pthread_sigmask'>pthread_sigmask</a>(3).</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='sigprocmask'>sigprocmask</a>() returns 0 on success and -1 on error. In the event of an error, <code>errno</code> is set to indicate the cause.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The <code>set</code> or <code>oldset</code> argument points outside the process's allocated address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Either the value specified in <code>how</code> was invalid or the kernel does not support the size passed in <code>sigsetsize.</code></p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>It is not possible to block <strong>SIGKILL</strong> or <strong>SIGSTOP</strong>. Attempts to do so are silently ignored.</p>
+<p>Each of the threads in a process has its own signal mask.</p>
+<p>A child created via <a href='/2/fork'>fork</a>(2) inherits a copy of its parent's signal mask; the signal mask is preserved across <a href='/2/execve'>execve</a>(2).</p>
+<p>If <strong>SIGBUS</strong>, <strong>SIGFPE</strong>, <strong>SIGILL</strong>, or <strong>SIGSEGV</strong> are generated while they are blocked, the result is undefined, unless the signal was generated by <a href='/2/kill'>kill</a>(2), <a href='/3/sigqueue'>sigqueue</a>(3), or <a href='/3/raise'>raise</a>(3).</p>
+<p>See <a href='/3/sigsetops'>sigsetops</a>(3) for details on manipulating signal sets.</p>
+<p>Note that it is permissible (although not very useful) to specify both <code>set</code> and <code>oldset</code> as NULL. The kernel's definition of <code>sigset_t</code> differs in size from that used by the C library. In this manual page, the former is referred to as <code>kernel_sigset_t</code> (it is nevertheless named <code>sigset_t</code> in the kernel sources).</p>
+<p>The glibc wrapper function for <a href='sigprocmask'>sigprocmask</a>() silently ignores attempts to block the two real-time signals that are used internally by the NPTL threading implementation. See <a href='/7/nptl'>nptl</a>(7) for details.</p>
+<p>The original Linux system call was named <a href='sigprocmask'>sigprocmask</a>(). However, with the addition of real-time signals in Linux 2.2, the fixed-size, 32-bit <code>sigset_t</code> (referred to as <code>old_kernel_sigset_t</code> in this manual page) type supported by that system call was no longer fit for purpose. Consequently, a new system call, <a href='rt_sigprocmask'>rt_sigprocmask</a>(), was added to support an enlarged <code>sigset_t</code> type (referred to as <code>kernel_sigset_t</code> in this manual page). The new system call takes a fourth argument, <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> sigsetsize</code>, which specifies the size in bytes of the signal sets in <code>set</code> and <code>oldset</code>. This argument is currently required to have a fixed architecture specific value (equal to <code>sizeof(kernel_sigset_t)</code>).</p>
+<p>The glibc <a href='sigprocmask'>sigprocmask</a>() wrapper function hides these details from us, transparently calling <a href='rt_sigprocmask'>rt_sigprocmask</a>() when the kernel provides it. <a href='/2/kill'>kill</a>(2), <a href='/2/pause'>pause</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/signal'>signal</a>(2), <a href='/2/sigpending'>sigpending</a>(2), <a href='/2/sigsuspend'>sigsuspend</a>(2), <a href='/3/pthread_sigmask'>pthread_sigmask</a>(3), <a href='/3/sigqueue'>sigqueue</a>(3), <a href='/3/sigsetops'>sigsetops</a>(3), <a href='/7/signal'>signal</a>(7)</p>
+</div></div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

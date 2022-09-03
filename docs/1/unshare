@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>unshare - run program in new namespaces</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>unshare</strong> [options] [<code>program</code> [<code>arguments</code>]]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>unshare</strong> command creates new namespaces (as specified by the command-line options described below) and then executes the specified <code>program</code>. If <code>program</code> is not given, then "${SHELL}" is run (default: <code>/bin/sh</code>).</p>
+<p>By default, a new namespace persists only as long as it has member processes. A new namespace can be made persistent even when it has no member processes by bind mounting /proc/<code>pid</code>/ns/<code>type</code> files to a filesystem path. A namespace that has been made persistent in this way can subsequently be entered with <a href='/1/nsenter'>nsenter</a>(1) even after the <code>program</code> terminates (except PID namespaces where a permanently running init process is required). Once a persistent namespace is no longer needed, it can be unpersisted by using <a href='/8/umount'>umount</a>(8) to remove the bind mount. See the EXAMPLES section for more details.</p>
+<p><strong>unshare</strong> since util-linux version 2.36 uses <code>/proc/[pid]/ns/pid_for_children</code> and <code>/proc/[pid]/ns/time_for_children</code> files for persistent PID and TIME namespaces. This change requires Linux kernel 4.17 or newer.</p>
+<p>The following types of namespaces can be created with <strong>unshare</strong>:</p>
+<p><strong>mount namespace</strong></p>
+<blockquote>
+<p>Mounting and unmounting filesystems will not affect the rest of the system, except for filesystems which are explicitly marked as shared (with <strong>mount --make-shared</strong>; see <code>/proc/self/mountinfo</code> or <strong>findmnt -o+PROPAGATION</strong> for the <strong>shared</strong> flags). For further details, see <a href='/7/mount_namespaces'>mount_namespaces</a>(7).</p>
+<p><strong>unshare</strong> since util-linux version 2.27 automatically sets propagation to <strong>private</strong> in a new mount namespace to make sure that the new namespace is really unshared. It’s possible to disable this feature with option <strong>--propagation unchanged</strong>. Note that <strong>private</strong> is the kernel default.</p>
+</blockquote>
+<p><strong>UTS namespace</strong></p>
+<blockquote>
+<p>Setting hostname or domainname will not affect the rest of the system. For further details, see <a href='/7/uts_namespaces'>uts_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>IPC namespace</strong></p>
+<blockquote>
+<p>The process will have an independent namespace for POSIX message queues as well as System V message queues, semaphore sets and shared memory segments. For further details, see <a href='/7/ipc_namespaces'>ipc_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>network namespace</strong></p>
+<blockquote>
+<p>The process will have independent IPv4 and IPv6 stacks, IP routing tables, firewall rules, the <code>/proc/net</code> and <code>/sys/class/net</code> directory trees, sockets, etc. For further details, see <a href='/7/network_namespaces'>network_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>PID namespace</strong></p>
+<blockquote>
+<p>Children will have a distinct set of PID-to-process mappings from their parent. For further details, see <a href='/7/pid_namespaces'>pid_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>cgroup namespace</strong></p>
+<blockquote>
+<p>The process will have a virtualized view of <code>/proc/self/cgroup</code>, and new cgroup mounts will be rooted at the namespace cgroup root. For further details, see <a href='/7/cgroup_namespaces'>cgroup_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>user namespace</strong></p>
+<blockquote>
+<p>The process will have a distinct set of UIDs, GIDs and capabilities. For further details, see <a href='/7/user_namespaces'>user_namespaces</a>(7).</p>
+</blockquote>
+<p><strong>time namespace</strong></p>
+<blockquote>
+<p>The process can have a distinct view of <strong>CLOCK_MONOTONIC</strong> and/or <strong>CLOCK_BOOTTIME</strong> which can be changed using <code>/proc/self/timens_offsets</code>. For further details, see <a href='/7/time_namespaces'>time_namespaces</a>(7).</p>
+</blockquote>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-i</strong>, <strong>--ipc</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the IPC namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount.</p>
+</blockquote>
+<p><strong>-m</strong>, <strong>--mount</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the mount namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount. Note that <code>file</code> must be located on a mount whose propagation type is not <strong>shared</strong> (or an error results). Use the command <strong>findmnt -o+PROPAGATION</strong> when not sure about the current setting. See also the examples below.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--net</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the network namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--pid</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the PID namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount. (Creation of a persistent PID namespace will fail if the <strong>--fork</strong> option is not also specified.)</p>
+<p>See also the <strong>--fork</strong> and <strong>--mount-proc</strong> options.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--uts</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the UTS namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount.</p>
+</blockquote>
+<p><strong>-U</strong>, <strong>--user</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the user namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount.</p>
+</blockquote>
+<p><strong>-C</strong>, <strong>--cgroup</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the cgroup namespace. If <code>file</code> is specified, then persistent namespace is created by bind mount.</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--time</strong>[<strong>=</strong><code>file</code>]</p>
+<blockquote>
+<p>Unshare the time namespace. If <code>file</code> is specified, then a persistent namespace is created by a bind mount. The <strong>--monotonic</strong> and <strong>--boottime</strong> options can be used to specify the corresponding offset in the time namespace.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--fork</strong></p>
+<blockquote>
+<p>Fork the specified <code>program</code> as a child process of <strong>unshare</strong> rather than running it directly. This is useful when creating a new PID namespace. Note that when <strong>unshare</strong> is waiting for the child process, then it ignores <strong>SIGINT</strong> and <strong>SIGTERM</strong> and does not forward any signals to the child. It is necessary to send signals to the child process.</p>
+</blockquote>
+<p><strong>--keep-caps</strong></p>
+<blockquote>
+<p>When the <strong>--user</strong> option is given, ensure that capabilities granted in the user namespace are preserved in the child process.</p>
+</blockquote>
+<p><strong>--kill-child</strong>[<strong>=</strong><code>signame</code>]</p>
+<blockquote>
+<p>When <strong>unshare</strong> terminates, have <code>signame</code> be sent to the forked child process. Combined with <strong>--pid</strong> this allows for an easy and reliable killing of the entire process tree below <strong>unshare</strong>. If not given, <code>signame</code> defaults to <strong>SIGKILL</strong>. This option implies <strong>--fork</strong>.</p>
+</blockquote>
+<p><strong>--mount-proc</strong>[<strong>=</strong><code>mountpoint</code>]</p>
+<blockquote>
+<p>Just before running the program, mount the proc filesystem at <code>mountpoint</code> (default is <code>/proc</code>). This is useful when creating a new PID namespace. It also implies creating a new mount namespace since the <code>/proc</code> mount would otherwise mess up existing programs on the system. The new proc filesystem is explicitly mounted as private (with <strong>MS_PRIVATE</strong>|<strong>MS_REC</strong>).</p>
+</blockquote>
+<p><strong>--map-user=</strong><code>uid|name</code></p>
+<blockquote>
+<p>Run the program only after the current effective user ID has been mapped to <code>uid</code>. If this option is specified multiple times, the last occurrence takes precedence. This option implies <strong>--user</strong>.</p>
+</blockquote>
+<p><strong>--map-group=</strong><code>gid|name</code></p>
+<blockquote>
+<p>Run the program only after the current effective group ID has been mapped to <code>gid</code>. If this option is specified multiple times, the last occurrence takes precedence. This option implies <strong>--setgroups=deny</strong> and <strong>--user</strong>.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--map-root-user</strong></p>
+<blockquote>
+<p>Run the program only after the current effective user and group IDs have been mapped to the superuser UID and GID in the newly created user namespace. This makes it possible to conveniently gain capabilities needed to manage various aspects of the newly created namespaces (such as configuring interfaces in the network namespace or mounting filesystems in the mount namespace) even when run unprivileged. As a mere convenience feature, it does not support more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs. This option implies <strong>--setgroups=deny</strong> and <strong>--user</strong>. This option is equivalent to <strong>--map-user=0 --map-group=0</strong>.</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--map-current-user</strong></p>
+<blockquote>
+<p>Run the program only after the current effective user and group IDs have been mapped to the same UID and GID in the newly created user namespace. This option implies <strong>--setgroups=deny</strong> and <strong>--user</strong>. This option is equivalent to <strong>--map-user=$(id -ru) --map-group=$(id -rg)</strong>.</p>
+</blockquote>
+<p><strong>--propagation private</strong>|<strong>shared</strong>|<strong>slave</strong>|<strong>unchanged</strong></p>
+<blockquote>
+<p>Recursively set the mount propagation flag in the new mount namespace. The default is to set the propagation to <code>private</code>. It is possible to disable this feature with the argument <strong>unchanged</strong>. The option is silently ignored when the mount namespace (<strong>--mount</strong>) is not requested.</p>
+</blockquote>
+<p><strong>--setgroups allow</strong>|<strong>deny</strong></p>
+<blockquote>
+<p>Allow or deny the <a href='/2/setgroups'>setgroups</a>(2) system call in a user namespace.</p>
+<p>To be able to call <a href='/2/setgroups'>setgroups</a>(2), the calling process must at least have <strong>CAP_SETGID</strong>. But since Linux 3.19 a further restriction applies: the kernel gives permission to call <a href='/2/setgroups'>setgroups</a>(2) only after the GID map (<strong>/proc/</strong><code>pid</code>*/gid_map*) has been set. The GID map is writable by root when <a href='/2/setgroups'>setgroups</a>(2) is enabled (i.e., <strong>allow</strong>, the default), and the GID map becomes writable by unprivileged processes when <a href='/2/setgroups'>setgroups</a>(2) is permanently disabled (with <strong>deny</strong>).</p>
+</blockquote>
+<p><strong>-R</strong>, <strong>--root=</strong><code>dir</code></p>
+<blockquote>
+<p>run the command with root directory set to <code>dir</code>.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--wd=</strong><code>dir</code></p>
+<blockquote>
+<p>change working directory to <code>dir</code>.</p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--setuid</strong> <code>uid</code></p>
+<blockquote>
+<p>Set the user ID which will be used in the entered namespace.</p>
+</blockquote>
+<p><strong>-G</strong>, <strong>--setgid</strong> <code>gid</code></p>
+<blockquote>
+<p>Set the group ID which will be used in the entered namespace and drop supplementary groups.</p>
+</blockquote>
+<p><strong>--monotonic</strong> <code>offset</code></p>
+<blockquote>
+<p>Set the offset of <strong>CLOCK_MONOTONIC</strong> which will be used in the entered time namespace. This option requires unsharing a time namespace with <strong>--time</strong>.</p>
+</blockquote>
+<p><strong>--boottime</strong> <code>offset</code></p>
+<blockquote>
+<p>Set the offset of <strong>CLOCK_BOOTTIME</strong> which will be used in the entered time namespace. This option requires unsharing a time namespace with <strong>--time</strong>.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The proc and sysfs filesystems mounting as root in a user namespace have to be restricted so that a less privileged user can not get more access to sensitive files that a more privileged user made unavailable. In short the rule for proc and sysfs is as close to a bind mount as possible.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following command creates a PID namespace, using <strong>--fork</strong> to ensure that the executed command is performed in a child process that (being the first process in the namespace) has PID 1. The <strong>--mount-proc</strong> option ensures that a new mount namespace is also simultaneously created and that a new <a href='/5/proc'>proc</a>(5) filesystem is mounted that contains information corresponding to the new PID namespace. When the <strong>readlink</strong> command terminates, the new namespaces are automatically torn down.</p>
+<blockquote>
+<pre><code># unshare --fork --pid --mount-proc readlink /proc/self
+1</code></pre>
+</blockquote>
+<p>As an unprivileged user, create a new user namespace where the user’s credentials are mapped to the root IDs inside the namespace:</p>
+<blockquote>
+<pre><code>$ id -u; id -g
+1000
+1000
+$ unshare --user --map-root-user \
+        sh -c ''whoami; cat /proc/self/uid_map /proc/self/gid_map''
+root
+         0       1000          1
+         0       1000          1</code></pre>
+</blockquote>
+<p>The first of the following commands creates a new persistent UTS namespace and modifies the hostname as seen in that namespace. The namespace is then entered with <a href='/1/nsenter'>nsenter</a>(1) in order to display the modified hostname; this step demonstrates that the UTS namespace continues to exist even though the namespace had no member processes after the <strong>unshare</strong> command terminated. The namespace is then destroyed by removing the bind mount.</p>
+<blockquote>
+<pre><code># touch /root/uts-ns
+# unshare --uts=/root/uts-ns hostname FOO
+# nsenter --uts=/root/uts-ns hostname
+FOO
+# umount /root/uts-ns</code></pre>
+</blockquote>
+<p>The following commands establish a persistent mount namespace referenced by the bind mount <code>/root/namespaces/mnt</code>. In order to ensure that the creation of that bind mount succeeds, the parent directory (<code>/root/namespaces</code>) is made a bind mount whose propagation type is not <strong>shared</strong>.</p>
+<blockquote>
+<pre><code># mount --bind /root/namespaces /root/namespaces
+# mount --make-private /root/namespaces
+# touch /root/namespaces/mnt
+# unshare --mount=/root/namespaces/mnt</code></pre>
+</blockquote>
+<p>The following commands demonstrate the use of the <strong>--kill-child</strong> option when creating a PID namespace, in order to ensure that when <strong>unshare</strong> is killed, all of the processes within the PID namespace are killed.</p>
+<blockquote>
+<pre><code># set +m                # Don't print job status messages
+
+
+# unshare --pid --fork --mount-proc --kill-child -- \
+
+
+       bash --norc -c ''(sleep 555 &amp;) &amp;&amp; (ps a &amp;) &amp;&amp; sleep 999'' &amp;
+[1] 53456
+#     PID TTY      STAT   TIME COMMAND
+      1 pts/3    S+     0:00 sleep 999
+      3 pts/3    S+     0:00 sleep 555
+      5 pts/3    R+     0:00 ps a
+
+# ps h -o 'comm' $!     # Show that background job is unshare(1)
+unshare
+# kill $!               # Kill unshare(1)
+# pidof sleep</code></pre>
+</blockquote>
+<p>The <a href='/1/pidof'>pidof</a>(1) command prints no output, because the <strong>sleep</strong> processes have been killed. More precisely, when the <strong>sleep</strong> process that has PID 1 in the namespace (i.e., the namespace’s init process) was killed, this caused all other processes in the namespace to be killed. By contrast, a similar series of commands where the <strong>--kill-child</strong> option is not used shows that when <strong>unshare</strong> terminates, the processes in the PID namespace are not killed:</p>
+<blockquote>
+<pre><code># unshare --pid --fork --mount-proc -- \
+
+
+       bash --norc -c ''(sleep 555 &amp;) &amp;&amp; (ps a &amp;) &amp;&amp; sleep 999'' &amp;
+[1] 53479
+#     PID TTY      STAT   TIME COMMAND
+      1 pts/3    S+     0:00 sleep 999
+      3 pts/3    S+     0:00 sleep 555
+      5 pts/3    R+     0:00 ps a
+
+# kill $!
+# pidof sleep
+53482 53480</code></pre>
+</blockquote>
+<p>The following example demonstrates the creation of a time namespace where the boottime clock is set to a point several years in the past:</p>
+<blockquote>
+<pre><code># uptime -p             # Show uptime in initial time namespace
+up 21 hours, 30 minutes
+# unshare --time --fork --boottime 300000000 uptime -p
+up 9 years, 28 weeks, 1 day, 2 hours, 50 minutes</code></pre>
+</blockquote>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clone'>clone</a>(2), <a href='/2/unshare'>unshare</a>(2), <a href='/7/namespaces'>namespaces</a>(7), <a href='/8/mount'>mount</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>unshare</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

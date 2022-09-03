@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getopt - parse command options (enhanced)</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>getopt</strong> <code>optstring</code> <code>parameters</code> <strong>getopt</strong> [options] [<strong>--</strong>] <code>optstring</code> <code>parameters</code> <strong>getopt</strong> [options] <strong>-o</strong>|<strong>--options</strong> <code>optstring</code> [options] [<strong>--</strong>] <code>parameters</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>getopt</strong> is used to break up (<code>parse</code>) options in command lines for easy parsing by shell procedures, and to check for valid options. It uses the GNU <a href='/3/getopt'>getopt</a>(3) routines to do this.</p>
+<p>The parameters <strong>getopt</strong> is called with can be divided into two parts: options which modify the way <strong>getopt</strong> will do the parsing (the <code>options</code> and the <code>optstring</code> in the <strong>SYNOPSIS</strong>), and the parameters which are to be parsed (<code>parameters</code> in the <strong>SYNOPSIS</strong>). The second part will start at the first non-option parameter that is not an option argument, or after the first occurrence of '<strong>--</strong>'. If no '<strong>-o</strong>' or '<strong>--options</strong>' option is found in the first part, the first parameter of the second part is used as the short options string.</p>
+<p>If the environment variable <strong>GETOPT_COMPATIBLE</strong> is set, or if the first <code>parameter</code> is not an option (does not start with a '<strong>-</strong>', the first format in the <strong>SYNOPSIS</strong>), <strong>getopt</strong> will generate output that is compatible with that of other versions of <a href='/1/getopt'>getopt</a>(1). It will still do parameter shuffling and recognize optional arguments (see section <strong>COMPATIBILITY</strong> for more information).</p>
+<p>Traditional implementations of <a href='/1/getopt'>getopt</a>(1) are unable to cope with whitespace and other (shell-specific) special characters in arguments and non-option parameters. To solve this problem, this implementation can generate quoted output which must once again be interpreted by the shell (usually by using the <strong>eval</strong> command). This has the effect of preserving those characters, but you must call <strong>getopt</strong> in a way that is no longer compatible with other versions (the second or third format in the <strong>SYNOPSIS</strong>). To determine whether this enhanced version of <a href='/1/getopt'>getopt</a>(1) is installed, a special test option (<strong>-T</strong>) can be used.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-a</strong>, <strong>--alternative</strong></p>
+<blockquote>
+<p>Allow long options to start with a single '<strong>-</strong>'.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit. No other output is generated.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--longoptions</strong> <code>longopts</code></p>
+<blockquote>
+<p>The long (multi-character) options to be recognized. More than one option name may be specified at once, by separating the names with commas. This option may be given more than once, the <code>longopts</code> are cumulative. Each long option name in <code>longopts</code> may be followed by one colon to indicate it has a required argument, and by two colons to indicate it has an optional argument.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--name</strong> <code>progname</code></p>
+<blockquote>
+<p>The name that will be used by the <a href='/3/getopt'>getopt</a>(3) routines when it reports errors. Note that errors of <a href='/1/getopt'>getopt</a>(1) are still reported as coming from getopt.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--options</strong> <code>shortopts</code></p>
+<blockquote>
+<p>The short (one-character) options to be recognized. If this option is not found, the first parameter of <strong>getopt</strong> that does not start with a '<strong>-</strong>' (and is not an option argument) is used as the short options string. Each short option character in <code>shortopts</code> may be followed by one colon to indicate it has a required argument, and by two colons to indicate it has an optional argument. The first character of shortopts may be '<strong>+</strong>' or '<strong>-</strong>' to influence the way options are parsed and output is generated (see section <strong>SCANNING MODES</strong> for details).</p>
+</blockquote>
+<p><strong>-q</strong>, <strong>--quiet</strong></p>
+<blockquote>
+<p>Disable error reporting by <a href='/3/getopt'>getopt</a>(3).</p>
+</blockquote>
+<p><strong>-Q</strong>, <strong>--quiet-output</strong></p>
+<blockquote>
+<p>Do not generate normal output. Errors are still reported by <a href='/3/getopt'>getopt</a>(3), unless you also use <strong>-q</strong>.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--shell</strong> <code>shell</code></p>
+<blockquote>
+<p>Set quoting conventions to those of <code>shell</code>. If the <strong>-s</strong> option is not given, the BASH conventions are used. Valid arguments are currently '<strong>sh</strong>' '<strong>bash</strong>', '<strong>csh</strong>', and '<strong>tcsh</strong>'.</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--test</strong></p>
+<blockquote>
+<p>Test if your <a href='/1/getopt'>getopt</a>(1) is this enhanced version or an old version. This generates no output, and sets the error status to 4. Other implementations of <a href='/1/getopt'>getopt</a>(1), and this version if the environment variable <strong>GETOPT_COMPATIBLE</strong> is set, will return '<strong>--</strong>' and error status 0.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--unquoted</strong></p>
+<blockquote>
+<p>Do not quote the output. Note that whitespace and special (shell-dependent) characters can cause havoc in this mode (like they do with other <a href='/1/getopt'>getopt</a>(1) implementations).</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit. No other output is generated.</p>
+</blockquote>
+</div></div></div><h1 id='parsing'><a href='#parsing'>PARSING</a></h1><div data-for='parsing' data-hide><div class='section' data-for='parsing'><div data-more>
+<p>This section specifies the format of the second part of the parameters of <strong>getopt</strong> (the <code>parameters</code> in the <strong>SYNOPSIS</strong>). The next section (<strong>OUTPUT</strong>) describes the output that is generated. These parameters were typically the parameters a shell function was called with. Care must be taken that each parameter the shell function was called with corresponds to exactly one parameter in the parameter list of <strong>getopt</strong> (see the <strong>EXAMPLES</strong>). All parsing is done by the GNU <a href='/3/getopt'>getopt</a>(3) routines.</p>
+<p>The parameters are parsed from left to right. Each parameter is classified as a short option, a long option, an argument to an option, or a non-option parameter.</p>
+<p>A simple short option is a '<strong>-</strong>' followed by a short option character. If the option has a required argument, it may be written directly after the option character or as the next parameter (i.e., separated by whitespace on the command line). If the option has an optional argument, it must be written directly after the option character if present.</p>
+<p>It is possible to specify several short options after one '<strong>-</strong>', as long as all (except possibly the last) do not have required or optional arguments.</p>
+<p>A long option normally begins with '<strong>--</strong>' followed by the long option name. If the option has a required argument, it may be written directly after the long option name, separated by '<strong>=</strong>', or as the next argument (i.e., separated by whitespace on the command line). If the option has an optional argument, it must be written directly after the long option name, separated by '<strong>=</strong>', if present (if you add the '<strong>=</strong>' but nothing behind it, it is interpreted as if no argument was present; this is a slight bug, see the <strong>BUGS</strong>). Long options may be abbreviated, as long as the abbreviation is not ambiguous.</p>
+<p>Each parameter not starting with a '<strong>-</strong>', and not a required argument of a previous option, is a non-option parameter. Each parameter after a '<strong>--</strong>' parameter is always interpreted as a non-option parameter. If the environment variable <strong>POSIXLY_CORRECT</strong> is set, or if the short option string started with a '<strong>+</strong>', all remaining parameters are interpreted as non-option parameters as soon as the first non-option parameter is found.</p>
+</div></div></div><h1 id='output'><a href='#output'>OUTPUT</a></h1><div data-for='output' data-hide><div class='section' data-for='output'><div data-more>
+<p>Output is generated for each element described in the previous section. Output is done in the same order as the elements are specified in the input, except for non-option parameters. Output can be done in <code>compatible</code> (<code>unquoted</code>) mode, or in such way that whitespace and other special characters within arguments and non-option parameters are preserved (see <strong>QUOTING</strong>). When the output is processed in the shell script, it will seem to be composed of distinct elements that can be processed one by one (by using the shift command in most shell languages). This is imperfect in unquoted mode, as elements can be split at unexpected places if they contain whitespace or special characters.</p>
+<p>If there are problems parsing the parameters, for example because a required argument is not found or an option is not recognized, an error will be reported on stderr, there will be no output for the offending element, and a non-zero error status is returned.</p>
+<p>For a short option, a single '<strong>-</strong>' and the option character are generated as one parameter. If the option has an argument, the next parameter will be the argument. If the option takes an optional argument, but none was found, the next parameter will be generated but be empty in quoting mode, but no second parameter will be generated in unquoted (compatible) mode. Note that many other <a href='/1/getopt'>getopt</a>(1) implementations do not support optional arguments.</p>
+<p>If several short options were specified after a single '<strong>-</strong>', each will be present in the output as a separate parameter.</p>
+<p>For a long option, '<strong>--</strong>' and the full option name are generated as one parameter. This is done regardless whether the option was abbreviated or specified with a single '<strong>-</strong>' in the input. Arguments are handled as with short options.</p>
+<p>Normally, no non-option parameters output is generated until all options and their arguments have been generated. Then '<strong>--</strong>' is generated as a single parameter, and after it the non-option parameters in the order they were found, each as a separate parameter. Only if the first character of the short options string was a '<strong>-</strong>', non-option parameter output is generated at the place they are found in the input (this is not supported if the first format of the <strong>SYNOPSIS</strong> is used; in that case all preceding occurrences of '<strong>-</strong>' and '<strong>+</strong>' are ignored).</p>
+</div></div></div><h1 id='quoting'><a href='#quoting'>QUOTING</a></h1><div data-for='quoting' data-hide><div class='section' data-for='quoting'><div data-more>
+<p>In compatibility mode, whitespace or 'special' characters in arguments or non-option parameters are not handled correctly. As the output is fed to the shell script, the script does not know how it is supposed to break the output into separate parameters. To circumvent this problem, this implementation offers quoting. The idea is that output is generated with quotes around each parameter. When this output is once again fed to the shell (usually by a shell <strong>eval</strong> command), it is split correctly into separate parameters.</p>
+<p>Quoting is not enabled if the environment variable <strong>GETOPT_COMPATIBLE</strong> is set, if the first form of the <strong>SYNOPSIS</strong> is used, or if the option '<strong>-u</strong>' is found.</p>
+<p>Different shells use different quoting conventions. You can use the '<strong>-s</strong>' option to select the shell you are using. The following shells are currently supported: '<strong>sh</strong>', '<strong>bash</strong>', '<strong>csh</strong>' and '<strong>tcsh</strong>'. Actually, only two 'flavors' are distinguished: sh-like quoting conventions and csh-like quoting conventions. Chances are that if you use another shell script language, one of these flavors can still be used.</p>
+</div></div></div><h1 id='scanning-modes'><a href='#scanning-modes'>SCANNING MODES</a></h1><div data-for='scanning-modes' data-hide><div class='section' data-for='scanning-modes'><div data-more>
+<p>The first character of the short options string may be a '<strong>-</strong>' or a '<strong>+</strong>' to indicate a special scanning mode. If the first calling form in the <strong>SYNOPSIS</strong> is used they are ignored; the environment variable <strong>POSIXLY_CORRECT</strong> is still examined, though.</p>
+<p>If the first character is '<strong>+</strong>', or if the environment variable <strong>POSIXLY_CORRECT</strong> is set, parsing stops as soon as the first non-option parameter (i.e., a parameter that does not start with a '<strong>-</strong>') is found that is not an option argument. The remaining parameters are all interpreted as non-option parameters.</p>
+<p>If the first character is a '<strong>-</strong>', non-option parameters are outputted at the place where they are found; in normal operation, they are all collected at the end of output after a '<strong>--</strong>' parameter has been generated. Note that this '<strong>--</strong>' parameter is still generated, but it will always be the last parameter in this mode.</p>
+</div></div></div><h1 id='compatibility'><a href='#compatibility'>COMPATIBILITY</a></h1><div data-for='compatibility' data-hide><div class='section' data-for='compatibility'><div data-more>
+<p>This version of <a href='/1/getopt'>getopt</a>(1) is written to be as compatible as possible to other versions. Usually you can just replace them with this version without any modifications, and with some advantages.</p>
+<p>If the first character of the first parameter of getopt is not a '<strong>-</strong>', <strong>getopt</strong> goes into compatibility mode. It will interpret its first parameter as the string of short options, and all other arguments will be parsed. It will still do parameter shuffling (i.e., all non-option parameters are output at the end), unless the environment variable <strong>POSIXLY_CORRECT</strong> is set, in which case, <strong>getopt</strong> will prepend a '<strong>+</strong>' before short options automatically.</p>
+<p>The environment variable <strong>GETOPT_COMPATIBLE</strong> forces <strong>getopt</strong> into compatibility mode. Setting both this environment variable and <strong>POSIXLY_CORRECT</strong> offers 100% compatibility for 'difficult' programs. Usually, though, neither is needed.</p>
+<p>In compatibility mode, leading '<strong>-</strong>' and '<strong>+</strong>' characters in the short options string are ignored.</p>
+</div></div></div><h1 id='return-codes'><a href='#return-codes'>RETURN CODES</a></h1><div data-for='return-codes' data-hide><div class='section' data-for='return-codes'><div data-more>
+<p><strong>getopt</strong> returns error code <strong>0</strong> for successful parsing, <strong>1</strong> if <a href='/3/getopt'>getopt</a>(3) returns errors, <strong>2</strong> if it does not understand its own parameters, <strong>3</strong> if an internal error occurs like out-of-memory, and <strong>4</strong> if it is called with <strong>-T</strong>.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Example scripts for (ba)sh and (t)csh are provided with the <a href='/1/getopt'>getopt</a>(1) distribution, and are installed in <code>/usr/share/doc/util-linux/examples/</code> directory.</p>
+</div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p><strong>POSIXLY_CORRECT</strong></p>
+<blockquote>
+<p>This environment variable is examined by the <a href='/3/getopt'>getopt</a>(3) routines. If it is set, parsing stops as soon as a parameter is found that is not an option or an option argument. All remaining parameters are also interpreted as non-option parameters, regardless whether they start with a '<strong>-</strong>'.</p>
+</blockquote>
+<p><strong>GETOPT_COMPATIBLE</strong></p>
+<blockquote>
+<p>Forces <strong>getopt</strong> to use the first calling format as specified in the <strong>SYNOPSIS</strong>.</p>
+</blockquote>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p><a href='/3/getopt'>getopt</a>(3) can parse long options with optional arguments that are given an empty optional argument (but cannot do this for short options). This <a href='/1/getopt'>getopt</a>(1) treats optional arguments that are empty as if they were not present.</p>
+<p>The syntax if you do not want any short option variables at all is not very intuitive (you have to set them explicitly to the empty string).</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/bash'>bash</a>(1), <a href='/1/tcsh'>tcsh</a>(1), <a href='/3/getopt'>getopt</a>(3)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>getopt</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

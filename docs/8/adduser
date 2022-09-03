@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;adduser&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>adduser</a>, addgroup - add a user or group to the system</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>adduser</strong> [options] [--home DIR] [--shell SHELL] [--no-create-home] [--uid ID] [--firstuid ID] [--lastuid ID] [--ingroup GROUP | --gid ID] [--disabled-password] [--disabled-login] [--gecos GECOS] [--add_extra_groups] [--encrypt-home] user</p>
+<p><strong>adduser</strong> --system [options] [--home DIR] [--shell SHELL] [--no-create-home] [--uid ID] [--group | --ingroup GROUP | --gid ID] [--disabled-password] [--disabled-login] [--gecos GECOS] user</p>
+<p><strong>addgroup</strong> [options] [--gid ID] group</p>
+<p><strong>addgroup</strong> --system [options] [--gid ID] group</p>
+<p><strong>adduser</strong> [options] user group</p>
+<h2>COMMON OPTIONS</h2>
+<p><br/>
+[--quiet] [--debug] [--force-badname] [--help|-h] [--version] [--conf FILE]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>adduser</strong> and <strong>addgroup</strong> add users and groups to the system according to command line options and configuration information in <code>/etc/adduser.conf</code>. They are friendlier front ends to the low level tools like <strong>useradd,</strong> <strong>groupadd</strong> and <strong>usermod</strong> programs, by default choosing Debian policy conformant UID and GID values, creating a home directory with skeletal configuration, running a custom script, and other features. <strong>adduser</strong> and <strong>addgroup</strong> can be run in one of five modes:</p>
+<h2>Add a normal user</h2>
+<p>If called with one non-option argument and without the <strong>--system</strong> or <strong>--group</strong> options, <strong>adduser</strong> will add a normal user.</p>
+<p><strong>adduser</strong> will choose the first available UID from the range specified for normal users in the configuration file. The UID can be overridden with the <strong>--uid</strong> option.</p>
+<p>The range specified in the configuration file may be overridden with the <strong>--firstuid</strong> and <strong>--lastuid</strong> options.</p>
+<p>By default, each user in Debian GNU/Linux is given a corresponding group with the same name. Usergroups allow group writable directories to be easily maintained by placing the appropriate users in the new group, setting the set-group-ID bit in the directory, and ensuring that all users use a umask of 002. If this option is turned off by setting <strong>USERGROUPS</strong> to <code>no</code>, all users' GIDs are set to <strong>USERS_GID</strong>. Users' primary groups can also be overridden from the command line with the <strong>--gid</strong> or <strong>--ingroup</strong> options to set the group by id or name, respectively. Also, users can be added to one or more groups defined in adduser.conf either by setting ADD_EXTRA_GROUPS to 1 in adduser.conf, or by passing <strong>--add_extra_groups</strong> on the commandline.</p>
+<p><strong>adduser</strong> will create a home directory subject to <strong>DHOME</strong>, <strong>GROUPHOMES</strong>, and <strong>LETTERHOMES</strong>. The home directory can be overridden from the command line with the <strong>--home</strong> option, and the shell with the <strong>--shell</strong> option. The home directory's set-group-ID bit is set if <strong>USERGROUPS</strong> is <code>yes</code> so that any files created in the user's home directory will have the correct group.</p>
+<p><strong>adduser</strong> will copy files from <strong>SKEL</strong> into the home directory and prompt for finger (gecos) information and a password. The gecos may also be set with the <strong>--gecos</strong> option. With the <strong>--disabled-login</strong> option, the account will be created but will be disabled until a password is set. The <strong>--disabled-password</strong> option will not set a password, but login is still possible (for example with SSH RSA keys). To set up an encrypted home directory for the new user, add the <strong>--encrypt-home</strong> option. For more information, refer to the -b option of <strong>ecryptfs-setup-private(1).</strong></p>
+<p>If the file <strong>/usr/local/sbin/adduser.local</strong> exists, it will be executed after the user account has been set up in order to do any local setup. The arguments passed to <strong>adduser.local</strong> are:<br/>
+username uid gid home-directory<br/>
+The environment variable VERBOSE is set according to the following rule:</p>
+<dl>
+<dt>0 if </dt>
+<dd><p><strong>--quiet</strong> is specified</p>
+</dd>
+<dt>1 if neither </dt>
+<dd><p><strong>--quiet</strong> nor <strong>--debug</strong> is specified</p>
+</dd>
+<dt>2 if </dt>
+<dd><p><strong>--debug</strong> is specified</p>
+</dd>
+</dl>
+<p>(The same applies to the variable DEBUG, but DEBUG is deprecated and will be removed in a later version of <strong>adduser</strong>.)</p>
+<h2>Add a system user</h2>
+<p>If called with one non-option argument and the <strong>--system</strong> option, <strong>adduser</strong> will add a system user. If a user with the same name already exists in the system uid range (or, if the uid is specified, if a user with that uid already exists), adduser will exit with a warning. This warning can be suppressed by adding <strong>--quiet</strong>.</p>
+<p><strong>adduser</strong> will choose the first available UID from the range specified for system users in the configuration file (FIRST_SYSTEM_UID and LAST_SYSTEM_UID). If you want to have a specific UID, you can specify it using the <strong>--uid</strong> option.</p>
+<p>By default, system users are placed in the <strong>nogroup</strong> group. To place the new system user in an already existing group, use the <strong>--gid</strong> or <strong>--ingroup</strong> options. To place the new system user in a new group with the same ID, use the <strong>--group</strong> option.</p>
+<p>A home directory is created by the same rules as for normal users. The new system user will have the shell <code>/usr/sbin/nologin</code> (unless overridden with the <strong>--shell</strong> option), and have logins disabled. Skeletal configuration files are not copied.</p>
+<h2>Add a user group</h2>
+<p>If <strong>adduser</strong> is called with the <strong>--group</strong>"<strong>option</strong>and<strong>without</strong>the <strong>--system</strong> option, or <strong>addgroup</strong>"<strong>is</strong>called<strong>respectively,</strong>a<strong>user</strong> group will be added.</p>
+<p>A GID will be chosen from the range specified for system GIDS in the configuration file (FIRST_GID, LAST_GID). To override that mechanism you can give the GID using the <strong>--gid</strong> option.</p>
+<p>The group is created with no users.</p>
+<h2>Add a system group</h2>
+<p>If <strong>addgroup</strong>"<strong>is</strong>called<strong>with</strong>the <strong>--system</strong>"<strong>option,</strong>a<strong>system</strong>group<strong>will</strong>be<strong>added.</strong></p>
+<p>A GID will be chosen from the range specified for system GIDS in the configuration file (FIRST_SYSTEM_GID, LAST_SYSTEM_GID). To override that mechanism you can give the GID using the <strong>--gid</strong> option.</p>
+<p>The group is created with no users.</p>
+<h2>Add an existing user to an existing group</h2>
+<p>If called with two non-option arguments, <strong>adduser</strong> will add an existing user to an existing group.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>--conf FILE</strong></dt>
+<dd><p>Use FILE instead of <code>/etc/adduser.conf</code>.</p>
+</dd>
+<dt><strong>--disabled-login</strong></dt>
+<dd><p>Do not run passwd to set the password. The user won't be able to use her account until the password is set.</p>
+</dd>
+<dt><strong>--disabled-password</strong></dt>
+<dd><p>Like --disabled-login, but logins are still possible (for example using SSH RSA keys) but not using password authentication.</p>
+</dd>
+<dt><strong>--force-badname</strong></dt>
+<dd><p>By default, user and group names are checked against the configurable regular expression <strong>NAME_REGEX</strong> (or <strong>NAME_REGEX_SYSTEM</strong> if <strong>--system</strong> is specified) specified in the configuration file. This option forces <strong>adduser</strong> and <strong>addgroup</strong> to apply only a weak check for validity of the name. <strong>NAME_REGEX</strong> is described in <a href='/5/adduser.conf'>adduser.conf</a>(5).</p>
+</dd>
+<dt><strong>--gecos GECOS</strong></dt>
+<dd><p>Set the gecos field for the new entry generated. <strong>adduser</strong> will not ask for finger information if this option is given.</p>
+</dd>
+<dt><strong>--gid ID</strong></dt>
+<dd><p>When creating a group, this option forces the new groupid to be the given number. When creating a user, this option will put the user in that group.</p>
+</dd>
+<dt><strong>--group</strong></dt>
+<dd><p>When combined with <strong>--system</strong>, a group with the same name and ID as the system user is created. If not combined with <strong>--system</strong>, a group with the given name is created. This is the default action if the program is invoked as <strong>addgroup</strong>.</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>Display brief instructions.</p>
+</dd>
+<dt><strong>--home DIR</strong></dt>
+<dd><p>Use DIR as the user's home directory, rather than the default specified by the configuration file. If the directory does not exist, it is created and skeleton files are copied.</p>
+</dd>
+<dt><strong>--shell SHELL</strong></dt>
+<dd><p>Use SHELL as the user's login shell, rather than the default specified by the configuration file.</p>
+</dd>
+<dt><strong>--ingroup GROUP</strong></dt>
+<dd><p>Add the new user to GROUP instead of a usergroup or the default group defined by <strong>USERS_GID</strong> in the configuration file. This affects the users primary group. To add additional groups, see the <strong>add_extra_groups</strong> option.</p>
+</dd>
+<dt><strong>--no-create-home</strong></dt>
+<dd><p>Do not create the home directory, even if it doesn't exist.</p>
+</dd>
+<dt><strong>--quiet</strong></dt>
+<dd><p>Suppress informational messages, only show warnings and errors.</p>
+</dd>
+<dt><strong>--debug</strong></dt>
+<dd><p>Be verbose, most useful if you want to nail down a problem with adduser.</p>
+</dd>
+<dt><strong>--system</strong></dt>
+<dd><p>Create a system user or group.</p>
+</dd>
+<dt><strong>--uid ID</strong></dt>
+<dd><p>Force the new userid to be the given number. <strong>adduser</strong> will fail if the userid is already taken.</p>
+</dd>
+<dt><strong>--firstuid ID</strong></dt>
+<dd><p>Override the first uid in the range that the uid is chosen from (overrides <strong>FIRST_UID</strong> specified in the configuration file).</p>
+</dd>
+<dt><strong>--lastuid ID</strong></dt>
+<dd><p>Override the last uid in the range that the uid is chosen from ( <strong>LAST_UID</strong> )</p>
+</dd>
+<dt><strong>--add_extra_groups</strong></dt>
+<dd><p>Add new user to extra groups defined in the configuration file.</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>Display version and copyright information.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='exit-values'><a href='#exit-values'>EXIT VALUES</a></h1><div data-for='exit-values' data-hide><div class='section' data-for='exit-values'><div data-more>
+<dl>
+<dt><strong>0</strong></dt>
+<dd><p>The user exists as specified. This can have 2 causes: The user was created by adduser or the user was already present on the system before adduser was invoked. If adduser was returning 0 , invoking adduser a second time with the same parameters as before also returns 0.</p>
+</dd>
+<dt><strong>1</strong></dt>
+<dd><p>Creating the user or group failed because it was already present with other UID/GID than specified. The username or groupname was rejected because of a mismatch with the configured regular expressions, see adduser.conf(5). Adduser has been aborted by a signal.<br/>
+Or for many other yet undocumented reasons which are printed to console then. You may then consider to remove <strong>--quiet</strong> to make adduser more verbose.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt>/etc/adduser.conf</dt>
+<dd><p>Default configuration file for adduser and addgroup</p>
+</dd>
+<dt>/usr/local/sbin/adduser.local</dt>
+<dd><p>Optional custom add-ons.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/adduser.conf'>adduser.conf</a>(5), <a href='/8/deluser'>deluser</a>(8), <a href='/8/groupadd'>groupadd</a>(8), <a href='/8/useradd'>useradd</a>(8), <a href='/8/usermod'>usermod</a>(8), Debian Policy 9.2.2.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (C) 1997, 1998, 1999 Guy Maor. Modifications by Roland Bauerschmidt and Marc Haber. Additional patches by Joerg Hoh and Stephen Gran.<br/>
+Copyright (C) 1995 Ted Hajek, with a great deal borrowed from the original Debian <strong>adduser</strong><br/>
+Copyright (C) 1994 Ian Murdock. <strong>adduser</strong> is free software; see the GNU General Public Licence version 2 or later for copying conditions. There is <code>no</code> warranty.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

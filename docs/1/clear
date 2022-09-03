@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><strong><a data-bs-content='This is the man page for &lt;code&gt;clear&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>clear</a></strong> - clear the terminal screen</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>clear</strong> [<strong>-T</strong><code>type</code>] [<strong>-V</strong>] [<strong>-x</strong>]<br/>
+</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>clear</strong> clears your screen if this is possible, including its scrollback buffer (if the extended E3 capability is defined). <strong>clear</strong> looks in the environment for the terminal type given by the environment variable <strong>TERM</strong>, and then in the <strong>terminfo</strong> database to determine how to clear the screen.</p>
+<p><strong>clear</strong> writes to the standard output. You can redirect the standard output to a file (which prevents <strong>clear</strong> from actually clearing the screen), and later <strong>cat</strong> the file to the screen, clearing it at that point.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-T <code>type</code></strong></dt>
+<dd><p>indicates the <code>type</code> of terminal. Normally this option is unnecessary, because the default is taken from the environment variable <strong>TERM</strong>. If <strong>-T</strong> is specified, then the shell variables <strong>LINES</strong> and <strong>COLUMNS</strong> will also be ignored.</p>
+</dd>
+<dt><strong>-V</strong></dt>
+<dd><p>reports the version of ncurses which was used in this program, and exits. The options are as follows:</p>
+</dd>
+<dt><strong>-x</strong></dt>
+<dd><p>do not attempt to clear the terminal's scrollback buffer using the extended E3 capability.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>A <strong>clear</strong> command appeared in 2.79BSD dated February 24, 1979. Later that was provided in Unix 8th edition (1985).</p>
+<p>AT&amp;T adapted a different BSD program (<strong>tset</strong>) to make a new command (<strong>tput</strong>), and used this to replace the <strong>clear</strong> command with a shell script which calls <strong>tput clear</strong>, e.g.,</p>
+<pre><code>/usr/bin/tput ${1:+-T$1} clear 2&gt; /dev/null
+exit</code></pre>
+<p>In 1989, when Keith Bostic revised the BSD <strong>tput</strong> command to make it similar to the AT&amp;T <strong>tput</strong>, he added a shell script for the <strong>clear</strong> command:</p>
+<pre><code>exec tput clear</code></pre>
+<p>The remainder of the script in each case is a copyright notice.</p>
+<p>The ncurses <strong>clear</strong> command began in 1995 by adapting the original BSD <strong>clear</strong> command (with terminfo, of course).</p>
+<p>The <strong>E3</strong> extension came later:</p>
+<ul>
+<li><p>In June 1999, xterm provided an extension to the standard control sequence for clearing the screen. Rather than clearing just the visible part of the screen using</p></li>
+</ul>
+<pre><code>printf '\033[2J'</code></pre>
+<blockquote>
+<p>one could clear the <code>scrollback</code> using</p>
+</blockquote>
+<pre><code>printf '\033[3J'</code></pre>
+<blockquote>
+<p>This is documented in <code>XTerm Control Sequences</code> as a feature originating with xterm.</p>
+</blockquote>
+<ul>
+<li><p>A few other terminal developers adopted the feature, e.g., PuTTY in 2006.</p></li>
+<li><p>In April 2011, a Red Hat developer submitted a patch to the Linux kernel, modifying its console driver to do the same thing. The Linux change, part of the 3.0 release, did not mention xterm, although it was cited in the Red Hat bug report (#683733) which led to the change.</p></li>
+<li><p>Again, a few other terminal developers adopted the feature. But the next relevant step was a change to the <strong>clear</strong> program in 2013 to incorporate this extension.</p></li>
+<li><p>In 2013, the <strong>E3</strong> extension was overlooked in <strong>tput</strong> with the clear parameter. That was addressed in 2016 by reorganizing <strong>tput</strong> to share its logic with <strong>clear</strong> and <strong>tset</strong>.</p></li>
+</ul>
+</div></div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<p>Neither IEEE Std 1003.1/The Open Group Base Specifications Issue 7 (POSIX.1-2008) nor X/Open Curses Issue 7 documents tset or reset.</p>
+<p>The latter documents <strong>tput</strong>, which could be used to replace this utility either via a shell script or by an alias (such as a symbolic link) to run <strong>tput</strong> as <strong>clear</strong>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/tput'>tput</a>(1), <a href='/5/terminfo'>terminfo</a>(5)</p>
+<p>This describes <strong>ncurses</strong> version 6.3 (patch 20211021).</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

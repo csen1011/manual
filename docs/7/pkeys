@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>pkeys - overview of Memory Protection Keys</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Memory Protection Keys (pkeys) are an extension to existing page-based memory permissions. Normal page permissions using page tables require expensive system calls and TLB invalidations when changing permissions. Memory Protection Keys provide a mechanism for changing protections without requiring modification of the page tables on every permission change.</p>
+<p>To use pkeys, software must first "tag" a page in the page tables with a pkey. After this tag is in place, an application only has to change the contents of a register in order to remove write access, or all access to a tagged page.</p>
+<p>Protection keys work in conjunction with the existing <strong>PROT_READ</strong>/ <strong>PROT_WRITE</strong>/ <strong>PROT_EXEC</strong> permissions passed to system calls such as <a href='/2/mprotect'>mprotect</a>(2) and <a href='/2/mmap'>mmap</a>(2), but always act to further restrict these traditional permission mechanisms.</p>
+<p>If a process performs an access that violates pkey restrictions, it receives a <strong>SIGSEGV</strong> signal. See <a href='/2/sigaction'>sigaction</a>(2) for details of the information available with that signal.</p>
+<p>To use the pkeys feature, the processor must support it, and the kernel must contain support for the feature on a given processor. As of early 2016 only future Intel x86 processors are supported, and this hardware supports 16 protection keys in each process. However, pkey 0 is used as the default key, so a maximum of 15 are available for actual application use. The default key is assigned to any memory region for which a pkey has not been explicitly assigned via <a href='/2/pkey_mprotect'>pkey_mprotect</a>(2).</p>
+<p>Protection keys have the potential to add a layer of security and reliability to applications. But they have not been primarily designed as a security feature. For instance, WRPKRU is a completely unprivileged instruction, so pkeys are useless in any case that an attacker controls the PKRU register or can execute arbitrary instructions.</p>
+<p>Applications should be very careful to ensure that they do not "leak" protection keys. For instance, before calling <a href='/2/pkey_free'>pkey_free</a>(2), the application should be sure that no memory has that pkey assigned. If the application left the freed pkey assigned, a future user of that pkey might inadvertently change the permissions of an unrelated data structure, which could impact security or stability. The kernel currently allows in-use pkeys to have <a href='/2/pkey_free'>pkey_free</a>(2) called on them because it would have processor or memory performance implications to perform the additional checks needed to disallow it. Implementation of the necessary checks is left up to applications. Applications may implement these checks by searching the <code>/proc/[pid]/smaps</code> file for memory regions with the pkey assigned. Further details can be found in <a href='/5/proc'>proc</a>(5).</p>
+<p>Any application wanting to use protection keys needs to be able to function without them. They might be unavailable because the hardware that the application runs on does not support them, the kernel code does not contain support, the kernel support has been disabled, or because the keys have all been allocated, perhaps by a library the application is using. It is recommended that applications wanting to use protection keys should simply call <a href='/2/pkey_alloc'>pkey_alloc</a>(2) and test whether the call succeeds, instead of attempting to detect support for the feature in any other way.</p>
+<p>Although unnecessary, hardware support for protection keys may be enumerated with the <code>cpuid</code> instruction. Details of how to do this can be found in the Intel Software Developers Manual. The kernel performs this enumeration and exposes the information in <code>/proc/cpuinfo</code> under the "flags" field. The string "pku" in this field indicates hardware support for protection keys and the string "ospke" indicates that the kernel contains and has enabled protection keys support.</p>
+<p>Applications using threads and protection keys should be especially careful. Threads inherit the protection key rights of the parent at the time of the <a href='/2/clone'>clone</a>(2), system call. Applications should either ensure that their own permissions are appropriate for child threads at the time when <a href='/2/clone'>clone</a>(2) is called, or ensure that each child thread can perform its own initialization of protection key rights. Each time a signal handler is invoked (including nested signals), the thread is temporarily given a new, default set of protection key rights that override the rights from the interrupted context. This means that applications must re-establish their desired protection key rights upon entering a signal handler if the desired rights differ from the defaults. The rights of any interrupted context are restored when the signal handler returns.</p>
+<p>This signal behavior is unusual and is due to the fact that the x86 PKRU register (which stores protection key access rights) is managed with the same hardware mechanism (XSAVE) that manages floating-point registers. The signal behavior is the same as that of floating-point registers. The Linux kernel implements the following pkey-related system calls: <a href='/2/pkey_mprotect'>pkey_mprotect</a>(2), <a href='/2/pkey_alloc'>pkey_alloc</a>(2), and <a href='/2/pkey_free'>pkey_free</a>(2).</p>
+<p>The Linux pkey system calls are available only if the kernel was configured and built with the <strong>CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS</strong> option.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below allocates a page of memory with read and write permissions. It then writes some data to the memory and successfully reads it back. After that, it attempts to allocate a protection key and disallows access to the page by using the WRPKRU instruction. It then tries to access the page, which we now expect to cause a fatal signal to the application.</p>
+<pre><code>$ ./a.out
+buffer contains: 73
+about to read buffer again...
+Segmentation fault (core dumped)</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;unistd.h&gt;
+#include &lt;sys/syscall.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;sys/mman.h&gt;
+
+static inline void
+wrpkru(unsigned int pkru)
+{
+    unsigned int eax = pkru;
+    unsigned int ecx = 0;
+    unsigned int edx = 0;
+
+    asm volatile(".byte 0x0f,0x01,0xef\n\t"
+                 : : "a" (eax), "c" (ecx), "d" (edx));
+}
+
+int
+pkey_set(int pkey, unsigned long rights, unsigned long flags)
+{
+    unsigned int pkru = (rights &lt;&lt; (2 * pkey));
+    return wrpkru(pkru);
+}
+
+int
+pkey_mprotect(void *ptr, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size, unsigned long orig_prot,
+              unsigned long pkey)
+{
+    return syscall(SYS_pkey_mprotect, ptr, size, orig_prot, pkey);
+}
+
+int
+pkey_alloc(void)
+{
+    return syscall(SYS_pkey_alloc, 0, 0);
+}
+
+int
+pkey_free(unsigned long pkey)
+{
+    return syscall(SYS_pkey_free, pkey);
+}
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                           } while (0)
+
+int
+main(void)
+{
+    int status;
+    int pkey;
+    int *buffer;
+
+    /*
+     *Allocate one page of memory
+     */
+    buffer = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE,
+                  MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    if (buffer == MAP_FAILED)
+        errExit("mmap");
+
+    /*
+     * Put some random data into the page (still OK to touch)
+     */
+    *buffer = __LINE__;
+    printf("buffer contains: %d\n", *buffer);
+
+    /*
+     * Allocate a protection key:
+     */
+    pkey = pkey_alloc();
+    if (pkey == -1)
+        errExit("pkey_alloc");
+
+    /*
+     * Disable access to any memory with "pkey" set,
+     * even though there is none right now
+     */
+    status = pkey_set(pkey, PKEY_DISABLE_ACCESS, 0);
+    if (status)
+        errExit("pkey_set");
+
+    /*
+     * Set the protection key on "buffer".
+     * Note that it is still read/write as far as mprotect() is
+     * concerned and the previous pkey_set() overrides it.
+     */
+    status = pkey_mprotect(buffer, getpagesize(),
+                           PROT_READ | PROT_WRITE, pkey);
+    if (status == -1)
+        errExit("pkey_mprotect");
+
+    printf("about to read buffer again...\n");
+
+    /*
+     * This will crash, because we have disallowed access
+     */
+    printf("buffer contains: %d\n", *buffer);
+
+    status = pkey_free(pkey);
+    if (status == -1)
+        errExit("pkey_free");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/pkey_alloc'>pkey_alloc</a>(2), <a href='/2/pkey_free'>pkey_free</a>(2), <a href='/2/pkey_mprotect'>pkey_mprotect</a>(2), <a href='/2/sigaction'>sigaction</a>(2)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

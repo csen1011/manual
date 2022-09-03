@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>shmctl - System V shared memory control</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/ipc.h&gt;</strong><br/>
+<strong>#include &lt;sys/shm.h&gt;</strong></p>
+<p><strong>int shmctl(int </strong><code>shmid</code><strong>, int </strong><code>cmd</code><strong>, struct shmid_ds *</strong><code>buf</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='shmctl'>shmctl</a>() performs the control operation specified by <code>cmd</code> on the System V shared memory segment whose identifier is given in <code>shmid</code>.</p>
+<p>The <code>buf</code> argument is a pointer to a <code>shmid_ds</code> structure, defined in <code>&lt;sys/shm.h&gt;</code> as follows:</p>
+<pre><code>struct shmid_ds {
+    struct ipc_perm shm_perm;    /* Ownership and permissions */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a>          shm_segsz;   /* Size of segment (bytes) */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>          shm_atime;   /* Last attach time */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>          shm_dtime;   /* Last detach time */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>          shm_ctime;   /* Creation time/time of last
+                                    modification via shmctl() */
+    pid_t           shm_cpid;    /* PID of creator */
+    pid_t           shm_lpid;    /* PID of last shmat(2)/shmdt(2) */
+    shmatt_t        shm_nattch;  /* No. of current attaches */
+    ...
+};</code></pre>
+<p>The fields of the <code>shmid_ds</code> structure are as follows:</p>
+<dl>
+<dt><code>shm_perm</code></dt>
+<dd><p>This is an <code>ipc_perm</code> structure (see below) that specifies the access permissions on the shared memory segment.</p>
+</dd>
+<dt><code>shm_segsz</code></dt>
+<dd><p>Size in bytes of the shared memory segment.</p>
+</dd>
+<dt><code>shm_atime</code></dt>
+<dd><p>Time of the last <a href='/2/shmat'>shmat</a>(2) system call that attached this segment.</p>
+</dd>
+<dt><code>shm_dtime</code></dt>
+<dd><p>Time of the last <a href='/2/shmdt'>shmdt</a>(2) system call that detached tgis segment.</p>
+</dd>
+<dt><code>shm_ctime</code></dt>
+<dd><p>Time of creation of segment or time of the last <a href='shmctl'>shmctl</a>() <strong>IPC_SET</strong> operation.</p>
+</dd>
+<dt><code>shm_cpid</code></dt>
+<dd><p>ID of the process that created the shared memory segment.</p>
+</dd>
+<dt><code>shm_lpid</code></dt>
+<dd><p>ID of the last process that executed a <a href='/2/shmat'>shmat</a>(2) or <a href='/2/shmdt'>shmdt</a>(2) system call on this segment.</p>
+</dd>
+<dt><code>shm_nattch</code></dt>
+<dd><p>Number of processes that have this segment attached.</p>
+</dd>
+</dl>
+<p>The <code>ipc_perm</code> structure is defined as follows (the highlighted fields are settable using <strong>IPC_SET</strong>):</p>
+<pre><code>struct ipc_perm {
+    key_t          __key;    /* Key supplied to shmget(2) */
+    uid_t          uid;      /* Effective UID of owner */
+    gid_t          gid;      /* Effective GID of owner */
+    uid_t          cuid;     /* Effective UID of creator */
+    gid_t          cgid;     /* Effective GID of creator */
+    unsigned short mode;     /* Permissions + SHM_DEST and
+                                SHM_LOCKED flags */
+    unsigned short __seq;    /* Sequence number */
+};</code></pre>
+<p>The least significant 9 bits of the <code>mode</code> field of the <code>ipc_perm</code> structure define the access permissions for the shared memory segment. The permission bits are as follows:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0400</td>
+<td style="text-align: left;">Read by user</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0200</td>
+<td style="text-align: left;">Write by user</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0040</td>
+<td style="text-align: left;">Read by group</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0020</td>
+<td style="text-align: left;">Write by group</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0004</td>
+<td style="text-align: left;">Read by others</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0002</td>
+<td style="text-align: left;">Write by others</td>
+</tr>
+</tbody>
+</table>
+<p>Bits 0100, 0010, and 0001 (the execute bits) are unused by the system. (It is not necessary to have execute permission on a segment in order to perform a <a href='/2/shmat'>shmat</a>(2) call with the <strong>SHM_EXEC</strong> flag.)</p>
+<p>Valid values for <code>cmd</code> are:</p>
+<dl>
+<dt><strong>IPC_STAT</strong></dt>
+<dd><p>Copy information from the kernel data structure associated with <code>shmid</code> into the <code>shmid_ds</code> structure pointed to by <code>buf</code>. The caller must have read permission on the shared memory segment.</p>
+</dd>
+<dt><strong>IPC_SET</strong></dt>
+<dd><p>Write the values of some members of the <code>shmid_ds</code> structure pointed to by <code>buf</code> to the kernel data structure associated with this shared memory segment, updating also its <code>shm_ctime</code> member.</p>
+<p>The following fields are updated: <code>shm_perm.uid</code>, <code>shm_perm.gid</code>, and (the least significant 9 bits of) <code>shm_perm.mode</code>.</p>
+<p>The effective UID of the calling process must match the owner (<code>shm_perm.uid</code>) or creator (<code>shm_perm.cuid</code>) of the shared memory segment, or the caller must be privileged.</p>
+</dd>
+<dt><strong>IPC_RMID</strong></dt>
+<dd><p>Mark the segment to be destroyed. The segment will actually be destroyed only after the last process detaches it (i.e., when the <code>shm_nattch</code> member of the associated structure <code>shmid_ds</code> is zero). The caller must be the owner or creator of the segment, or be privileged. The <code>buf</code> argument is ignored.</p>
+<p>If a segment has been marked for destruction, then the (nonstandard) <strong>SHM_DEST</strong> flag of the <code>shm_perm.mode</code> field in the associated data structure retrieved by <strong>IPC_STAT</strong> will be set.</p>
+<p>The caller <code>must</code> ensure that a segment is eventually destroyed; otherwise its pages that were faulted in will remain in memory or swap.</p>
+<p>See also the description of <code>/proc/sys/kernel/shm_rmid_forced</code> in <a href='/5/proc'>proc</a>(5).</p>
+</dd>
+<dt><strong>IPC_INFO</strong> (Linux-specific)</dt>
+<dd><p>Return information about system-wide shared memory limits and parameters in the structure pointed to by <code>buf</code>. This structure is of type <code>shminfo</code> (thus, a cast is required), defined in <code>&lt;sys/shm.h&gt;</code> if the <strong>_GNU_SOURCE</strong> feature test macro is defined:</p>
+<pre><code>struct shminfo {
+    unsigned long shmmax; /* Maximum segment size */
+    unsigned long shmmin; /* Minimum segment size;
+                             always 1 */
+    unsigned long shmmni; /* Maximum number of segments */
+    unsigned long shmseg; /* Maximum number of segments
+                             that a process can attach;
+                             unused within kernel */
+    unsigned long shmall; /* Maximum number of pages of
+                             shared memory, system-wide */
+};</code></pre>
+<p>The <code>shmmni</code>, <code>shmmax</code>, and <code>shmall</code> settings can be changed via <code>/proc</code> files of the same name; see <a href='/5/proc'>proc</a>(5) for details.</p>
+</dd>
+<dt><strong>SHM_INFO</strong> (Linux-specific)</dt>
+<dd><p>Return a <code>shm_info</code> structure whose fields contain information about system resources consumed by shared memory. This structure is defined in <code>&lt;sys/shm.h&gt;</code> if the <strong>_GNU_SOURCE</strong> feature test macro is defined:</p>
+<pre><code>struct shm_info {
+    int           used_ids; /* # of currently existing
+                               segments */
+    unsigned long shm_tot;  /* Total number of shared
+                               memory pages */
+    unsigned long shm_rss;  /* # of resident shared
+                               memory pages */
+    unsigned long shm_swp;  /* # of swapped shared
+                               memory pages */
+    unsigned long swap_attempts;
+                            /* Unused since Linux 2.4 */
+    unsigned long swap_successes;
+                            /* Unused since Linux 2.4 */
+};</code></pre>
+</dd>
+<dt><strong>SHM_STAT</strong> (Linux-specific)</dt>
+<dd><p>Return a <code>shmid_ds</code> structure as for <strong>IPC_STAT</strong>. However, the <code>shmid</code> argument is not a segment identifier, but instead an index into the kernel's internal array that maintains information about all shared memory segments on the system.</p>
+</dd>
+<dt><strong>SHM_STAT_ANY</strong> (Linux-specific, since Linux 4.17)</dt>
+<dd><p>Return a <code>shmid_ds</code> structure as for <strong>SHM_STAT</strong>. However, <code>shm_perm.mode</code> is not checked for read access for <code>shmid</code>, meaning that any user can employ this operation (just as any user may read <code>/proc/sysvipc/shm</code> to obtain the same information).</p>
+</dd>
+</dl>
+<p>The caller can prevent or allow swapping of a shared memory segment with the following <code>cmd</code> values:</p>
+<dl>
+<dt><strong>SHM_LOCK</strong> (Linux-specific)</dt>
+<dd><p>Prevent swapping of the shared memory segment. The caller must fault in any pages that are required to be present after locking is enabled. If a segment has been locked, then the (nonstandard) <strong>SHM_LOCKED</strong> flag of the <code>shm_perm.mode</code> field in the associated data structure retrieved by <strong>IPC_STAT</strong> will be set.</p>
+</dd>
+<dt><strong>SHM_UNLOCK</strong> (Linux-specific)</dt>
+<dd><p>Unlock the segment, allowing it to be swapped out.</p>
+</dd>
+</dl>
+<p>In kernels before 2.6.10, only a privileged process could employ <strong>SHM_LOCK</strong> and <strong>SHM_UNLOCK</strong>. Since kernel 2.6.10, an unprivileged process can employ these operations if its effective UID matches the owner or creator UID of the segment, and (for <strong>SHM_LOCK</strong>) the amount of memory to be locked falls within the <strong>RLIMIT_MEMLOCK</strong> resource limit (see <a href='/2/setrlimit'>setrlimit</a>(2)).</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>A successful <strong>IPC_INFO</strong> or <strong>SHM_INFO</strong> operation returns the index of the highest used entry in the kernel's internal array recording information about all shared memory segments. (This information can be used with repeated <strong>SHM_STAT</strong> or <strong>SHM_STAT_ANY</strong> operations to obtain information about all shared memory segments on the system.) A successful <strong>SHM_STAT</strong> operation returns the identifier of the shared memory segment whose index was given in <code>shmid</code>. Other operations return 0 on success.</p>
+<p>On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p><strong>IPC_STAT</strong> or <strong>SHM_STAT</strong> is requested and <code>shm_perm.mode</code> does not allow read access for <code>shmid</code>, and the calling process does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The argument <code>cmd</code> has value <strong>IPC_SET</strong> or <strong>IPC_STAT</strong> but the address pointed to by <code>buf</code> isn't accessible.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p><code>shmid</code> points to a removed identifier.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>shmid</code> is not a valid identifier, or <code>cmd</code> is not a valid command. Or: for a <strong>SHM_STAT</strong> or <strong>SHM_STAT_ANY</strong> operation, the index value specified in <code>shmid</code> referred to an array slot that is currently unused.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>(In kernels since 2.6.9), <strong>SHM_LOCK</strong> was specified and the size of the to-be-locked segment would mean that the total bytes in locked shared memory segments would exceed the limit for the real user ID of the calling process. This limit is defined by the <strong>RLIMIT_MEMLOCK</strong> soft resource limit (see <a href='/2/setrlimit'>setrlimit</a>(2)).</p>
+</dd>
+<dt><strong>EOVERFLOW</strong></dt>
+<dd><p><strong>IPC_STAT</strong> is attempted, and the GID or UID value is too large to be stored in the structure pointed to by <code>buf</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p><strong>IPC_SET</strong> or <strong>IPC_RMID</strong> is attempted, and the effective user ID of the calling process is not that of the creator (found in <code>shm_perm.cuid</code>), or the owner (found in <code>shm_perm.uid</code>), and the process was not privileged (Linux: did not have the <strong>CAP_SYS_ADMIN</strong> capability).</p>
+<p>Or (in kernels before 2.6.9), <strong>SHM_LOCK</strong> or <strong>SHM_UNLOCK</strong> was specified, but the process was not privileged (Linux: did not have the <strong>CAP_IPC_LOCK</strong> capability). (Since Linux 2.6.9, this error can also occur if the <strong>RLIMIT_MEMLOCK</strong> is 0 and the caller is not privileged.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p>The <strong>IPC_INFO</strong>, <strong>SHM_STAT</strong>, and <strong>SHM_INFO</strong> operations are used by the <a href='/1/ipcs'>ipcs</a>(1) program to provide information on allocated resources. In the future, these may modified or moved to a <code>/proc</code> filesystem interface.</p>
+<p>Linux permits a process to attach (<a href='/2/shmat'>shmat</a>(2)) a shared memory segment that has already been marked for deletion using <code>shmctl(IPC_RMID)</code>. This feature is not available on other UNIX implementations; portable applications should avoid relying on it.</p>
+<p>Various fields in a <code>struct shmid_ds</code> were typed as <code>short</code> under Linux 2.2 and have become <code>long</code> under Linux 2.4. To take advantage of this, a recompilation under glibc-2.1.91 or later should suffice. (The kernel distinguishes old and new calls by an <strong>IPC_64</strong> flag in <code>cmd</code>.)</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/mlock'>mlock</a>(2), <a href='/2/setrlimit'>setrlimit</a>(2), <a href='/2/shmget'>shmget</a>(2), <a href='/2/shmop'>shmop</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>symlink - symbolic link handling</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Symbolic links are files that act as pointers to other files. To understand their behavior, you must first understand how hard links work.</p>
+<p>A hard link to a file is indistinguishable from the original file because it is a reference to the object underlying the original filename. (To be precise: each of the hard links to a file is a reference to the same <code>inode number</code>, where an inode number is an index into the inode table, which contains metadata about all files on a filesystem. See <a href='/2/stat'>stat</a>(2).) Changes to a file are independent of the name used to reference the file. Hard links may not refer to directories (to prevent the possibility of loops within the filesystem tree, which would confuse many programs) and may not refer to files on different filesystems (because inode numbers are not unique across filesystems).</p>
+<p>A symbolic link is a special type of file whose contents are a string that is the pathname of another file, the file to which the link refers. (The contents of a symbolic link can be read using <a href='/2/readlink'>readlink</a>(2).) In other words, a symbolic link is a pointer to another name, and not to an underlying object. For this reason, symbolic links may refer to directories and may cross filesystem boundaries.</p>
+<p>There is no requirement that the pathname referred to by a symbolic link should exist. A symbolic link that refers to a pathname that does not exist is said to be a <code>dangling link</code>.</p>
+<p>Because a symbolic link and its referenced object coexist in the filesystem name space, confusion can arise in distinguishing between the link itself and the referenced object. On historical systems, commands and system calls adopted their own link-following conventions in a somewhat ad-hoc fashion. Rules for a more uniform approach, as they are implemented on Linux and other systems, are outlined here. It is important that site-local applications also conform to these rules, so that the user interface can be as consistent as possible. There is a special class of symbolic-link-like objects known as "magic links", which can be found in certain pseudofilesystems such as <a href='/5/proc'>proc</a>(5) (examples include <code>/proc/[pid]/exe</code> and <code>/proc/[pid]/fd/*</code>). Unlike normal symbolic links, magic links are not resolved through pathname-expansion, but instead act as direct references to the kernel's own representation of a file handle. As such, these magic links allow users to access files which cannot be referenced with normal paths (such as unlinked files still referenced by a running program ).</p>
+<p>Because they can bypass ordinary <a href='/7/mount_namespaces'>mount_namespaces</a>(7)-based restrictions, magic links have been used as attack vectors in various exploits. The owner and group of an existing symbolic link can be changed using <a href='/2/lchown'>lchown</a>(2). The only time that the ownership of a symbolic link matters is when the link is being removed or renamed in a directory that has the sticky bit set (see <a href='/2/stat'>stat</a>(2)).</p>
+<p>The last access and last modification timestamps of a symbolic link can be changed using <a href='/2/utimensat'>utimensat</a>(2) or <a href='/3/lutimes'>lutimes</a>(3).</p>
+<p>On Linux, the permissions of an ordinary symbolic link are not used in any operations; the permissions are always 0777 (read, write, and execute for all user categories), and can't be changed.</p>
+<p>However, magic links do not follow this rule. They can have a non-0777 mode, though this mode is not currently used in any permission checks.</p>
+<h2>Obtaining a file descriptor that refers to a symbolic link</h2>
+<p>Using the combination of the <strong>O_PATH</strong> and <strong>O_NOFOLLOW</strong> flags to <a href='/2/open'>open</a>(2) yields a file descriptor that can be passed as the <code>dirfd</code> argument in system calls such as <a href='/2/fstatat'>fstatat</a>(2), <a href='/2/fchownat'>fchownat</a>(2), <a href='/2/fchmodat'>fchmodat</a>(2), <a href='/2/linkat'>linkat</a>(2), and <a href='/2/readlinkat'>readlinkat</a>(2), in order to operate on the symbolic link itself (rather than the file to which it refers).</p>
+<p>By default (i.e., if the <strong>AT_SYMLINK_FOLLOW</strong> flag is not specified), if <a href='/2/name_to_handle_at'>name_to_handle_at</a>(2) is applied to a symbolic link, it yields a handle for the symbolic link (rather than the file to which it refers). One can then obtain a file descriptor for the symbolic link (rather than the file to which it refers) by specifying the <strong>O_PATH</strong> flag in a subsequent call to <a href='/2/open_by_handle_at'>open_by_handle_at</a>(2). Again, that file descriptor can be used in the aforementioned system calls to operate on the symbolic link itself.</p>
+<h2>Handling of symbolic links by system calls and commands</h2>
+<p>Symbolic links are handled either by operating on the link itself, or by operating on the object referred to by the link. In the latter case, an application or system call is said to <code>follow</code> the link. Symbolic links may refer to other symbolic links, in which case the links are dereferenced until an object that is not a symbolic link is found, a symbolic link that refers to a file which does not exist is found, or a loop is detected. (Loop detection is done by placing an upper limit on the number of links that may be followed, and an error results if this limit is exceeded.)</p>
+<p>There are three separate areas that need to be discussed. They are as follows:</p>
+<ol type="1">
+<li><p>Symbolic links used as filename arguments for system calls.</p></li>
+<li><p>Symbolic links specified as command-line arguments to utilities that are not traversing a file tree.</p></li>
+<li><p>Symbolic links encountered by utilities that are traversing a file tree (either specified on the command line or encountered as part of the file hierarchy walk).</p></li>
+</ol>
+<p>Before describing the treatment of symbolic links by system calls and commands, we require some terminology. Given a pathname of the form <code>a/b/c</code>, the part preceding the final slash (i.e., <code>a/b</code>) is called the <code>dirname</code> component, and the part following the final slash (i.e., <code>c</code>) is called the <code>basename</code> component. The first area is symbolic links used as filename arguments for system calls.</p>
+<p>The treatment of symbolic links within a pathname passed to a system call is as follows:</p>
+<ol type="1">
+<li><p>Within the dirname component of a pathname, symbolic links are always followed in nearly every system call. (This is also true for commands.) The one exception is <a href='/2/openat2'>openat2</a>(2), which provides flags that can be used to explicitly prevent following of symbolic links in the dirname component.</p></li>
+<li><p>Except as noted below, all system calls follow symbolic links in the basename component of a pathname. For example, if there were a symbolic link <code>slink</code> which pointed to a file named <code>afile</code>, the system call <code>open("slink" ...)</code> would return a file descriptor referring to the file <code>afile</code>.</p></li>
+</ol>
+<p>Various system calls do not follow links in the basename component of a pathname, and operate on the symbolic link itself. They are: <a href='/2/lchown'>lchown</a>(2), <a href='/2/lgetxattr'>lgetxattr</a>(2), <a href='/2/llistxattr'>llistxattr</a>(2), <a href='/2/lremovexattr'>lremovexattr</a>(2), <a href='/2/lsetxattr'>lsetxattr</a>(2), <a href='/2/lstat'>lstat</a>(2), <a href='/2/readlink'>readlink</a>(2), <a href='/2/rename'>rename</a>(2), <a href='/2/rmdir'>rmdir</a>(2), and <a href='/2/unlink'>unlink</a>(2).</p>
+<p>Certain other system calls optionally follow symbolic links in the basename component of a pathname. They are: <a href='/2/faccessat'>faccessat</a>(2), <a href='/2/fchownat'>fchownat</a>(2), <a href='/2/fstatat'>fstatat</a>(2), <a href='/2/linkat'>linkat</a>(2), <a href='/2/name_to_handle_at'>name_to_handle_at</a>(2), <a href='/2/open'>open</a>(2), <a href='/2/openat'>openat</a>(2), <a href='/2/open_by_handle_at'>open_by_handle_at</a>(2), and <a href='/2/utimensat'>utimensat</a>(2); see their manual pages for details. Because <a href='/3/remove'>remove</a>(3) is an alias for <a href='/2/unlink'>unlink</a>(2), that library function also does not follow symbolic links. When <a href='/2/rmdir'>rmdir</a>(2) is applied to a symbolic link, it fails with the error <strong>ENOTDIR</strong>.</p>
+<p><a href='/2/link'>link</a>(2) warrants special discussion. POSIX.1-2001 specifies that <a href='/2/link'>link</a>(2) should dereference <code>oldpath</code> if it is a symbolic link. However, Linux does not do this. (By default, Solaris is the same, but the POSIX.1-2001 specified behavior can be obtained with suitable compiler options.) POSIX.1-2008 changed the specification to allow either behavior in an implementation.</p>
+<h2>Commands not traversing a file tree</h2>
+<p>The second area is symbolic links, specified as command-line filename arguments, to commands which are not traversing a file tree.</p>
+<p>Except as noted below, commands follow symbolic links named as command-line arguments. For example, if there were a symbolic link <code>slink</code> which pointed to a file named <code>afile</code>, the command <code>cat slink</code> would display the contents of the file <code>afile</code>.</p>
+<p>It is important to realize that this rule includes commands which may optionally traverse file trees; for example, the command <code>chown file</code> is included in this rule, while the command <code>chown -R file</code>, which performs a tree traversal, is not. (The latter is described in the third area, below.)</p>
+<p>If it is explicitly intended that the command operate on the symbolic link instead of following the symbolic link—for example, it is desired that <code>chown slink</code> change the ownership of the file that <code>slink</code> is, whether it is a symbolic link or not—then the <code>-h</code> option should be used. In the above example, <code>chown root slink</code> would change the ownership of the file referred to by <code>slink</code>, while <code>chown -h root slink</code> would change the ownership of <code>slink</code> itself.</p>
+<p>There are some exceptions to this rule:</p>
+<ul>
+<li><p>The <a href='/1/mv'>mv</a>(1) and <a href='/1/rm'>rm</a>(1) commands do not follow symbolic links named as arguments, but respectively attempt to rename and delete them. (Note, if the symbolic link references a file via a relative path, moving it to another directory may very well cause it to stop working, since the path may no longer be correct.)</p></li>
+<li><p>The <a href='/1/ls'>ls</a>(1) command is also an exception to this rule. For compatibility with historic systems (when <a href='/1/ls'>ls</a>(1) is not doing a tree walk—that is, <code>-R</code> option is not specified), the <a href='/1/ls'>ls</a>(1) command follows symbolic links named as arguments if the <code>-H</code> or <code>-L</code> option is specified, or if the <code>-F</code>, <code>-d</code>, or <code>-l</code> options are not specified. (The <a href='/1/ls'>ls</a>(1) command is the only command where the <code>-H</code> and <code>-L</code> options affect its behavior even though it is not doing a walk of a file tree.)</p></li>
+<li><p>The <a href='/1/file'>file</a>(1) command is also an exception to this rule. The <a href='/1/file'>file</a>(1) command does not follow symbolic links named as argument by default. The <a href='/1/file'>file</a>(1) command does follow symbolic links named as argument if the <code>-L</code> option is specified.</p></li>
+</ul>
+<h2>Commands traversing a file tree</h2>
+<p>The following commands either optionally or always traverse file trees: <a href='/1/chgrp'>chgrp</a>(1), <a href='/1/chmod'>chmod</a>(1), <a href='/1/chown'>chown</a>(1), <a href='/1/cp'>cp</a>(1), <a href='/1/du'>du</a>(1), <a href='/1/find'>find</a>(1), <a href='/1/ls'>ls</a>(1), <a href='/1/pax'>pax</a>(1), <a href='/1/rm'>rm</a>(1), and <a href='/1/tar'>tar</a>(1).</p>
+<p>It is important to realize that the following rules apply equally to symbolic links encountered during the file tree traversal and symbolic links listed as command-line arguments.</p>
+<p>The <code>first rule</code> applies to symbolic links that reference files other than directories. Operations that apply to symbolic links are performed on the links themselves, but otherwise the links are ignored.</p>
+<p>The command <code>rm -r slink directory</code> will remove <code>slink</code>, as well as any symbolic links encountered in the tree traversal of <code>directory</code>, because symbolic links may be removed. In no case will <a href='/1/rm'>rm</a>(1) affect the file referred to by <code>slink</code>.</p>
+<p>The <code>second rule</code> applies to symbolic links that refer to directories. Symbolic links that refer to directories are never followed by default. This is often referred to as a "physical" walk, as opposed to a "logical" walk (where symbolic links that refer to directories are followed).</p>
+<p>Certain conventions are (should be) followed as consistently as possible by commands that perform file tree walks:</p>
+<ul>
+<li><p>A command can be made to follow any symbolic links named on the command line, regardless of the type of file they reference, by specifying the <code>-H</code> (for "half-logical") flag. This flag is intended to make the command-line name space look like the logical name space. (Note, for commands that do not always do file tree traversals, the <code>-H</code> flag will be ignored if the <code>-R</code> flag is not also specified.)</p>
+<p>For example, the command <code>chown -HR user slink</code> will traverse the file hierarchy rooted in the file pointed to by <code>slink</code>. Note, the <code>-H</code> is not the same as the previously discussed <code>-h</code> flag. The <code>-H</code> flag causes symbolic links specified on the command line to be dereferenced for the purposes of both the action to be performed and the tree walk, and it is as if the user had specified the name of the file to which the symbolic link pointed.</p></li>
+<li><p>A command can be made to follow any symbolic links named on the command line, as well as any symbolic links encountered during the traversal, regardless of the type of file they reference, by specifying the <code>-L</code> (for "logical") flag. This flag is intended to make the entire name space look like the logical name space. (Note, for commands that do not always do file tree traversals, the <code>-L</code> flag will be ignored if the <code>-R</code> flag is not also specified.)</p>
+<p>For example, the command <code>chown -LR user slink</code> will change the owner of the file referred to by <code>slink</code>. If <code>slink</code> refers to a directory, <strong>chown</strong> will traverse the file hierarchy rooted in the directory that it references. In addition, if any symbolic links are encountered in any file tree that <strong>chown</strong> traverses, they will be treated in the same fashion as <code>slink</code>.</p></li>
+<li><p>A command can be made to provide the default behavior by specifying the <code>-P</code> (for "physical") flag. This flag is intended to make the entire name space look like the physical name space.</p></li>
+</ul>
+<p>For commands that do not by default do file tree traversals, the <code>-H</code>, <code>-L</code>, and <code>-P</code> flags are ignored if the <code>-R</code> flag is not also specified. In addition, you may specify the <code>-H</code>, <code>-L</code>, and <code>-P</code> options more than once; the last one specified determines the command's behavior. This is intended to permit you to alias commands to behave one way or the other, and then override that behavior on the command line.</p>
+<p>The <a href='/1/ls'>ls</a>(1) and <a href='/1/rm'>rm</a>(1) commands have exceptions to these rules:</p>
+<ul>
+<li><p>The <a href='/1/rm'>rm</a>(1) command operates on the symbolic link, and not the file it references, and therefore never follows a symbolic link. The <a href='/1/rm'>rm</a>(1) command does not support the <code>-H</code>, <code>-L</code>, or <code>-P</code> options.</p></li>
+<li><p>To maintain compatibility with historic systems, the <a href='/1/ls'>ls</a>(1) command acts a little differently. If you do not specify the <code>-F</code>, <code>-d</code> or <code>-l</code> options, <a href='/1/ls'>ls</a>(1) will follow symbolic links specified on the command line. If the <code>-L</code> flag is specified, <a href='/1/ls'>ls</a>(1) follows all symbolic links, regardless of their type, whether specified on the command line or encountered in the tree walk.</p></li>
+</ul>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/chgrp'>chgrp</a>(1), <a href='/1/chmod'>chmod</a>(1), <a href='/1/find'>find</a>(1), <a href='/1/ln'>ln</a>(1), <a href='/1/ls'>ls</a>(1), <a href='/1/mv'>mv</a>(1), <a href='/1/namei'>namei</a>(1), <a href='/1/rm'>rm</a>(1), <a href='/2/lchown'>lchown</a>(2), <a href='/2/link'>link</a>(2), <a href='/2/lstat'>lstat</a>(2), <a href='/2/readlink'>readlink</a>(2), <a href='/2/rename'>rename</a>(2), <a href='/2/symlink'>symlink</a>(2), <a href='/2/unlink'>unlink</a>(2), <a href='/2/utimensat'>utimensat</a>(2), <a href='/3/lutimes'>lutimes</a>(3), <a href='/7/path_resolution'>path_resolution</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

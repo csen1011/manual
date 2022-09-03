@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd.syntax - General syntax of systemd configuration files</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p>This page describes the basic principles of configuration files used by <a href='/1/systemd'>systemd</a>(1) and related programs for:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>systemd unit files, see <a href='/5/systemd.unit'>systemd.unit</a>(5), <a href='/5/systemd.service'>systemd.service</a>(5), <a href='/5/systemd.socket'>systemd.socket</a>(5), <a href='/5/systemd.device'>systemd.device</a>(5), <a href='/5/systemd.mount'>systemd.mount</a>(5), <a href='/5/systemd.automount'>systemd.automount</a>(5), <a href='/5/systemd.swap'>systemd.swap</a>(5), <a href='/5/systemd.target'>systemd.target</a>(5), <a href='/5/systemd.path'>systemd.path</a>(5), <a href='/5/systemd.timer'>systemd.timer</a>(5), <a href='/5/systemd.slice'>systemd.slice</a>(5), <a href='/5/systemd.scope'>systemd.scope</a>(5), <a href='/5/systemd.nspawn'>systemd.nspawn</a>(5)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>link files, see <a href='/5/systemd.link'>systemd.link</a>(5)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>netdev and network files, see <a href='/5/systemd.netdev'>systemd.netdev</a>(5), <a href='/5/systemd.network'>systemd.network</a>(5)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>daemon config files, see <a href='/5/systemd-system.conf'>systemd-system.conf</a>(5), <a href='/5/systemd-user.conf'>systemd-user.conf</a>(5), <a href='/5/logind.conf'>logind.conf</a>(5), <a href='/5/journald.conf'>journald.conf</a>(5), <a href='/5/journal-remote.conf'>journal-remote.conf</a>(5), <a href='/5/journal-upload.conf'>journal-upload.conf</a>(5), <a href='/5/systemd-sleep.conf'>systemd-sleep.conf</a>(5), <a href='/5/timesyncd.conf'>timesyncd.conf</a>(5)</p>
+</blockquote>
+<p>The syntax is inspired by <strong>XDG Desktop Entry Specification</strong>[1] .desktop files, which are in turn inspired by Microsoft Windows .ini files.</p>
+<p>Each file is a plain text file divided into sections, with configuration entries in the style <code>key</code>=<code>value</code>. Whitespace immediately before or after the "=" is ignored. Empty lines and lines starting with "#" or ";" are ignored, which may be used for commenting.</p>
+<p>Lines ending in a backslash are concatenated with the following line while reading and the backslash is replaced by a space character. This may be used to wrap long lines. The limit on line length is very large (currently 1 MB), but it is recommended to avoid such long lines and use multiple directives, variable substitution, or other mechanism as appropriate for the given file type. When a comment line or lines follow a line ending with a backslash, the comment block is ignored, so the continued line is concatenated with whatever follows the comment block.</p>
+<p><strong>Example 1. </strong></p>
+<p>.RS 4</p>
+<pre><code>[Section A]
+KeyOne=value 1
+KeyTwo=value 2
+
+# a comment
+
+[Section B]
+Setting="something" "some thing" "..."
+KeyTwo=value 2 \
+       value 2 continued
+
+[Section C]
+KeyThree=value 3\
+# this line is ignored
+; this line is ignored too
+       value 3 continued</code></pre>
+<p>.RE</p>
+<p>Boolean arguments used in configuration files can be written in various formats. For positive settings the strings <strong>1</strong>, <strong>yes</strong>, <strong>true</strong> and <strong>on</strong> are equivalent. For negative settings, the strings <strong>0</strong>, <strong>no</strong>, <strong>false</strong> and <strong>off</strong> are equivalent.</p>
+<p>Time span values encoded in configuration files can be written in various formats. A stand-alone number specifies a time in seconds. If suffixed with a time unit, the unit is honored. A concatenation of multiple values with units is supported, in which case the values are added up. Example: "50" refers to 50 seconds; "2min 200ms" refers to 2 minutes and 200 milliseconds, i.e. 120200 ms. The following time units are understood: "s", "min", "h", "d", "w", "ms", "us". For details see <a href='/7/systemd.time'>systemd.time</a>(7).</p>
+<p>Various settings are allowed to be specified more than once, in which case the interpretation depends on the setting. Often, multiple settings form a list, and setting to an empty value "resets", which means that previous assignments are ignored. When this is allowed, it is mentioned in the description of the setting. Note that using multiple assignments to the same value makes the file incompatible with parsers for the XDG .desktop file format.</p>
+</div></div></div><h1 id='quoting'><a href='#quoting'>QUOTING</a></h1><div data-for='quoting' data-hide><div class='section' data-for='quoting'><div data-more>
+<p>For settings where quoting is allowed, the following general rules apply: double quotes ("...") and single quotes (...) may be used to wrap a whole item (the opening quote may appear only at the beginning or after whitespace that is not quoted, and the closing quote must be followed by whitespace or the end of line), in which case everything until the next matching quote becomes part of the same item. Quotes themselves are removed. C-style escapes are supported. The table below contains the list of known escape patterns. Only escape patterns which match the syntax in the table are allowed; other patterns may be added in the future and unknown patterns will result in a warning. In particular, any backslashes should be doubled. Finally, a trailing backslash ("\") may be used to merge lines, as described above. UTF-8 is accepted, and hence typical unicode characters do not need to be escaped.</p>
+<p><br/>
+<strong>Table 1. Supported escapes</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Literal</td>
+<td style="text-align: left;">Actual value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\a"</td>
+<td style="text-align: left;">bell</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\b"</td>
+<td style="text-align: left;">backspace</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\f"</td>
+<td style="text-align: left;">form feed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\n"</td>
+<td style="text-align: left;">newline</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\r"</td>
+<td style="text-align: left;">carriage return</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\t"</td>
+<td style="text-align: left;">tab</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\v"</td>
+<td style="text-align: left;">vertical tab</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\\"</td>
+<td style="text-align: left;">backslash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\""</td>
+<td style="text-align: left;">double quotation mark</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\"</td>
+<td style="text-align: left;">single quotation mark</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\s"</td>
+<td style="text-align: left;">space</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\x<code>xx</code>"</td>
+<td style="text-align: left;">character number <code>xx</code> in hexadecimal encoding</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\<code>nnn</code>"</td>
+<td style="text-align: left;">character number <code>nnn</code> in octal encoding</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"\u<code>nnnn</code>"</td>
+<td style="text-align: left;">unicode code point <code>nnnn</code> in hexadecimal encoding</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"\U<code>nnnnnnnn</code>"</td>
+<td style="text-align: left;">unicode code point <code>nnnnnnnn</code> in hexadecimal encoding</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/7/systemd.time'>systemd.time</a>(7)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>XDG Desktop Entry Specification</p>
+<p><a href="http://standards.freedesktop.org/desktop-entry-spec/latest/">http://standards.freedesktop.org/desktop-entry-spec/latest/</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

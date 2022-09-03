@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>readelf - display information about ELF files</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>readelf [<strong>-a</strong>|<strong>--all</strong>] [<strong>-h</strong>|<strong>--file-header</strong>] [<strong>-l</strong>|<strong>--program-headers</strong>|<strong>--segments</strong>] [<strong>-S</strong>|<strong>--section-headers</strong>|<strong>--sections</strong>] [<strong>-g</strong>|<strong>--section-groups</strong>] [<strong>-t</strong>|<strong>--section-details</strong>] [<strong>-e</strong>|<strong>--headers</strong>] [<strong>-s</strong>|<strong>--syms</strong>|<strong>--symbols</strong>] [<strong>--dyn-syms</strong>|<strong>--lto-syms</strong>] [<strong>--sym-base=[0|8|10|16]</strong>] [<strong>--demangle</strong><code>=style</code>|<strong>--no-demangle</strong>] [<strong>--quiet</strong>] [<strong>--recurse-limit</strong>|<strong>--no-recurse-limit</strong>] [<strong>-U</strong> <code>method</code>|<strong>--unicode=</strong><code>method</code>] [<strong>-n</strong>|<strong>--notes</strong>] [<strong>-r</strong>|<strong>--relocs</strong>] [<strong>-u</strong>|<strong>--unwind</strong>] [<strong>-d</strong>|<strong>--dynamic</strong>] [<strong>-V</strong>|<strong>--version-info</strong>] [<strong>-A</strong>|<strong>--arch-specific</strong>] [<strong>-D</strong>|<strong>--use-dynamic</strong>] [<strong>-L</strong>|<strong>--lint</strong>|<strong>--enable-checks</strong>] [<strong>-x</strong> &lt;number or name&gt;|<strong>--hex-dump=</strong>&lt;number or name&gt;] [<strong>-p</strong> &lt;number or name&gt;|<strong>--string-dump=</strong>&lt;number or name&gt;] [<strong>-R</strong> &lt;number or name&gt;|<strong>--relocated-dump=</strong>&lt;number or name&gt;] [<strong>-z</strong>|<strong>--decompress</strong>] [<strong>-c</strong>|<strong>--archive-index</strong>] [<strong>-w[lLiaprmfFsoORtUuTgAck]</strong>| <strong>--debug-dump</strong>[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links]] [<strong>-wK</strong>|<strong>--debug-dump=follow-links</strong>] [<strong>-wN</strong>|<strong>--debug-dump=no-follow-links</strong>] [<strong>-P</strong>|<strong>--process-links</strong>] [<strong>--dwarf-depth=</strong><code>n</code>] [<strong>--dwarf-start=</strong><code>n</code>] [<strong>--ctf=</strong><code>section</code>] [<strong>--ctf-parent=</strong><code>section</code>] [<strong>--ctf-symbols=</strong><code>section</code>] [<strong>--ctf-strings=</strong><code>section</code>] [<strong>-I</strong>|<strong>--histogram</strong>] [<strong>-v</strong>|<strong>--version</strong>] [<strong>-W</strong>|<strong>--wide</strong>] [<strong>-T</strong>|<strong>--silent-truncation</strong>] [<strong>-H</strong>|<strong>--help</strong>] <code>elffile</code>...</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>readelf</strong> displays information about one or more ELF format object files. The options control what particular information to display.</p>
+<p><code>elffile</code>... are the object files to be examined. 32-bit and 64-bit ELF files are supported, as are archives containing ELF files.</p>
+<p>This program performs a similar function to <strong>objdump</strong> but it goes into more detail and it exists independently of the BFD library, so if there is a bug in BFD then readelf will not be affected.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The long and short forms of options, shown here as alternatives, are equivalent. At least one option besides <strong>-v</strong> or <strong>-H</strong> must be given.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Equivalent to specifying <strong>--file-header</strong>, <strong>--program-headers</strong>, <strong>--sections</strong>, <strong>--symbols</strong>, <strong>--relocs</strong>, <strong>--dynamic</strong>, <strong>--notes</strong>, <strong>--version-info</strong>, <strong>--arch-specific</strong>, <strong>--unwind</strong>, <strong>--section-groups</strong> and <strong>--histogram</strong>. Note - this option does not enable <strong>--use-dynamic</strong> itself, so if that option is not present on the command line then dynamic symbols and dynamic relocs will not be displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the information contained in the ELF header at the start of the file.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Displays the information contained in the file's segment headers, if it has any.</p>
+<ul>
+<li><p>Suppress ``no symbols'' diagnostic.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Displays the information contained in the file's section headers, if it has any.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the information contained in the file's section groups, if it has any.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the detailed section information. Implies <strong>-S</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Displays the entries in symbol table section of the file, if it has one. If a symbol has version information associated with it then this is displayed as well. The version string is displayed as a suffix to the symbol name, preceded by an @ character. For example <strong>foo@VER_1</strong>. If the version is the default version to be used when resolving unversioned references to the symbol then it is displayed as a suffix preceded by two @ characters. For example <strong>foo@@VER_2</strong>.</p>
+<ul>
+<li><p>Displays the entries in dynamic symbol table section of the file, if it has one. The output format is the same as the format used by the <strong>--syms</strong> option.</p></li>
+<li><p>Displays the contents of any LTO symbol tables in the file.</p></li>
+<li><p>Forces the size field of the symbol table to use the given base. Any unrecognized options will be treated as <strong>0</strong>. <strong>--sym-base=0</strong> represents the default and legacy behaviour. This will output sizes as decimal for numbers less than 100000. For sizes 100000 and greater hexadecimal notation will be used with a 0x prefix. <strong>--sym-base=8</strong> will give the symbol sizes in octal. <strong>--sym-base=10</strong> will always give the symbol sizes in decimal. <strong>--sym-base=16</strong> will always give the symbol sizes in hexadecimal with a 0x prefix.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Decode (<code>demangle</code>) low-level symbol names into user-level names. This makes C++ function names readable. Different compilers have different mangling styles. The optional demangling style argument can be used to choose an appropriate demangling style for your compiler.</p>
+<ul>
+<li><p>Do not demangle low-level symbol names. This is the default.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<p>Enables or disables a limit on the amount of recursion performed whilst demangling strings. Since the name mangling formats allow for an infinite level of recursion it is possible to create strings whose decoding will exhaust the amount of stack space available on the host machine, triggering a memory fault. The limit tries to prevent this from happening by restricting recursion to 2048 levels of nesting. The default is for this limit to be enabled, but disabling it may be necessary in order to demangle truly complicated names. Note however that if the recursion limit is disabled then stack exhaustion is possible and any bug reports about such an event will be rejected.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Controls the display of non-ASCII characters in identifier names. The default (<strong>--unicode=locale</strong> or <strong>--unicode=default</strong>) is to treat them as multibyte characters and display them in the current locale. All other versions of this option treat the bytes as UTF-8 encoded values and attempt to interpret them. If they cannot be interpreted or if the <strong>--unicode=invalid</strong> option is used then they are displayed as a sequence of hex bytes, encloses in curly parethesis characters. Using the <strong>--unicode=escape</strong> option will display the characters as as unicode escape sequences (<code>\uxxxx</code>). Using the <strong>--unicode=hex</strong> will display the characters as hex byte sequences enclosed between angle brackets. Using the <strong>--unicode=highlight</strong> will display the characters as unicode escape sequences but it will also highlighted them in red, assuming that colouring is supported by the output device. The colouring is intended to draw attention to the presence of unicode sequences when they might not be expected.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display all the headers in the file. Equivalent to <strong>-h -l -S</strong>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the NOTE segments and/or sections, if any.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the file's relocation section, if it has one.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the file's unwind section, if it has one. Only the unwind sections for IA64 ELF files, as well as ARM unwind tables (<code>.ARM.exidx</code> / <code>.ARM.extab</code>) are currently supported. If support is not yet implemented for your architecture you could try dumping the contents of the <code>.eh_frames</code> section using the <strong>--debug-dump=frames</strong> or <strong>--debug-dump=frames-interp</strong> options.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the file's dynamic section, if it has one.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the version sections in the file, it they exist.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays architecture-specific information in the file, if there is any.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>When displaying symbols, this option makes <strong>readelf</strong> use the symbol hash tables in the file's dynamic section, rather than the symbol table sections. When displaying relocations, this option makes <strong>readelf</strong> display the dynamic relocations rather than the static relocations.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>Displays warning messages about possible problems with the file(s) being examined. If used on its own then all of the contents of the file(s) will be examined. If used with one of the dumping options then the warning messages will only be produced for the things being displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the indicated section as a hexadecimal bytes. A number identifies a particular section by index in the section table; any other string identifies all sections with that name in the object file.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the indicated section as a hexadecimal bytes. A number identifies a particular section by index in the section table; any other string identifies all sections with that name in the object file. The contents of the section will be relocated before they are displayed.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the indicated section as printable strings. A number identifies a particular section by index in the section table; any other string identifies all sections with that name in the object file.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Requests that the section(s) being dumped by <strong>x</strong>, <strong>R</strong> or <strong>p</strong> options are decompressed before being displayed. If the section(s) are not compressed then they are displayed as is.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the file symbol index information contained in the header part of binary archives. Performs the same function as the <strong>t</strong> command to <strong>ar</strong>, but without using the BFD library.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the DWARF debug sections in the file, if any are present. Compressed debug sections are automatically decompressed (temporarily) before they are displayed. If one or more of the optional letters or words follows the switch then only those type(s) of data will be dumped. The letters and words refer to the following information:</p>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_abbrev</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_addr</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_cu_index</strong> and/or <strong>.debug_tu_index</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the raw contents of a <strong>.debug_frame</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the interpreted contents of a <strong>.debug_frame</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.gdb_index</strong> and/or <strong>.debug_names</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_info</strong> section. Note: the output from this option can also be restricted by the use of the <strong>--dwarf-depth</strong> and <strong>--dwarf-start</strong> options.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.gnu_debuglink</strong>, <strong>.gnu_debugaltlink</strong> and <strong>.debug_sup</strong> sections, if any of them are present. Also displays any links to separate dwarf object files (dwo), if they are specified by the DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the <strong>.debug_info</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the contents of any selected debug sections that are found in linked, separate debug info file(s). This can result in multiple versions of the same debug section being displayed if it exists in more than one file. In addition, when displaying DWARF attributes, if a form is found that references the separate debug info file, then the referenced contents will also be displayed. Note - in some distributions this option is enabled by default. It can be disabled via the <strong>N</strong> debug option. The default can be chosen when configuring the binutils via the <strong>--enable-follow-debug-links=yes</strong> or <strong>--enable-follow-debug-links=no</strong> options. If these are not used then the default is to enable the following of debug links.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Disables the following of links to separate debug info files.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_line</strong> section in a raw format.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the interpreted contents of the <strong>.debug_line</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_macro</strong> and/or <strong>.debug_macinfo</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_loc</strong> and/or <strong>.debug_loclists</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_str_offsets</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_pubnames</strong> and/or <strong>.debug_gnu_pubnames</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_aranges</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_ranges</strong> and/or <strong>.debug_rnglists</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_str</strong>, <strong>.debug_line_str</strong> and/or <strong>.debug_str_offsets</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.debug_pubtypes</strong> and/or <strong>.debug_gnu_pubtypes</strong> sections.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_aranges</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_abbrev</strong> section.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Displays the contents of the <strong>.trace_info</strong> section.</p>
+</blockquote>
+<blockquote>
+<p>Note: displaying the contents of <strong>.debug_static_funcs</strong>, <strong>.debug_static_vars</strong> and <strong>debug_weaknames</strong> sections is not currently supported.</p>
+</blockquote>
+<ul>
+<li><p>Limit the dump of the <code>.debug_info</code> section to <code>n</code> children. This is only useful with <strong>--debug-dump=info</strong>. The default is to print all DIEs; the special value 0 for <code>n</code> will also have this effect. With a non-zero value for <code>n</code>, DIEs at or deeper than <code>n</code> levels will not be printed. The range for <code>n</code> is zero-based.</p></li>
+<li><p>Print only DIEs beginning with the DIE numbered <code>n</code>. This is only useful with <strong>--debug-dump=info</strong>. If specified, this option will suppress printing of any header information and all DIEs before the DIE numbered <code>n</code>. Only siblings and children of the specified DIE will be printed. This can be used in conjunction with <strong>--dwarf-depth</strong>.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the contents of non-debug sections found in separate debuginfo files that are linked to the main file. This option automatically implies the <strong>-wK</strong> option, and only sections requested by other command line options will be displayed.</p>
+<ul>
+<li><p>Display the contents of the specified CTF section. CTF sections themselves contain many subsections, all of which are displayed in order. By default, display the name of the section named <code>.ctf</code>, which is the name emitted by <strong>ld</strong>.</p></li>
+<li><p>If the CTF section contains ambiguously-defined types, it will consist of an archive of many CTF dictionaries, all inheriting from one dictionary containing unambiguous types. This member is by default named <code>.ctf</code>, like the section containing it, but it is possible to change this name using the <code>ctf_link_set_memb_name_changer</code> function at link time. When looking at CTF archives that have been created by a linker that uses the name changer to rename the parent archive member, <strong>--ctf-parent</strong> can be used to specify the name used for the parent.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Specify the name of another section from which the CTF file can inherit strings and symbols. By default, the <code>.symtab</code> and its linked string table are used. If either of <strong>--ctf-symbols</strong> or <strong>--ctf-strings</strong> is specified, the other must be specified as well.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display a histogram of bucket list lengths when displaying the contents of the symbol tables.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the version number of readelf.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Don't break output lines to fit into 80 columns. By default <strong>readelf</strong> breaks section header and segment listing lines for 64-bit ELF files, so that they fit into 80 columns. This option causes <strong>readelf</strong> to print each section header resp. each segment one a single line, which is far more readable on terminals wider than 80 columns.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Normally when readelf is displaying a symbol name, and it has to truncate the name to fit into an 80 column display, it will add a suffix of <code>[...]</code> to the name. This command line option disables this behaviour, allowing 5 more characters of the name to be displayed and restoring the old behaviour of readelf (prior to release 2.35).</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Display the command-line options understood by <strong>readelf</strong>.</p>
+<ol class="example" type="1">
+<li><p>Read command-line options from <code>file</code>. The options read are inserted in place of the original @<code>file</code> option. If <code>file</code> does not exist, or cannot be read, then the option will be treated literally, and not removed. Options in <code>file</code> are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The <code>file</code> may itself contain additional @<code>file</code> options; any such options will be processed recursively.</p></li>
+</ol>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><strong>objdump</strong> (1), and the Info entries for <code>binutils</code>.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1991-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License''.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

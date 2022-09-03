@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>select, <a data-bs-content='This is the man page for &lt;code&gt;pselect&lt;/code&gt; and 5 related functions.' data-bs-toggle='popover' tabindex='0'>pselect</a>, FD_CLR, FD_ISSET, FD_SET, FD_ZERO - synchronous I/O multiplexing</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/select.h&gt;</a>
+
+int select(int nfds, fd_set *readfds, fd_set *writefds,
+ fd_set *exceptfds, struct timeval *timeout);
+
+void FD_CLR(int fd, fd_set *set);
+int FD_ISSET(int fd, fd_set *set);
+void FD_SET(int fd, fd_set *set);
+void FD_ZERO(fd_set *set);
+
+int pselect(int nfds, fd_set *readfds, fd_set *writefds,
+ fd_set *exceptfds, const struct timespec *timeout,
+ const sigset_t *sigmask);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='pselect'>pselect</a>(): _POSIX_C_SOURCE &gt;= 200112L</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='select'>select</a>() allows a program to monitor multiple file descriptors, waiting until one or more of the file descriptors become "ready" for some class of I/O operation (e.g., input possible). A file descriptor is considered ready if it is possible to perform a corresponding I/O operation (e.g., <a href='/2/read'>read</a>(2), or a sufficiently small <a href='/2/write'>write</a>(2)) without blocking.</p>
+<p><a href='select'>select</a>() can monitor only file descriptors numbers that are less than <strong>FD_SETSIZE</strong>; <a href='/2/poll'>poll</a>(2) and <a href='/7/epoll'>epoll</a>(7) do not have this limitation. See <a href='#bugs'>BUGS</a>. The principal arguments of <a href='select'>select</a>() are three "sets" of file descriptors (declared with the type <code>fd_set</code>), which allow the caller to wait for three classes of events on the specified set of file descriptors. Each of the <code>fd_set</code> arguments may be specified as NULL if no file descriptors are to be watched for the corresponding class of events.</p>
+<p><strong>Note well</strong>: Upon return, each of the file descriptor sets is modified in place to indicate which file descriptors are currently "ready". Thus, if using <a href='select'>select</a>() within a loop, the sets <code>must be reinitialized</code> before each call. The implementation of the <code>fd_set</code> arguments as value-result arguments is a design error that is avoided in <a href='/2/poll'>poll</a>(2) and <a href='/7/epoll'>epoll</a>(7).</p>
+<p>The contents of a file descriptor set can be manipulated using the following macros:</p>
+<dl>
+<dt><a href='FD_ZERO'>FD_ZERO</a>()</dt>
+<dd><p>This macro clears (removes all file descriptors from) <code>set</code>. It should be employed as the first step in initializing a file descriptor set.</p>
+</dd>
+<dt><a href='FD_SET'>FD_SET</a>()</dt>
+<dd><p>This macro adds the file descriptor <code>fd</code> to <code>set</code>. Adding a file descriptor that is already present in the set is a no-op, and does not produce an error.</p>
+</dd>
+<dt><a href='FD_CLR'>FD_CLR</a>()</dt>
+<dd><p>This macro removes the file descriptor <code>fd</code> from <code>set</code>. Removing a file descriptor that is not present in the set is a no-op, and does not produce an error.</p>
+</dd>
+<dt><a href='FD_ISSET'>FD_ISSET</a>()</dt>
+<dd><p><a href='select'>select</a>() modifies the contents of the sets according to the rules described below. After calling <a href='select'>select</a>(), the <a href='FD_ISSET'>FD_ISSET</a>() macro can be used to test if a file descriptor is still present in a set. <a href='FD_ISSET'>FD_ISSET</a>() returns nonzero if the file descriptor <code>fd</code> is present in <code>set</code>, and zero if it is not. The arguments of <a href='select'>select</a>() are as follows:</p>
+</dd>
+<dt><code>readfds</code></dt>
+<dd><p>The file descriptors in this set are watched to see if they are ready for reading. A file descriptor is ready for reading if a read operation will not block; in particular, a file descriptor is also ready on end-of-file.</p>
+<p>After <a href='select'>select</a>() has returned, <code>readfds</code> will be cleared of all file descriptors except for those that are ready for reading.</p>
+</dd>
+<dt><code>writefds</code></dt>
+<dd><p>The file descriptors in this set are watched to see if they are ready for writing. A file descriptor is ready for writing if a write operation will not block. However, even if a file descriptor indicates as writable, a large write may still block.</p>
+<p>After <a href='select'>select</a>() has returned, <code>writefds</code> will be cleared of all file descriptors except for those that are ready for writing.</p>
+</dd>
+<dt><code>exceptfds</code></dt>
+<dd><p>The file descriptors in this set are watched for "exceptional conditions". For examples of some exceptional conditions, see the discussion of <strong>POLLPRI</strong> in <a href='/2/poll'>poll</a>(2).</p>
+<p>After <a href='select'>select</a>() has returned, <code>exceptfds</code> will be cleared of all file descriptors except for those for which an exceptional condition has occurred.</p>
+</dd>
+<dt><code>nfds</code></dt>
+<dd><p>This argument should be set to the highest-numbered file descriptor in any of the three sets, plus 1. The indicated file descriptors in each set are checked, up to this limit (but see BUGS).</p>
+</dd>
+<dt><code>timeout</code></dt>
+<dd><p>The <code>timeout</code> argument is a <code>timeval</code> structure (shown below) that specifies the interval that <a href='select'>select</a>() should block waiting for a file descriptor to become ready. The call will block until either:</p>
+<ul>
+<li><p>a file descriptor becomes ready;</p></li>
+<li><p>the call is interrupted by a signal handler; or</p></li>
+<li><p>the timeout expires.</p></li>
+</ul>
+<p>Note that the <code>timeout</code> interval will be rounded up to the system clock granularity, and kernel scheduling delays mean that the blocking interval may overrun by a small amount.</p>
+<p>If both fields of the <code>timeval</code> structure are zero, then <a href='select'>select</a>() returns immediately. (This is useful for polling.)</p>
+<p>If <code>timeout</code> is specified as NULL, <a href='select'>select</a>() blocks indefinitely waiting for a file descriptor to become ready. The <a href='pselect'>pselect</a>() system call allows an application to safely wait until either a file descriptor becomes ready or until a signal is caught.</p>
+</dd>
+</dl>
+<p>The operation of <a href='select'>select</a>() and <a href='pselect'>pselect</a>() is identical, other than these three differences:</p>
+<ul>
+<li><p><a href='select'>select</a>() uses a timeout that is a <code>struct timeval</code> (with seconds and microseconds), while <a href='pselect'>pselect</a>() uses a <code>struct timespec</code> (with seconds and nanoseconds).</p></li>
+<li><p><a href='select'>select</a>() may update the <code>timeout</code> argument to indicate how much time was left. <a href='pselect'>pselect</a>() does not change this argument.</p></li>
+<li><p><a href='select'>select</a>() has no <code>sigmask</code> argument, and behaves as <a href='pselect'>pselect</a>() called with NULL <code>sigmask</code>.</p></li>
+</ul>
+<p><code>sigmask</code> is a pointer to a signal mask (see <a href='/2/sigprocmask'>sigprocmask</a>(2)); if it is not NULL, then <a href='pselect'>pselect</a>() first replaces the current signal mask by the one pointed to by <code>sigmask</code>, then does the "select" function, and then restores the original signal mask. (If <code>sigmask</code> is NULL, the signal mask is not modified during the <a href='pselect'>pselect</a>() call.)</p>
+<p>Other than the difference in the precision of the <code>timeout</code> argument, the following <a href='pselect'>pselect</a>() call:</p>
+<pre><code>ready = pselect(nfds, &amp;readfds, &amp;writefds, &amp;exceptfds,
+                timeout, &amp;sigmask);</code></pre>
+<p>is equivalent to <code>atomically</code> executing the following calls:</p>
+<pre><code>sigset_t origmask;
+
+pthread_sigmask(SIG_SETMASK, &amp;sigmask, &amp;origmask);
+ready = select(nfds, &amp;readfds, &amp;writefds, &amp;exceptfds, timeout);
+pthread_sigmask(SIG_SETMASK, &amp;origmask, NULL);</code></pre>
+<p>The reason that <a href='pselect'>pselect</a>() is needed is that if one wants to wait for either a signal or for a file descriptor to become ready, then an atomic test is needed to prevent race conditions. (Suppose the signal handler sets a global flag and returns. Then a test of this global flag followed by a call of <a href='select'>select</a>() could hang indefinitely if the signal arrived just after the test but just before the call. By contrast, <a href='pselect'>pselect</a>() allows one to first block signals, handle the signals that have come in, then call <a href='pselect'>pselect</a>() with the desired <code>sigmask</code>, avoiding the race.)</p>
+<h2>The timeout</h2>
+<p>The <code>timeout</code> argument for <a href='select'>select</a>() is a structure of the following type:</p>
+<pre><code>struct timeval {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>      tv_sec;         /* seconds */
+    suseconds_t tv_usec;        /* microseconds */
+};</code></pre>
+<p>The corresponding argument for <a href='pselect'>pselect</a>() has the following type:</p>
+<pre><code>struct timespec {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a>      tv_sec;         /* seconds */
+    long        tv_nsec;        /* nanoseconds */
+};</code></pre>
+<p>On Linux, <a href='select'>select</a>() modifies <code>timeout</code> to reflect the amount of time not slept; most other implementations do not do this. (POSIX.1 permits either behavior.) This causes problems both when Linux code which reads <code>timeout</code> is ported to other operating systems, and when code is ported to Linux that reuses a <code>struct timeval</code> for multiple <a href='select'>select</a>()s in a loop without reinitializing it. Consider <code>timeout</code> to be undefined after <a href='select'>select</a>() returns.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='select'>select</a>() and <a href='pselect'>pselect</a>() return the number of file descriptors contained in the three returned descriptor sets (that is, the total number of bits that are set in <code>readfds</code>, <code>writefds</code>, <code>exceptfds</code>). The return value may be zero if the timeout expired before any file descriptors became ready.</p>
+<p>On error, -1 is returned, and <code>errno</code> is set to indicate the error; the file descriptor sets are unmodified, and <code>timeout</code> becomes undefined.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/select.h&gt;
+
+int
+main(void)
+{
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+
+    /* Watch stdin (fd 0) to see when it has input. */
+
+    FD_ZERO(&amp;rfds);
+    FD_SET(0, &amp;rfds);
+
+    /* Wait up to five seconds. */
+
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+
+    retval = select(1, &amp;rfds, NULL, NULL, &amp;tv);
+    /* Don't rely on the value of tv now! */
+
+    if (retval == -1)
+        perror("select()");
+    else if (retval)
+        printf("Data is available now.\n");
+        /* FD_ISSET(0, &amp;rfds) will be true. */
+    else
+        printf("No data within five seconds.\n");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p>An invalid file descriptor was given in one of the sets. (Perhaps a file descriptor that was already closed, or one on which an error has occurred.) However, see BUGS.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>A signal was caught; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>nfds</code> is negative or exceeds the <strong>RLIMIT_NOFILE</strong> resource limit (see <a href='/2/getrlimit'>getrlimit</a>(2)).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The value contained within <code>timeout</code> is invalid.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Unable to allocate memory for internal tables.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='pselect'>pselect</a>() was added to Linux in kernel 2.6.16. Prior to this, <a href='pselect'>pselect</a>() was emulated in glibc (but see BUGS).</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='select'>select</a>() conforms to POSIX.1-2001, POSIX.1-2008, and 4.4BSD (<a href='select'>select</a>() first appeared in 4.2BSD). Generally portable to/from non-BSD systems supporting clones of the BSD socket layer (including System V variants). However, note that the System V variant typically sets the timeout variable before returning, but the BSD variant does not.</p>
+<p><a href='pselect'>pselect</a>() is defined in POSIX.1g, and in POSIX.1-2001 and POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>An <code>fd_set</code> is a fixed size buffer. Executing <a href='FD_CLR'>FD_CLR</a>() or <a href='FD_SET'>FD_SET</a>() with a value of <code>fd</code> that is negative or is equal to or larger than <strong>FD_SETSIZE</strong> will result in undefined behavior. Moreover, POSIX requires <code>fd</code> to be a valid file descriptor.</p>
+<p>The operation of <a href='select'>select</a>() and <a href='pselect'>pselect</a>() is not affected by the <strong>O_NONBLOCK</strong> flag.</p>
+<p>On some other UNIX systems, <a href='select'>select</a>() can fail with the error <strong>EAGAIN</strong> if the system fails to allocate kernel-internal resources, rather than <strong>ENOMEM</strong> as Linux does. POSIX specifies this error for <a href='/2/poll'>poll</a>(2), but not for <a href='select'>select</a>(). Portable programs may wish to check for <strong>EAGAIN</strong> and loop, just as with <strong>EINTR</strong>. On systems that lack <a href='pselect'>pselect</a>(), reliable (and more portable) signal trapping can be achieved using the self-pipe trick. In this technique, a signal handler writes a byte to a pipe whose other end is monitored by <a href='select'>select</a>() in the main program. (To avoid possibly blocking when writing to a pipe that may be full or reading from a pipe that may be empty, nonblocking I/O is used when reading from and writing to the pipe.) Before the advent of <a href='/3/usleep'>usleep</a>(3), some code employed a call to <a href='select'>select</a>() with all three sets empty, <code>nfds</code> zero, and a non-NULL <code>timeout</code> as a fairly portable way to sleep with subsecond precision. Within the Linux kernel source, we find the following definitions which show the correspondence between the readable, writable, and exceptional condition notifications of <a href='select'>select</a>() and the event notifications provided by <a href='/2/poll'>poll</a>(2) and <a href='/7/epoll'>epoll</a>(7):</p>
+<pre><code>#define POLLIN_SET  (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN |
+                     EPOLLHUP | EPOLLERR)
+                   /* Ready for reading */
+#define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT |
+                     EPOLLERR)
+                   /* Ready for writing */
+#define POLLEX_SET  (EPOLLPRI)
+                   /* Exceptional condition */</code></pre>
+<p>If a file descriptor being monitored by <a href='select'>select</a>() is closed in another thread, the result is unspecified. On some UNIX systems, <a href='select'>select</a>() unblocks and returns, with an indication that the file descriptor is ready (a subsequent I/O operation will likely fail with an error, unless another process reopens file descriptor between the time <a href='select'>select</a>() returned and the I/O operation is performed). On Linux (and some other systems), closing the file descriptor in another thread has no effect on <a href='select'>select</a>(). In summary, any application that relies on a particular behavior in this scenario must be considered buggy. The Linux kernel allows file descriptor sets of arbitrary size, determining the length of the sets to be checked from the value of <code>nfds</code>. However, in the glibc implementation, the <code>fd_set</code> type is fixed in size. See also BUGS.</p>
+<p>The <a href='pselect'>pselect</a>() interface described in this page is implemented by glibc. The underlying Linux system call is named <a href='pselect6'>pselect6</a>(). This system call has somewhat different behavior from the glibc wrapper function.</p>
+<p>The Linux <a href='pselect6'>pselect6</a>() system call modifies its <code>timeout</code> argument. However, the glibc wrapper function hides this behavior by using a local variable for the timeout argument that is passed to the system call. Thus, the glibc <a href='pselect'>pselect</a>() function does not modify its <code>timeout</code> argument; this is the behavior required by POSIX.1-2001.</p>
+<p>The final argument of the <a href='pselect6'>pselect6</a>() system call is not a <code>sigset_t *</code> pointer, but is instead a structure of the form:</p>
+<pre><code>struct {
+    const kernel_sigset_t *ss;   /* Pointer to signal set */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> ss_len;               /* Size (in bytes) of object
+                                    pointed to by 'ss' */
+};</code></pre>
+<p>This allows the system call to obtain both a pointer to the signal set and its size, while allowing for the fact that most architectures support a maximum of 6 arguments to a system call. See <a href='/2/sigprocmask'>sigprocmask</a>(2) for a discussion of the difference between the kernel and libc notion of the signal set. Glibc 2.0 provided an incorrect version of <a href='pselect'>pselect</a>() that did not take a <code>sigmask</code> argument.</p>
+<p>In glibc versions 2.1 to 2.2.1, one must define <strong>_GNU_SOURCE</strong> in order to obtain the declaration of <a href='pselect'>pselect</a>() from <code>&lt;sys/select.h&gt;</code>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>POSIX allows an implementation to define an upper limit, advertised via the constant <strong>FD_SETSIZE</strong>, on the range of file descriptors that can be specified in a file descriptor set. The Linux kernel imposes no fixed limit, but the glibc implementation makes <code>fd_set</code> a fixed-size type, with <strong>FD_SETSIZE</strong> defined as 1024, and the <a href='FD_*'>FD_*</a>() macros operating according to that limit. To monitor file descriptors greater than 1023, use <a href='/2/poll'>poll</a>(2) or <a href='/7/epoll'>epoll</a>(7) instead.</p>
+<p>According to POSIX, <a href='select'>select</a>() should check all specified file descriptors in the three file descriptor sets, up to the limit <code>nfds-1</code>. However, the current implementation ignores any file descriptor in these sets that is greater than the maximum file descriptor number that the process currently has open. According to POSIX, any such file descriptor that is specified in one of the sets should result in the error <strong>EBADF</strong>.</p>
+<p>Starting with version 2.1, glibc provided an emulation of <a href='pselect'>pselect</a>() that was implemented using <a href='/2/sigprocmask'>sigprocmask</a>(2) and <a href='select'>select</a>(). This implementation remained vulnerable to the very race condition that <a href='pselect'>pselect</a>() was designed to prevent. Modern versions of glibc use the (race-free) <a href='pselect'>pselect</a>() system call on kernels where it is provided.</p>
+<p>On Linux, <a href='select'>select</a>() may report a socket file descriptor as "ready for reading", while nevertheless a subsequent read blocks. This could for example happen when data has arrived but upon examination has the wrong checksum and is discarded. There may be other circumstances in which a file descriptor is spuriously reported as ready. Thus it may be safer to use <strong>O_NONBLOCK</strong> on sockets that should not block.</p>
+<p>On Linux, <a href='select'>select</a>() also modifies <code>timeout</code> if the call is interrupted by a signal handler (i.e., the <strong>EINTR</strong> error return). This is not permitted by POSIX.1. The Linux <a href='pselect'>pselect</a>() system call has the same behavior, but the glibc wrapper hides this behavior by internally copying the <code>timeout</code> to a local variable and passing that variable to the system call.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/accept'>accept</a>(2), <a href='/2/connect'>connect</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/recv'>recv</a>(2), <a href='/2/restart_syscall'>restart_syscall</a>(2), <a href='/2/send'>send</a>(2), <a href='/2/sigprocmask'>sigprocmask</a>(2), <a href='/2/write'>write</a>(2), <a href='/7/epoll'>epoll</a>(7), <a href='/7/time'>time</a>(7)</p>
+<p>For a tutorial with discussion and examples, see <a href='/2/select_tut'>select_tut</a>(2).</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

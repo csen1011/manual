@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ioctl_userfaultfd - create a file descriptor for handling page faults in user space</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ioctl.h&gt;</a>
+
+int ioctl(int fd, int cmd, ...);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Various <a href='/2/ioctl'>ioctl</a>(2) operations can be performed on a userfaultfd object (created by a call to <a href='/2/userfaultfd'>userfaultfd</a>(2)) using calls of the form:</p>
+<pre><code>ioctl(fd, cmd, argp);</code></pre>
+<p>In the above, <code>fd</code> is a file descriptor referring to a userfaultfd object, <code>cmd</code> is one of the commands listed below, and <code>argp</code> is a pointer to a data structure that is specific to <code>cmd</code>.</p>
+<p>The various <a href='/2/ioctl'>ioctl</a>(2) operations are described below. The <strong>UFFDIO_API</strong>, <strong>UFFDIO_REGISTER</strong>, and <strong>UFFDIO_UNREGISTER</strong> operations are used to <code>configure</code> userfaultfd behavior. These operations allow the caller to choose what features will be enabled and what kinds of events will be delivered to the application. The remaining operations are <code>range</code> operations. These operations enable the calling application to resolve page-fault events. (Since Linux 4.3.) Enable operation of the userfaultfd and perform API handshake.</p>
+<p>The <code>argp</code> argument is a pointer to a <code>uffdio_api</code> structure, defined as:</p>
+<pre><code>struct uffdio_api {
+    __u64 api;        /* Requested API version (input) */
+    __u64 features;   /* Requested features (input/output) */
+    __u64 ioctls;     /* Available ioctl() operations (output) */
+};</code></pre>
+<p>The <code>api</code> field denotes the API version requested by the application.</p>
+<p>The kernel verifies that it can support the requested API version, and sets the <code>features</code> and <code>ioctls</code> fields to bit masks representing all the available features and the generic <a href='/2/ioctl'>ioctl</a>(2) operations available.</p>
+<p>For Linux kernel versions before 4.11, the <code>features</code> field must be initialized to zero before the call to <strong>UFFDIO_API</strong>, and zero (i.e., no feature bits) is placed in the <code>features</code> field by the kernel upon return from <a href='/2/ioctl'>ioctl</a>(2).</p>
+<p>Starting from Linux 4.11, the <code>features</code> field can be used to ask whether particular features are supported and explicitly enable userfaultfd features that are disabled by default. The kernel always reports all the available features in the <code>features</code> field.</p>
+<p>To enable userfaultfd features the application should set a bit corresponding to each feature it wants to enable in the <code>features</code> field. If the kernel supports all the requested features it will enable them. Otherwise it will zero out the returned <code>uffdio_api</code> structure and return <strong>EINVAL</strong>.</p>
+<p>The following feature bits may be set:</p>
+<dl>
+<dt><strong>UFFD_FEATURE_EVENT_FORK</strong> (since Linux 4.11)</dt>
+<dd><p>When this feature is enabled, the userfaultfd objects associated with a parent process are duplicated into the child process during <a href='/2/fork'>fork</a>(2) and a <strong>UFFD_EVENT_FORK</strong> event is delivered to the userfaultfd monitor</p>
+</dd>
+<dt><strong>UFFD_FEATURE_EVENT_REMAP</strong> (since Linux 4.11)</dt>
+<dd><p>If this feature is enabled, when the faulting process invokes <a href='/2/mremap'>mremap</a>(2), the userfaultfd monitor will receive an event of type <strong>UFFD_EVENT_REMAP</strong>.</p>
+</dd>
+<dt><strong>UFFD_FEATURE_EVENT_REMOVE</strong> (since Linux 4.11)</dt>
+<dd><p>If this feature is enabled, when the faulting process calls <a href='/2/madvise'>madvise</a>(2) with the <strong>MADV_DONTNEED</strong> or <strong>MADV_REMOVE</strong> advice value to free a virtual memory area the userfaultfd monitor will receive an event of type <strong>UFFD_EVENT_REMOVE</strong>.</p>
+</dd>
+<dt><strong>UFFD_FEATURE_EVENT_UNMAP</strong> (since Linux 4.11)</dt>
+<dd><p>If this feature is enabled, when the faulting process unmaps virtual memory either explicitly with <a href='/2/munmap'>munmap</a>(2), or implicitly during either <a href='/2/mmap'>mmap</a>(2) or <a href='/2/mremap'>mremap</a>(2). the userfaultfd monitor will receive an event of type <strong>UFFD_EVENT_UNMAP</strong>.</p>
+</dd>
+<dt><strong>UFFD_FEATURE_MISSING_HUGETLBFS</strong> (since Linux 4.11)</dt>
+<dd><p>If this feature bit is set, the kernel supports registering userfaultfd ranges on hugetlbfs virtual memory areas</p>
+</dd>
+<dt><strong>UFFD_FEATURE_MISSING_SHMEM</strong> (since Linux 4.11)</dt>
+<dd><p>If this feature bit is set, the kernel supports registering userfaultfd ranges on shared memory areas. This includes all kernel shared memory APIs: System V shared memory, <a href='/5/tmpfs'>tmpfs</a>(5), shared mappings of <code>/dev/zero</code>, <a href='/2/mmap'>mmap</a>(2) with the <strong>MAP_SHARED</strong> flag set, <a href='/2/memfd_create'>memfd_create</a>(2), and so on.</p>
+</dd>
+<dt><strong>UFFD_FEATURE_SIGBUS</strong> (since Linux 4.14)</dt>
+<dd><p>If this feature bit is set, no page-fault events (<strong>UFFD_EVENT_PAGEFAULT</strong>) will be delivered. Instead, a <strong>SIGBUS</strong> signal will be sent to the faulting process. Applications using this feature will not require the use of a userfaultfd monitor for processing memory accesses to the regions registered with userfaultfd.</p>
+</dd>
+</dl>
+<p>The returned <code>ioctls</code> field can contain the following bits:</p>
+<dl>
+<dt><strong>1 &lt;&lt; _UFFDIO_API</strong></dt>
+<dd><p>The <strong>UFFDIO_API</strong> operation is supported.</p>
+</dd>
+<dt><strong>1 &lt;&lt; _UFFDIO_REGISTER</strong></dt>
+<dd><p>The <strong>UFFDIO_REGISTER</strong> operation is supported.</p>
+</dd>
+<dt><strong>1 &lt;&lt; _UFFDIO_UNREGISTER</strong></dt>
+<dd><p>The <strong>UFFDIO_UNREGISTER</strong> operation is supported.</p>
+</dd>
+</dl>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include:</p>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>argp</code> refers to an address that is outside the calling process's accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The userfaultfd has already been enabled by a previous <strong>UFFDIO_API</strong> operation.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The API version requested in the <code>api</code> field is not supported by this kernel, or the <code>features</code> field passed to the kernel includes feature bits that are not supported by the current kernel version. (Since Linux 4.3.) Register a memory address range with the userfaultfd object. The pages in the range must be "compatible".</p>
+</dd>
+</dl>
+<p>Up to Linux kernel 4.11, only private anonymous ranges are compatible for registering with <strong>UFFDIO_REGISTER</strong>.</p>
+<p>Since Linux 4.11, hugetlbfs and shared memory ranges are also compatible with <strong>UFFDIO_REGISTER</strong>.</p>
+<p>The <code>argp</code> argument is a pointer to a <code>uffdio_register</code> structure, defined as:</p>
+<pre><code>struct uffdio_range {
+    __u64 start;    /* Start of range */
+    __u64 len;      /* Length of range (bytes) */
+};
+
+struct uffdio_register {
+    struct uffdio_range range;
+    __u64 mode;     /* Desired mode of operation (input) */
+    __u64 ioctls;   /* Available ioctl() operations (output) */
+};</code></pre>
+<p>The <code>range</code> field defines a memory range starting at <code>start</code> and continuing for <code>len</code> bytes that should be handled by the userfaultfd.</p>
+<p>The <code>mode</code> field defines the mode of operation desired for this memory region. The following values may be bitwise ORed to set the userfaultfd mode for the specified range:</p>
+<dl>
+<dt><strong>UFFDIO_REGISTER_MODE_MISSING</strong></dt>
+<dd><p>Track page faults on missing pages.</p>
+</dd>
+<dt><strong>UFFDIO_REGISTER_MODE_WP</strong></dt>
+<dd><p>Track page faults on write-protected pages.</p>
+</dd>
+</dl>
+<p>Currently, the only supported mode is <strong>UFFDIO_REGISTER_MODE_MISSING</strong>.</p>
+<p>If the operation is successful, the kernel modifies the <code>ioctls</code> bit-mask field to indicate which <a href='/2/ioctl'>ioctl</a>(2) operations are available for the specified range. This returned bit mask is as for <strong>UFFDIO_API</strong>.</p>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include: <strong>EBUSY</strong> A mapping in the specified range is registered with another userfaultfd object.</p>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>argp</code> refers to an address that is outside the calling process's accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid or unsupported bit was specified in the <code>mode</code> field; or the <code>mode</code> field was zero.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There is no mapping in the specified address range.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>range.start</code> or <code>range.len</code> is not a multiple of the system page size; or, <code>range.len</code> is zero; or these fields are otherwise invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There as an incompatible mapping in the specified address range.</p>
+</dd>
+</dl>
+<h2>UFFDIO_UNREGISTER</h2>
+<p>(Since Linux 4.3.) Unregister a memory address range from userfaultfd. The pages in the range must be "compatible" (see the description of <strong>UFFDIO_REGISTER</strong>.)</p>
+<p>The address range to unregister is specified in the <code>uffdio_range</code> structure pointed to by <code>argp</code>.</p>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Either the <code>start</code> or the <code>len</code> field of the <code>ufdio_range</code> structure was not a multiple of the system page size; or the <code>len</code> field was zero; or these fields were otherwise invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There as an incompatible mapping in the specified address range.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>There was no mapping in the specified address range. (Since Linux 4.3.) Atomically copy a continuous memory chunk into the userfault registered range and optionally wake up the blocked thread. The source and destination addresses and the number of bytes to copy are specified by the <code>src</code>, <code>dst</code>, and <code>len</code> fields of the <code>uffdio_copy</code> structure pointed to by <code>argp</code>:</p>
+</dd>
+</dl>
+<pre><code>struct uffdio_copy {
+    __u64 dst;    /* Destination of copy */
+    __u64 src;    /* Source of copy */
+    __u64 len;    /* Number of bytes to copy */
+    __u64 mode;   /* Flags controlling behavior of copy */
+    __s64 copy;   /* Number of bytes copied, or negated error */
+};</code></pre>
+<p>The following value may be bitwise ORed in <code>mode</code> to change the behavior of the <strong>UFFDIO_COPY</strong> operation:</p>
+<dl>
+<dt><strong>UFFDIO_COPY_MODE_DONTWAKE</strong></dt>
+<dd><p>Do not wake up the thread that waits for page-fault resolution</p>
+</dd>
+</dl>
+<p>The <code>copy</code> field is used by the kernel to return the number of bytes that was actually copied, or an error (a negated <code>errno</code>-style value). If the value returned in <code>copy</code> doesn't match the value that was specified in <code>len</code>, the operation fails with the error <strong>EAGAIN</strong>. The <code>copy</code> field is output-only; it is not read by the <strong>UFFDIO_COPY</strong> operation.</p>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. In this case, the entire area was copied. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include:</p>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The number of bytes copied (i.e., the value returned in the <code>copy</code> field) does not equal the value that was specified in the <code>len</code> field.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Either <code>dst</code> or <code>len</code> was not a multiple of the system page size, or the range specified by <code>src</code> and <code>len</code> or <code>dst</code> and <code>len</code> was invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid bit was specified in the <code>mode</code> field.</p>
+</dd>
+<dt><strong>ENOENT</strong> (since Linux 4.11)</dt>
+<dd><p>The faulting process has changed its virtual memory layout simultaneously with an outstanding <strong>UFFDIO_COPY</strong> operation.</p>
+</dd>
+<dt><strong>ENOSPC</strong> (from Linux 4.11 until Linux 4.13)</dt>
+<dd><p>The faulting process has exited at the time of a <strong>UFFDIO_COPY</strong> operation.</p>
+</dd>
+<dt><strong>ESRCH</strong> (since Linux 4.13)</dt>
+<dd><p>The faulting process has exited at the time of a <strong>UFFDIO_COPY</strong> operation. (Since Linux 4.3.) Zero out a memory range registered with userfaultfd.</p>
+</dd>
+</dl>
+<p>The requested range is specified by the <code>range</code> field of the <code>uffdio_zeropage</code> structure pointed to by <code>argp</code>:</p>
+<pre><code>struct uffdio_zeropage {
+    struct uffdio_range range;
+    __u64 mode;     /* Flags controlling behavior of copy */
+    __s64 zeropage; /* Number of bytes zeroed, or negated error */
+};</code></pre>
+<p>The following value may be bitwise ORed in <code>mode</code> to change the behavior of the <strong>UFFDIO_ZEROPAGE</strong> operation:</p>
+<dl>
+<dt><strong>UFFDIO_ZEROPAGE_MODE_DONTWAKE</strong></dt>
+<dd><p>Do not wake up the thread that waits for page-fault resolution.</p>
+</dd>
+</dl>
+<p>The <code>zeropage</code> field is used by the kernel to return the number of bytes that was actually zeroed, or an error in the same manner as <strong>UFFDIO_COPY</strong>. If the value returned in the <code>zeropage</code> field doesn't match the value that was specified in <code>range.len</code>, the operation fails with the error <strong>EAGAIN</strong>. The <code>zeropage</code> field is output-only; it is not read by the <strong>UFFDIO_ZEROPAGE</strong> operation.</p>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. In this case, the entire area was zeroed. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include:</p>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The number of bytes zeroed (i.e., the value returned in the <code>zeropage</code> field) does not equal the value that was specified in the <code>range.len</code> field.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Either <code>range.start</code> or <code>range.len</code> was not a multiple of the system page size; or <code>range.len</code> was zero; or the range specified was invalid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An invalid bit was specified in the <code>mode</code> field.</p>
+</dd>
+<dt><strong>ESRCH</strong> (since Linux 4.13)</dt>
+<dd><p>The faulting process has exited at the time of a <strong>UFFDIO_ZEROPAGE</strong> operation. (Since Linux 4.3.) Wake up the thread waiting for page-fault resolution on a specified memory address range.</p>
+</dd>
+</dl>
+<p>The <strong>UFFDIO_WAKE</strong> operation is used in conjunction with <strong>UFFDIO_COPY</strong> and <strong>UFFDIO_ZEROPAGE</strong> operations that have the <strong>UFFDIO_COPY_MODE_DONTWAKE</strong> or <strong>UFFDIO_ZEROPAGE_MODE_DONTWAKE</strong> bit set in the <code>mode</code> field. The userfault monitor can perform several <strong>UFFDIO_COPY</strong> and <strong>UFFDIO_ZEROPAGE</strong> operations in a batch and then explicitly wake up the faulting thread using <strong>UFFDIO_WAKE</strong>.</p>
+<p>The <code>argp</code> argument is a pointer to a <code>uffdio_range</code> structure (shown above) that specifies the address range.</p>
+<p>This <a href='/2/ioctl'>ioctl</a>(2) operation returns 0 on success. On error, -1 is returned and <code>errno</code> is set to indicate the cause of the error. Possible errors include:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The <code>start</code> or the <code>len</code> field of the <code>ufdio_range</code> structure was not a multiple of the system page size; or <code>len</code> was zero; or the specified range was otherwise invalid.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>See descriptions of the individual operations, above.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>See <a href='/2/userfaultfd'>userfaultfd</a>(2).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>See descriptions of the individual operations, above. In addition, the following general errors can occur for all of the operations described above:</p>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>argp</code> does not point to a valid memory address.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>(For all operations except <strong>UFFDIO_API</strong>.) The userfaultfd object has not yet been enabled (via the <strong>UFFDIO_API</strong> operation).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These <a href='/2/ioctl'>ioctl</a>(2) operations are Linux-specific.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In order to detect available userfault features and enable some subset of those features the userfaultfd file descriptor must be closed after the first <strong>UFFDIO_API</strong> operation that queries features availability and reopened before the second <strong>UFFDIO_API</strong> operation that actually enables the desired features.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/ioctl'>ioctl</a>(2), <a href='/2/mmap'>mmap</a>(2), <a href='/2/userfaultfd'>userfaultfd</a>(2)</p>
+<p><code>Documentation/admin-guide/mm/userfaultfd.rst</code> in the Linux kernel source tree</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

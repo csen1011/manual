@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>dlinfo - obtain information about a dynamically loaded object</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;link.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;dlfcn.h&gt;</a>
+
+int dlinfo(void *handle, int request, void *info);
+
+Link with -ldl.</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='dlinfo'>dlinfo</a>() function obtains information about the dynamically loaded object referred to by <code>handle</code> (typically obtained by an earlier call to <a href='/3/dlopen'>dlopen</a>(3) or <a href='/3/dlmopen'>dlmopen</a>(3)). The <code>request</code> argument specifies which information is to be returned. The <code>info</code> argument is a pointer to a buffer used to store information returned by the call; the type of this argument depends on <code>request</code>.</p>
+<p>The following values are supported for <code>request</code> (with the corresponding type for <code>info</code> shown in parentheses):</p>
+<dl>
+<dt><strong>RTLD_DI_LMID</strong> (<code>Lmid_t *</code>)</dt>
+<dd><p>Obtain the ID of the link-map list (namespace) in which <code>handle</code> is loaded.</p>
+</dd>
+<dt><strong>RTLD_DI_LINKMAP</strong> (<code>struct link_map **</code>)</dt>
+<dd><p>Obtain a pointer to the <code>link_map</code> structure corresponding to <code>handle</code>. The <code>info</code> argument points to a pointer to a <code>link_map</code> structure, defined in <code>&lt;link.h&gt;</code> as:</p>
+<pre><code>struct link_map {
+    ElfW(Addr) l_addr;  /* Difference between the
+                           address in the ELF file and
+                           the address in memory */
+    char      *l_name;  /* Absolute pathname where
+                           object was found */
+    ElfW(Dyn) *l_ld;    /* Dynamic section of the
+                           shared object */
+    struct link_map *l_next, *l_prev;
+                        /* Chain of loaded objects */
+
+    /* Plus additional fields private to the
+       implementation */
+};</code></pre>
+</dd>
+<dt><strong>RTLD_DI_ORIGIN</strong> (<code><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a></code>)</dt>
+<dd><p>Copy the pathname of the origin of the shared object corresponding to <code>handle</code> to the location pointed to by <code>info</code>.</p>
+</dd>
+<dt><strong>RTLD_DI_SERINFO</strong> (<code>Dl_serinfo *</code>)</dt>
+<dd><p>Obtain the library search paths for the shared object referred to by <code>handle</code>. The <code>info</code> argument is a pointer to a <code>Dl_serinfo</code> that contains the search paths. Because the number of search paths may vary, the size of the structure pointed to by <code>info</code> can vary. The <strong>RTLD_DI_SERINFOSIZE</strong> request described below allows applications to size the buffer suitably. The caller must perform the following steps:</p>
+<ol type="1">
+<li><p>Use a <strong>RTLD_DI_SERINFOSIZE</strong> request to populate a <code>Dl_serinfo</code> structure with the size (<code>dls_size</code>) of the structure needed for the subsequent <strong>RTLD_DI_SERINFO</strong> request.</p></li>
+<li><p>Allocate a <code>Dl_serinfo</code> buffer of the correct size (<code>dls_size</code>).</p></li>
+<li><p>Use a further <strong>RTLD_DI_SERINFOSIZE</strong> request to populate the <code>dls_size</code> and <code>dls_cnt</code> fields of the buffer allocated in the previous step.</p></li>
+<li><p>Use a <strong>RTLD_DI_SERINFO</strong> to obtain the library search paths.</p></li>
+</ol>
+<p>The <code>Dl_serinfo</code> structure is defined as follows:</p>
+<pre><code>typedef struct {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> dls_size;           /* Size in bytes of
+                                  the whole buffer */
+    unsigned int dls_cnt;      /* Number of elements
+                                  in 'dls_serpath' */
+    Dl_serpath dls_serpath[1]; /* Actually longer,
+                                  'dls_cnt' elements */
+} Dl_serinfo;</code></pre>
+<p>Each of the <code>dls_serpath</code> elements in the above structure is a structure of the following form:</p>
+<pre><code>typedef struct {
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>dls_name;            /* Name of library search
+                                  path directory */
+    unsigned int dls_flags;    /* Indicates where this
+                                  directory came from */
+} Dl_serpath;</code></pre>
+<p>The <code>dls_flags</code> field is currently unused, and always contains zero.</p>
+</dd>
+<dt><strong>RTLD_DI_SERINFOSIZE</strong> (<code>Dl_serinfo *</code>)</dt>
+<dd><p>Populate the <code>dls_size</code> and <code>dls_cnt</code> fields of the <code>Dl_serinfo</code> structure pointed to by <code>info</code> with values suitable for allocating a buffer for use in a subsequent <strong>RTLD_DI_SERINFO</strong> request.</p>
+</dd>
+<dt><strong>RTLD_DI_TLS_MODID</strong> (<code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> *</code>, since glibc 2.4)</dt>
+<dd><p>Obtain the module ID of this shared object's TLS (thread-local storage) segment, as used in TLS relocations. If this object does not define a TLS segment, zero is placed in <code>*info</code>.</p>
+</dd>
+<dt><strong>RTLD_DI_TLS_DATA</strong> (<code>void **</code>, since glibc 2.4)</dt>
+<dd><p>Obtain a pointer to the calling thread's TLS block corresponding to this shared object's TLS segment. If this object does not define a PT_TLS segment, or if the calling thread has not allocated a block for it, NULL is placed in <code>*info</code>.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='dlinfo'>dlinfo</a>() returns 0. On failure, it returns -1; the cause of the error can be diagnosed using <a href='/3/dlerror'>dlerror</a>(3).</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below opens a shared objects using <a href='/3/dlopen'>dlopen</a>(3) and then uses the <strong>RTLD_DI_SERINFOSIZE</strong> and <strong>RTLD_DI_SERINFO</strong> requests to obtain the library search path list for the library. Here is an example of what we might see when running the program:</p>
+<pre><code>$ ./a.out /lib64/libm.so.6
+dls_serpath[0].dls_name = /lib64
+dls_serpath[1].dls_name = /usr/lib64</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;dlfcn.h&gt;
+#include &lt;link.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    void *handle;
+    Dl_serinfo serinfo;
+    Dl_serinfo *sip;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;libpath&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Obtain a handle for shared object specified on command line */
+
+    handle = dlopen(argv[1], RTLD_NOW);
+    if (handle == NULL) {
+        fprintf(stderr, "dlopen() failed: %s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    /* Discover the size of the buffer that we must pass to
+       RTLD_DI_SERINFO */
+
+    if (dlinfo(handle, RTLD_DI_SERINFOSIZE, &amp;serinfo) == -1) {
+        fprintf(stderr, "RTLD_DI_SERINFOSIZE failed: %s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    /* Allocate the buffer for use with RTLD_DI_SERINFO */
+
+    sip = malloc(serinfo.dls_size);
+    if (sip == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Initialize the 'dls_size' and 'dls_cnt' fields in the newly
+       allocated buffer */
+
+    if (dlinfo(handle, RTLD_DI_SERINFOSIZE, sip) == -1) {
+        fprintf(stderr, "RTLD_DI_SERINFOSIZE failed: %s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    /* Fetch and print library search list */
+
+    if (dlinfo(handle, RTLD_DI_SERINFO, sip) == -1) {
+        fprintf(stderr, "RTLD_DI_SERINFO failed: %s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    for (int j = 0; j &lt; serinfo.dls_cnt; j++)
+        printf("dls_serpath[%d].dls_name = %s\n",
+                j, sip-&gt;dls_serpath[j].dls_name);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='dlinfo'>dlinfo</a>() first appeared in glibc 2.3.3.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='dlinfo'>dlinfo</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This function is a nonstandard GNU extension.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>This function derives from the Solaris function of the same name and also appears on some other systems. The sets of requests supported by the various implementations overlaps only partially.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/dl_iterate_phdr'>dl_iterate_phdr</a>(3), <a href='/3/dladdr'>dladdr</a>(3), <a href='/3/dlerror'>dlerror</a>(3), <a href='/3/dlopen'>dlopen</a>(3), <a href='/3/dlsym'>dlsym</a>(3), <strong><a href="http://ld.so">ld.so</a></strong>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

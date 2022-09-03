@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>od - dump files in octal and other formats</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>od</strong> [<code>OPTION</code>]... [<code>FILE</code>]...<br/>
+<strong>od</strong> [<code>-abcdfilosx</code>]... [<code>FILE</code>] [[<code>+</code>]<code>OFFSET</code>[<code>.</code>][<code>b</code>]]<br/>
+<strong>od</strong> <code>--traditional </code>[<code>OPTION</code>]... [<code>FILE</code>] [[<code>+</code>]<code>OFFSET</code>[<code>.</code>][<code>b</code>] [<code>+</code>][<code>LABEL</code>][<code>.</code>][<code>b</code>]]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Write an unambiguous representation, octal bytes by default, of FILE to standard output. With more than one FILE argument, concatenate them in the listed order to form the input.</p>
+<p>With no FILE, or when FILE is -, read standard input.</p>
+<p>If first and second call formats both apply, the second format is assumed if the last operand begins with + or (if there are 2 operands) a digit. An OFFSET operand means <strong>-j</strong> OFFSET. LABEL is the pseudo-address at first byte printed, incremented when dump is progressing. For OFFSET and LABEL, a 0x or 0X prefix indicates hexadecimal; suffixes may be . for octal and b for multiply by 512.</p>
+<p>Mandatory arguments to long options are mandatory for short options too.</p>
+<dl>
+<dt><strong>-A</strong>, <strong>--address-radix</strong>=<code>RADIX</code></dt>
+<dd><p>output format for file offsets; RADIX is one of [doxn], for Decimal, Octal, Hex or None</p>
+</dd>
+<dt><strong>--endian=</strong>{big|little}</dt>
+<dd><p>swap input bytes according the specified order</p>
+</dd>
+<dt><strong>-j</strong>, <strong>--skip-bytes</strong>=<code>BYTES</code></dt>
+<dd><p>skip BYTES input bytes first</p>
+</dd>
+<dt><strong>-N</strong>, <strong>--read-bytes</strong>=<code>BYTES</code></dt>
+<dd><p>limit dump to BYTES input bytes</p>
+</dd>
+<dt><strong>-S</strong> BYTES, <strong>--strings</strong>[=<code>BYTES</code>]</dt>
+<dd><p>output strings of at least BYTES graphic chars; 3 is implied when BYTES is not specified</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--format</strong>=<code>TYPE</code></dt>
+<dd><p>select output format or formats</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--output-duplicates</strong></dt>
+<dd><p>do not use * to mark line suppression</p>
+</dd>
+<dt><strong>-w[BYTES]</strong>, <strong>--width</strong>[=<code>BYTES</code>]</dt>
+<dd><p>output BYTES bytes per output line; 32 is implied when BYTES is not specified</p>
+</dd>
+<dt><strong>--traditional</strong></dt>
+<dd><p>accept arguments in third form above</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<h2>Traditional format specifications may be intermixed; they accumulate:</h2>
+<dl>
+<dt><strong>-a</strong></dt>
+<dd><p>same as <strong>-t</strong> a, select named characters, ignoring high-order bit</p>
+</dd>
+<dt><strong>-b</strong></dt>
+<dd><p>same as <strong>-t</strong> o1, select octal bytes</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>same as <strong>-t</strong> c, select printable characters or backslash escapes</p>
+</dd>
+<dt><strong>-d</strong></dt>
+<dd><p>same as <strong>-t</strong> u2, select unsigned decimal 2-byte units</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>same as <strong>-t</strong> fF, select floats</p>
+</dd>
+<dt><strong>-i</strong></dt>
+<dd><p>same as <strong>-t</strong> dI, select decimal ints</p>
+</dd>
+<dt><strong>-l</strong></dt>
+<dd><p>same as <strong>-t</strong> dL, select decimal longs</p>
+</dd>
+<dt><strong>-o</strong></dt>
+<dd><p>same as <strong>-t</strong> o2, select octal 2-byte units</p>
+</dd>
+<dt><strong>-s</strong></dt>
+<dd><p>same as <strong>-t</strong> d2, select decimal 2-byte units</p>
+</dd>
+<dt><strong>-x</strong></dt>
+<dd><p>same as <strong>-t</strong> x2, select hexadecimal 2-byte units</p>
+</dd>
+</dl>
+<h2>TYPE is made up of one or more of these specifications:</h2>
+<dl>
+<dt>a</dt>
+<dd><p>named character, ignoring high-order bit</p>
+</dd>
+<dt>c</dt>
+<dd><p>printable character or backslash escape</p>
+</dd>
+<dt>d[SIZE]</dt>
+<dd><p>signed decimal, SIZE bytes per integer</p>
+</dd>
+<dt>f[SIZE]</dt>
+<dd><p>floating point, SIZE bytes per float</p>
+</dd>
+<dt>o[SIZE]</dt>
+<dd><p>octal, SIZE bytes per integer</p>
+</dd>
+<dt>u[SIZE]</dt>
+<dd><p>unsigned decimal, SIZE bytes per integer</p>
+</dd>
+<dt>x[SIZE]</dt>
+<dd><p>hexadecimal, SIZE bytes per integer</p>
+</dd>
+</dl>
+<p>SIZE is a number. For TYPE in [doux], SIZE may also be C for sizeof(char), S for sizeof(short), I for sizeof(int) or L for sizeof(long). If TYPE is f, SIZE may also be F for sizeof(float), D for sizeof(double) or L for sizeof(long double).</p>
+<p>Adding a z suffix to any type displays printable characters at the end of each output line.</p>
+<h2>BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:</h2>
+<dl>
+<dt>b</dt>
+<dd><p>512</p>
+</dd>
+<dt>KB</dt>
+<dd><p>1000</p>
+</dd>
+<dt>K</dt>
+<dd><p>1024</p>
+</dd>
+<dt>MB</dt>
+<dd><p>1000*1000</p>
+</dd>
+<dt>M</dt>
+<dd><p>1024*1024</p>
+</dd>
+</dl>
+<p>and so on for G, T, P, E, Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<dl>
+<dt><strong>od -A x -t x1z -v</strong></dt>
+<dd><p>Display hexdump format output</p>
+</dd>
+<dt><strong>od -A o -t oS -w16</strong></dt>
+<dd><p>The default output format used by od</p>
+</dd>
+</dl>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by Jim Meyering.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>GNU coreutils online help: &lt;<a href="https://www.gnu.org/software/coreutils/&amp;gt;">https://www.gnu.org/software/coreutils/&gt;</a><br/>
+Report any translation bugs to &lt;<a href="https://translationproject.org/team/&amp;gt;">https://translationproject.org/team/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2020 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>Full documentation &lt;<a href="https://www.gnu.org/software/coreutils/od&amp;gt;">https://www.gnu.org/software/coreutils/od&gt;</a><br/>
+or available locally via: info '(coreutils) od invocation'</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

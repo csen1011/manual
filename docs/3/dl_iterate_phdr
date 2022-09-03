@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>dl_iterate_phdr - walk through list of shared objects</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;link.h&gt;</a>
+
+int dl_iterate_phdr(
+ int (*callback) (struct dl_phdr_info *info,
+ <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size, void *data),
+ void *data);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='dl_iterate_phdr'>dl_iterate_phdr</a>() function allows an application to inquire at run time to find out which shared objects it has loaded, and the order in which they were loaded.</p>
+<p>The <a href='dl_iterate_phdr'>dl_iterate_phdr</a>() function walks through the list of an application's shared objects and calls the function <code>callback</code> once for each object, until either all shared objects have been processed or <code>callback</code> returns a nonzero value.</p>
+<p>Each call to <code>callback</code> receives three arguments: <code>info</code>, which is a pointer to a structure containing information about the shared object; <code>size</code>, which is the size of the structure pointed to by <code>info</code>; and <code>data</code>, which is a copy of whatever value was passed by the calling program as the second argument (also named <code>data</code>) in the call to <a href='dl_iterate_phdr'>dl_iterate_phdr</a>().</p>
+<p>The <code>info</code> argument is a structure of the following type:</p>
+<pre><code>struct dl_phdr_info {
+    ElfW(Addr)        dlpi_addr;  /* Base address of object */
+    const char       *dlpi_name;  /* (Null-terminated) name of
+                                     object */
+    const ElfW(Phdr) *dlpi_phdr;  /* Pointer to array of
+                                     ELF program headers
+                                     for this object */
+    ElfW(Half)        dlpi_phnum; /* # of items in dlpi_phdr */
+
+    /* The following fields were added in glibc 2.4, after the first
+       version of this structure was available.  Check the size
+       argument passed to the dl_iterate_phdr callback to determine
+       whether or not each later member is available.  */
+
+    unsigned long long dlpi_adds;
+                    /* Incremented when a new object may
+                       have been added */
+    unsigned long long dlpi_subs;
+                    /* Incremented when an object may
+                       have been removed */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> dlpi_tls_modid;
+                    /* If there is a PT_TLS segment, its module
+                       ID as used in TLS relocations, else zero */
+    void  *dlpi_tls_data;
+                    /* The address of the calling thread's instance
+                       of this module's PT_TLS segment, if it has
+                       one and it has been allocated in the calling
+                       thread, otherwise a null pointer */
+};</code></pre>
+<p>(The <code>ElfW</code>() macro definition turns its argument into the name of an ELF data type suitable for the hardware architecture. For example, on a 32-bit platform, <code>ElfW(Addr)</code> yields the data type name <code>Elf32_Addr</code>. Further information on these types can be found in the <code>&lt;elf.h&gt;</code> and <code>&lt;link.h&gt;</code> header files.)</p>
+<p>The <code>dlpi_addr</code> field indicates the base address of the shared object (i.e., the difference between the virtual memory address of the shared object and the offset of that object in the file from which it was loaded). The <code>dlpi_name</code> field is a null-terminated string giving the pathname from which the shared object was loaded.</p>
+<p>To understand the meaning of the <code>dlpi_phdr</code> and <code>dlpi_phnum</code> fields, we need to be aware that an ELF shared object consists of a number of segments, each of which has a corresponding program header describing the segment. The <code>dlpi_phdr</code> field is a pointer to an array of the program headers for this shared object. The <code>dlpi_phnum</code> field indicates the size of this array.</p>
+<p>These program headers are structures of the following form:</p>
+<pre><code>typedef struct {
+    Elf32_Word  p_type;    /* Segment type */
+    Elf32_Off   p_offset;  /* Segment file offset */
+    Elf32_Addr  p_vaddr;   /* Segment virtual address */
+    Elf32_Addr  p_paddr;   /* Segment physical address */
+    Elf32_Word  p_filesz;  /* Segment size in file */
+    Elf32_Word  p_memsz;   /* Segment size in memory */
+    Elf32_Word  p_flags;   /* Segment flags */
+    Elf32_Word  p_align;   /* Segment alignment */
+} Elf32_Phdr;</code></pre>
+<p>Note that we can calculate the location of a particular program header, <code>x</code>, in virtual memory using the formula:</p>
+<pre><code>addr == info-&gt;dlpi_addr + info-&gt;dlpi_phdr[x].p_vaddr;</code></pre>
+<p>Possible values for <code>p_type</code> include the following (see <code>&lt;elf.h&gt;</code> for further details):</p>
+<pre><code>#define PT_LOAD         1    /* Loadable program segment */
+#define PT_DYNAMIC      2    /* Dynamic linking information */
+#define PT_INTERP       3    /* Program interpreter */
+#define PT_NOTE         4    /* Auxiliary information */
+#define PT_SHLIB        5    /* Reserved */
+#define PT_PHDR         6    /* Entry for header table itself */
+#define PT_TLS          7    /* Thread-local storage segment */
+#define PT_GNU_EH_FRAME 0x6474e550 /* GCC .eh_frame_hdr segment */
+#define PT_GNU_STACK  0x6474e551 /* Indicates stack executability */
+#define PT_GNU_RELRO  0x6474e552 /* Read-only after relocation */</code></pre>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The <a href='dl_iterate_phdr'>dl_iterate_phdr</a>() function returns whatever value was returned by the last call to <code>callback</code>.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program displays a list of pathnames of the shared objects it has loaded. For each shared object, the program lists some information (virtual address, size, flags, and type) for each of the objects ELF segments.</p>
+<p>The following shell session demonstrates the output produced by the program on an x86-64 system. The first shared object for which output is displayed (where the name is an empty string) is the main program.</p>
+<pre><code>$ ./a.out
+Name: "" (9 segments)
+     0: [      0x400040; memsz:    1f8] flags: 0x5; PT_PHDR
+     1: [      0x400238; memsz:     1c] flags: 0x4; PT_INTERP
+     2: [      0x400000; memsz:    ac4] flags: 0x5; PT_LOAD
+     3: [      0x600e10; memsz:    240] flags: 0x6; PT_LOAD
+     4: [      0x600e28; memsz:    1d0] flags: 0x6; PT_DYNAMIC
+     5: [      0x400254; memsz:     44] flags: 0x4; PT_NOTE
+     6: [      0x400970; memsz:     3c] flags: 0x4; PT_GNU_EH_FRAME
+     7: [         (nil); memsz:      0] flags: 0x6; PT_GNU_STACK
+     8: [      0x600e10; memsz:    1f0] flags: 0x4; PT_GNU_RELRO
+Name: "linux-vdso.so.1" (4 segments)
+     0: [0x7ffc6edd1000; memsz:    e89] flags: 0x5; PT_LOAD
+     1: [0x7ffc6edd1360; memsz:    110] flags: 0x4; PT_DYNAMIC
+     2: [0x7ffc6edd17b0; memsz:     3c] flags: 0x4; PT_NOTE
+     3: [0x7ffc6edd17ec; memsz:     3c] flags: 0x4; PT_GNU_EH_FRAME
+Name: "/lib64/libc.so.6" (10 segments)
+     0: [0x7f55712ce040; memsz:    230] flags: 0x5; PT_PHDR
+     1: [0x7f557145b980; memsz:     1c] flags: 0x4; PT_INTERP
+     2: [0x7f55712ce000; memsz: 1b6a5c] flags: 0x5; PT_LOAD
+     3: [0x7f55716857a0; memsz:   9240] flags: 0x6; PT_LOAD
+     4: [0x7f5571688b80; memsz:    1f0] flags: 0x6; PT_DYNAMIC
+     5: [0x7f55712ce270; memsz:     44] flags: 0x4; PT_NOTE
+     6: [0x7f55716857a0; memsz:     78] flags: 0x4; PT_TLS
+     7: [0x7f557145b99c; memsz:   544c] flags: 0x4; PT_GNU_EH_FRAME
+     8: [0x7f55712ce000; memsz:      0] flags: 0x6; PT_GNU_STACK
+     9: [0x7f55716857a0; memsz:   3860] flags: 0x4; PT_GNU_RELRO
+Name: "/lib64/ld-linux-x86-64.so.2" (7 segments)
+     0: [0x7f557168f000; memsz:  20828] flags: 0x5; PT_LOAD
+     1: [0x7f55718afba0; memsz:   15a8] flags: 0x6; PT_LOAD
+     2: [0x7f55718afe10; memsz:    190] flags: 0x6; PT_DYNAMIC
+     3: [0x7f557168f1c8; memsz:     24] flags: 0x4; PT_NOTE
+     4: [0x7f55716acec4; memsz:    604] flags: 0x4; PT_GNU_EH_FRAME
+     5: [0x7f557168f000; memsz:      0] flags: 0x6; PT_GNU_STACK
+     6: [0x7f55718afba0; memsz:    460] flags: 0x4; PT_GNU_RELRO</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;link.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+
+static int
+callback(struct dl_phdr_info *info, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> size, void *data)
+{
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>type;
+    int p_type;
+
+    printf("Name: \"%s\" (%d segments)\n", info-&gt;dlpi_name,
+               info-&gt;dlpi_phnum);
+
+    for (int j = 0; j &lt; info-&gt;dlpi_phnum; j++) {
+        p_type = info-&gt;dlpi_phdr[j].p_type;
+        type =  (p_type == PT_LOAD) ? "PT_LOAD" :
+                (p_type == PT_DYNAMIC) ? "PT_DYNAMIC" :
+                (p_type == PT_INTERP) ? "PT_INTERP" :
+                (p_type == PT_NOTE) ? "PT_NOTE" :
+                (p_type == PT_INTERP) ? "PT_INTERP" :
+                (p_type == PT_PHDR) ? "PT_PHDR" :
+                (p_type == PT_TLS) ? "PT_TLS" :
+                (p_type == PT_GNU_EH_FRAME) ? "PT_GNU_EH_FRAME" :
+                (p_type == PT_GNU_STACK) ? "PT_GNU_STACK" :
+                (p_type == PT_GNU_RELRO) ? "PT_GNU_RELRO" : NULL;
+
+        printf("    %2d: [%14p; memsz:%7jx] flags: %#jx; ", j,
+                (void *) (info-&gt;dlpi_addr + info-&gt;dlpi_phdr[j].p_vaddr),
+                (uintmax_t) info-&gt;dlpi_phdr[j].p_memsz,
+                (uintmax_t) info-&gt;dlpi_phdr[j].p_flags);
+        if (type != NULL)
+            printf("%s\n", type);
+        else
+            printf("[other (%#x)]\n", p_type);
+    }
+
+    return 0;
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    dl_iterate_phdr(callback, NULL);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='dl_iterate_phdr'>dl_iterate_phdr</a>() has been supported in glibc since version 2.2.4.</p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='dl_iterate_phdr'>dl_iterate_phdr</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <a href='dl_iterate_phdr'>dl_iterate_phdr</a>() function is not specified in any standard. Various other systems provide a version of this function, although details of the returned <code>dl_phdr_info</code> structure differ. On the BSDs and Solaris, the structure includes the fields <code>dlpi_addr</code>, <code>dlpi_name</code>, <code>dlpi_phdr</code>, and <code>dlpi_phnum</code> in addition to other implementation-specific fields.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Future versions of the C library may add further fields to the <code>dl_phdr_info</code> structure; in that event, the <code>size</code> argument provides a mechanism for the callback function to discover whether it is running on a system with added fields.</p>
+<p>The first object visited by <code>callback</code> is the main program. For the main program, the <code>dlpi_name</code> field will be an empty string.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ldd'>ldd</a>(1), <a href='/1/objdump'>objdump</a>(1), <a href='/1/readelf'>readelf</a>(1), <a href='/3/dladdr'>dladdr</a>(3), <a href='/3/dlopen'>dlopen</a>(3), <a href='/5/elf'>elf</a>(5), <strong><a href="http://ld.so">ld.so</a></strong>(8)</p>
+<p><code>Executable and Linking Format Specification</code>, available at various locations online.</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

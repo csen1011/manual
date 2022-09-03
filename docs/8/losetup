@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>losetup - set up and control loop devices</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>Get info:</p>
+<p><strong>losetup</strong> [<code>loopdev</code>]</p>
+<p><strong>losetup</strong> <strong>-l</strong> [<strong>-a</strong>]</p>
+<p><strong>losetup</strong> <strong>-j</strong> <code>file</code> [<strong>-o</strong> <code>offset</code>]</p>
+<p>Detach a loop device:</p>
+<p><strong>losetup</strong> <strong>-d</strong> <code>loopdev</code> ...</p>
+<p>Detach all associated loop devices:</p>
+<p><strong>losetup</strong> <strong>-D</strong></p>
+<p>Set up a loop device:</p>
+<p><strong>losetup</strong> [<strong>-o</strong> <code>offset</code>] [<strong>--sizelimit</strong> <code>size</code>] [<strong>--sector-size</strong> <code>size</code>] [<strong>-Pr</strong>] [<strong>--show</strong>] <strong>-f</strong> <code>loopdev file</code></p>
+<p>Resize a loop device:</p>
+<p><strong>losetup</strong> <strong>-c</strong> <code>loopdev</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>losetup</strong> is used to associate loop devices with regular files or block devices, to detach loop devices, and to query the status of a loop device. If only the <code>loopdev</code> argument is given, the status of the corresponding loop device is shown. If no option is given, all loop devices are shown.</p>
+<p>Note that the old output format (i.e., <strong>losetup -a</strong>) with comma-delimited strings is deprecated in favour of the <strong>--list</strong> output format.</p>
+<p>It’s possible to create more independent loop devices for the same backing file. <strong>This setup may be dangerous, can cause data loss, corruption and overwrites.</strong> Use <strong>--nooverlap</strong> with <strong>--find</strong> during setup to avoid this problem.</p>
+<p>The loop device setup is not an atomic operation when used with <strong>--find</strong>, and <strong>losetup</strong> does not protect this operation by any lock. The number of attempts is internally restricted to a maximum of 16. It is recommended to use for example flock1 to avoid a collision in heavily parallel use cases.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The <code>size</code> and <code>offset</code> arguments may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is optional, e.g., "K" has the same meaning as "KiB") or the suffixes KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.</p>
+<p><strong>-a</strong>, <strong>--all</strong></p>
+<blockquote>
+<p>Show the status of all loop devices. Note that not all information is accessible for non-root users. See also <strong>--list</strong>. The old output format (as printed without <strong>--list)</strong> is deprecated.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--detach</strong> <code>loopdev</code>...</p>
+<blockquote>
+<p>Detach the file or device associated with the specified loop device(s). Note that since Linux v3.7 kernel uses "lazy device destruction". The detach operation does not return <strong>EBUSY</strong> error anymore if device is actively used by system, but it is marked by autoclear flag and destroyed later.</p>
+</blockquote>
+<p><strong>-D</strong>, <strong>--detach-all</strong></p>
+<blockquote>
+<p>Detach all associated loop devices.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--find</strong> [<code>file</code>]</p>
+<blockquote>
+<p>Find the first unused loop device. If a <code>file</code> argument is present, use the found device as loop device. Otherwise, just print its name.</p>
+</blockquote>
+<p><strong>--show</strong></p>
+<blockquote>
+<p>Display the name of the assigned loop device if the <strong>-f</strong> option and a <code>file</code> argument are present.</p>
+</blockquote>
+<p><strong>-L</strong>, <strong>--nooverlap</strong></p>
+<blockquote>
+<p>Check for conflicts between loop devices to avoid situation when the same backing file is shared between more loop devices. If the file is already used by another device then re-use the device rather than a new one. The option makes sense only with <strong>--find</strong>.</p>
+</blockquote>
+<p><strong>-j</strong>, <strong>--associated</strong> <code>file</code> [<strong>-o</strong> <code>offset</code>]</p>
+<blockquote>
+<p>Show the status of all loop devices associated with the given <code>file</code>.</p>
+</blockquote>
+<p><strong>-o</strong>, <strong>--offset</strong> <code>offset</code></p>
+<blockquote>
+<p>The data start is moved <code>offset</code> bytes into the specified file or device. The <code>offset</code> may be followed by the multiplicative suffixes; see above.</p>
+</blockquote>
+<p><strong>--sizelimit</strong> <code>size</code></p>
+<blockquote>
+<p>The data end is set to no more than <code>size</code> bytes after the data start. The <code>size</code> may be followed by the multiplicative suffixes; see above.</p>
+</blockquote>
+<p><strong>-b</strong>, <strong>--sector-size</strong> <code>size</code></p>
+<blockquote>
+<p>Set the logical sector size of the loop device in bytes (since Linux 4.14). The option may be used when create a new loop device as well as stand-alone command to modify sector size of the already existing loop device.</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--set-capacity</strong> <code>loopdev</code></p>
+<blockquote>
+<p>Force the loop driver to reread the size of the file associated with the specified loop device.</p>
+</blockquote>
+<p><strong>-P</strong>, <strong>--partscan</strong></p>
+<blockquote>
+<p>Force the kernel to scan the partition table on a newly created loop device. Note that the partition table parsing depends on sector sizes. The default is sector size is 512 bytes, otherwise you need to use the option <strong>--sector-size</strong> together with <strong>--partscan</strong>.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--read-only</strong></p>
+<blockquote>
+<p>Set up a read-only loop device.</p>
+</blockquote>
+<p><strong>--direct-io</strong>[<strong>=on</strong>|<strong>off</strong>]</p>
+<blockquote>
+<p>Enable or disable direct I/O for the backing file. The optional argument can be either <strong>on</strong> or <strong>off</strong>. If the argument is omitted, it defaults to <strong>off</strong>.</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--verbose</strong></p>
+<blockquote>
+<p>Verbose mode.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--list</strong></p>
+<blockquote>
+<p>If a loop device or the <strong>-a</strong> option is specified, print the default columns for either the specified loop device or all loop devices; the default is to print info about all devices. See also <strong>--output</strong>, <strong>--noheadings</strong>, <strong>--raw</strong>, and <strong>--json</strong>.</p>
+</blockquote>
+<p><strong>-O</strong>, <strong>--output</strong> <code>column</code>[,<code>column</code>]...</p>
+<blockquote>
+<p>Specify the columns that are to be printed for the <strong>--list</strong> output. Use <strong>--help</strong> to get a list of all supported columns.</p>
+</blockquote>
+<p><strong>--output-all</strong></p>
+<blockquote>
+<p>Output all available columns.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--noheadings</strong></p>
+<blockquote>
+<p>Don’t print headings for <strong>--list</strong> output format.</p>
+</blockquote>
+<p><strong>--raw</strong></p>
+<blockquote>
+<p>Use the raw <strong>--list</strong> output format.</p>
+</blockquote>
+<p><strong>-J</strong>, <strong>--json</strong></p>
+<blockquote>
+<p>Use JSON format for <strong>--list</strong> output.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='encryption'><a href='#encryption'>ENCRYPTION</a></h1><div data-for='encryption' data-hide><div class='section' data-for='encryption'><div data-more>
+<p><strong>Cryptoloop is no longer supported in favor of dm-crypt.</strong> For more details see <a href='/8/cryptsetup'>cryptsetup</a>(8).</p>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p><strong>losetup</strong> returns 0 on success, nonzero on failure. When <strong>losetup</strong> displays the status of a loop device, it returns 1 if the device is not configured and 2 if an error occurred which prevented determining the status of the device.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Since version 2.37 <strong>losetup</strong> uses <strong>LOOP_CONFIGURE</strong> ioctl to setup a new loop device by one ioctl call. The old versions use <strong>LOOP_SET_FD</strong> and <strong>LOOP_SET_STATUS64</strong> ioctls to do the same.</p>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>LOOPDEV_DEBUG=all</p>
+<blockquote>
+<p>enables debug output.</p>
+</blockquote>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/dev/loop[0..N]</code></p>
+<blockquote>
+<p>loop block devices</p>
+</blockquote>
+<p><code>/dev/loop-control</code></p>
+<blockquote>
+<p>loop control device</p>
+</blockquote>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p>The following commands can be used as an example of using the loop device.</p>
+<blockquote>
+<pre><code># dd if=/dev/zero of=~/file.img bs=1024k count=10
+# losetup --find --show ~/file.img
+/dev/loop0
+# mkfs -t ext2 /dev/loop0
+# mount /dev/loop0 /mnt
+...
+# umount /dev/loop0
+# losetup --detach /dev/loop0</code></pre>
+</blockquote>
+</div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>based on the original version from</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>losetup</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

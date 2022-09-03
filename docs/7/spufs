@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>spufs - SPU filesystem</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The SPU filesystem is used on PowerPC machines that implement the Cell Broadband Engine Architecture in order to access Synergistic Processor Units (SPUs).</p>
+<p>The filesystem provides a name space similar to POSIX shared memory or message queues. Users that have write permissions on the filesystem can use <a href='/2/spu_create'>spu_create</a>(2) to establish SPU contexts under the <strong>spufs</strong> root directory.</p>
+<p>Every SPU context is represented by a directory containing a predefined set of files. These files can be used for manipulating the state of the logical SPU. Users can change permissions on the files, but can't add or remove files.</p>
+<h2>Mount options</h2>
+<dl>
+<dt><strong>uid=&lt;uid&gt;</strong></dt>
+<dd><p>Set the user owning the mount point; the default is 0 (root).</p>
+</dd>
+<dt><strong>gid=&lt;gid&gt;</strong></dt>
+<dd><p>Set the group owning the mount point; the default is 0 (root).</p>
+</dd>
+<dt><strong>mode=&lt;mode&gt;</strong></dt>
+<dd><p>Set the mode of the top-level directory in <strong>spufs</strong>, as an octal mode string. The default is 0775.</p>
+</dd>
+</dl>
+<h2>Files</h2>
+<p>The files in <strong>spufs</strong> mostly follow the standard behavior for regular system calls like <a href='/2/read'>read</a>(2) or <a href='/2/write'>write</a>(2), but often support only a subset of the operations supported on regular filesystems. This list details the supported operations and the deviations from the standard behavior described in the respective man pages.</p>
+<p>All files that support the <a href='/2/read'>read</a>(2) operation also support <a href='/2/readv'>readv</a>(2) and all files that support the <a href='/2/write'>write</a>(2) operation also support <a href='/2/writev'>writev</a>(2). All files support the <a href='/2/access'>access</a>(2) and <a href='/2/stat'>stat</a>(2) family of operations, but for the latter call, the only fields of the returned <code>stat</code> structure that contain reliable information are <code>st_mode</code>, <code>st_nlink</code>, <code>st_uid</code>, and <code>st_gid</code>.</p>
+<p>All files support the <a href='/2/chmod'>chmod</a>(2)/<a href='/2/fchmod'>fchmod</a>(2) and <a href='/2/chown'>chown</a>(2)/<a href='/2/fchown'>fchown</a>(2) operations, but will not be able to grant permissions that contradict the possible operations (e.g., read access on the <code>wbox</code> file).</p>
+<p>The current set of files is:</p>
+<dl>
+<dt><code>/capabilities</code></dt>
+<dd><p>Contains a comma-delimited string representing the capabilities of this SPU context. Possible capabilities are:</p>
+<dl>
+<dt><strong>sched</strong></dt>
+<dd><p>This context may be scheduled.</p>
+</dd>
+<dt><strong>step</strong></dt>
+<dd><p>This context can be run in single-step mode, for debugging.</p>
+</dd>
+</dl>
+<p>New capabilities flags may be added in the future.</p>
+</dd>
+<dt><code>/mem</code></dt>
+<dd><p>the contents of the local storage memory of the SPU. This can be accessed like a regular shared memory file and contains both code and data in the address space of the SPU. The possible operations on an open <code>mem</code> file are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2), <a href='/2/pread'>pread</a>(2), <a href='/2/write'>write</a>(2), <a href='/2/pwrite'>pwrite</a>(2), <a href='/2/lseek'>lseek</a>(2)</dt>
+<dd><p>These operate as usual, with the exception that <a href='/2/lseek'>lseek</a>(2), <a href='/2/write'>write</a>(2), and <a href='/2/pwrite'>pwrite</a>(2) are not supported beyond the end of the file. The file size is the size of the local storage of the SPU, which is normally 256 kilobytes.</p>
+</dd>
+<dt><a href='/2/mmap'>mmap</a>(2)</dt>
+<dd><p>Mapping <code>mem</code> into the process address space provides access to the SPU local storage within the process address space. Only <strong>MAP_SHARED</strong> mappings are allowed.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/regs</code></dt>
+<dd><p>Contains the saved general-purpose registers of the SPU context. This file contains the 128-bit values of each register, from register 0 to register 127, in order. This allows the general-purpose registers to be inspected for debugging.</p>
+<p>Reading to or writing from this file requires that the context is scheduled out, so use of this file is not recommended in normal program operation.</p>
+<p>The <code>regs</code> file is not present on contexts that have been created with the <strong>SPU_CREATE_NOSCHED</strong> flag.</p>
+</dd>
+<dt><code>/mbox</code></dt>
+<dd><p>The first SPU-to-CPU communication mailbox. This file is read-only and can be read in units of 4 bytes. The file can be used only in nonblocking mode - even <a href='/2/poll'>poll</a>(2) cannot be used to block on this file. The only possible operation on an open <code>mbox</code> file is:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/read'>read</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. If there is no data available in the mailbox (i.e., the SPU has not sent a mailbox message), the return value is set to -1 and <code>errno</code> is set to <strong>EAGAIN</strong>. When data has been read successfully, four bytes are placed in the data buffer and the value four is returned.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/ibox</code></dt>
+<dd><p>The second SPU-to-CPU communication mailbox. This file is similar to the first mailbox file, but can be read in blocking I/O mode, thus calling <a href='/2/read'>read</a>(2) on an open <code>ibox</code> file will block until the SPU has written data to its interrupt mailbox channel (unless the file has been opened with <strong>O_NONBLOCK</strong>, see below). Also, <a href='/2/poll'>poll</a>(2) and similar system calls can be used to monitor for the presence of mailbox data.</p>
+<p>The possible operations on an open <code>ibox</code> file are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/read'>read</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. If there is no data available in the mailbox and the file descriptor has been opened with <strong>O_NONBLOCK</strong>, the return value is set to -1 and <code>errno</code> is set to <strong>EAGAIN</strong>.</p>
+<p>If there is no data available in the mailbox and the file descriptor has been opened without <strong>O_NONBLOCK</strong>, the call will block until the SPU writes to its interrupt mailbox channel. When data has been read successfully, four bytes are placed in the data buffer and the value four is returned.</p>
+</dd>
+<dt><a href='/2/poll'>poll</a>(2)</dt>
+<dd><p>Poll on the <code>ibox</code> file returns <code>(POLLIN | POLLRDNORM)</code> whenever data is available for reading.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/wbox</code></dt>
+<dd><p>The CPU-to-SPU communication mailbox. It is write-only and can be written in units of four bytes. If the mailbox is full, <a href='/2/write'>write</a>(2) will block, and <a href='/2/poll'>poll</a>(2) can be used to block until the mailbox is available for writing again. The possible operations on an open <code>wbox</code> file are:</p>
+<dl>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/write'>write</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. If there is no space available in the mailbox and the file descriptor has been opened with <strong>O_NONBLOCK</strong>, the return value is set to -1 and <code>errno</code> is set to <strong>EAGAIN</strong>.</p>
+<p>If there is no space available in the mailbox and the file descriptor has been opened without <strong>O_NONBLOCK</strong>, the call will block until the SPU reads from its PPE (PowerPC Processing Element) mailbox channel. When data has been written successfully, the system call returns four as its function result.</p>
+</dd>
+<dt><a href='/2/poll'>poll</a>(2)</dt>
+<dd><p>A poll on the <code>wbox</code> file returns <code>(POLLOUT | POLLWRNORM)</code> whenever space is available for writing.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/mbox_stat</code>, <code>/ibox_stat</code>, <code>/wbox_stat</code></dt>
+<dd><p>These are read-only files that contain the length of the current queue of each mailbox—that is, how many words can be read from <code>mbox</code> or <code>ibox</code> or how many words can be written to <code>wbox</code> without blocking. The files can be read only in four-byte units and return a big-endian binary integer number. The only possible operation on an open <code>*box_stat</code> file is:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/read'>read</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. Otherwise, a four-byte value is placed in the data buffer. This value is the number of elements that can be read from (for <code>mbox_stat</code> and <code>ibox_stat</code>) or written to (for <code>wbox_stat</code>) the respective mailbox without blocking or returning an <strong>EAGAIN</strong> error.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/npc</code>, <code>/decr</code>, <code>/decr_status</code>, <code>/spu_tag_mask</code>, <code>/event_mask</code>, <code>/event_status</code>, <code>/srr0</code>, <code>/lslr</code></dt>
+<dd><p>Internal registers of the SPU. These files contain an ASCII string representing the hex value of the specified register. Reads and writes on these files (except for <code>npc</code>, see below) require that the SPU context be scheduled out, so frequent access to these files is not recommended for normal program operation.</p>
+<p>The contents of these files are:</p>
+<dl>
+<dt><code>npc</code></dt>
+<dd><p>Next Program Counter - valid only when the SPU is in a stopped state.</p>
+</dd>
+<dt><code>decr</code></dt>
+<dd><p>SPU Decrementer</p>
+</dd>
+<dt><code>decr_status</code></dt>
+<dd><p>Decrementer Status</p>
+</dd>
+<dt><code>spu_tag_mask</code></dt>
+<dd><p>MFC tag mask for SPU DMA</p>
+</dd>
+<dt><code>event_mask</code></dt>
+<dd><p>Event mask for SPU interrupts</p>
+</dd>
+<dt><code>event_status</code></dt>
+<dd><p>Number of SPU events pending (read-only)</p>
+</dd>
+<dt><code>srr0</code></dt>
+<dd><p>Interrupt Return address register</p>
+</dd>
+<dt><code>lslr</code></dt>
+<dd><p>Local Store Limit Register</p>
+</dd>
+</dl>
+<p>The possible operations on these files are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>Reads the current register value. If the register value is larger than the buffer passed to the <a href='/2/read'>read</a>(2) system call, subsequent reads will continue reading from the same buffer, until the end of the buffer is reached.</p>
+<p>When a complete string has been read, all subsequent read operations will return zero bytes and a new file descriptor needs to be opened to read a new value.</p>
+</dd>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>A <a href='/2/write'>write</a>(2) operation on the file sets the register to the value given in the string. The string is parsed from the beginning until the first nonnumeric character or the end of the buffer. Subsequent writes to the same file descriptor overwrite the previous setting.</p>
+<p>Except for the <code>npc</code> file, these files are not present on contexts that have been created with the <strong>SPU_CREATE_NOSCHED</strong> flag.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/fpcr</code></dt>
+<dd><p>This file provides access to the Floating Point Status and Control Register (fcpr) as a binary, four-byte file. The operations on the <code>fpcr</code> file are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/read'>read</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. Otherwise, a four-byte value is placed in the data buffer; this is the current value of the <code>fpcr</code> register.</p>
+</dd>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/write'>write</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. Otherwise, a four-byte value is copied from the data buffer, updating the value of the <code>fpcr</code> register.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/signal1</code>, <code>/signal2</code></dt>
+<dd><p>The files provide access to the two signal notification channels of an SPU. These are read-write files that operate on four-byte words. Writing to one of these files triggers an interrupt on the SPU. The value written to the signal files can be read from the SPU through a channel read or from host user space through the file. After the value has been read by the SPU, it is reset to zero. The possible operations on an open <code>signal1</code> or <code>signal2</code> file are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/read'>read</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. Otherwise, a four-byte value is placed in the data buffer; this is the current value of the specified signal notification register.</p>
+</dd>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>If <code>count</code> is smaller than four, <a href='/2/write'>write</a>(2) returns -1 and sets <code>errno</code> to <strong>EINVAL</strong>. Otherwise, a four-byte value is copied from the data buffer, updating the value of the specified signal notification register. The signal notification register will either be replaced with the input data or will be updated to the bitwise OR operation of the old value and the input data, depending on the contents of the <code>signal1_type</code> or <code>signal2_type</code> files respectively.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/signal1_type</code>, <code>/signal2_type</code></dt>
+<dd><p>These two files change the behavior of the <code>signal1</code> and <code>signal2</code> notification files. They contain a numeric ASCII string which is read as either "1" or "0". In mode 0 (overwrite), the hardware replaces the contents of the signal channel with the data that is written to it. In mode 1 (logical OR), the hardware accumulates the bits that are subsequently written to it. The possible operations on an open <code>signal1_type</code> or <code>signal2_type</code> file are:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>When the count supplied to the <a href='/2/read'>read</a>(2) call is shorter than the required length for the digit (plus a newline character), subsequent reads from the same file descriptor will complete the string. When a complete string has been read, all subsequent read operations will return zero bytes and a new file descriptor needs to be opened to read the value again.</p>
+</dd>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>A <a href='/2/write'>write</a>(2) operation on the file sets the register to the value given in the string. The string is parsed from the beginning until the first nonnumeric character or the end of the buffer. Subsequent writes to the same file descriptor overwrite the previous setting.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/mbox_info</code>, <code>/ibox_info</code>, <code>/wbox_info</code>, <code>/dma_into</code>, <code>/proxydma_info</code></dt>
+<dd><p>Read-only files that contain the saved state of the SPU mailboxes and DMA queues. This allows the SPU status to be inspected, mainly for debugging. The <code>mbox_info</code> and <code>ibox_info</code> files each contain the four-byte mailbox message that has been written by the SPU. If no message has been written to these mailboxes, then contents of these files is undefined. The <code>mbox_stat</code>, <code>ibox_stat</code>, and <code>wbox_stat</code> files contain the available message count.</p>
+<p>The <code>wbox_info</code> file contains an array of four-byte mailbox messages, which have been sent to the SPU. With current CBEA machines, the array is four items in length, so up to 4 * 4 = 16 bytes can be read from this file. If any mailbox queue entry is empty, then the bytes read at the corresponding location are undefined.</p>
+<p>The <code>dma_info</code> file contains the contents of the SPU MFC DMA queue, represented as the following structure:</p>
+<pre><code>struct spu_dma_info {
+    uint64_t         dma_info_type;
+    uint64_t         dma_info_mask;
+    uint64_t         dma_info_status;
+    uint64_t         dma_info_stall_and_notify;
+    uint64_t         dma_info_atomic_command_status;
+    struct mfc_cq_sr dma_info_command_data[16];
+};</code></pre>
+<p>The last member of this data structure is the actual DMA queue, containing 16 entries. The <code>mfc_cq_sr</code> structure is defined as:</p>
+<pre><code>struct mfc_cq_sr {
+    uint64_t mfc_cq_data0_RW;
+    uint64_t mfc_cq_data1_RW;
+    uint64_t mfc_cq_data2_RW;
+    uint64_t mfc_cq_data3_RW;
+};</code></pre>
+<p>The <code>proxydma_info</code> file contains similar information, but describes the proxy DMA queue (i.e., DMAs initiated by entities outside the SPU) instead. The file is in the following format:</p>
+<pre><code>struct spu_proxydma_info {
+    uint64_t         proxydma_info_type;
+    uint64_t         proxydma_info_mask;
+    uint64_t         proxydma_info_status;
+    struct mfc_cq_sr proxydma_info_command_data[8];
+};</code></pre>
+<p>Accessing these files requires that the SPU context is scheduled out - frequent use can be inefficient. These files should not be used for normal program operation.</p>
+<p>These files are not present on contexts that have been created with the <strong>SPU_CREATE_NOSCHED</strong> flag.</p>
+</dd>
+<dt><code>/cntl</code></dt>
+<dd><p>This file provides access to the SPU Run Control and SPU status registers, as an ASCII string. The following operations are supported:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>Reads from the <code>cntl</code> file will return an ASCII string with the hex value of the SPU Status register.</p>
+</dd>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>Writes to the <code>cntl</code> file will set the context's SPU Run Control register.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/mfc</code></dt>
+<dd><p>Provides access to the Memory Flow Controller of the SPU. Reading from the file returns the contents of the SPU's MFC Tag Status register, and writing to the file initiates a DMA from the MFC. The following operations are supported:</p>
+<dl>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>Writes to this file need to be in the format of a MFC DMA command, defined as follows:</p>
+<pre><code>struct mfc_dma_command {
+    int32_t  pad;    /* reserved */
+    uint32_t lsa;    /* local storage address */
+    uint64_t ea;     /* effective address */
+    uint16_t size;   /* transfer size */
+    uint16_t tag;    /* command tag */
+    uint16_t class;  /* class ID */
+    uint16_t cmd;    /* command opcode */
+};</code></pre>
+<p>Writes are required to be exactly <code>sizeof(struct mfc_dma_command)</code> bytes in size. The command will be sent to the SPU's MFC proxy queue, and the tag stored in the kernel (see below).</p>
+</dd>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>Reads the contents of the tag status register. If the file is opened in blocking mode (i.e., without <strong>O_NONBLOCK</strong>), then the read will block until a DMA tag (as performed by a previous write) is complete. In nonblocking mode, the MFC tag status register will be returned without waiting.</p>
+</dd>
+<dt><a href='/2/poll'>poll</a>(2)</dt>
+<dd><p>Calling <a href='/2/poll'>poll</a>(2) on the <code>mfc</code> file will block until a new DMA can be started (by checking for <strong>POLLOUT</strong>) or until a previously started DMA (by checking for <strong>POLLIN</strong>) has been completed.</p>
+<p><code>/mss</code> Provides access to the MFC MultiSource Synchronization (MSS) facility. By <a href='/2/mmap'>mmap</a>(2)-ing this file, processes can access the MSS area of the SPU.</p>
+<p>The following operations are supported:</p>
+</dd>
+<dt><a href='/2/mmap'>mmap</a>(2)</dt>
+<dd><p>Mapping <strong>mss</strong> into the process address space gives access to the SPU MSS area within the process address space. Only <strong>MAP_SHARED</strong> mappings are allowed.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/psmap</code></dt>
+<dd><p>Provides access to the whole problem-state mapping of the SPU. Applications can use this area to interface to the SPU, rather than writing to individual register files in <strong>spufs</strong>.</p>
+<p>The following operations are supported:</p>
+<dl>
+<dt><a href='/2/mmap'>mmap</a>(2)</dt>
+<dd><p>Mapping <strong>psmap</strong> gives a process a direct map of the SPU problem state area. Only <strong>MAP_SHARED</strong> mappings are supported.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>/phys-id</code></dt>
+<dd><p>Read-only file containing the physical SPU number that the SPU context is running on. When the context is not running, this file contains the string "-1".</p>
+<p>The physical SPU number is given by an ASCII hex string.</p>
+</dd>
+<dt><code>/object-id</code></dt>
+<dd><p>Allows applications to store (or retrieve) a single 64-bit ID into the context. This ID is later used by profiling tools to uniquely identify the context.</p>
+<dl>
+<dt><a href='/2/write'>write</a>(2)</dt>
+<dd><p>By writing an ASCII hex value into this file, applications can set the object ID of the SPU context. Any previous value of the object ID is overwritten.</p>
+</dd>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>Reading this file gives an ASCII hex string representing the object ID for this SPU context.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<dl>
+<dt><code>/etc/fstab</code> entry</dt>
+<dd><p>none /spu spufs gid=spu 0 0</p>
+</dd>
+</dl>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/close'>close</a>(2), <a href='/2/spu_create'>spu_create</a>(2), <a href='/2/spu_run'>spu_run</a>(2), <a href='/7/capabilities'>capabilities</a>(7)</p>
+<p><code>The Cell Broadband Engine Architecture (CBEA) specification</code></p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

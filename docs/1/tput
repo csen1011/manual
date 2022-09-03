@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><strong><a data-bs-content='This is the man page for &lt;code&gt;tput&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>tput</a></strong>, <strong>reset</strong> - initialize a terminal or query terminfo database</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>tput</strong> [<strong>-T</strong><code>type</code>] <code>capname</code> [<code>parameters</code>]<br/>
+<strong>tput</strong> [<strong>-T</strong><code>type</code>] [<strong>-x</strong>] <strong>clear</strong><br/>
+<strong>tput</strong> [<strong>-T</strong><code>type</code>] <strong>init</strong><br/>
+<strong>tput</strong> [<strong>-T</strong><code>type</code>] <strong>reset</strong><br/>
+<strong>tput</strong> [<strong>-T</strong><code>type</code>] <strong>longname</strong><br/>
+<strong>tput -S</strong> <strong>&lt;&lt;</strong><br/>
+<strong>tput -V</strong><br/>
+</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>tput</strong> utility uses the <strong>terminfo</strong> database to make the values of terminal-dependent capabilities and information available to the shell (see <a href='/1/sh'>sh</a>(1)), to initialize or reset the terminal, or return the long name of the requested terminal type. The result depends upon the capability's type:</p>
+<blockquote>
+<dl>
+<dt>string</dt>
+<dd><p><strong>tput</strong> writes the string to the standard output. No trailing newline is supplied.</p>
+</dd>
+<dt>integer</dt>
+<dd><p><strong>tput</strong> writes the decimal value to the standard output, with a trailing newline.</p>
+</dd>
+<dt>boolean</dt>
+<dd><p><strong>tput</strong> simply sets the exit code (<strong>0</strong> for TRUE if the terminal has the capability, <strong>1</strong> for FALSE if it does not), and writes nothing to the standard output.</p>
+</dd>
+</dl>
+</blockquote>
+<p>Before using a value returned on the standard output, the application should test the exit code (e.g., <strong>$?</strong>, see <a href='/1/sh'>sh</a>(1)) to be sure it is <strong>0</strong>. (See the <strong>EXIT CODES</strong> and <strong>DIAGNOSTICS</strong> sections.) For a complete list of capabilities and the <code>capname</code> associated with each, see <a href='/5/terminfo'>terminfo</a>(5).</p>
+<h2>Options</h2>
+<dl>
+<dt><strong>-S</strong></dt>
+<dd><p>allows more than one capability per invocation of <strong>tput</strong>. The capabilities must be passed to <strong>tput</strong> from the standard input instead of from the command line (see example). Only one <code>capname</code> is allowed per line. The <strong>-S</strong> option changes the meaning of the <strong>0</strong> and <strong>1</strong> boolean and string exit codes (see the EXIT CODES section).</p>
+<p>Because some capabilities may use <code>string</code> parameters rather than <code>numbers</code>, <strong>tput</strong> uses a table and the presence of parameters in its input to decide whether to use <strong>tparm</strong>(3X), and how to interpret the parameters.</p>
+</dd>
+<dt><strong>-T</strong><code>type</code></dt>
+<dd><p>indicates the <code>type</code> of terminal. Normally this option is unnecessary, because the default is taken from the environment variable <strong>TERM</strong>. If <strong>-T</strong> is specified, then the shell variables <strong>LINES</strong> and <strong>COLUMNS</strong> will also be ignored.</p>
+</dd>
+<dt><strong>-V</strong></dt>
+<dd><p>reports the version of ncurses which was used in this program, and exits.</p>
+</dd>
+<dt><strong>-x</strong></dt>
+<dd><p>do not attempt to clear the terminal's scrollback buffer using the extended E3 capability.</p>
+</dd>
+</dl>
+<h2>Commands</h2>
+<p>A few commands (<strong>init</strong>, <strong>reset</strong> and <strong>longname</strong>) are special; they are defined by the <strong>tput</strong> program. The others are the names of <code>capabilities</code> from the terminal database (see <a href='/5/terminfo'>terminfo</a>(5) for a list). Although <strong>init</strong> and <strong>reset</strong> resemble capability names, <strong>tput</strong> uses several capabilities to perform these special functions.</p>
+<dl>
+<dt><code>capname</code></dt>
+<dd><p>indicates the capability from the terminal database.</p>
+<p>If the capability is a string that takes parameters, the arguments following the capability will be used as parameters for the string.</p>
+<p>Most parameters are numbers. Only a few terminal capabilities require string parameters; <strong>tput</strong> uses a table to decide which to pass as strings. Normally <strong>tput</strong> uses <strong>tparm</strong>(3X) to perform the substitution. If no parameters are given for the capability, <strong>tput</strong> writes the string without performing the substitution.</p>
+</dd>
+<dt><strong>init</strong></dt>
+<dd><p>If the terminal database is present and an entry for the user's terminal exists (see <strong>-T</strong><code>type</code>, above), the following will occur:</p>
+<dl>
+<dt>(1)</dt>
+<dd><p>first, <strong>tput</strong> retrieves the current terminal mode settings for your terminal. It does this by successively testing</p>
+<ul>
+<li><p>the standard error,</p></li>
+<li><p>standard output,</p></li>
+<li><p>standard input and</p></li>
+<li><p>ultimately /dev/tty</p></li>
+</ul>
+<p>to obtain terminal settings. Having retrieved these settings, <strong>tput</strong> remembers which file descriptor to use when updating settings.</p>
+</dd>
+<dt>(2)</dt>
+<dd><p>if the window size cannot be obtained from the operating system, but the terminal description (or environment, e.g., <strong>LINES</strong> and <strong>COLUMNS</strong> variables specify this), update the operating system's notion of the window size.</p>
+</dd>
+<dt>(3)</dt>
+<dd><p>the terminal modes will be updated:</p>
+<ul>
+<li><p>any delays (e.g., newline) specified in the entry will be set in the tty driver,</p></li>
+<li><p>tabs expansion will be turned on or off according to the specification in the entry, and</p></li>
+<li><p>if tabs are not expanded, standard tabs will be set (every 8 spaces).</p></li>
+</ul>
+</dd>
+<dt>(4)</dt>
+<dd><p>if present, the terminal's initialization strings will be output as detailed in the <a href='/5/terminfo'>terminfo</a>(5) section on <code>Tabs and Initialization</code>,</p>
+</dd>
+<dt>(5)</dt>
+<dd><p>output is flushed.</p>
+</dd>
+</dl>
+<p>If an entry does not contain the information needed for any of these activities, that activity will silently be skipped.</p>
+</dd>
+<dt><strong>reset</strong></dt>
+<dd><p>This is similar to <strong>init</strong>, with two differences:</p>
+<dl>
+<dt>(1)</dt>
+<dd><p>before any other initialization, the terminal modes will be reset to a sane state:</p>
+<ul>
+<li><p>set cooked and echo modes,</p></li>
+<li><p>turn off cbreak and raw modes,</p></li>
+<li><p>turn on newline translation and</p></li>
+<li><p>reset any unset special characters to their default values</p></li>
+</ul>
+</dd>
+<dt>(2)</dt>
+<dd><p>Instead of putting out <code>initialization</code> strings, the terminal's <code>reset</code> strings will be output if present (<strong>rs1</strong>, <strong>rs2</strong>, <strong>rs3</strong>, <strong>rf</strong>). If the <code>reset</code> strings are not present, but <code>initialization</code> strings are, the <code>initialization</code> strings will be output.</p>
+</dd>
+</dl>
+<p>Otherwise, <strong>reset</strong> acts identically to <strong>init</strong>.</p>
+</dd>
+<dt><strong>longname</strong></dt>
+<dd><p>If the terminal database is present and an entry for the user's terminal exists (see <strong>-T</strong><code>type</code> above), then the long name of the terminal will be put out. The long name is the last name in the first line of the terminal's description in the <strong>terminfo</strong> database [see <a href='/5/term'>term</a>(5)].</p>
+</dd>
+</dl>
+<h2>Aliases</h2>
+<p><strong>tput</strong> handles the <strong>clear</strong>, <strong>init</strong> and <strong>reset</strong> commands specially: it allows for the possibility that it is invoked by a link with those names.</p>
+<p>If <strong>tput</strong> is invoked by a link named <strong>reset</strong>, this has the same effect as <strong>tput reset</strong>. The <a href='/1/tset'>tset</a>(1) utility also treats a link named <strong>reset</strong> specially.</p>
+<p>Before ncurses 6.1, the two utilities were different from each other:</p>
+<ul>
+<li><p><strong>tset</strong> utility reset the terminal modes and special characters (not done with <strong>tput</strong>).</p></li>
+<li><p>On the other hand, <strong>tset</strong>'s repertoire of terminal capabilities for resetting the terminal was more limited, i.e., only <strong>reset_1string</strong>, <strong>reset_2string</strong> and <strong>reset_file</strong> in contrast to the tab-stops and margins which are set by this utility.</p></li>
+<li><p>The <strong>reset</strong> program is usually an alias for <strong>tset</strong>, because of this difference with resetting terminal modes and special characters.</p></li>
+</ul>
+<p>With the changes made for ncurses 6.1, the <code>reset</code> feature of the two programs is (mostly) the same. A few differences remain:</p>
+<ul>
+<li><p>The <strong>tset</strong> program waits one second when resetting, in case it happens to be a hardware terminal.</p></li>
+<li><p>The two programs write the terminal initialization strings to different streams (i.e., the standard error for <strong>tset</strong> and the standard output for <strong>tput</strong>).</p>
+<p><strong>Note:</strong> although these programs write to different streams, redirecting their output to a file will capture only part of their actions. The changes to the terminal modes are not affected by redirecting the output.</p></li>
+</ul>
+<p>If <strong>tput</strong> is invoked by a link named <strong>init</strong>, this has the same effect as <strong>tput init</strong>. Again, you are less likely to use that link because another program named <strong>init</strong> has a more well-established use.</p>
+<h2>Terminal Size</h2>
+<p>Besides the special commands (e.g., <strong>clear</strong>), tput treats certain terminfo capabilities specially: <strong>lines</strong> and <strong>cols</strong>. tput calls <strong>setupterm</strong>(3X) to obtain the terminal size:</p>
+<ul>
+<li><p>first, it gets the size from the terminal database (which generally is not provided for terminal emulators which do not have a fixed window size)</p></li>
+<li><p>then it asks the operating system for the terminal's size (which generally works, unless connecting via a serial line which does not support <code>NAWS</code>: negotiations about window size).</p></li>
+<li><p>finally, it inspects the environment variables <strong>LINES</strong> and <strong>COLUMNS</strong> which may override the terminal size.</p></li>
+</ul>
+<p>If the <strong>-T</strong> option is given tput ignores the environment variables by calling <strong>use_tioctl(TRUE)</strong>, relying upon the operating system (or finally, the terminal database).</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<dl>
+<dt><strong>tput init</strong></dt>
+<dd><p>Initialize the terminal according to the type of terminal in the environmental variable <strong>TERM</strong>. This command should be included in everyone's .profile after the environmental variable <strong>TERM</strong> has been exported, as illustrated on the <a href='/5/profile'>profile</a>(5) manual page.</p>
+</dd>
+<dt><strong>tput -T5620 reset</strong></dt>
+<dd><p>Reset an AT&amp;T 5620 terminal, overriding the type of terminal in the environmental variable <strong>TERM</strong>.</p>
+</dd>
+<dt><strong>tput cup 0 0</strong></dt>
+<dd><p>Send the sequence to move the cursor to row <strong>0</strong>, column <strong>0</strong> (the upper left corner of the screen, usually known as the home cursor position).</p>
+</dd>
+<dt><strong>tput clear</strong></dt>
+<dd><p>Echo the clear-screen sequence for the current terminal.</p>
+</dd>
+<dt><strong>tput cols</strong></dt>
+<dd><p>Print the number of columns for the current terminal.</p>
+</dd>
+<dt><strong>tput -T450 cols</strong></dt>
+<dd><p>Print the number of columns for the 450 terminal.</p>
+</dd>
+<dt><strong>bold=`tput smso` offbold=`tput rmso`</strong></dt>
+<dd><p>Set the shell variables <strong>bold</strong>, to begin stand-out mode sequence, and <strong>offbold</strong>, to end standout mode sequence, for the current terminal. This might be followed by a prompt: <strong>echo "${bold}Please type in your name: ${offbold}\c"</strong></p>
+</dd>
+<dt><strong>tput hc</strong></dt>
+<dd><p>Set exit code to indicate if the current terminal is a hard copy terminal.</p>
+</dd>
+<dt><strong>tput cup 23 4</strong></dt>
+<dd><p>Send the sequence to move the cursor to row 23, column 4.</p>
+</dd>
+<dt><strong>tput cup</strong></dt>
+<dd><p>Send the terminfo string for cursor-movement, with no parameters substituted.</p>
+</dd>
+<dt><strong>tput longname</strong></dt>
+<dd><p>Print the long name from the <strong>terminfo</strong> database for the type of terminal specified in the environmental variable <strong>TERM</strong>.</p>
+</dd>
+</dl>
+<blockquote>
+<p><strong>tput -S &lt;&lt;!</strong><br/>
+<strong>&gt; clear</strong><br/>
+<strong>&gt; cup 10 10</strong><br/>
+<strong>&gt; bold</strong><br/>
+<strong>&gt; !</strong></p>
+</blockquote>
+<dl>
+<dt>This example shows <strong>tput</strong> processing several capabilities</dt>
+<dd><p>in one invocation. It clears the screen, moves the cursor to position 10, 10 and turns on bold (extra bright) mode. The list is terminated by an exclamation mark (<strong>!</strong>) on a line by itself.</p>
+</dd>
+</dl>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><strong>/etc/terminfo</strong></dt>
+<dd><p>compiled terminal description database</p>
+</dd>
+<dt><strong>/usr/share/tabset/*</strong></dt>
+<dd><p>tab settings for some terminals, in a format appropriate to be output to the terminal (escape sequences that set margins and tabs); for more information, see the <code>Tabs and Initialization</code>, section of <a href='/5/terminfo'>terminfo</a>(5)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='exit-codes'><a href='#exit-codes'>EXIT CODES</a></h1><div data-for='exit-codes' data-hide><div class='section' data-for='exit-codes'><div data-more>
+<p>If the <strong>-S</strong> option is used, <strong>tput</strong> checks for errors from each line, and if any errors are found, will set the exit code to 4 plus the number of lines with errors. If no errors are found, the exit code is <strong>0</strong>. No indication of which line failed can be given so exit code <strong>1</strong> will never appear. Exit codes <strong>2</strong>, <strong>3</strong>, and <strong>4</strong> retain their usual interpretation. If the <strong>-S</strong> option is not used, the exit code depends on the type of <code>capname</code>:</p>
+<blockquote>
+<dl>
+<dt><code>boolean</code></dt>
+<dd><p>a value of <strong>0</strong> is set for TRUE and <strong>1</strong> for FALSE.</p>
+</dd>
+<dt><code>string</code></dt>
+<dd><p>a value of <strong>0</strong> is set if the <code>capname</code> is defined for this terminal <code>type</code> (the value of <code>capname</code> is returned on standard output); a value of <strong>1</strong> is set if <code>capname</code> is not defined for this terminal <code>type</code> (nothing is written to standard output).</p>
+</dd>
+<dt><code>integer</code></dt>
+<dd><p>a value of <strong>0</strong> is always set, whether or not <code>capname</code> is defined for this terminal <code>type</code>. To determine if <code>capname</code> is defined for this terminal <code>type</code>, the user must test the value written to standard output. A value of <strong>-1</strong> means that <code>capname</code> is not defined for this terminal <code>type</code>.</p>
+</dd>
+<dt><code>other</code></dt>
+<dd><p><strong>reset</strong> or <strong>init</strong> may fail to find their respective files. In that case, the exit code is set to 4 + <strong>errno</strong>.</p>
+</dd>
+</dl>
+</blockquote>
+<p>Any other exit code indicates an error; see the DIAGNOSTICS section.</p>
+</div></div></div><h1 id='diagnostics'><a href='#diagnostics'>DIAGNOSTICS</a></h1><div data-for='diagnostics' data-hide><div class='section' data-for='diagnostics'><div data-more>
+<p><strong>tput</strong> prints the following error messages and sets the corresponding exit codes.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">exit code</th>
+<th style="text-align: left;">error message</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>0</strong></td>
+<td style="text-align: left;">(<code>capname</code> is a numeric variable that is not specified in the <a href='/5/terminfo'>terminfo</a>(5) database for this terminal type, e.g. <strong>tput -T450 lines</strong> and <strong>tput -Thp2621 xmc</strong>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>1</strong></td>
+<td style="text-align: left;">no error message is printed, see the <strong>EXIT CODES</strong> section.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;">usage error</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;">unknown terminal <code>type</code> or no <strong>terminfo</strong> database</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>4</strong></td>
+<td style="text-align: left;">unknown <strong>terminfo</strong> capability <code>capname</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>&gt;4</strong></td>
+<td style="text-align: left;">error occurred in -S</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">=</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>The <strong>tput</strong> command was begun by Bill Joy in 1980. The initial version only cleared the screen.</p>
+<p>AT&amp;T System V provided a different <strong>tput</strong> command:</p>
+<ul>
+<li><p>SVr2 provided a rudimentary <strong>tput</strong> which checked the parameter against each predefined capability and returned the corresponding value. This version of <strong>tput</strong> did not use <strong>tparm</strong>(3X) for the capabilities which are parameterized.</p></li>
+<li><p>SVr3 replaced that, a year later, by a more extensive program whose <strong>init</strong> and <strong>reset</strong> subcommands (more than half the program) were incorporated from the <strong>reset</strong> feature of BSD <strong>tset</strong> written by Eric Allman.</p></li>
+<li><p>SVr4 added color initialization using the <code>orig_colors</code> and <code>orig_pairs</code> capabilities in the <strong>init</strong> subcommand.</p></li>
+</ul>
+<p>Keith Bostic replaced the BSD <strong>tput</strong> command in 1989 with a new implementation based on the AT&amp;T System V program <strong>tput</strong>. Like the AT&amp;T program, Bostic's version accepted some parameters named for <code>terminfo capabilities</code> (<strong>clear</strong>, <strong>init</strong>, <strong>longname</strong> and <strong>reset</strong>). However (because he had only termcap available), it accepted <code>termcap names</code> for other capabilities. Also, Bostic's BSD <strong>tput</strong> did not modify the terminal I/O modes as the earlier BSD <strong>tset</strong> had done.</p>
+<p>At the same time, Bostic added a shell script named clear, which used <strong>tput</strong> to clear the screen.</p>
+<p>Both of these appeared in 4.4BSD, becoming the modern BSD implementation of <strong>tput</strong>.</p>
+<p>This implementation of <strong>tput</strong> began from a different source than AT&amp;T or BSD: Ross Ridge's <code>mytinfo</code> package, published on <code>comp.sources.unix</code> in December 1992. Ridge's program made more sophisticated use of the terminal capabilities than the BSD program. Eric Raymond used that <strong>tput</strong> program (and other parts of <code>mytinfo</code>) in ncurses in June 1995. Using the portions dealing with terminal capabilities almost without change, Raymond made improvements to the way the command-line parameters were handled.</p>
+</div></div></div><h1 id='portability'><a href='#portability'>PORTABILITY</a></h1><div data-for='portability' data-hide><div class='section' data-for='portability'><div data-more>
+<p>This implementation of <strong>tput</strong> differs from AT&amp;T <strong>tput</strong> in two important areas:</p>
+<ul>
+<li><p><strong>tput</strong> <code>capname</code> writes to the standard output. That need not be a regular terminal. However, the subcommands which manipulate terminal modes may not use the standard output.</p>
+<p>The AT&amp;T implementation's <strong>init</strong> and <strong>reset</strong> commands use the BSD (4.1c) <strong>tset</strong> source, which manipulates terminal modes. It successively tries standard output, standard error, standard input before falling back to /dev/tty and finally just assumes a 1200Bd terminal. When updating terminal modes, it ignores errors.</p>
+<p>Until changes made after ncurses 6.0, <strong>tput</strong> did not modify terminal modes. <strong>tput</strong> now uses a similar scheme, using functions shared with <strong>tset</strong> (and ultimately based on the 4.4BSD <strong>tset</strong>). If it is not able to open a terminal, e.g., when running in <strong>cron</strong>, <strong>tput</strong> will return an error.</p></li>
+<li><p>AT&amp;T <strong>tput</strong> guesses the type of its <code>capname</code> operands by seeing if all of the characters are numeric, or not.</p>
+<p>Most implementations which provide support for <code>capname</code> operands use the <code>tparm</code> function to expand parameters in it. That function expects a mixture of numeric and string parameters, requiring <strong>tput</strong> to know which type to use.</p>
+<p>This implementation uses a table to determine the parameter types for the standard <code>capname</code> operands, and an internal library function to analyze nonstandard <code>capname</code> operands.</p>
+<p>Besides providing more reliable operation than AT&amp;T's utility, a portability problem is introduced by this analysis: An OpenBSD developer adapted the internal library function from ncurses to port NetBSD's termcap-based <strong>tput</strong> to terminfo. That had been modified to interpret multiple commands on a line. Portable applications should not rely upon this feature; ncurses provides it to support applications written specifically for OpenBSD.</p></li>
+</ul>
+<p>This implementation (unlike others) can accept both <code>termcap</code> and <code>terminfo</code> names for the <code>capname</code> feature, if <code>termcap</code> support is compiled in. However, the predefined <code>termcap</code> and <code>terminfo</code> names have two ambiguities in this case (and the <code>terminfo</code> name is assumed):</p>
+<ul>
+<li><p>The <code>termcap</code> name <strong>dl</strong> corresponds to the <code>terminfo</code> name <strong>dl1</strong> (delete one line).<br/>
+The <code>terminfo</code> name <strong>dl</strong> corresponds to the <code>termcap</code> name <strong>DL</strong> (delete a given number of lines).</p></li>
+<li><p>The <code>termcap</code> name <strong>ed</strong> corresponds to the <code>terminfo</code> name <strong>rmdc</strong> (end delete mode).<br/>
+The <code>terminfo</code> name <strong>ed</strong> corresponds to the <code>termcap</code> name <strong>cd</strong> (clear to end of screen).</p></li>
+</ul>
+<p>The <strong>longname</strong> and <strong>-S</strong> options, and the parameter-substitution features used in the <strong>cup</strong> example, were not supported in BSD curses before 4.3reno (1989) or in AT&amp;T/USL curses before SVr4 (1988).</p>
+<p>IEEE Std 1003.1/The Open Group Base Specifications Issue 7 (POSIX.1-2008) documents only the operands for <strong>clear</strong>, <strong>init</strong> and <strong>reset</strong>. There are a few interesting observations to make regarding that:</p>
+<ul>
+<li><p>In this implementation, <strong>clear</strong> is part of the <code>capname</code> support. The others (<strong>init</strong> and <strong>longname</strong>) do not correspond to terminal capabilities.</p></li>
+<li><p>Other implementations of <strong>tput</strong> on SVr4-based systems such as Solaris, IRIX64 and HPUX as well as others such as AIX and Tru64 provide support for <code>capname</code> operands.</p></li>
+<li><p>A few platforms such as FreeBSD recognize termcap names rather than terminfo capability names in their respective <strong>tput</strong> commands. Since 2010, NetBSD's <strong>tput</strong> uses terminfo names. Before that, it (like FreeBSD) recognized termcap names.</p>
+<p>Beginning in 2021, FreeBSD uses the ncurses <strong>tput</strong>, configured for both terminfo (tested first) and termcap (as a fallback).</p></li>
+</ul>
+<p>Because (apparently) <code>all</code> of the certified Unix systems support the full set of capability names, the reasoning for documenting only a few may not be apparent.</p>
+<ul>
+<li><p>X/Open Curses Issue 7 documents <strong>tput</strong> differently, with <code>capname</code> and the other features used in this implementation.</p></li>
+<li><p>That is, there are two standards for <strong>tput</strong>: POSIX (a subset) and X/Open Curses (the full implementation). POSIX documents a subset to avoid the complication of including X/Open Curses and the terminal capabilities database.</p></li>
+<li><p>While it is certainly possible to write a <strong>tput</strong> program without using curses, none of the systems which have a curses implementation provide a <strong>tput</strong> utility which does not provide the <code>capname</code> feature.</p></li>
+</ul>
+<p>X/Open Curses Issue 7 (2009) is the first version to document utilities. However that part of X/Open Curses does not follow existing practice (i.e., Unix features documented in SVID 3):</p>
+<ul>
+<li><p>It assigns exit code 4 to invalid operand, which may be the same as <code>unknown capability</code>. For instance, the source code for Solaris' xcurses uses the term invalid in this case.</p></li>
+<li><p>It assigns exit code 255 to a numeric variable that is not specified in the terminfo database. That likely is a documentation error, confusing the <strong>-1</strong> written to the standard output for an absent or cancelled numeric value versus an (unsigned) exit code.</p></li>
+</ul>
+<p>The various Unix systems (AIX, HPUX, Solaris) use the same exit-codes as ncurses.</p>
+<p>NetBSD curses documents different exit codes which do not correspond to either ncurses or X/Open.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/clear'>clear</a>(1), <a href='/1/stty'>stty</a>(1), <a href='/1/tabs'>tabs</a>(1), <a href='/1/tset'>tset</a>(1), <strong>termcap</strong>(3NCURSES), <a href='/5/terminfo'>terminfo</a>(5).</p>
+<p>This describes <strong>ncurses</strong> version 6.3 (patch 20211021).</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

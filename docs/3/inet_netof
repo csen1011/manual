@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>inet_aton, inet_addr, inet_network, inet_ntoa, inet_makeaddr, inet_lnaof, inet_netof - Internet address manipulation routines</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/socket.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;netinet/in.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;arpa/inet.h&gt;</a>
+
+int inet_aton(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>cp, struct in_addr *inp);
+
+in_addr_t inet_addr(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>cp);
+
+in_addr_t inet_network(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>cp);
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>inet_ntoa(struct in_addr in);
+
+struct in_addr inet_makeaddr(in_addr_t net, in_addr_t host);
+
+in_addr_t inet_lnaof(struct in_addr in);
+
+in_addr_t inet_netof(struct in_addr in);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='inet_aton'>inet_aton</a>(), <a href='inet_ntoa'>inet_ntoa</a>():</p>
+<pre><code>    Since glibc 2.19:
+        _DEFAULT_SOURCE
+    In glibc up to and including 2.19:
+        _BSD_SOURCE || _BSD_SOURCE</code></pre>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='inet_aton'>inet_aton</a>() converts the Internet host address <code>cp</code> from the IPv4 numbers-and-dots notation into binary form (in network byte order) and stores it in the structure that <code>inp</code> points to. <a href='inet_aton'>inet_aton</a>() returns nonzero if the address is valid, zero if not. The address supplied in <code>cp</code> can have one of the following forms:</p>
+<dl>
+<dt><code>a.b.c.d</code></dt>
+<dd><p>Each of the four numeric parts specifies a byte of the address; the bytes are assigned in left-to-right order to produce the binary address.</p>
+</dd>
+<dt><code>a.b.c</code></dt>
+<dd><p>Parts <code>a</code> and <code>b</code> specify the first two bytes of the binary address. Part <code>c</code> is interpreted as a 16-bit value that defines the rightmost two bytes of the binary address. This notation is suitable for specifying (outmoded) Class B network addresses.</p>
+</dd>
+<dt><code>a.b</code></dt>
+<dd><p>Part <code>a</code> specifies the first byte of the binary address. Part <code>b</code> is interpreted as a 24-bit value that defines the rightmost three bytes of the binary address. This notation is suitable for specifying (outmoded) Class A network addresses.</p>
+</dd>
+<dt><code>a</code></dt>
+<dd><p>The value <code>a</code> is interpreted as a 32-bit value that is stored directly into the binary address without any byte rearrangement.</p>
+</dd>
+</dl>
+<p>In all of the above forms, components of the dotted address can be specified in decimal, octal (with a leading <code>0</code>), or hexadecimal, with a leading <code>0X</code>). Addresses in any of these forms are collectively termed <code>IPV4 numbers-and-dots notation</code>. The form that uses exactly four decimal numbers is referred to as <code>IPv4 dotted-decimal notation</code> (or sometimes: <code>IPv4 dotted-quad notation</code>).</p>
+<p><a href='inet_aton'>inet_aton</a>() returns 1 if the supplied string was successfully interpreted, or 0 if the string is invalid (<strong>errno</strong> is <code>not</code> set on error).</p>
+<p>The <a href='inet_addr'>inet_addr</a>() function converts the Internet host address <code>cp</code> from IPv4 numbers-and-dots notation into binary data in network byte order. If the input is invalid, <strong>INADDR_NONE</strong> (usually -1) is returned. Use of this function is problematic because -1 is a valid address (255.255.255.255). Avoid its use in favor of <a href='inet_aton'>inet_aton</a>(), <a href='/3/inet_pton'>inet_pton</a>(3), or <a href='/3/getaddrinfo'>getaddrinfo</a>(3), which provide a cleaner way to indicate error return.</p>
+<p>The <a href='inet_network'>inet_network</a>() function converts <code>cp</code>, a string in IPv4 numbers-and-dots notation, into a number in host byte order suitable for use as an Internet network address. On success, the converted address is returned. If the input is invalid, -1 is returned.</p>
+<p>The <a href='inet_ntoa'>inet_ntoa</a>() function converts the Internet host address <code>in</code>, given in network byte order, to a string in IPv4 dotted-decimal notation. The string is returned in a statically allocated buffer, which subsequent calls will overwrite.</p>
+<p>The <a href='inet_lnaof'>inet_lnaof</a>() function returns the local network address part of the Internet address <code>in</code>. The returned value is in host byte order.</p>
+<p>The <a href='inet_netof'>inet_netof</a>() function returns the network number part of the Internet address <code>in</code>. The returned value is in host byte order.</p>
+<p>The <a href='inet_makeaddr'>inet_makeaddr</a>() function is the converse of <a href='inet_netof'>inet_netof</a>() and <a href='inet_lnaof'>inet_lnaof</a>(). It returns an Internet host address in network byte order, created by combining the network number <code>net</code> with the local address <code>host</code>, both in host byte order.</p>
+<p>The structure <code>in_addr</code> as used in <a href='inet_ntoa'>inet_ntoa</a>(), <a href='inet_makeaddr'>inet_makeaddr</a>(), <a href='inet_lnaof'>inet_lnaof</a>(), and <a href='inet_netof'>inet_netof</a>() is defined in <code>&lt;netinet/in.h&gt;</code> as:</p>
+<pre><code>typedef uint32_t in_addr_t;
+
+struct in_addr {
+    in_addr_t s_addr;
+};</code></pre>
+</div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='inet_aton'>inet_aton</a>(), <a href='inet_addr'>inet_addr</a>(),<br/>
+<a href='inet_network'>inet_network</a>(), <a href='inet_ntoa'>inet_ntoa</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='inet_makeaddr'>inet_makeaddr</a>(), <a href='inet_lnaof'>inet_lnaof</a>(),<br/>
+<a href='inet_netof'>inet_netof</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='inet_addr'>inet_addr</a>(), <a href='inet_ntoa'>inet_ntoa</a>(): POSIX.1-2001, POSIX.1-2008, 4.3BSD.</p>
+<p><a href='inet_aton'>inet_aton</a>() is not specified in POSIX.1, but is available on most systems.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>On x86 architectures, the host byte order is Least Significant Byte first (little endian), whereas the network byte order, as used on the Internet, is Most Significant Byte first (big endian).</p>
+<p><a href='inet_lnaof'>inet_lnaof</a>(), <a href='inet_netof'>inet_netof</a>(), and <a href='inet_makeaddr'>inet_makeaddr</a>() are legacy functions that assume they are dealing with <code>classful network addresses</code>. Classful networking divides IPv4 network addresses into host and network components at byte boundaries, as follows:</p>
+<dl>
+<dt>Class A</dt>
+<dd><p>This address type is indicated by the value 0 in the most significant bit of the (network byte ordered) address. The network address is contained in the most significant byte, and the host address occupies the remaining three bytes.</p>
+</dd>
+<dt>Class B</dt>
+<dd><p>This address type is indicated by the binary value 10 in the most significant two bits of the address. The network address is contained in the two most significant bytes, and the host address occupies the remaining two bytes.</p>
+</dd>
+<dt>Class C</dt>
+<dd><p>This address type is indicated by the binary value 110 in the most significant three bits of the address. The network address is contained in the three most significant bytes, and the host address occupies the remaining byte.</p>
+</dd>
+</dl>
+<p>Classful network addresses are now obsolete, having been superseded by Classless Inter-Domain Routing (CIDR), which divides addresses into network and host components at arbitrary bit (rather than byte) boundaries.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>An example of the use of <a href='inet_aton'>inet_aton</a>() and <a href='inet_ntoa'>inet_ntoa</a>() is shown below. Here are some example runs:</p>
+<pre><code>$ ./a.out 226.000.000.037 # Last byte is in octal
+226.0.0.31
+$ ./a.out 0x7f.1  # First byte is in hex
+127.0.0.1</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _BSD_SOURCE
+#include &lt;arpa/inet.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct in_addr addr;
+
+    if (argc != 2) {
+        fprintf(stderr, "%s &lt;dotted-address&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (inet_aton(argv[1], &amp;addr) == 0) {
+        fprintf(stderr, "Invalid address\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%s\n", inet_ntoa(addr));
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/byteorder'>byteorder</a>(3), <a href='/3/getaddrinfo'>getaddrinfo</a>(3), <a href='/3/gethostbyname'>gethostbyname</a>(3), <a href='/3/getnameinfo'>getnameinfo</a>(3), <a href='/3/getnetent'>getnetent</a>(3), <a href='/3/inet_net_pton'>inet_net_pton</a>(3), <a href='/3/inet_ntop'>inet_ntop</a>(3), <a href='/3/inet_pton'>inet_pton</a>(3), <a href='/5/hosts'>hosts</a>(5), <a href='/5/networks'>networks</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>du - estimate file space usage</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>du</strong> [<code>OPTION</code>]... [<code>FILE</code>]...<br/>
+<strong>du</strong> [<code>OPTION</code>]... <code>--files0-from=F</code></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Summarize disk usage of the set of FILEs, recursively for directories.</p>
+<p>Mandatory arguments to long options are mandatory for short options too.</p>
+<dl>
+<dt><strong>-0</strong>, <strong>--null</strong></dt>
+<dd><p>end each output line with NUL, not newline</p>
+</dd>
+<dt><strong>-a</strong>, <strong>--all</strong></dt>
+<dd><p>write counts for all files, not just directories</p>
+</dd>
+<dt><strong>--apparent-size</strong></dt>
+<dd><p>print apparent sizes, rather than disk usage; although the apparent size is usually smaller, it may be larger due to holes in ('sparse') files, internal fragmentation, indirect blocks, and the like</p>
+</dd>
+<dt><strong>-B</strong>, <strong>--block-size</strong>=<code>SIZE</code></dt>
+<dd><p>scale sizes by SIZE before printing them; e.g., '-BM' prints sizes in units of 1,048,576 bytes; see SIZE format below</p>
+</dd>
+<dt><strong>-b</strong>, <strong>--bytes</strong></dt>
+<dd><p>equivalent to '--apparent-size <strong>--block-size</strong>=<code>1</code>'</p>
+</dd>
+<dt><strong>-c</strong>, <strong>--total</strong></dt>
+<dd><p>produce a grand total</p>
+</dd>
+<dt><strong>-D</strong>, <strong>--dereference-args</strong></dt>
+<dd><p>dereference only symlinks that are listed on the command line</p>
+</dd>
+<dt><strong>-d</strong>, <strong>--max-depth</strong>=<code>N</code></dt>
+<dd><p>print the total for a directory (or file, with <strong>--all</strong>) only if it is N or fewer levels below the command line argument; <strong>--max-depth</strong>=<code>0</code> is the same as <strong>--summarize</strong></p>
+</dd>
+<dt><strong>--files0-from</strong>=<code>F</code></dt>
+<dd><p>summarize disk usage of the NUL-terminated file names specified in file F; if F is -, then read names from standard input</p>
+</dd>
+<dt><strong>-H</strong></dt>
+<dd><p>equivalent to <strong>--dereference-args</strong> (<strong>-D</strong>)</p>
+</dd>
+<dt><strong>-h</strong>, <strong>--human-readable</strong></dt>
+<dd><p>print sizes in human readable format (e.g., 1K 234M 2G)</p>
+</dd>
+<dt><strong>--inodes</strong></dt>
+<dd><p>list inode usage information instead of block usage</p>
+</dd>
+<dt><strong>-k</strong></dt>
+<dd><p>like <strong>--block-size</strong>=<code>1K</code></p>
+</dd>
+<dt><strong>-L</strong>, <strong>--dereference</strong></dt>
+<dd><p>dereference all symbolic links</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--count-links</strong></dt>
+<dd><p>count sizes many times if hard linked</p>
+</dd>
+<dt><strong>-m</strong></dt>
+<dd><p>like <strong>--block-size</strong>=<code>1M</code></p>
+</dd>
+<dt><strong>-P</strong>, <strong>--no-dereference</strong></dt>
+<dd><p>don't follow any symbolic links (this is the default)</p>
+</dd>
+<dt><strong>-S</strong>, <strong>--separate-dirs</strong></dt>
+<dd><p>for directories do not include size of subdirectories</p>
+</dd>
+<dt><strong>--si</strong></dt>
+<dd><p>like <strong>-h</strong>, but use powers of 1000 not 1024</p>
+</dd>
+<dt><strong>-s</strong>, <strong>--summarize</strong></dt>
+<dd><p>display only a total for each argument</p>
+</dd>
+<dt><strong>-t</strong>, <strong>--threshold</strong>=<code>SIZE</code></dt>
+<dd><p>exclude entries smaller than SIZE if positive, or entries greater than SIZE if negative</p>
+</dd>
+<dt><strong>--time</strong></dt>
+<dd><p>show time of the last modification of any file in the directory, or any of its subdirectories</p>
+</dd>
+<dt><strong>--time</strong>=<code>WORD</code></dt>
+<dd><p>show time as WORD instead of modification time: atime, access, use, ctime or status</p>
+</dd>
+<dt><strong>--time-style</strong>=<code>STYLE</code></dt>
+<dd><p>show times using STYLE, which can be: full-iso, long-iso, iso, or +FORMAT; FORMAT is interpreted like in 'date'</p>
+</dd>
+<dt><strong>-X</strong>, <strong>--exclude-from</strong>=<code>FILE</code></dt>
+<dd><p>exclude files that match any pattern in FILE</p>
+</dd>
+<dt><strong>--exclude</strong>=<code>PATTERN</code></dt>
+<dd><p>exclude files that match PATTERN</p>
+</dd>
+<dt><strong>-x</strong>, <strong>--one-file-system</strong></dt>
+<dd><p>skip directories on different file systems</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<p>Display values are in units of the first available SIZE from <strong>--block-size</strong>, and the DU_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables. Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).</p>
+<p>The SIZE argument is an integer and optional unit (example: 10K is 10*1024). Units are K,M,G,T,P,E,Z,Y (powers of 1024) or KB,MB,... (powers of 1000). Binary prefixes can be used, too: KiB=K, MiB=M, and so on.</p>
+</div></div><h1 id='patterns'><a href='#patterns'>PATTERNS</a></h1><div data-for='patterns' data-hide><div class='section' data-for='patterns'><div data-more>
+<p>PATTERN is a shell pattern (not a regular expression). The pattern <strong>?</strong> matches any one character, whereas <strong>*</strong> matches any string (composed of zero, one or multiple characters). For example, <strong>*.o</strong> will match any files whose names end in <strong>.o</strong>. Therefore, the command</p>
+<blockquote>
+<p><strong>du --exclude='*.o'</strong></p>
+</blockquote>
+<p>will skip all files and subdirectories ending in <strong>.o</strong> (including the file <strong>.o</strong> itself).</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by Torbjorn Granlund, David MacKenzie, Paul Eggert, and Jim Meyering.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>GNU coreutils online help: &lt;<a href="https://www.gnu.org/software/coreutils/&amp;gt;">https://www.gnu.org/software/coreutils/&gt;</a><br/>
+Report any translation bugs to &lt;<a href="https://translationproject.org/team/&amp;gt;">https://translationproject.org/team/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2020 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>Full documentation &lt;<a href="https://www.gnu.org/software/coreutils/du&amp;gt;">https://www.gnu.org/software/coreutils/du&gt;</a><br/>
+or available locally via: info '(coreutils) du invocation'</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

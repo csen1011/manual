@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>org.freedesktop.machine1 - The D-Bus interface of systemd-machined</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p><a href='/8/systemd-machined.service'>systemd-machined.service</a>(8) is a system service that keeps track of locally running virtual machines and containers. This page describes the D-Bus interface.</p>
+</div></div></div><h1 id='the-manager-object'><a href='#the-manager-object'>THE MANAGER OBJECT</a></h1><div data-for='the-manager-object' data-hide><div class='section' data-for='the-manager-object'><div data-more>
+<p>The service exposes the following interfaces on the Manager object on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/machine1 {
+  interface org.freedesktop.machine1.Manager {
+    methods:
+      GetMachine(in  s name,
+                 out o machine);
+      GetImage(in  s name,
+               out o image);
+      GetMachineByPID(in  u pid,
+                      out o machine);
+      ListMachines(out a(ssso) machines);
+      ListImages(out a(ssbttto) images);
+      CreateMachine(in  s name,
+                    in  ay id,
+                    in  s service,
+                    in  s class,
+                    in  u leader,
+                    in  s root_directory,
+                    in  a(sv) scope_properties,
+                    out o path);
+      CreateMachineWithNetwork(in  s name,
+                               in  ay id,
+                               in  s service,
+                               in  s class,
+                               in  u leader,
+                               in  s root_directory,
+                               in  ai ifindices,
+                               in  a(sv) scope_properties,
+                               out o path);
+      RegisterMachine(in  s name,
+                      in  ay id,
+                      in  s service,
+                      in  s class,
+                      in  u leader,
+                      in  s root_directory,
+                      out o path);
+      RegisterMachineWithNetwork(in  s name,
+                                 in  ay id,
+                                 in  s service,
+                                 in  s class,
+                                 in  u leader,
+                                 in  s root_directory,
+                                 in  ai ifindices,
+                                 out o path);
+      UnregisterMachine(in  s name);
+      TerminateMachine(in  s id);
+      KillMachine(in  s name,
+                  in  s who,
+                  in  i signal);
+      GetMachineAddresses(in  s name,
+                          out a(iay) addresses);
+      GetMachineOSRelease(in  s name,
+                          out a{ss} fields);
+      OpenMachinePTY(in  s name,
+                     out h pty,
+                     out s pty_path);
+      OpenMachineLogin(in  s name,
+                       out h pty,
+                       out s pty_path);
+      OpenMachineShell(in  s name,
+                       in  s user,
+                       in  s path,
+                       in  as args,
+                       in  as environment,
+                       out h pty,
+                       out s pty_path);
+      BindMountMachine(in  s name,
+                       in  s source,
+                       in  s destination,
+                       in  b read_only,
+                       in  b mkdir);
+      CopyFromMachine(in  s name,
+                      in  s source,
+                      in  s destination);
+      CopyToMachine(in  s name,
+                    in  s source,
+                    in  s destination);
+      OpenMachineRootDirectory(in  s name,
+                               out h fd);
+      GetMachineUIDShift(in  s name,
+                         out u shift);
+      RemoveImage(in  s name);
+      RenameImage(in  s name,
+                  in  s new_name);
+      CloneImage(in  s name,
+                 in  s new_name,
+                 in  b read_only);
+      MarkImageReadOnly(in  s name,
+                        in  b read_only);
+      GetImageHostname(in  s name,
+                       out s hostname);
+      GetImageMachineID(in  s name,
+                        out ay id);
+      GetImageMachineInfo(in  s name,
+                          out a{ss} machine_info);
+      GetImageOSRelease(in  s name,
+                        out a{ss} os_release);
+      SetPoolLimit(in  t size);
+      SetImageLimit(in  s name,
+                    in  t size);
+      CleanPool(in  s mode,
+                out a(st) images);
+      MapFromMachineUser(in  s name,
+                         in  u uid_inner,
+                         out u uid_outer);
+      MapToMachineUser(in  u uid_outer,
+                       out s machine_name,
+                       out o machine_path,
+                       out u uid_inner);
+      MapFromMachineGroup(in  s name,
+                          in  u gid_inner,
+                          out u gid_outer);
+      MapToMachineGroup(in  u gid_outer,
+                        out s machine_name,
+                        out o machine_path,
+                        out u gid_inner);
+    signals:
+      MachineNew(s machine,
+                 o path);
+      MachineRemoved(s machine,
+                     o path);
+    properties:
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s PoolPath = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t PoolUsage = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly t PoolLimit = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p><strong>GetMachine()</strong> may be used to get the machine object path for the machine with the specified name. Similarly, <strong>GetMachineByPID()</strong> gets the machine object the specified PID belongs to if there is any.</p>
+<p><strong>GetImage()</strong> may be used to get the image object path of the image with the specified name.</p>
+<p><strong>ListMachines()</strong> returns an array of all currently registered machines. The structures in the array consist of the following fields: machine name, machine class, an identifier for the service that registered the machine and the machine object path.</p>
+<p><strong>ListImages()</strong> returns an array of all currently known images. The structures in the array consist of the following fields: image name, type, read-only flag, creation time, modification time, current disk space, and image object path.</p>
+<p><strong>CreateMachine()</strong> may be used to register a new virtual machine or container with <strong>systemd-machined</strong>, creating a scope unit for it. It accepts the following arguments: a machine name chosen by the registrar, an optional UUID as a 32 byte array, a string that identifies the service that registers the machine, a class string, the PID of the leader process of the machine, an optional root directory of the container, and an array of additional properties to use for the scope registration. The virtual machine name must be suitable as a hostname, and hence should follow the usual DNS hostname rules, as well as the Linux hostname restrictions. Specifically, only 7 bit ASCII is permitted, a maximum length of 64 characters is enforced, only characters from the set "a-zA-Z0-9-_." are allowed, the name may not begin with a dot, and it may not contain two dots immediately following each other. Container and VM managers should ideally use the hostname used internally in the machine for this parameter. This recommendation is made in order to make the machine name naturally resolvable using <a href='/8/nss-mymachines'>nss-mymachines</a>(8). If a container manager needs to embed characters outside of the indicated range, escaping is required, possibly using "_" as the escape character. Another (somewhat natural) option would be to utilize Internet IDNA encoding. The UUID is passed as a 32 byte array or, if no suitable UUID is available, an empty array (zero length) or zeroed out array shall be passed. The UUID should identify the virtual machine/container uniquely and should ideally be the same UUID that /etc/machine-id in the VM/container is initialized from. The service string can be free-form, but it is recommended to pass a short lowercase identifier like "systemd-nspawn", "libvirt-lxc" or similar. The class string should be either "container" or "vm" indicating whether the machine to register is of the respective class. The leader PID should be the host PID of the init process of the container or the encapsulating process of the VM. If the root directory of the container is known and available in the hosts hierarchy, it should be passed. Otherwise, pass the empty string instead. Finally, the scope properties are passed as array in the same way as to PID1s <strong>StartTransientUnit()</strong> method. Calling this method will internally register a transient scope unit for the calling client (utilizing the passed scope_properties) and move the leader PID into it. The method returns an object path for the registered machine object that implements the org.freedesktop.machine1.Machine interface (see below). Also see the <strong>New Control Group Interfaces</strong>[1] for details about scope units and how to alter resource control settings on the created machine at runtime.</p>
+<p><strong>RegisterMachine()</strong> is similar to <strong>CreateMachine()</strong>. However, it only registers a machine and does not create a scope unit for it. Instead, the callers unit is registered. We recommend to only use this method for container or VM managers that are run multiple times, one instance for each container/VM they manage, and are invoked as system services.</p>
+<p><strong>CreateMachineWithNetwork()</strong> and <strong>RegisterMachineWithNetwork()</strong> are similar to <strong>CreateMachine()</strong> and <strong>RegisterMachine()</strong> but take an extra argument: an array of network interface indices that point towards the virtual machine or container. The interface indices should reference one or more network interfaces on the host that can be used to communicate with the guest. Commonly, the passed interface index refers to the host side of a "veth" link (in case of containers), a "tun"/"tap" link (in case of VMs), or the host side of a bridge interface that bridges access to the VM/container interfaces. Specifying this information is useful to enable support for link-local IPv6 communication to the machines since the scope field of sockaddr_in6 can be initialized by the specified ifindex. <a href='/8/nss-mymachines'>nss-mymachines</a>(8) makes use of this information.</p>
+<p><strong>KillMachine()</strong> sends a UNIX signal to the machines processes. As its arguments, it takes a machine name (as originally passed to <strong>CreateMachine()</strong> or returned by <strong>ListMachines()</strong>), an identifier that specifies what precisely to send the signal to (either "leader" or "all"), and a numeric UNIX signal integer.</p>
+<p><strong>TerminateMachine()</strong> terminates a virtual machine, killing its processes. It takes a machine name as its only argument.</p>
+<p><strong>GetMachineAddresses()</strong> retrieves the IP addresses of a container. This method returns an array of pairs consisting of an address family specifier (<strong>AF_INET</strong> or <strong>AF_INET6</strong>) and a byte array containing the addresses. This is only supported for containers that make use of network namespacing.</p>
+<p><strong>GetMachineOSRelease()</strong> retrieves the OS release information of a container. This method returns an array of key value pairs read from the <a href='/5/os-release'>os-release</a>(5) file in the container and is useful to identify the operating system used in a container.</p>
+<p><strong>OpenMachinePTY()</strong> allocates a pseudo TTY in the container and returns a file descriptor and its path. This is equivalent to transitioning into the container and invoking <a href='/3/posix_openpt'>posix_openpt</a>(3).</p>
+<p><strong>OpenMachineLogin()</strong> allocates a pseudo TTY in the container and ensures that a getty login prompt of the container is running on the other end. It returns the file descriptor of the PTY and the PTY path. This is useful for acquiring a pty with a login prompt from the container.</p>
+<p><strong>OpenMachineShell()</strong> allocates a pseudo TTY in the container, as the specified user, and invokes the executable at the specified path with a list of arguments (starting from argv[0]) and an environment block. It then returns the file descriptor of the PTY and the PTY path.</p>
+<p><strong>BindMountMachine()</strong> bind mounts a file or directory from the host into the container. Its arguments consist of a machine name, the source directory on the host, the destination directory in the container, and two booleans, one indicating whether the bind mount shall be read-only, the other indicating whether the destination mount point shall be created first, if it is missing.</p>
+<p><strong>CopyFromMachine()</strong> copies files or directories from a container into the host. It takes a container name, a source directory in the container and a destination directory on the host as arguments. <strong>CopyToMachine()</strong> does the opposite and copies files from a source directory on the host into a destination directory in the container.</p>
+<p><strong>RemoveImage()</strong> removes the image with the specified name.</p>
+<p><strong>RenameImage()</strong> renames the specified image.</p>
+<p><strong>CloneImage()</strong> clones the specified image under a new name. It also takes a boolean argument indicating whether the resulting image shall be read-only or not.</p>
+<p><strong>MarkImageReadOnly()</strong> toggles the read-only flag of an image.</p>
+<p><strong>SetPoolLimit()</strong> sets an overall quota limit on the pool of images.</p>
+<p><strong>SetImageLimit()</strong> sets a per-image quota limit.</p>
+<p><strong>MapFromMachineUser()</strong>, <strong>MapToMachineUser()</strong>, <strong>MapFromMachineGroup()</strong>, and <strong>MapToMachineGroup()</strong> may be used to map UIDs/GIDs from the host user namespace to a container user namespace or vice versa.</p>
+<h2>Signals</h2>
+<p><strong>MachineNew</strong> and <strong>MachineRemoved</strong> are sent whenever a new machine is registered or removed. These signals carry the machine name and the object path to the corresponding org.freedesktop.machine1.Machine interface (see below).</p>
+<h2>Properties</h2>
+<p><code>PoolPath</code> specifies the file system path where images are written to.</p>
+<p><code>PoolUsage</code> specifies the current usage size of the image pool in bytes.</p>
+<p><code>PoolLimit</code> specifies the size limit of the image pool in bytes.</p>
+</div></div></div><h1 id='machine-objects'><a href='#machine-objects'>MACHINE OBJECTS</a></h1><div data-for='machine-objects' data-hide><div class='section' data-for='machine-objects'><div data-more>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/machine1/machine/rawhide {
+  interface org.freedesktop.machine1.Machine {
+    methods:
+      Terminate();
+      Kill(in  s who,
+           in  i signal);
+      GetAddresses(out a(iay) addresses);
+      GetOSRelease(out a{ss} fields);
+      GetUIDShift(out u shift);
+      OpenPTY(out h pty,
+              out s pty_path);
+      OpenLogin(out h pty,
+                out s pty_path);
+      OpenShell(in  s user,
+                in  s path,
+                in  as args,
+                in  as environment,
+                out h pty,
+                out s pty_path);
+      BindMount(in  s source,
+                in  s destination,
+                in  b read_only,
+                in  b mkdir);
+      CopyFrom(in  s source,
+               in  s destination);
+      CopyTo(in  s source,
+             in  s destination);
+      OpenRootDirectory(out h fd);
+    properties:
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Name = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly ay Id = [...];
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly t Timestamp = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly t TimestampMonotonic = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Service = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Unit = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly u Leader = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s Class = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly s RootDirectory = ...;
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+      readonly ai NetworkInterfaces = [...];
+      @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+      readonly s State = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p><strong>Terminate()</strong> and <strong>Kill()</strong> terminate/kill the machine. These methods take the same arguments as <strong>TerminateMachine()</strong> and <strong>KillMachine()</strong> on the Manager interface, respectively.</p>
+<p><strong>GetAddresses()</strong> and <strong>GetOSRelease()</strong> get the IP address and OS release information from the machine. These methods take the same arguments as <strong>GetMachineAddresses()</strong> and <strong>GetMachineOSRelease()</strong> of the Manager interface, respectively.</p>
+<h2>Properties</h2>
+<p><code>Name</code> is the machine name as it was passed in during registration with <strong>CreateMachine()</strong> on the manager object.</p>
+<p><code>Id</code> is the machine UUID.</p>
+<p><code>Timestamp</code> and <code>TimestampMonotonic</code> are the realtime and monotonic timestamps when the virtual machines where created in microseconds since the epoch.</p>
+<p><code>Service</code> contains a short string identifying the registering service as passed in during registration of the machine.</p>
+<p><code>Unit</code> is the systemd scope or service unit name for the machine.</p>
+<p><code>Leader</code> is the PID of the leader process of the machine.</p>
+<p><code>Class</code> is the class of the machine and is either the string "vm" (for real VMs based on virtualized hardware) or "container" (for light-weight userspace virtualization sharing the same kernel as the host).</p>
+<p><code>RootDirectory</code> is the root directory of the container if it is known and applicable or the empty string.</p>
+<p><code>NetworkInterfaces</code> contains an array of network interface indices that point towards the container, the VM or the host. For details about this information see the description of <strong>CreateMachineWithNetwork()</strong> above.</p>
+<p><code>State</code> is the state of the machine and is one of "opening", "running", or "closing". Note that the state machine is not considered part of the API and states might be removed or added without this being considered API breakage.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. Introspect org.freedesktop.machine1.Manager on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.machine1 \
+  --object-path /org/freedesktop/machine1
+      </code></pre>
+<p>.RE</p>
+<p><strong>Example 2. Introspect org.freedesktop.machine1.Machine on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.machine1 \
+  --object-path /org/freedesktop/machine1/machine/rawhide
+      </code></pre>
+<p>.RE</p>
+</div></div><h1 id='versioning'><a href='#versioning'>VERSIONING</a></h1><div data-for='versioning' data-hide><div class='section' data-for='versioning'><div data-more>
+<p>These D-Bus interfaces follow <strong>the usual interface versioning guidelines</strong>[2].</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>New Control Group Interfaces</p>
+<p><a href="https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/">https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/</a></p></li>
+<li><p>the usual interface versioning guidelines</p>
+<p><a href="http://0pointer.de/blog/projects/versioning-dbus.html">http://0pointer.de/blog/projects/versioning-dbus.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

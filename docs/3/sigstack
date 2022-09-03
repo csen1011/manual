@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sigaltstack - set and/or get signal stack context</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;signal.h&gt;</strong></p>
+<p><strong>int sigaltstack(const stack_t *</strong><code>ss</code><strong>, stack_t *</strong><code>old_ss</code><strong>);</strong></p>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='sigaltstack'>sigaltstack</a>():</p>
+<blockquote>
+<p>_XOPEN_SOURCE &gt;= 500 || /* Since glibc 2.12: */ _POSIX_C_SOURCE &gt;= 200809L || /* Glibc versions &lt;= 2.19: */ _BSD_SOURCE</p>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='sigaltstack'>sigaltstack</a>() allows a thread to define a new alternate signal stack and/or retrieve the state of an existing alternate signal stack. An alternate signal stack is used during the execution of a signal handler if the establishment of that handler (see <a href='/2/sigaction'>sigaction</a>(2)) requested it.</p>
+<p>The normal sequence of events for using an alternate signal stack is the following:</p>
+<dl>
+<dt>1.</dt>
+<dd><p>Allocate an area of memory to be used for the alternate signal stack.</p>
+</dd>
+<dt>2.</dt>
+<dd><p>Use <a href='sigaltstack'>sigaltstack</a>() to inform the system of the existence and location of the alternate signal stack.</p>
+</dd>
+<dt>3.</dt>
+<dd><p>When establishing a signal handler using <a href='/2/sigaction'>sigaction</a>(2), inform the system that the signal handler should be executed on the alternate signal stack by specifying the <strong>SA_ONSTACK</strong> flag.</p>
+</dd>
+</dl>
+<p>The <code>ss</code> argument is used to specify a new alternate signal stack, while the <code>old_ss</code> argument is used to retrieve information about the currently established signal stack. If we are interested in performing just one of these tasks, then the other argument can be specified as NULL.</p>
+<p>The <code>stack_t</code> type used to type the arguments of this function is defined as follows:</p>
+<pre><code>typedef struct {
+    void  *ss_sp;     /* Base address of stack */
+    int    ss_flags;  /* Flags */
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> ss_size;   /* Number of bytes in stack */
+} stack_t;</code></pre>
+<p>To establish a new alternate signal stack, the fields of this structure are set as follows:</p>
+<dl>
+<dt><code>ss.ss_flags</code></dt>
+<dd><p>This field contains either 0, or the following flag:</p>
+<dl>
+<dt><strong>SS_AUTODISARM</strong> (since Linux 4.7)</dt>
+<dd><p>Clear the alternate signal stack settings on entry to the signal handler. When the signal handler returns, the previous alternate signal stack settings are restored.</p>
+<p>This flag was added in order make it safe to switch away from the signal handler with <a href='/3/swapcontext'>swapcontext</a>(3). Without this flag, a subsequently handled signal will corrupt the state of the switched-away signal handler. On kernels where this flag is not supported, <a href='sigaltstack'>sigaltstack</a>() fails with the error <strong>EINVAL</strong> when this flag is supplied.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>ss.ss_sp</code></dt>
+<dd><p>This field specifies the starting address of the stack. When a signal handler is invoked on the alternate stack, the kernel automatically aligns the address given in <code>ss.ss_sp</code> to a suitable address boundary for the underlying hardware architecture.</p>
+</dd>
+<dt><code>ss.ss_size</code></dt>
+<dd><p>This field specifies the size of the stack. The constant <strong>SIGSTKSZ</strong> is defined to be large enough to cover the usual size requirements for an alternate signal stack, and the constant <strong>MINSIGSTKSZ</strong> defines the minimum size required to execute a signal handler.</p>
+</dd>
+</dl>
+<p>To disable an existing stack, specify <code>ss.ss_flags</code> as <strong>SS_DISABLE</strong>. In this case, the kernel ignores any other flags in <code>ss.ss_flags</code> and the remaining fields in <code>ss</code>.</p>
+<p>If <code>old_ss</code> is not NULL, then it is used to return information about the alternate signal stack which was in effect prior to the call to <a href='sigaltstack'>sigaltstack</a>(). The <code>old_ss.ss_sp</code> and <code>old_ss.ss_size</code> fields return the starting address and size of that stack. The <code>old_ss.ss_flags</code> may return either of the following values:</p>
+<dl>
+<dt><strong>SS_ONSTACK</strong></dt>
+<dd><p>The thread is currently executing on the alternate signal stack. (Note that it is not possible to change the alternate signal stack if the thread is currently executing on it.)</p>
+</dd>
+<dt><strong>SS_DISABLE</strong></dt>
+<dd><p>The alternate signal stack is currently disabled.</p>
+<p>Alternatively, this value is returned if the thread is currently executing on an alternate signal stack that was established using the <strong>SS_AUTODISARM</strong> flag. In this case, it is safe to switch away from the signal handler with <a href='/3/swapcontext'>swapcontext</a>(3). It is also possible to set up a different alternative signal stack using a further call to <a href='sigaltstack'>sigaltstack</a>().</p>
+</dd>
+<dt><strong>SS_AUTODISARM</strong></dt>
+<dd><p>The alternate signal stack has been marked to be autodisarmed as described above.</p>
+</dd>
+</dl>
+<p>By specifying <code>ss</code> as NULL, and <code>old_ss</code> as a non-NULL value, one can obtain the current settings for the alternate signal stack without changing them.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='sigaltstack'>sigaltstack</a>() returns 0 on success, or -1 on failure with <code>errno</code> set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following code segment demonstrates the use of <a href='sigaltstack'>sigaltstack</a>() (and <a href='/2/sigaction'>sigaction</a>(2)) to install an alternate signal stack that is employed by a handler for the <strong>SIGSEGV</strong> signal:</p>
+<pre><code>stack_t ss;
+
+ss.ss_sp = malloc(SIGSTKSZ);
+if (ss.ss_sp == NULL) {
+    perror("malloc");
+    exit(EXIT_FAILURE);
+}
+
+ss.ss_size = SIGSTKSZ;
+ss.ss_flags = 0;
+if (sigaltstack(&amp;ss, NULL) == -1) {
+    perror("sigaltstack");
+    exit(EXIT_FAILURE);
+}
+
+sa.sa_flags = SA_ONSTACK;
+sa.sa_handler = handler();      /* Address of a signal handler */
+sigemptyset(&amp;sa.sa_mask);
+if (sigaction(SIGSEGV, &amp;sa, NULL) == -1) {
+    perror("sigaction");
+    exit(EXIT_FAILURE);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>Either <code>ss</code> or <code>old_ss</code> is not NULL and points to an area outside of the process's address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>ss</code> is not NULL and the <code>ss_flags</code> field contains an invalid flag.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>The specified size of the new alternate signal stack <code>ss.ss_size</code> was less than <strong>MINSIGSTKSZ</strong>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>An attempt was made to change the alternate signal stack while it was active (i.e., the thread was already executing on the current alternate signal stack).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='sigaltstack'>sigaltstack</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SUSv2, SVr4.</p>
+<p>The <strong>SS_AUTODISARM</strong> flag is a Linux extension.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The most common usage of an alternate signal stack is to handle the <strong>SIGSEGV</strong> signal that is generated if the space available for the standard stack is exhausted: in this case, a signal handler for <strong>SIGSEGV</strong> cannot be invoked on the standard stack; if we wish to handle it, we must use an alternate signal stack.</p>
+<p>Establishing an alternate signal stack is useful if a thread expects that it may exhaust its standard stack. This may occur, for example, because the stack grows so large that it encounters the upwardly growing heap, or it reaches a limit established by a call to <strong>setrlimit(RLIMIT_STACK, &amp;rlim)</strong>. If the standard stack is exhausted, the kernel sends the thread a <strong>SIGSEGV</strong> signal. In these circumstances the only way to catch this signal is on an alternate signal stack.</p>
+<p>On most hardware architectures supported by Linux, stacks grow downward. <a href='sigaltstack'>sigaltstack</a>() automatically takes account of the direction of stack growth.</p>
+<p>Functions called from a signal handler executing on an alternate signal stack will also use the alternate signal stack. (This also applies to any handlers invoked for other signals while the thread is executing on the alternate signal stack.) Unlike the standard stack, the system does not automatically extend the alternate signal stack. Exceeding the allocated size of the alternate signal stack will lead to unpredictable results.</p>
+<p>A successful call to <a href='/2/execve'>execve</a>(2) removes any existing alternate signal stack. A child process created via <a href='/2/fork'>fork</a>(2) inherits a copy of its parent's alternate signal stack settings. The same is also true for a child process created using <a href='/2/clone'>clone</a>(2), unless the clone flags include <strong>CLONE_VM</strong> and do not include <strong>CLONE_VFORK</strong>, in which case any alternate signal stack that was established in the parent is disabled in the child process.</p>
+<p><a href='sigaltstack'>sigaltstack</a>() supersedes the older <a href='sigstack'>sigstack</a>() call. For backward compatibility, glibc also provides <a href='sigstack'>sigstack</a>(). All new applications should be written using <a href='sigaltstack'>sigaltstack</a>().</p>
+<h2>History</h2>
+<p>4.2BSD had a <a href='sigstack'>sigstack</a>() system call. It used a slightly different struct, and had the major disadvantage that the caller had to know the direction of stack growth.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In Linux 2.2 and earlier, the only flag that could be specified in <code>ss.sa_flags</code> was <strong>SS_DISABLE</strong>. In the lead up to the release of the Linux 2.4 kernel, a change was made to allow <a href='sigaltstack'>sigaltstack</a>() to allow <code>ss.ss_flags==SS_ONSTACK</code> with the same meaning as <code>ss.ss_flags==0</code> (i.e., the inclusion of <strong>SS_ONSTACK</strong> in <code>ss.ss_flags</code> is a no-op). On other implementations, and according to POSIX.1, <strong>SS_ONSTACK</strong> appears only as a reported flag in <code>old_ss.ss_flags</code>. On Linux, there is no need ever to specify <strong>SS_ONSTACK</strong> in <code>ss.ss_flags</code>, and indeed doing so should be avoided on portability grounds: various other systems give an error if <strong>SS_ONSTACK</strong> is specified in <code>ss.ss_flags</code>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/execve'>execve</a>(2), <a href='/2/setrlimit'>setrlimit</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/3/siglongjmp'>siglongjmp</a>(3), <a href='/3/sigsetjmp'>sigsetjmp</a>(3), <a href='/7/signal'>signal</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

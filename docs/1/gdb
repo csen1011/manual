@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>gdb - The GNU Debugger</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>gdb [OPTIONS] [<code>prog</code>|<code>prog</code> <code>procID</code>|<code>prog</code> <code>core</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The purpose of a debugger such as GDB is to allow you to see what is going on ``inside'' another program while it executes or what another program was doing at the moment it crashed.</p>
+<p>GDB can do four main kinds of things (plus other things in support of these) to help you catch bugs in the act:</p>
+<ul>
+<li><p>Start your program, specifying anything that might affect its behavior.</p></li>
+<li><p>Make your program stop on specified conditions.</p></li>
+<li><p>Examine what has happened, when your program has stopped.</p></li>
+<li><p>Change things in your program, so you can experiment with correcting the effects of one bug and go on to learn about another.</p></li>
+</ul>
+<p>You can use GDB to debug programs written in C, C++, Fortran and Modula-2.</p>
+<p>GDB is invoked with the shell command <code>gdb</code>. Once started, it reads commands from the terminal until you tell it to exit with the GDB command <code>quit</code> or <code>exit</code>. You can get online help from GDB itself by using the command <code>help</code>.</p>
+<p>You can run <code>gdb</code> with no arguments or options; but the most usual way to start GDB is with one argument or two, specifying an executable program as the argument:</p>
+<p>gdb program</p>
+<p>You can also start with both an executable program and a core file specified:</p>
+<p>gdb program core</p>
+<p>You can, instead, specify a process ID as a second argument or use option <code>-p</code>, if you want to debug a running process:</p>
+<p>gdb program 1234 gdb -p 1234</p>
+<p>would attach GDB to process <code>1234</code>. With option <strong>-p</strong> you can omit the <code>program</code> filename.</p>
+<p>Here are some of the most frequently needed GDB commands:</p>
+<ul>
+<li><p>Set a breakpoint at <code>function</code> or <code>line</code> (in <code>file</code>).</p></li>
+<li><p>Start your program (with <code>arglist</code>, if specified).</p></li>
+<li><p>Backtrace: display the program stack.</p></li>
+<li><p>Display the value of an expression.</p></li>
+</ul>
+<ol start="3" type="a">
+<li><p>Continue running your program (after stopping, e.g. at a breakpoint).</p></li>
+</ol>
+<ul>
+<li><p>Execute next program line (after stopping); step <code>over</code> any function calls in the line.</p></li>
+<li><p>look at the program line where it is presently stopped.</p></li>
+<li><p>type the text of the program in the vicinity of where it is presently stopped.</p></li>
+<li><p>Execute next program line (after stopping); step <code>into</code> any function calls in the line.</p></li>
+<li><p>Show information about GDB command <code>name</code>, or general information about using GDB.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Exit from GDB.</p>
+<p>For full details on GDB, see <code>Using GDB: A Guide to the GNU Source-Level Debugger</code>, by Richard M. Stallman and Roland H. Pesch. The same text is available online as the <code>gdb</code> entry in the <code>info</code> program.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>Any arguments other than options specify an executable file and core file (or process ID); that is, the first argument encountered with no associated option flag is equivalent to a <strong>--se</strong> option, and the second, if any, is equivalent to a <strong>-c</strong> option if it's the name of a file. Many options have both long and abbreviated forms; both are shown here. The long forms are also recognized if you truncate them, so long as enough of the option is present to be unambiguous.</p>
+<p>The abbreviated forms are shown here with <strong>-</strong> and long forms are shown with <strong>--</strong> to reflect how they are shown in <strong>--help</strong>. However, GDB recognizes all of the following conventions for most options:</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<p>All the options and command line arguments you give are processed in sequential order. The order makes a difference when the <strong>-x</strong> option is used.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>List all options, with brief explanations.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Read symbol table from <code>file</code>.</p>
+<ul>
+<li><p>Enable writing into executable and core files.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Use <code>file</code> as the executable file to execute when appropriate, and for examining pure data in conjunction with a core dump.</p>
+<ul>
+<li><p>Read symbol table from <code>file</code> and use it as the executable file.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Use <code>file</code> as a core dump to examine.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Execute GDB commands from <code>file</code>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Execute given GDB <code>command</code>.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Execute GDB <code>command</code> before loading the inferior.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Add <code>directory</code> to the path to search for source files.</p>
+<ul>
+<li><p>Do not execute commands from <code>~/.config/gdb/gdbinit</code>, <code>~/.gdbinit</code>, <code>~/.config/gdb/gdbearlyinit</code>, or <code>~/.gdbearlyinit</code></p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Do not execute commands from any <code>.gdbinit</code> or <code>.gdbearlyinit</code> initialization files.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>``Quiet''. Do not print the introductory and copyright messages. These messages are also suppressed in batch mode.</p>
+<ul>
+<li><p>Run in batch mode. Exit with status <code>0</code> after processing all the command files specified with <strong>-x</strong> (and <code>.gdbinit</code>, if not inhibited). Exit with nonzero status if an error occurs in executing the GDB commands in the command files. Batch mode may be useful for running GDB as a filter, for example to download and run a program on another computer; in order to make this more useful, the message Program exited normally. (which is ordinarily issued whenever a program running under GDB control terminates) is not issued when running in batch mode.</p></li>
+<li><p>Run in batch mode, just like <strong>--batch</strong>, but totally silent. All GDB output is supressed (stderr is unaffected). This is much quieter than <strong>--silent</strong> and would be useless for an interactive session. This is particularly useful when using targets that give <strong>Loading section</strong> messages, for example. Note that targets that give their output via GDB, as opposed to writing directly to <code>stdout</code>, will also be made silent.</p></li>
+<li><p>Change interpretation of command line so that arguments following this option are passed as arguments to the inferior. As an example, take the following command: gdb ./a.out -q It would start GDB with <strong>-q</strong>, not printing the introductory message. On the other hand, using: gdb --args ./a.out -q starts GDB with the introductory message, and passes the option to the inferior.</p></li>
+<li><p>Attach GDB to an already running program, with the PID <code>pid</code>.</p></li>
+<li><p>Open the terminal user interface.</p></li>
+<li><p>Read all symbols from the given symfile on the first access.</p></li>
+<li><p>Do not read symbol files.</p></li>
+<li><p>Run in DBX compatibility mode.</p></li>
+<li><p>GDB's exit code will be the same as the child's exit code.</p></li>
+<li><p>Print details about GDB configuration and then exit.</p></li>
+<li><p>Print version information and then exit.</p></li>
+<li><p>Run GDB using <code>directory</code> as its working directory, instead of the current directory.</p></li>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Run GDB using <code>directory</code> as its data directory. The data directory is where GDB searches for its auxiliary files.</p>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<p>Emacs sets this option when it runs GDB as a subprocess. It tells GDB to output the full file name and line number in a standard, recognizable fashion each time a stack frame is displayed (which includes each time the program stops). This recognizable format looks like two <strong>\032</strong> characters, followed by the file name, line number and character position separated by colons, and a newline. The Emacs-to-GDB interface program uses the two <strong>\032</strong> characters as a signal to display the source code for the frame.</p>
+<ul>
+<li><p>Set the line speed (baud rate or bits per second) of any serial interface used by GDB for remote debugging.</p></li>
+<li><p>Set timeout, in seconds, for remote debugging.</p></li>
+<li><p>Run using <code>device</code> for your program's standard input and output.</p></li>
+</ul>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>The full documentation for GDB is maintained as a Texinfo manual. If the <code>info</code> and <code>gdb</code> programs and GDB's Texinfo documentation are properly installed at your site, the command</p>
+<p>info gdb</p>
+<p>should give you access to the complete manual.</p>
+<p><code>Using GDB: A Guide to the GNU Source-Level Debugger</code>, Richard M. Stallman and Roland H. Pesch, July 1991.</p>
+</div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (c) 1988-2022 Free Software Foundation, Inc.</p>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with the Invariant Sections being ``Free Software'' and ``Free Software Needs Free Documentation'', with the Front-Cover Texts being ``A GNU Manual,'' and with the Back-Cover Texts as in (a) below.</p>
+<p>(a) The FSF's Back-Cover Text is: ``You are free to copy and modify this GNU Manual. Buying copies from GNU Press supports the FSF in developing GNU and promoting software freedom.''</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

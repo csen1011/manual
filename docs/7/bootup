@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>bootup - System bootup process</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>A number of different components are involved in the boot of a Linux system. Immediately after power-up, the system firmware will do minimal hardware initialization, and hand control over to a boot loader (e.g. <a href='/7/systemd-boot'>systemd-boot</a>(7) or <strong>GRUB</strong>[1]) stored on a persistent storage device. This boot loader will then invoke an OS kernel from disk (or the network). On systems using EFI or other types of firmware, this firmware may also load the kernel directly.</p>
+<p>The kernel (optionally) mounts an in-memory file system, often generated by <a href='/8/dracut'>dracut</a>(8), which looks for the root file system. Nowadays this is usually implemented as an initramfs — a compressed archive which is extracted when the kernel boots up into a lightweight in-memory file system based on tmpfs, but in the past normal file systems using an in-memory block device (ramdisk) were used, and the name "initrd" is still used to describe both concepts. Its the boot loader or the firmware that loads both the kernel and initrd/initramfs images into memory, but the kernel which interprets it as a file system. <a href='/1/systemd'>systemd</a>(1) may be used to manage services in the initrd, similarly to the real system.</p>
+<p>After the root file system is found and mounted, the initrd hands over control to the hosts system manager (such as <a href='/1/systemd'>systemd</a>(1)) stored in the root file system, which is then responsible for probing all remaining hardware, mounting all necessary file systems and spawning all configured services.</p>
+<p>On shutdown, the system manager stops all services, unmounts all file systems (detaching the storage technologies backing them), and then (optionally) jumps back into the initrd code which unmounts/detaches the root file system and the storage it resides on. As a last step, the system is powered down.</p>
+<p>Additional information about the system boot process may be found in <a href='/7/boot'>boot</a>(7).</p>
+</div></div><h1 id='system-manager-bootup'><a href='#system-manager-bootup'>SYSTEM MANAGER BOOTUP</a></h1><div data-for='system-manager-bootup' data-hide><div class='section' data-for='system-manager-bootup'><div data-more>
+<p>At boot, the system manager on the OS image is responsible for initializing the required file systems, services and drivers that are necessary for operation of the system. On <a href='/1/systemd'>systemd</a>(1) systems, this process is split up in various discrete steps which are exposed as target units. (See <a href='/5/systemd.target'>systemd.target</a>(5) for detailed information about target units.) The boot-up process is highly parallelized so that the order in which specific target units are reached is not deterministic, but still adheres to a limited amount of ordering structure.</p>
+<p>When systemd starts up the system, it will activate all units that are dependencies of default.target (as well as recursively all dependencies of these dependencies). Usually, default.target is simply an alias of graphical.target or multi-user.target, depending on whether the system is configured for a graphical UI or only for a text console. To enforce minimal ordering between the units pulled in, a number of well-known target units are available, as listed on <a href='/7/systemd.special'>systemd.special</a>(7).</p>
+<p>The following chart is a structural overview of these well-known units and their position in the boot-up logic. The arrows describe which units are pulled in and ordered before which other units. Units near the top are started before units nearer to the bottom of the chart.</p>
+<p>.RS 4</p>
+<pre><code>                             cryptsetup-pre.target veritysetup-pre.target
+                                                  |
+(various low-level                                v
+ API VFS mounts:             (various cryptsetup/veritysetup devices...)
+ mqueue, configfs,                                |    |
+ debugfs, ...)                                    v    |
+ |                                  cryptsetup.target  |
+ |  (various swap                                 |    |    remote-fs-pre.target
+ |   devices...)                                  |    |     |        |
+ |    |                                           |    |     |        v
+ |    v                       local-fs-pre.target |    |     |  (network file systems)
+ |  swap.target                       |           |    v     v                 |
+ |    |                               v           |  remote-cryptsetup.target  |
+ |    |  (various low-level  (various mounts and  |  remote-veritysetup.target |
+ |    |   services: udevd,    fsck services...)   |             |    remote-fs.target
+ |    |   tmpfiles, random            |           |             |             /
+ |    |   seed, sysctl, ...)          v           |             |            /
+ |    |      |                 local-fs.target    |             |           /
+ |    |      |                        |           |             |          /
+ \____|______|_______________   ______|___________/             |         /
+                             \ /                                |        /
+                              v                                 |       /
+                       sysinit.target                           |      /
+                              |                                 |     /
+       ______________________/|\_____________________           |    /
+      /              |        |      |               \          |   /
+      |              |        |      |               |          |  /
+      v              v        |      v               |          | /
+ (various       (various      |  (various            |          |/
+  timers...)      paths...)   |   sockets...)        |          |
+      |              |        |      |               |          |
+      v              v        |      v               |          |
+timers.target  paths.target   |  sockets.target      |          |
+      |              |        |      |               v          |
+      v              \_______ | _____/         rescue.service   |
+                             \|/                     |          |
+                              v                      v          |
+                          basic.target         rescue.target    |
+                              |                                 |
+                      ________v____________________             |
+                     /              |              \            |
+                     |              |              |            |
+                     v              v              v            |
+                 display-    (various system   (various system  |
+             manager.service     services        services)      |
+                     |         required for        |            |
+                     |        graphical UIs)       v            v
+                     |              |            multi-user.target
+emergency.service    |              |              |
+        |            \_____________ | _____________/
+        v                          \|/
+emergency.target                    v
+                              graphical.target</code></pre>
+<p>.RE</p>
+<p>Target units that are commonly used as boot targets are <code>emphasized</code>. These units are good choices as goal targets, for example by passing them to the <code>systemd.unit=</code> kernel command line option (see <a href='/1/systemd'>systemd</a>(1)) or by symlinking default.target to them.</p>
+<p>timers.target is pulled-in by basic.target asynchronously. This allows timers units to depend on services which become only available later in boot.</p>
+</div></div></div><h1 id='user-manager-startup'><a href='#user-manager-startup'>USER MANAGER STARTUP</a></h1><div data-for='user-manager-startup' data-hide><div class='section' data-for='user-manager-startup'><div data-more>
+<p>The system manager starts the user@<code>uid</code>.service unit for each user, which launches a separate unprivileged instance of <strong>systemd</strong> for each user — the user manager. Similarly to the system manager, the user manager starts units which are pulled in by default.target. The following chart is a structural overview of the well-known user units. For non-graphical sessions, default.target is used. Whenever the user logs into a graphical session, the login manager will start the graphical-session.target target that is used to pull in units required for the graphical session. A number of targets (shown on the right side) are started when specific hardware is available to the user.</p>
+<p>.RS 4</p>
+<pre><code>    (various           (various         (various
+     timers...)         paths...)        sockets...)    (sound devices)
+         |                  |                 |               |
+         v                  v                 v               v
+   timers.target      paths.target     sockets.target    sound.target
+         |                  |                 |
+         \______________   _|_________________/         (bluetooth devices)
+                        \ /                                   |
+                         V                                    v
+                   basic.target                          bluetooth.target
+                         |
+              __________/ \_______                      (smartcard devices)
+             /                    \                           |
+             |                    |                           v
+             |                    v                      smartcard.target
+             v            graphical-session-pre.target
+ (various user services)          |                       (printers)
+             |                    v                           |
+             |       (services for the graphical session)     v
+             |                    |                       printer.target
+             v                    v
+      default.target      graphical-session.target</code></pre>
+<p>.RE</p>
+</div></div></div><h1 id='bootup-in-the-initial-ram-disk-initrd'><a href='#bootup-in-the-initial-ram-disk-initrd'>BOOTUP IN THE INITIAL RAM DISK (INITRD)</a></h1><div data-for='bootup-in-the-initial-ram-disk-initrd' data-hide><div class='section' data-for='bootup-in-the-initial-ram-disk-initrd'><div data-more>
+<p>The initial RAM disk implementation (initrd) can be set up using systemd as well. In this case, boot up inside the initrd follows the following structure.</p>
+<p>systemd detects that it is run within an initrd by checking for the file /etc/initrd-release. The default target in the initrd is initrd.target. The bootup process begins identical to the system manager bootup (see above) until it reaches basic.target. From there, systemd approaches the special target initrd.target. Before any file systems are mounted, it must be determined whether the system will resume from hibernation or proceed with normal boot. This is accomplished by systemd-hibernate-resume@.service which must be finished before local-fs-pre.target, so no filesystems can be mounted before the check is complete. When the root device becomes available, initrd-root-device.target is reached. If the root device can be mounted at /sysroot, the sysroot.mount unit becomes active and initrd-root-fs.target is reached. The service initrd-parse-etc.service scans /sysroot/etc/fstab for a possible /usr/ mount point and additional entries marked with the <code>x-initrd.mount</code> option. All entries found are mounted below /sysroot, and initrd-fs.target is reached. The service initrd-cleanup.service isolates to the initrd-switch-root.target, where cleanup services can run. As the very last step, the initrd-switch-root.service is activated, which will cause the system to switch its root to /sysroot.</p>
+<p>.RS 4</p>
+<pre><code>                                               : (beginning identical to above)
+                                               :
+                                               v
+                                         basic.target
+                                               |                                 emergency.service
+                        ______________________/|                                         |
+                       /                       |                                         v
+                       |            initrd-root-device.target                    emergency.target
+                       |                       |
+                       |                       v
+                       |                  sysroot.mount
+                       |                       |
+                       |                       v
+                       |             initrd-root-fs.target
+                       |                       |
+                       |                       v
+                       v            initrd-parse-etc.service
+                (custom initrd                 |
+                 services...)                  v
+                       |            (sysroot-usr.mount and
+                       |             various mounts marked
+                       |               with fstab option
+                       |              x-initrd.mount...)
+                       |                       |
+                       |                       v
+                       |                initrd-fs.target
+                       \______________________ |
+                                              \|
+                                               v
+                                          initrd.target
+                                               |
+                                               v
+                                     initrd-cleanup.service
+                                          isolates to
+                                    initrd-switch-root.target
+                                               |
+                                               v
+                        ______________________/|
+                       /                       v
+                       |        initrd-udevadm-cleanup-db.service
+                       v                       |
+                (custom initrd                 |
+                 services...)                  |
+                       \______________________ |
+                                              \|
+                                               v
+                                   initrd-switch-root.target
+                                               |
+                                               v
+                                   initrd-switch-root.service
+                                               |
+                                               v
+                                     Transition to Host OS</code></pre>
+<p>.RE</p>
+</div></div></div><h1 id='system-manager-shutdown'><a href='#system-manager-shutdown'>SYSTEM MANAGER SHUTDOWN</a></h1><div data-for='system-manager-shutdown' data-hide><div class='section' data-for='system-manager-shutdown'><div data-more>
+<p>System shutdown with systemd also consists of various target units with some minimal ordering structure applied:</p>
+<p>.RS 4</p>
+<pre><code>                                  (conflicts with  (conflicts with
+                                    all system     all file system
+                                     services)     mounts, swaps,
+                                         |           cryptsetup/
+                                         |           veritysetup
+                                         |          devices, ...)
+                                         |                |
+                                         v                v
+                                  shutdown.target    umount.target
+                                         |                |
+                                         \_______   ______/
+                                                 \ /
+                                                  v
+                                         (various low-level
+                                              services)
+                                                  |
+                                                  v
+                                            final.target
+                                                  |
+            _____________________________________/ \_________________________________
+           /                         |                        |                      \
+           |                         |                        |                      |
+           v                         v                        v                      v
+systemd-reboot.service   systemd-poweroff.service   systemd-halt.service   systemd-kexec.service
+           |                         |                        |                      |
+           v                         v                        v                      v
+    reboot.target             poweroff.target            halt.target           kexec.target</code></pre>
+<p>.RE</p>
+<p>Commonly used system shutdown targets are <code>emphasized</code>.</p>
+<p>Note that <a href='/8/systemd-halt.service'>systemd-halt.service</a>(8), systemd-reboot.service, systemd-poweroff.service and systemd-kexec.service will transition the system and server manager (PID 1) into the second phase of system shutdown (implemented in the systemd-shutdown binary), which will unmount any remaining file systems, kill any remaining processes and release any other remaining resources, in a simple and robust fashion, without taking any service or unit concept into account anymore. At that point, regular applications and resources are generally terminated and released already, the second phase hence operates only as safety net for everything that couldnt be stopped or released for some reason during the primary, unit-based shutdown phase described above.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/7/boot'>boot</a>(7), <a href='/7/systemd.special'>systemd.special</a>(7), <a href='/5/systemd.target'>systemd.target</a>(5), <a href='/8/systemd-halt.service'>systemd-halt.service</a>(8), <a href='/8/dracut'>dracut</a>(8)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>GRUB</p>
+<p><a href="https://www.gnu.org/software/grub/">https://www.gnu.org/software/grub/</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

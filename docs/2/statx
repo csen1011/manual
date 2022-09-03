@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>statx - get file status (extended)</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a> /* Definition of AT_* constants */
+
+int statx(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname, int flags,
+ unsigned int mask, struct statx *statxbuf);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>This function returns information about a file, storing it in the buffer pointed to by <code>statxbuf</code>. The returned buffer is a structure of the following type:</p>
+<pre><code>struct statx {
+    __u32 stx_mask;        /* Mask of bits indicating
+                              filled fields */
+    __u32 stx_blksize;     /* Block size for filesystem I/O */
+    __u64 stx_attributes;  /* Extra file attribute indicators */
+    __u32 stx_nlink;       /* Number of hard links */
+    __u32 stx_uid;         /* User ID of owner */
+    __u32 stx_gid;         /* Group ID of owner */
+    __u16 stx_mode;        /* File type and mode */
+    __u64 stx_ino;         /* Inode number */
+    __u64 stx_size;        /* Total size in bytes */
+    __u64 stx_blocks;      /* Number of 512B blocks allocated */
+    __u64 stx_attributes_mask;
+                           /* Mask to show what's supported
+                              in stx_attributes */
+
+    /* The following fields are file timestamps */
+    struct statx_timestamp stx_atime;  /* Last access */
+    struct statx_timestamp stx_btime;  /* Creation */
+    struct statx_timestamp stx_ctime;  /* Last status change */
+    struct statx_timestamp stx_mtime;  /* Last modification */
+
+    /* If this file represents a device, then the next two
+       fields contain the ID of the device */
+    __u32 stx_rdev_major;  /* Major ID */
+    __u32 stx_rdev_minor;  /* Minor ID */
+
+    /* The next two fields contain the ID of the device
+       containing the filesystem where the file resides */
+    __u32 stx_dev_major;   /* Major ID */
+    __u32 stx_dev_minor;   /* Minor ID */
+};</code></pre>
+<p>The file timestamps are structures of the following type:</p>
+<pre><code>struct statx_timestamp {
+    __s64 tv_sec;    /* Seconds since the Epoch (UNIX time) */
+    __u32 tv_nsec;   /* Nanoseconds since tv_sec */
+};</code></pre>
+<p>(Note that reserved space and padding is omitted.)</p>
+<h2>Invoking <a href='statx'>statx</a>():</h2>
+<p>To access a file's status, no permissions are required on the file itself, but in the case of <a href='statx'>statx</a>() with a pathname, execute (search) permission is required on all of the directories in <code>pathname</code> that lead to the file.</p>
+<p><a href='statx'>statx</a>() uses <code>pathname</code>, <code>dirfd</code>, and <code>flags</code> to identify the target file in one of the following ways:</p>
+<dl>
+<dt>An absolute pathname</dt>
+<dd><p>If <code>pathname</code> begins with a slash, then it is an absolute pathname that identifies the target file. In this case, <code>dirfd</code> is ignored.</p>
+</dd>
+<dt>A relative pathname</dt>
+<dd><p>If <code>pathname</code> is a string that begins with a character other than a slash and <code>dirfd</code> is <strong>AT_FDCWD</strong>, then <code>pathname</code> is a relative pathname that is interpreted relative to the process's current working directory.</p>
+</dd>
+<dt>A directory-relative pathname</dt>
+<dd><p>If <code>pathname</code> is a string that begins with a character other than a slash and <code>dirfd</code> is a file descriptor that refers to a directory, then <code>pathname</code> is a relative pathname that is interpreted relative to the directory referred to by <code>dirfd</code>.</p>
+</dd>
+<dt>By file descriptor</dt>
+<dd><p>If <code>pathname</code> is an empty string and the <strong>AT_EMPTY_PATH</strong> flag is specified in <code>flags</code> (see below), then the target file is the one referred to by the file descriptor <code>dirfd</code>.</p>
+</dd>
+</dl>
+<p><code>flags</code> can be used to influence a pathname-based lookup. A value for <code>flags</code> is constructed by ORing together zero or more of the following constants:</p>
+<dl>
+<dt><strong>AT_EMPTY_PATH</strong></dt>
+<dd><p>If <code>pathname</code> is an empty string, operate on the file referred to by <code>dirfd</code> (which may have been obtained using the <a href='/2/open'>open</a>(2) <strong>O_PATH</strong> flag). In this case, <code>dirfd</code> can refer to any type of file, not just a directory.</p>
+<p>If <code>dirfd</code> is <strong>AT_FDCWD</strong>, the call operates on the current working directory.</p>
+<p>This flag is Linux-specific; define <strong>_GNU_SOURCE</strong> to obtain its definition.</p>
+</dd>
+<dt><strong>AT_NO_AUTOMOUNT</strong></dt>
+<dd><p>Don't automount the terminal ("basename") component of <code>pathname</code> if it is a directory that is an automount point. This allows the caller to gather attributes of an automount point (rather than the location it would mount). This flag can be used in tools that scan directories to prevent mass-automounting of a directory of automount points. The <strong>AT_NO_AUTOMOUNT</strong> flag has no effect if the mount point has already been mounted over. This flag is Linux-specific; define <strong>_GNU_SOURCE</strong> to obtain its definition.</p>
+</dd>
+<dt><strong>AT_SYMLINK_NOFOLLOW</strong></dt>
+<dd><p>If <code>pathname</code> is a symbolic link, do not dereference it: instead return information about the link itself, like <a href='/2/lstat'>lstat</a>(2).</p>
+</dd>
+</dl>
+<p><code>flags</code> can also be used to control what sort of synchronization the kernel will do when querying a file on a remote filesystem. This is done by ORing in one of the following values:</p>
+<dl>
+<dt><strong>AT_STATX_SYNC_AS_STAT</strong></dt>
+<dd><p>Do whatever <a href='/2/stat'>stat</a>(2) does. This is the default and is very much filesystem-specific.</p>
+</dd>
+<dt><strong>AT_STATX_FORCE_SYNC</strong></dt>
+<dd><p>Force the attributes to be synchronized with the server. This may require that a network filesystem perform a data writeback to get the timestamps correct.</p>
+</dd>
+<dt><strong>AT_STATX_DONT_SYNC</strong></dt>
+<dd><p>Don't synchronize anything, but rather just take whatever the system has cached if possible. This may mean that the information returned is approximate, but, on a network filesystem, it may not involve a round trip to the server - even if no lease is held.</p>
+</dd>
+</dl>
+<p>The <code>mask</code> argument to <a href='statx'>statx</a>() is used to tell the kernel which fields the caller is interested in. <code>mask</code> is an ORed combination of the following constants:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STATX_TYPE</td>
+<td style="text-align: left;">Want stx_mode &amp; S_IFMT</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_MODE</td>
+<td style="text-align: left;">Want stx_mode &amp; ~S_IFMT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_NLINK</td>
+<td style="text-align: left;">Want stx_nlink</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_UID</td>
+<td style="text-align: left;">Want stx_uid</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_GID</td>
+<td style="text-align: left;">Want stx_gid</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_ATIME</td>
+<td style="text-align: left;">Want stx_atime</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_MTIME</td>
+<td style="text-align: left;">Want stx_mtime</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_CTIME</td>
+<td style="text-align: left;">Want stx_ctime</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_INO</td>
+<td style="text-align: left;">Want stx_ino</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_SIZE</td>
+<td style="text-align: left;">Want stx_size</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_BLOCKS</td>
+<td style="text-align: left;">Want stx_blocks</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_BASIC_STATS</td>
+<td style="text-align: left;">[All of the above]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STATX_BTIME</td>
+<td style="text-align: left;">Want stx_btime</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATX_ALL</td>
+<td style="text-align: left;">[All currently available fields]</td>
+</tr>
+</tbody>
+</table>
+<p>Note that, in general, the kernel does <code>not</code> reject values in <code>mask</code> other than the above. (For an exception, see <strong>EINVAL</strong> in errors.) Instead, it simply informs the caller which values are supported by this kernel and filesystem via the <code>statx.stx_mask</code> field. Therefore, <code>do not</code> simply set <code>mask</code> to <strong>UINT_MAX</strong> (all bits set), as one or more bits may, in the future, be used to specify an extension to the buffer.</p>
+<h2>The returned information</h2>
+<p>The status information for the target file is returned in the <code>statx</code> structure pointed to by <code>statxbuf</code>. Included in this is <code>stx_mask</code> which indicates what other information has been returned. <code>stx_mask</code> has the same format as the <code>mask</code> argument and bits are set in it to indicate which fields have been filled in.</p>
+<p>It should be noted that the kernel may return fields that weren't requested and may fail to return fields that were requested, depending on what the backing filesystem supports. (Fields that are given values despite being unrequested can just be ignored.) In either case, <code>stx_mask</code> will not be equal <code>mask</code>.</p>
+<p>If a filesystem does not support a field or if it has an unrepresentable value (for instance, a file with an exotic type), then the mask bit corresponding to that field will be cleared in <code>stx_mask</code> even if the user asked for it and a dummy value will be filled in for compatibility purposes if one is available (e.g., a dummy UID and GID may be specified to mount under some circumstances).</p>
+<p>A filesystem may also fill in fields that the caller didn't ask for if it has values for them available and the information is available at no extra cost. If this happens, the corresponding bits will be set in <code>stx_mask</code>.</p>
+<p><code>Note</code>: for performance and simplicity reasons, different fields in the <code>statx</code> structure may contain state information from different moments during the execution of the system call. For example, if <code>stx_mode</code> or <code>stx_uid</code> is changed by another process by calling <a href='/2/chmod'>chmod</a>(2) or <a href='/2/chown'>chown</a>(2), <a href='stat'>stat</a>() might return the old <code>stx_mode</code> together with the new <code>stx_uid</code>, or the old <code>stx_uid</code> together with the new <code>stx_mode</code>.</p>
+<p>Apart from <code>stx_mask</code> (which is described above), the fields in the <code>statx</code> structure are:</p>
+<dl>
+<dt><code>stx_blksize</code></dt>
+<dd><p>The "preferred" block size for efficient filesystem I/O. (Writing to a file in smaller chunks may cause an inefficient read-modify-rewrite.)</p>
+</dd>
+<dt><code>stx_attributes</code></dt>
+<dd><p>Further status information about the file (see below for more information).</p>
+</dd>
+<dt><code>stx_nlink</code></dt>
+<dd><p>The number of hard links on a file.</p>
+</dd>
+<dt><code>stx_uid</code></dt>
+<dd><p>This field contains the user ID of the owner of the file.</p>
+</dd>
+<dt><code>stx_gid</code></dt>
+<dd><p>This field contains the ID of the group owner of the file.</p>
+</dd>
+<dt><code>stx_mode</code></dt>
+<dd><p>The file type and mode. See <a href='/7/inode'>inode</a>(7) for details.</p>
+</dd>
+<dt><code>stx_ino</code></dt>
+<dd><p>The inode number of the file.</p>
+</dd>
+<dt><code>stx_size</code></dt>
+<dd><p>The size of the file (if it is a regular file or a symbolic link) in bytes. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.</p>
+</dd>
+<dt><code>stx_blocks</code></dt>
+<dd><p>The number of blocks allocated to the file on the medium, in 512-byte units. (This may be smaller than <code>stx_size</code>/512 when the file has holes.)</p>
+</dd>
+<dt><code>stx_attributes_mask</code></dt>
+<dd><p>A mask indicating which bits in <code>stx_attributes</code> are supported by the VFS and the filesystem.</p>
+</dd>
+<dt><code>stx_atime</code></dt>
+<dd><p>The file's last access timestamp.</p>
+</dd>
+<dt><code>stx_btime</code></dt>
+<dd><p>The file's creation timestamp.</p>
+</dd>
+<dt><code>stx_ctime</code></dt>
+<dd><p>The file's last status change timestamp.</p>
+</dd>
+<dt><code>stx_mtime</code></dt>
+<dd><p>The file's last modification timestamp.</p>
+</dd>
+<dt><code>stx_dev_major</code> and <code>stx_dev_minor</code></dt>
+<dd><p>The device on which this file (inode) resides.</p>
+</dd>
+<dt><code>stx_rdev_major</code> and <code>stx_rdev_minor</code></dt>
+<dd><p>The device that this file (inode) represents if the file is of block or character device type.</p>
+</dd>
+</dl>
+<p>For further information on the above fields, see <a href='/7/inode'>inode</a>(7). The <code>stx_attributes</code> field contains a set of ORed flags that indicate additional attributes of the file. Note that any attribute that is not indicated as supported by <code>stx_attributes_mask</code> has no usable value here. The bits in <code>stx_attributes_mask</code> correspond bit-by-bit to <code>stx_attributes</code>.</p>
+<p>The flags are as follows:</p>
+<dl>
+<dt><strong>STATX_ATTR_COMPRESSED</strong></dt>
+<dd><p>The file is compressed by the filesystem and may take extra resources to access.</p>
+</dd>
+<dt><strong>STATX_ATTR_IMMUTABLE</strong></dt>
+<dd><p>The file cannot be modified: it cannot be deleted or renamed, no hard links can be created to this file and no data can be written to it. See <a href='/1/chattr'>chattr</a>(1).</p>
+</dd>
+<dt><strong>STATX_ATTR_APPEND</strong></dt>
+<dd><p>The file can only be opened in append mode for writing. Random access writing is not permitted. See <a href='/1/chattr'>chattr</a>(1).</p>
+</dd>
+<dt><strong>STATX_ATTR_NODUMP</strong></dt>
+<dd><p>File is not a candidate for backup when a backup program such as <a href='/8/dump'>dump</a>(8) is run. See <a href='/1/chattr'>chattr</a>(1).</p>
+</dd>
+<dt><strong>STATX_ATTR_ENCRYPTED</strong></dt>
+<dd><p>A key is required for the file to be encrypted by the filesystem.</p>
+</dd>
+<dt><strong>STATX_ATTR_VERITY</strong> (since Linux 5.5)</dt>
+<dd><p>The file has fs-verity enabled. It cannot be written to, and all reads from it will be verified against a cryptographic hash that covers the entire file (e.g., via a Merkle tree).</p>
+</dd>
+<dt><strong>STATX_ATTR_DAX</strong> (since Linux 5.8)</dt>
+<dd><p>The file is in the DAX (cpu direct access) state. DAX state attempts to minimize software cache effects for both I/O and memory mappings of this file. It requires a file system which has been configured to support DAX.</p>
+<p>DAX generally assumes all accesses are via CPU load / store instructions which can minimize overhead for small accesses, but may adversely affect CPU utilization for large transfers.</p>
+<p>File I/O is done directly to/from user-space buffers and memory mapped I/O may be performed with direct memory mappings that bypass the kernel page cache.</p>
+<p>While the DAX property tends to result in data being transferred synchronously, it does not give the same guarantees as the <strong>O_SYNC</strong> flag (see <a href='/2/open'>open</a>(2)), where data and the necessary metadata are transferred together.</p>
+<p>A DAX file may support being mapped with the <strong>MAP_SYNC</strong> flag, which enables a program to use CPU cache flush instructions to persist CPU store operations without an explicit <a href='/2/fsync'>fsync</a>(2). See <a href='/2/mmap'>mmap</a>(2) for more information.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, zero is returned. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Search permission is denied for one of the directories in the path prefix of <code>pathname</code>. (See also <a href='/7/path_resolution'>path_resolution</a>(7).)</p>
+</dd>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>dirfd</code> is not a valid open file descriptor.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>pathname</code> or <code>statxbuf</code> is NULL or points to a location outside the process's accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid flag specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Reserved flag specified in <code>mask</code>. (Currently, there is one such flag, designated by the constant <strong>STATX__RESERVED</strong>, with the value 0x80000000U.)</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p>Too many symbolic links encountered while traversing the pathname.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p><code>pathname</code> is too long.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>A component of <code>pathname</code> does not exist, or <code>pathname</code> is an empty string and <strong>AT_EMPTY_PATH</strong> was not specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Out of memory (i.e., kernel memory).</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>A component of the path prefix of <code>pathname</code> is not a directory or <code>pathname</code> is relative and <code>dirfd</code> is a file descriptor referring to a file other than a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='statx'>statx</a>() was added to Linux in kernel 4.11; library support was added in glibc 2.28.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='statx'>statx</a>() is Linux-specific.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ls'>ls</a>(1), <a href='/1/stat'>stat</a>(1), <a href='/2/access'>access</a>(2), <a href='/2/chmod'>chmod</a>(2), <a href='/2/chown'>chown</a>(2), <a href='/2/readlink'>readlink</a>(2), <a href='/2/stat'>stat</a>(2), <a href='/2/utime'>utime</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/inode'>inode</a>(7), <a href='/7/symlink'>symlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

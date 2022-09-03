@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>SLIST_EMPTY, SLIST_ENTRY, SLIST_FIRST, SLIST_FOREACH, SLIST_HEAD, SLIST_HEAD_INITIALIZER, <a data-bs-content='This is the man page for &lt;code&gt;SLIST_INIT&lt;/code&gt; and 11 related functions.' data-bs-toggle='popover' tabindex='0'>SLIST_INIT</a>, SLIST_INSERT_AFTER, SLIST_INSERT_HEAD, SLIST_NEXT, SLIST_REMOVE, SLIST_REMOVE_HEAD - implementation of a singly linked list</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/queue.h&gt;</a>
+
+int SLIST_EMPTY(SLIST_HEAD *head);
+
+SLIST_ENTRY(TYPE);
+
+struct TYPE *SLIST_FIRST(SLIST_HEAD *head);
+
+SLIST_FOREACH(struct TYPE *var, SLIST_HEAD *head, SLIST_ENTRY NAME);
+
+SLIST_HEAD(HEADNAME, TYPE);
+
+SLIST_HEAD SLIST_HEAD_INITIALIZER(SLIST_HEAD head);
+
+void SLIST_INIT(SLIST_HEAD *head);
+
+void SLIST_INSERT_AFTER(struct TYPE *listelm, struct TYPE *elm,
+ SLIST_ENTRY NAME);
+
+void SLIST_INSERT_HEAD(SLIST_HEAD *head, struct TYPE *elm,
+ SLIST_ENTRY NAME);
+
+struct TYPE *SLIST_NEXT(struct TYPE *elm, SLIST_ENTRY NAME);
+
+void SLIST_REMOVE(SLIST_HEAD *head, struct TYPE *elm, SLIST_ENTRY NAME);
+
+void SLIST_REMOVE_HEAD(SLIST_HEAD *head, SLIST_ENTRY NAME);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These macros define and operate on doubly linked lists.</p>
+<p>In the macro definitions, <code>TYPE</code> is the name of a user-defined structure, that must contain a field of type <code>SLIST_ENTRY</code>, named <code>NAME</code>. The argument <code>HEADNAME</code> is the name of a user-defined structure that must be declared using the macro <a href='SLIST_HEAD'>SLIST_HEAD</a>().</p>
+<p>A singly linked list is headed by a structure defined by the <a href='SLIST_HEAD'>SLIST_HEAD</a>() macro. This structure contains a single pointer to the first element on the list. The elements are singly linked for minimum space and pointer manipulation overhead at the expense of O(n) removal for arbitrary elements. New elements can be added to the list after an existing element or at the head of the list. An <code>SLIST_HEAD</code> structure is declared as follows:</p>
+<pre><code>SLIST_HEAD(HEADNAME, TYPE) head;</code></pre>
+<p>where <code>struct HEADNAME</code> is the structure to be defined, and <code>struct TYPE</code> is the type of the elements to be linked into the list. A pointer to the head of the list can later be declared as:</p>
+<pre><code>struct HEADNAME *headp;</code></pre>
+<p>(The names <code>head</code> and <code>headp</code> are user selectable.)</p>
+<p>The macro <a href='SLIST_HEAD_INITIALIZER'>SLIST_HEAD_INITIALIZER</a>() evaluates to an initializer for the list <code>head</code>.</p>
+<p>The macro <a href='SLIST_EMPTY'>SLIST_EMPTY</a>() evaluates to true if there are no elements in the list.</p>
+<p>The macro <a href='SLIST_ENTRY'>SLIST_ENTRY</a>() declares a structure that connects the elements in the list.</p>
+<p>The macro <a href='SLIST_FIRST'>SLIST_FIRST</a>() returns the first element in the list or NULL if the list is empty.</p>
+<p>The macro <a href='SLIST_FOREACH'>SLIST_FOREACH</a>() traverses the list referenced by <code>head</code> in the forward direction, assigning each element in turn to <code>var</code>.</p>
+<p>The macro <a href='SLIST_INIT'>SLIST_INIT</a>() initializes the list referenced by <code>head</code>.</p>
+<p>The macro <a href='SLIST_INSERT_HEAD'>SLIST_INSERT_HEAD</a>() inserts the new element <code>elm</code> at the head of the list.</p>
+<p>The macro <a href='SLIST_INSERT_AFTER'>SLIST_INSERT_AFTER</a>() inserts the new element <code>elm</code> after the element <code>listelm</code>.</p>
+<p>The macro <a href='SLIST_NEXT'>SLIST_NEXT</a>() returns the next element in the list.</p>
+<p>The macro <a href='SLIST_REMOVE_HEAD'>SLIST_REMOVE_HEAD</a>() removes the element <code>elm</code> from the head of the list. For optimum efficiency, elements being removed from the head of the list should explicitly use this macro instead of the generic <code>SLIST_REMOVE</code> macro.</p>
+<p>The macro <a href='SLIST_REMOVE'>SLIST_REMOVE</a>() removes the element <code>elm</code> from the list.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='SLIST_EMPTY'>SLIST_EMPTY</a>() returns nonzero if the list is empty, and zero if the list contains at least one entry.</p>
+<p><a href='SLIST_FIRST'>SLIST_FIRST</a>(), and <a href='SLIST_NEXT'>SLIST_NEXT</a>() return a pointer to the first or next <code>TYPE</code> structure, respectively.</p>
+<p><a href='SLIST_HEAD_INITIALIZER'>SLIST_HEAD_INITIALIZER</a>() returns an initializer that can be assigned to the list <code>head</code>.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>#include &lt;stddef.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/queue.h&gt;
+
+struct entry {
+    int data;
+    SLIST_ENTRY(entry) entries;             /* Singly linked List. */
+};
+
+SLIST_HEAD(slisthead, entry);
+
+int
+main(void)
+{
+    struct entry *n1, *n2, *n3, *np;
+    struct slisthead head;                  /* Singly linked List
+                                               head. */
+
+    SLIST_INIT(&amp;head);                      /* Initialize the queue. */
+
+    n1 = malloc(sizeof(struct entry));      /* Insert at the head. */
+    SLIST_INSERT_HEAD(&amp;head, n1, entries);
+
+    n2 = malloc(sizeof(struct entry));      /* Insert after. */
+    SLIST_INSERT_AFTER(n1, n2, entries);
+
+    SLIST_REMOVE(&amp;head, n2, entry, entries);/* Deletion. */
+    free(n2);
+
+    n3 = SLIST_FIRST(&amp;head);
+    SLIST_REMOVE_HEAD(&amp;head, entries);      /* Deletion from the head. */
+    free(n3);
+
+    for (int i = 0; i &lt; 5; i++) {
+        n1 = malloc(sizeof(struct entry));
+        SLIST_INSERT_HEAD(&amp;head, n1, entries);
+        n1-&gt;data = i;
+    }
+
+                                            /* Forward traversal. */
+    SLIST_FOREACH(np, &amp;head, entries)
+        printf("%i\n", np-&gt;data);
+
+    while (!SLIST_EMPTY(&amp;head)) {           /* List Deletion. */
+        n1 = SLIST_FIRST(&amp;head);
+        SLIST_REMOVE_HEAD(&amp;head, entries);
+        free(n1);
+    }
+    SLIST_INIT(&amp;head);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>Not in POSIX.1, POSIX.1-2001 or POSIX.1-2008. Present on the BSDs (SLIST macros first appeared in 4.4BSD).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The macro <a href='SLIST_FOREACH'>SLIST_FOREACH</a>() doesn't allow <code>var</code> to be removed or freed within the loop, as it would interfere with the traversal. The macro <a href='SLIST_FOREACH_SAFE'>SLIST_FOREACH_SAFE</a>(), which is present on the BSDs but is not present in glibc, fixes this limitation by allowing <code>var</code> to safely be removed from the list and freed from within the loop without interfering with the traversal.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/insque'>insque</a>(3), <a href='/7/queue'>queue</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

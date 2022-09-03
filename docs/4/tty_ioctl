@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>ioctl_tty - ioctls for terminals and serial lines</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;termios.h&gt;</strong></p>
+<p><strong>int ioctl(int </strong><code>fd</code><strong>, int </strong><code>cmd</code><strong>, ...);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='/2/ioctl'>ioctl</a>(2) call for terminals and serial ports accepts many possible command arguments. Most require a third argument, of varying type, here called <code>argp</code> or <code>arg</code>.</p>
+<p>Use of <code>ioctl</code> makes for nonportable programs. Use the POSIX interface described in <a href='/3/termios'>termios</a>(3) whenever possible.</p>
+<h2>Get and set terminal attributes</h2>
+<dl>
+<dt><strong>TCGETS struct termios *</strong><code>argp</code></dt>
+<dd><p>Equivalent to <code>tcgetattr(fd, argp)</code>.</p>
+<p>Get the current serial port settings.</p>
+</dd>
+<dt><strong>TCSETS const struct termios *</strong><code>argp</code></dt>
+<dd><p>Equivalent to <code>tcsetattr(fd, TCSANOW, argp)</code>.</p>
+<p>Set the current serial port settings.</p>
+</dd>
+<dt><strong>TCSETSW const struct termios *</strong><code>argp</code></dt>
+<dd><p>Equivalent to <code>tcsetattr(fd, TCSADRAIN, argp)</code>.</p>
+<p>Allow the output buffer to drain, and set the current serial port settings.</p>
+</dd>
+<dt><strong>TCSETSF const struct termios *</strong><code>argp</code></dt>
+<dd><p>Equivalent to <code>tcsetattr(fd, TCSAFLUSH, argp)</code>.</p>
+<p>Allow the output buffer to drain, discard pending input, and set the current serial port settings.</p>
+</dd>
+</dl>
+<p>The following four ioctls are just like <strong>TCGETS</strong>, <strong>TCSETS</strong>, <strong>TCSETSW</strong>, <strong>TCSETSF</strong>, except that they take a <code>struct termio *</code> instead of a <code>struct termios *</code>.</p>
+<blockquote>
+<p><strong>TCGETA struct termio *</strong><code>argp</code></p>
+<p><strong>TCSETA const struct termio *</strong><code>argp</code></p>
+<p><strong>TCSETAW const struct termio *</strong><code>argp</code></p>
+<p><strong>TCSETAF const struct termio *</strong><code>argp</code></p>
+</blockquote>
+<h2>Locking the termios structure</h2>
+<p>The <code>termios</code> structure of a terminal can be locked. The lock is itself a <code>termios</code> structure, with nonzero bits or fields indicating a locked value.</p>
+<dl>
+<dt><strong>TIOCGLCKTRMIOS struct termios *</strong><code>argp</code></dt>
+<dd><p>Gets the locking status of the <code>termios</code> structure of the terminal.</p>
+</dd>
+<dt><strong>TIOCSLCKTRMIOS const struct termios *</strong><code>argp</code></dt>
+<dd><p>Sets the locking status of the <code>termios</code> structure of the terminal. Only a process with the <strong>CAP_SYS_ADMIN</strong> capability can do this.</p>
+</dd>
+</dl>
+<h2>Get and set window size</h2>
+<p>Window sizes are kept in the kernel, but not used by the kernel (except in the case of virtual consoles, where the kernel will update the window size when the size of the virtual console changes, for example, by loading a new font).</p>
+<p>The following constants and structure are defined in <code>&lt;sys/ioctl.h&gt;</code>.</p>
+<dl>
+<dt><strong>TIOCGWINSZ struct winsize *</strong><code>argp</code></dt>
+<dd><p>Get window size.</p>
+</dd>
+<dt><strong>TIOCSWINSZ const struct winsize *</strong><code>argp</code></dt>
+<dd><p>Set window size.</p>
+</dd>
+</dl>
+<p>The struct used by these ioctls is defined as</p>
+<pre><code>struct winsize {
+    unsigned short ws_row;
+    unsigned short ws_col;
+    unsigned short ws_xpixel;   /* unused */
+    unsigned short ws_ypixel;   /* unused */
+};</code></pre>
+<p>When the window size changes, a <strong>SIGWINCH</strong> signal is sent to the foreground process group.</p>
+<h2>Sending a break</h2>
+<dl>
+<dt><strong>TCSBRK int </strong><code>arg</code></dt>
+<dd><p>Equivalent to <code>tcsendbreak(fd, arg)</code>.</p>
+<p>If the terminal is using asynchronous serial data transmission, and <code>arg</code> is zero, then send a break (a stream of zero bits) for between 0.25 and 0.5 seconds. If the terminal is not using asynchronous serial data transmission, then either a break is sent, or the function returns without doing anything. When <code>arg</code> is nonzero, nobody knows what will happen.</p>
+<p>(SVr4, UnixWare, Solaris, Linux treat <code>tcsendbreak(fd,arg)</code> with nonzero <code>arg</code> like <code>tcdrain(fd)</code>. SunOS treats <code>arg</code> as a multiplier, and sends a stream of bits <code>arg</code> times as long as done for zero <code>arg</code>. DG/UX and AIX treat <code>arg</code> (when nonzero) as a time interval measured in milliseconds. HP-UX ignores <code>arg</code>.)</p>
+</dd>
+<dt><strong>TCSBRKP int </strong><code>arg</code></dt>
+<dd><p>So-called "POSIX version" of <strong>TCSBRK</strong>. It treats nonzero <code>arg</code> as a time interval measured in deciseconds, and does nothing when the driver does not support breaks.</p>
+</dd>
+<dt><strong>TIOCSBRK void</strong></dt>
+<dd><p>Turn break on, that is, start sending zero bits.</p>
+</dd>
+<dt><strong>TIOCCBRK void</strong></dt>
+<dd><p>Turn break off, that is, stop sending zero bits.</p>
+</dd>
+</dl>
+<h2>Software flow control</h2>
+<dl>
+<dt><strong>TCXONC int </strong><code>arg</code></dt>
+<dd><p>Equivalent to <code>tcflow(fd, arg)</code>.</p>
+<p>See <a href='/3/tcflow'>tcflow</a>(3) for the argument values <strong>TCOOFF</strong>, <strong>TCOON</strong>, <strong>TCIOFF</strong>, <strong>TCION</strong>.</p>
+</dd>
+</dl>
+<h2>Buffer count and flushing</h2>
+<dl>
+<dt><strong>FIONREAD int *</strong><code>argp</code></dt>
+<dd><p>Get the number of bytes in the input buffer.</p>
+</dd>
+<dt><strong>TIOCINQ int *</strong><code>argp</code></dt>
+<dd><p>Same as <strong>FIONREAD</strong>.</p>
+</dd>
+<dt><strong>TIOCOUTQ int *</strong><code>argp</code></dt>
+<dd><p>Get the number of bytes in the output buffer.</p>
+</dd>
+<dt><strong>TCFLSH int </strong><code>arg</code></dt>
+<dd><p>Equivalent to <code>tcflush(fd, arg)</code>.</p>
+<p>See <a href='/3/tcflush'>tcflush</a>(3) for the argument values <strong>TCIFLUSH</strong>, <strong>TCOFLUSH</strong>, <strong>TCIOFLUSH</strong>.</p>
+</dd>
+</dl>
+<h2>Faking input</h2>
+<dl>
+<dt><strong>TIOCSTI <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>argp</code></dt>
+<dd><p>Insert the given byte in the input queue.</p>
+</dd>
+</dl>
+<h2>Redirecting console output</h2>
+<dl>
+<dt><strong>TIOCCONS void</strong></dt>
+<dd><p>Redirect output that would have gone to <code>/dev/console</code> or <code>/dev/tty0</code> to the given terminal. If that was a pseudoterminal master, send it to the slave. In Linux before version 2.6.10, anybody can do this as long as the output was not redirected yet; since version 2.6.10, only a process with the <strong>CAP_SYS_ADMIN</strong> capability may do this. If output was redirected already, then <strong>EBUSY</strong> is returned, but redirection can be stopped by using this ioctl with <code>fd</code> pointing at <code>/dev/console</code> or <code>/dev/tty0</code>.</p>
+</dd>
+</dl>
+<h2>Controlling terminal</h2>
+<dl>
+<dt><strong>TIOCSCTTY int </strong><code>arg</code></dt>
+<dd><p>Make the given terminal the controlling terminal of the calling process. The calling process must be a session leader and not have a controlling terminal already. For this case, <code>arg</code> should be specified as zero.</p>
+<p>If this terminal is already the controlling terminal of a different session group, then the ioctl fails with <strong>EPERM</strong>, unless the caller has the <strong>CAP_SYS_ADMIN</strong> capability and <code>arg</code> equals 1, in which case the terminal is stolen, and all processes that had it as controlling terminal lose it.</p>
+</dd>
+<dt><strong>TIOCNOTTY void</strong></dt>
+<dd><p>If the given terminal was the controlling terminal of the calling process, give up this controlling terminal. If the process was session leader, then send <strong>SIGHUP</strong> and <strong>SIGCONT</strong> to the foreground process group and all processes in the current session lose their controlling terminal.</p>
+</dd>
+</dl>
+<h2>Process group and session ID</h2>
+<dl>
+<dt><strong>TIOCGPGRP pid_t *</strong><code>argp</code></dt>
+<dd><p>When successful, equivalent to <code>*argp = tcgetpgrp(fd)</code>.</p>
+<p>Get the process group ID of the foreground process group on this terminal.</p>
+</dd>
+<dt><strong>TIOCSPGRP const pid_t *</strong><code>argp</code></dt>
+<dd><p>Equivalent to <code>tcsetpgrp(fd, *argp)</code>.</p>
+<p>Set the foreground process group ID of this terminal.</p>
+</dd>
+<dt><strong>TIOCGSID pid_t *</strong><code>argp</code></dt>
+<dd><p>Get the session ID of the given terminal. This fails with the error <strong>ENOTTY</strong> if the terminal is not a master pseudoterminal and not our controlling terminal. Strange.</p>
+</dd>
+</dl>
+<h2>Exclusive mode</h2>
+<dl>
+<dt><strong>TIOCEXCL void</strong></dt>
+<dd><p>Put the terminal into exclusive mode. No further <a href='/2/open'>open</a>(2) operations on the terminal are permitted. (They fail with <strong>EBUSY</strong>, except for a process with the <strong>CAP_SYS_ADMIN</strong> capability.)</p>
+</dd>
+<dt><strong>TIOCGEXCL int *</strong><code>argp</code></dt>
+<dd><p>(since Linux 3.8) If the terminal is currently in exclusive mode, place a nonzero value in the location pointed to by <code>argp</code>; otherwise, place zero in <code>*argp</code>.</p>
+</dd>
+<dt><strong>TIOCNXCL void</strong></dt>
+<dd><p>Disable exclusive mode.</p>
+</dd>
+</dl>
+<h2>Line discipline</h2>
+<dl>
+<dt><strong>TIOCGETD int *</strong><code>argp</code></dt>
+<dd><p>Get the line discipline of the terminal.</p>
+</dd>
+<dt><strong>TIOCSETD const int *</strong><code>argp</code></dt>
+<dd><p>Set the line discipline of the terminal.</p>
+</dd>
+</dl>
+<h2>Pseudoterminal ioctls</h2>
+<dl>
+<dt><strong>TIOCPKT const int *</strong><code>argp</code></dt>
+<dd><p>Enable (when *<code>argp</code> is nonzero) or disable packet mode. Can be applied to the master side of a pseudoterminal only (and will return <strong>ENOTTY</strong> otherwise). In packet mode, each subsequent <a href='/2/read'>read</a>(2) will return a packet that either contains a single nonzero control byte, or has a single byte containing zero ('\0') followed by data written on the slave side of the pseudoterminal. If the first byte is not <strong>TIOCPKT_DATA</strong> (0), it is an OR of one or more of the following bits:</p>
+</dd>
+</dl>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TIOCPKT_FLUSHREAD</td>
+<td style="text-align: left;">The read queue for the terminal is flushed.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCPKT_FLUSHWRITE</td>
+<td style="text-align: left;">The write queue for the terminal is flushed.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCPKT_STOP</td>
+<td style="text-align: left;">Output to the terminal is stopped.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCPKT_START</td>
+<td style="text-align: left;">Output to the terminal is restarted.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCPKT_DOSTOP</td>
+<td style="text-align: left;">The start and stop characters are <strong>^S</strong>/<strong>^Q</strong>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCPKT_NOSTOP</td>
+<td style="text-align: left;">The start and stop characters are not <strong>^S</strong>/<strong>^Q</strong>.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>While packet mode is in use, the presence of control status information to be read from the master side may be detected by a <a href='/2/select'>select</a>(2) for exceptional conditions or a <a href='/2/poll'>poll</a>(2) for the <strong>POLLPRI</strong> event.</p>
+<p>This mode is used by <a href='/1/rlogin'>rlogin</a>(1) and <a href='/8/rlogind'>rlogind</a>(8) to implement a remote-echoed, locally <strong>^S</strong>/<strong>^Q</strong> flow-controlled remote login.</p>
+</blockquote>
+<dl>
+<dt><strong>TIOCGPKT const int *</strong><code>argp</code></dt>
+<dd><p>(since Linux 3.8) Return the current packet mode setting in the integer pointed to by <code>argp</code>.</p>
+</dd>
+<dt><strong>TIOCSPTLCK int *</strong><code>argp</code></dt>
+<dd><p>Set (if <code>*argp</code> is nonzero) or remove (if <code>*argp</code> is zero) the lock on the pseudoterminal slave device. (See also <a href='/3/unlockpt'>unlockpt</a>(3).)</p>
+</dd>
+<dt><strong>TIOCGPTLCK int *</strong><code>argp</code></dt>
+<dd><p>(since Linux 3.8) Place the current lock state of the pseudoterminal slave device in the location pointed to by <code>argp</code>.</p>
+</dd>
+<dt><strong>TIOCGPTPEER int </strong><code>flags</code></dt>
+<dd><p>(since Linux 4.13) Given a file descriptor in <code>fd</code> that refers to a pseudoterminal master, open (with the given <a href='/2/open'>open</a>(2)-style <code>flags</code>) and return a new file descriptor that refers to the peer pseudoterminal slave device. This operation can be performed regardless of whether the pathname of the slave device is accessible through the calling process's mount namespace.</p>
+<p>Security-conscious programs interacting with namespaces may wish to use this operation rather than <a href='/2/open'>open</a>(2) with the pathname returned by <a href='/3/ptsname'>ptsname</a>(3), and similar library functions that have insecure APIs. (For example, confusion can occur in some cases using <a href='/3/ptsname'>ptsname</a>(3) with a pathname where a devpts filesystem has been mounted in a different mount namespace.)</p>
+</dd>
+</dl>
+<p>The BSD ioctls <strong>TIOCSTOP</strong>, <strong>TIOCSTART</strong>, <strong>TIOCUCNTL</strong>, <strong>TIOCREMOTE</strong> have not been implemented under Linux.</p>
+<h2>Modem control</h2>
+<dl>
+<dt><strong>TIOCMGET int *</strong><code>argp</code></dt>
+<dd><p>Get the status of modem bits.</p>
+</dd>
+<dt><strong>TIOCMSET const int *</strong><code>argp</code></dt>
+<dd><p>Set the status of modem bits.</p>
+</dd>
+<dt><strong>TIOCMBIC const int *</strong><code>argp</code></dt>
+<dd><p>Clear the indicated modem bits.</p>
+</dd>
+<dt><strong>TIOCMBIS const int *</strong><code>argp</code></dt>
+<dd><p>Set the indicated modem bits.</p>
+</dd>
+</dl>
+<p>The following bits are used by the above ioctls:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_LE</td>
+<td style="text-align: left;">DSR (data set ready/line enable)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCM_DTR</td>
+<td style="text-align: left;">DTR (data terminal ready)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_RTS</td>
+<td style="text-align: left;">RTS (request to send)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCM_ST</td>
+<td style="text-align: left;">Secondary TXD (transmit)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_SR</td>
+<td style="text-align: left;">Secondary RXD (receive)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCM_CTS</td>
+<td style="text-align: left;">CTS (clear to send)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_CAR</td>
+<td style="text-align: left;">DCD (data carrier detect)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCM_CD</td>
+<td style="text-align: left;">see TIOCM_CAR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_RNG</td>
+<td style="text-align: left;">RNG (ring)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOCM_RI</td>
+<td style="text-align: left;">see TIOCM_RNG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TIOCM_DSR</td>
+<td style="text-align: left;">DSR (data set ready)</td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt><strong>TIOCMIWAIT int </strong><code>arg</code></dt>
+<dd><p>Wait for any of the 4 modem bits (DCD, RI, DSR, CTS) to change. The bits of interest are specified as a bit mask in <code>arg</code>, by ORing together any of the bit values, <strong>TIOCM_RNG</strong>, <strong>TIOCM_DSR</strong>, <strong>TIOCM_CD</strong>, and <strong>TIOCM_CTS</strong>. The caller should use <strong>TIOCGICOUNT</strong> to see which bit has changed.</p>
+</dd>
+<dt><strong>TIOCGICOUNT struct serial_icounter_struct *</strong><code>argp</code></dt>
+<dd><p>Get counts of input serial line interrupts (DCD, RI, DSR, CTS). The counts are written to the <code>serial_icounter_struct</code> structure pointed to by <code>argp</code>.</p>
+<p>Note: both 1-&gt;0 and 0-&gt;1 transitions are counted, except for RI, where only 0-&gt;1 transitions are counted.</p>
+</dd>
+</dl>
+<h2>Marking a line as local</h2>
+<dl>
+<dt><strong>TIOCGSOFTCAR int *</strong><code>argp</code></dt>
+<dd><p>("Get software carrier flag") Get the status of the CLOCAL flag in the c_cflag field of the <code>termios</code> structure.</p>
+</dd>
+<dt><strong>TIOCSSOFTCAR const int *</strong><code>argp</code></dt>
+<dd><p>("Set software carrier flag") Set the CLOCAL flag in the <code>termios</code> structure when *<code>argp</code> is nonzero, and clear it otherwise.</p>
+</dd>
+</dl>
+<p>If the <strong>CLOCAL</strong> flag for a line is off, the hardware carrier detect (DCD) signal is significant, and an <a href='/2/open'>open</a>(2) of the corresponding terminal will block until DCD is asserted, unless the <strong>O_NONBLOCK</strong> flag is given. If <strong>CLOCAL</strong> is set, the line behaves as if DCD is always asserted. The software carrier flag is usually turned on for local devices, and is off for lines with modems.</p>
+<h2>Linux-specific</h2>
+<p>For the <strong>TIOCLINUX</strong> ioctl, see <a href='/2/ioctl_console'>ioctl_console</a>(2).</p>
+<h2>Kernel debugging</h2>
+<p><strong>#include &lt;linux/tty.h&gt;</strong></p>
+<dl>
+<dt><strong>TIOCTTYGSTRUCT struct tty_struct *</strong><code>argp</code></dt>
+<dd><p>Get the <code>tty_struct</code> corresponding to <code>fd</code>. This command was removed in Linux 2.5.67.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>The <a href='/2/ioctl'>ioctl</a>(2) system call returns 0 on success. On error, it returns -1 and sets <code>errno</code> appropriately.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Check the condition of DTR on the serial port.</p>
+<pre><code>#include &lt;termios.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/ioctl.h&gt;
+
+int
+main(void)
+{
+    int fd, serial;
+
+    fd = open("/dev/ttyS0", O_RDONLY);
+    ioctl(fd, TIOCMGET, &amp;serial);
+    if (serial &amp; TIOCM_DTR)
+        puts("TIOCM_DTR is set");
+    else
+        puts("TIOCM_DTR is not set");
+    close(fd);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid command parameter.</p>
+</dd>
+<dt><strong>ENOIOCTLCMD</strong></dt>
+<dd><p>Unknown command.</p>
+</dd>
+<dt><strong>ENOTTY</strong></dt>
+<dd><p>Inappropriate <code>fd</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>Insufficient permission.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ldattach'>ldattach</a>(1), <a href='/2/ioctl'>ioctl</a>(2), <a href='/2/ioctl_console'>ioctl_console</a>(2), <a href='/3/termios'>termios</a>(3), <a href='/7/pty'>pty</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

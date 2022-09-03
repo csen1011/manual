@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;adjtimex&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>adjtimex</a>, clock_adjtime, ntp_adjtime - tune kernel clock</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/timex.h&gt;</a>
+
+int adjtimex(struct timex *buf);
+
+int clock_adjtime(clockid_t clk_id, struct timex *buf);
+
+int ntp_adjtime(struct timex *buf);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Linux uses David L. Mills' clock adjustment algorithm (see RFC 5905). The system call <a href='adjtimex'>adjtimex</a>() reads and optionally sets adjustment parameters for this algorithm. It takes a pointer to a <code>timex</code> structure, updates kernel parameters from (selected) field values, and returns the same structure updated with the current kernel values. This structure is declared as follows:</p>
+<pre><code>struct timex {
+    int  modes;      /* Mode selector */
+    long offset;     /* Time offset; nanoseconds, if STA_NANO
+                        status flag is set, otherwise
+                        microseconds */
+    long freq;       /* Frequency offset; see NOTES for units */
+    long maxerror;   /* Maximum error (microseconds) */
+    long esterror;   /* Estimated error (microseconds) */
+    int  status;     /* Clock command/status */
+    long constant;   /* PLL (phase-locked loop) time constant */
+    long precision;  /* Clock precision
+                        (microseconds, read-only) */
+    long tolerance;  /* Clock frequency tolerance (read-only);
+                        see NOTES for units */
+    struct timeval time;
+                     /* Current time (read-only, except for
+                        ADJ_SETOFFSET); upon return, time.tv_usec
+                        contains nanoseconds, if STA_NANO status
+                        flag is set, otherwise microseconds */
+    long tick;       /* Microseconds between clock ticks */
+    long ppsfreq;    /* PPS (pulse per second) frequency
+                        (read-only); see NOTES for units */
+    long jitter;     /* PPS jitter (read-only); nanoseconds, if
+                        STA_NANO status flag is set, otherwise
+                        microseconds */
+    int  shift;      /* PPS interval duration
+                        (seconds, read-only) */
+    long stabil;     /* PPS stability (read-only);
+                        see NOTES for units */
+    long jitcnt;     /* PPS count of jitter limit exceeded
+                        events (read-only) */
+    long calcnt;     /* PPS count of calibration intervals
+                        (read-only) */
+    long errcnt;     /* PPS count of calibration errors
+                        (read-only) */
+    long stbcnt;     /* PPS count of stability limit exceeded
+                        events (read-only) */
+    int tai;         /* TAI offset, as set by previous ADJ_TAI
+                        operation (seconds, read-only,
+                        since Linux 2.6.26) */
+    /* Further padding bytes to allow for future expansion */
+};</code></pre>
+<p>The <code>modes</code> field determines which parameters, if any, to set. (As described later in this page, the constants used for <a href='ntp_adjtime'>ntp_adjtime</a>() are equivalent but differently named.) It is a bit mask containing a bitwise-<code>or</code> combination of zero or more of the following bits:</p>
+<dl>
+<dt><strong>ADJ_OFFSET</strong></dt>
+<dd><p>Set time offset from <code>buf.offset</code>. Since Linux 2.6.26, the supplied value is clamped to the range (-0.5s, +0.5s). In older kernels, an <strong>EINVAL</strong> error occurs if the supplied value is out of range.</p>
+</dd>
+<dt><strong>ADJ_FREQUENCY</strong></dt>
+<dd><p>Set frequency offset from <code>buf.freq</code>. Since Linux 2.6.26, the supplied value is clamped to the range (-32768000, +32768000). In older kernels, an <strong>EINVAL</strong> error occurs if the supplied value is out of range.</p>
+</dd>
+<dt><strong>ADJ_MAXERROR</strong></dt>
+<dd><p>Set maximum time error from <code>buf.maxerror</code>.</p>
+</dd>
+<dt><strong>ADJ_ESTERROR</strong></dt>
+<dd><p>Set estimated time error from <code>buf.esterror</code>.</p>
+</dd>
+<dt><strong>ADJ_STATUS</strong></dt>
+<dd><p>Set clock status bits from <code>buf.status</code>. A description of these bits is provided below.</p>
+</dd>
+<dt><strong>ADJ_TIMECONST</strong></dt>
+<dd><p>Set PLL time constant from <code>buf.constant</code>. If the <strong>STA_NANO</strong> status flag (see below) is clear, the kernel adds 4 to this value.</p>
+</dd>
+<dt><strong>ADJ_SETOFFSET</strong> (since Linux 2.6.39)</dt>
+<dd><p>Add <code>buf.time</code> to the current time. If <code>buf.status</code> includes the <strong>ADJ_NANO</strong> flag, then <code>buf.time.tv_usec</code> is interpreted as a nanosecond value; otherwise it is interpreted as microseconds.</p>
+<p>The value of <code>buf.time</code> is the sum of its two fields, but the field <code>buf.time.tv_usec</code> must always be nonnegative. The following example shows how to normalize a <code>timeval</code> with nanosecond resolution.</p>
+<pre><code>while (buf.time.tv_usec &lt; 0) {
+    buf.time.tv_sec  -= 1;
+    buf.time.tv_usec += 1000000000;
+}</code></pre>
+</dd>
+<dt><strong>ADJ_MICRO</strong> (since Linux 2.6.26)</dt>
+<dd><p>Select microsecond resolution.</p>
+</dd>
+<dt><strong>ADJ_NANO</strong> (since Linux 2.6.26)</dt>
+<dd><p>Select nanosecond resolution. Only one of <strong>ADJ_MICRO</strong> and <strong>ADJ_NANO</strong> should be specified.</p>
+</dd>
+<dt><strong>ADJ_TAI</strong> (since Linux 2.6.26)</dt>
+<dd><p>Set TAI (Atomic International Time) offset from <code>buf.constant</code>.</p>
+<p><strong>ADJ_TAI</strong> should not be used in conjunction with <strong>ADJ_TIMECONST</strong>, since the latter mode also employs the <code>buf.constant</code> field.</p>
+<p>For a complete explanation of TAI and the difference between TAI and UTC, see</p>
+</dd>
+</dl>
+<p><code>BIPM</code></p>
+<dl>
+<dt><strong>ADJ_TICK</strong></dt>
+<dd><p>Set tick value from <code>buf.tick</code>.</p>
+</dd>
+</dl>
+<p>Alternatively, <code>modes</code> can be specified as either of the following (multibit mask) values, in which case other bits should not be specified in <code>modes</code>:</p>
+<dl>
+<dt><strong>ADJ_OFFSET_SINGLESHOT</strong></dt>
+<dd><p>Old-fashioned <a href='/3/adjtime'>adjtime</a>(3): (gradually) adjust time by value specified in <code>buf.offset</code>, which specifies an adjustment in microseconds.</p>
+</dd>
+<dt><strong>ADJ_OFFSET_SS_READ</strong> (functional since Linux 2.6.28)</dt>
+<dd><p>Return (in <code>buf.offset</code>) the remaining amount of time to be adjusted after an earlier <strong>ADJ_OFFSET_SINGLESHOT</strong> operation. This feature was added in Linux 2.6.24, but did not work correctly until Linux 2.6.28.</p>
+</dd>
+</dl>
+<p>Ordinary users are restricted to a value of either 0 or <strong>ADJ_OFFSET_SS_READ</strong> for <code>modes</code>. Only the superuser may set any parameters.</p>
+<p>The <code>buf.status</code> field is a bit mask that is used to set and/or retrieve status bits associated with the NTP implementation. Some bits in the mask are both readable and settable, while others are read-only.</p>
+<dl>
+<dt><strong>STA_PLL</strong> (read-write)</dt>
+<dd><p>Enable phase-locked loop (PLL) updates via <strong>ADJ_OFFSET</strong>.</p>
+</dd>
+<dt><strong>STA_PPSFREQ</strong> (read-write)</dt>
+<dd><p>Enable PPS (pulse-per-second) frequency discipline.</p>
+</dd>
+<dt><strong>STA_PPSTIME</strong> (read-write)</dt>
+<dd><p>Enable PPS time discipline.</p>
+</dd>
+<dt><strong>STA_FLL</strong> (read-write)</dt>
+<dd><p>Select frequency-locked loop (FLL) mode.</p>
+</dd>
+<dt><strong>STA_INS</strong> (read-write)</dt>
+<dd><p>Insert a leap second after the last second of the UTC day, thus extending the last minute of the day by one second. Leap-second insertion will occur each day, so long as this flag remains set. <strong>STA_DEL</strong> (read-write) Delete a leap second at the last second of the UTC day. Leap second deletion will occur each day, so long as this flag remains set.</p>
+</dd>
+<dt><strong>STA_UNSYNC</strong> (read-write)</dt>
+<dd><p>Clock unsynchronized.</p>
+</dd>
+<dt><strong>STA_FREQHOLD</strong> (read-write)</dt>
+<dd><p>Hold frequency. Normally adjustments made via <strong>ADJ_OFFSET</strong> result in dampened frequency adjustments also being made. So a single call corrects the current offset, but as offsets in the same direction are made repeatedly, the small frequency adjustments will accumulate to fix the long-term skew.</p>
+<p>This flag prevents the small frequency adjustment from being made when correcting for an <strong>ADJ_OFFSET</strong> value.</p>
+</dd>
+<dt><strong>STA_PPSSIGNAL</strong> (read-only)</dt>
+<dd><p>A valid PPS (pulse-per-second) signal is present.</p>
+</dd>
+<dt><strong>STA_PPSJITTER</strong> (read-only)</dt>
+<dd><p>PPS signal jitter exceeded.</p>
+</dd>
+<dt><strong>STA_PPSWANDER</strong> (read-only)</dt>
+<dd><p>PPS signal wander exceeded.</p>
+</dd>
+<dt><strong>STA_PPSERROR</strong> (read-only)</dt>
+<dd><p>PPS signal calibration error.</p>
+</dd>
+<dt><strong>STA_CLOCKERR</strong> (read-only)</dt>
+<dd><p>Clock hardware fault.</p>
+</dd>
+<dt><strong>STA_NANO</strong> (read-only; since Linux 2.6.26)</dt>
+<dd><p>Resolution (0 = microsecond, 1 = nanoseconds). Set via <strong>ADJ_NANO</strong>, cleared via <strong>ADJ_MICRO</strong>.</p>
+</dd>
+<dt><strong>STA_MODE</strong> (since Linux 2.6.26)</dt>
+<dd><p>Mode (0 = Phase Locked Loop, 1 = Frequency Locked Loop).</p>
+</dd>
+<dt><strong>STA_CLK</strong> (read-only; since Linux 2.6.26)</dt>
+<dd><p>Clock source (0 = A, 1 = B); currently unused.</p>
+</dd>
+</dl>
+<p>Attempts to set read-only <code>status</code> bits are silently ignored. The <a href='clock_adjtime'>clock_adjtime</a>() system call (added in Linux 2.6.39) behaves like <a href='adjtimex'>adjtimex</a>() but takes an additional <code>clk_id</code> argument to specify the particular clock on which to act.</p>
+<h2>ntp_adjtime ()</h2>
+<p>The <a href='ntp_adjtime'>ntp_adjtime</a>() library function (described in the NTP "Kernel Application Program API", KAPI) is a more portable interface for performing the same task as <a href='adjtimex'>adjtimex</a>(). Other than the following points, it is identical to <a href='adjtimex'>adjtimex</a>():</p>
+<ul>
+<li><p>The constants used in <code>modes</code> are prefixed with "MOD_" rather than "ADJ_", and have the same suffixes (thus, <strong>MOD_OFFSET</strong>, <strong>MOD_FREQUENCY</strong>, and so on), other than the exceptions noted in the following points.</p></li>
+<li><p><strong>MOD_CLKA</strong> is the synonym for <strong>ADJ_OFFSET_SINGLESHOT</strong>.</p></li>
+<li><p><strong>MOD_CLKB</strong> is the synonym for <strong>ADJ_TICK</strong>.</p></li>
+<li><p>The is no synonym for <strong>ADJ_OFFSET_SS_READ</strong>, which is not described in the KAPI.</p></li>
+</ul>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='adjtimex'>adjtimex</a>() and <a href='ntp_adjtime'>ntp_adjtime</a>() return the clock state; that is, one of the following values:</p>
+<dl>
+<dt><strong>TIME_OK</strong></dt>
+<dd><p>Clock synchronized, no leap second adjustment pending.</p>
+</dd>
+<dt><strong>TIME_INS</strong></dt>
+<dd><p>Indicates that a leap second will be added at the end of the UTC day.</p>
+</dd>
+<dt><strong>TIME_DEL</strong></dt>
+<dd><p>Indicates that a leap second will be deleted at the end of the UTC day.</p>
+</dd>
+<dt><strong>TIME_OOP</strong></dt>
+<dd><p>Insertion of a leap second is in progress.</p>
+</dd>
+<dt><strong>TIME_WAIT</strong></dt>
+<dd><p>A leap-second insertion or deletion has been completed. This value will be returned until the next <strong>ADJ_STATUS</strong> operation clears the <strong>STA_INS</strong> and <strong>STA_DEL</strong> flags.</p>
+</dd>
+<dt><strong>TIME_ERROR</strong></dt>
+<dd><p>The system clock is not synchronized to a reliable server. This value is returned when any of the following holds true:</p>
+<ul>
+<li><p>Either <strong>STA_UNSYNC</strong> or <strong>STA_CLOCKERR</strong> is set.</p></li>
+<li><p><strong>STA_PPSSIGNAL</strong> is clear and either <strong>STA_PPSFREQ</strong> or <strong>STA_PPSTIME</strong> is set.</p></li>
+<li><p><strong>STA_PPSTIME</strong> and <strong>STA_PPSJITTER</strong> are both set.</p></li>
+<li><p><strong>STA_PPSFREQ</strong> is set and either <strong>STA_PPSWANDER</strong> or <strong>STA_PPSJITTER</strong> is set.</p></li>
+</ul>
+<p>The symbolic name <strong>TIME_BAD</strong> is a synonym for <strong>TIME_ERROR</strong>, provided for backward compatibility.</p>
+</dd>
+</dl>
+<p>Note that starting with Linux 3.4, the call operates asynchronously and the return value usually will not reflect a state change caused by the call itself.</p>
+<p>On failure, these calls return -1 and set <code>errno</code>.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>buf</code> does not point to writable memory.</p>
+</dd>
+<dt><strong>EINVAL</strong> (kernels before Linux 2.6.26)</dt>
+<dd><p>An attempt was made to set <code>buf.freq</code> to a value outside the range (-33554432, +33554432).</p>
+</dd>
+<dt><strong>EINVAL</strong> (kernels before Linux 2.6.26)</dt>
+<dd><p>An attempt was made to set <code>buf.offset</code> to a value outside the permitted range. In kernels before Linux 2.0, the permitted range was (-131072, +131072). From Linux 2.0 onwards, the permitted range was (-512000, +512000).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An attempt was made to set <code>buf.status</code> to a value other than those listed above.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The <code>clk_id</code> given to <a href='clock_adjtime'>clock_adjtime</a>() is invalid for one of two reasons. Either the System-V style hard-coded positive clock ID value is out of range, or the dynamic <code>clk_id</code> does not refer to a valid instance of a clock object. See <a href='/2/clock_gettime'>clock_gettime</a>(2) for a discussion of dynamic clocks.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>An attempt was made to set <code>buf.tick</code> to a value outside the range 900000/<strong>HZ</strong> to 1100000/<strong>HZ</strong>, where <strong>HZ</strong> is the system timer interrupt frequency.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>The hot-pluggable device (like USB for example) represented by a dynamic <code>clk_id</code> has disappeared after its character device was opened. See <a href='/2/clock_gettime'>clock_gettime</a>(2) for a discussion of dynamic clocks.</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>The given <code>clk_id</code> does not support adjustment.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p><code>buf.modes</code> is neither 0 nor <strong>ADJ_OFFSET_SS_READ</strong>, and the caller does not have sufficient privilege. Under Linux, the <strong>CAP_SYS_TIME</strong> capability is required.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='ntp_adjtime'>ntp_adjtime</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>None of these interfaces is described in POSIX.1</p>
+<p><a href='adjtimex'>adjtimex</a>() and <a href='clock_adjtime'>clock_adjtime</a>() are Linux-specific and should not be used in programs intended to be portable.</p>
+<p>The preferred API for the NTP daemon is <a href='ntp_adjtime'>ntp_adjtime</a>().</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>In struct <code>timex</code>, <code>freq</code>, <code>ppsfreq</code>, and <code>stabil</code> are ppm (parts per million) with a 16-bit fractional part, which means that a value of 1 in one of those fields actually means 2^-16 ppm, and 2^16=65536 is 1 ppm. This is the case for both input values (in the case of <code>freq</code>) and output values.</p>
+<p>The leap-second processing triggered by <strong>STA_INS</strong> and <strong>STA_DEL</strong> is done by the kernel in timer context. Thus, it will take one tick into the second for the leap second to be inserted or deleted.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/clock_gettime'>clock_gettime</a>(2), <a href='/2/clock_settime'>clock_settime</a>(2), <a href='/2/settimeofday'>settimeofday</a>(2), <a href='/3/adjtime'>adjtime</a>(3), <a href='/3/ntp_gettime'>ntp_gettime</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/time'>time</a>(7), <a href='/8/adjtimex'>adjtimex</a>(8), <a href='/8/hwclock'>hwclock</a>(8)</p>
+<p><a href="<a href="http://www.slac.stanford.edu/comp/unix/package/rtems/src/ssrlApps/ntpNanoclock/api.htm">http://www.slac.stanford.edu/comp/unix/package/rtems/src/ssrlApps/ntpNanoclock/api.htm</a>">NTP "Kernel Application Program Interface"</a></p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

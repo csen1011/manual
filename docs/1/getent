@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getent - get entries from Name Service Switch libraries</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>getent [<code>option</code>]... <code>database</code> <code>key</code>...</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>getent</strong> command displays entries from databases supported by the Name Service Switch libraries, which are configured in <code>/etc/nsswitch.conf</code>. If one or more <code>key</code> arguments are provided, then only the entries that match the supplied keys will be displayed. Otherwise, if no <code>key</code> is provided, all entries will be displayed (unless the database does not support enumeration).</p>
+<p>The <code>database</code> may be any of those supported by the GNU C Library, listed below:</p>
+<blockquote>
+<dl>
+<dt><strong>ahosts</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/sethostent'>sethostent</a>(3), <a href='/3/gethostent'>gethostent</a>(3), and <a href='/3/endhostent'>endhostent</a>(3) to enumerate the hosts database. This is identical to using <strong>hosts</strong>. When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/getaddrinfo'>getaddrinfo</a>(3) with the address family <strong>AF_UNSPEC</strong>, enumerating each socket address structure returned.</p>
+</dd>
+<dt><strong>ahostsv4</strong></dt>
+<dd><p>Same as <strong>ahosts</strong>, but use the address family <strong>AF_INET</strong>.</p>
+</dd>
+<dt><strong>ahostsv6</strong></dt>
+<dd><p>Same as <strong>ahosts</strong>, but use the address family <strong>AF_INET6</strong>. The call to <a href='/3/getaddrinfo'>getaddrinfo</a>(3) in this case includes the <strong>AI_V4MAPPED</strong> flag.</p>
+</dd>
+<dt><strong>aliases</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setaliasent'>setaliasent</a>(3), <a href='/3/getaliasent'>getaliasent</a>(3), and <a href='/3/endaliasent'>endaliasent</a>(3) to enumerate the aliases database. When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/getaliasbyname'>getaliasbyname</a>(3) and display the result.</p>
+</dd>
+<dt><strong>ethers</strong></dt>
+<dd><p>When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/ether_aton'>ether_aton</a>(3) and <a href='/3/ether_hostton'>ether_hostton</a>(3) until a result is obtained, and display the result. Enumeration is not supported on <strong>ethers</strong>, so a <code>key</code> must be provided.</p>
+</dd>
+<dt><strong>group</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setgrent'>setgrent</a>(3), <a href='/3/getgrent'>getgrent</a>(3), and <a href='/3/endgrent'>endgrent</a>(3) to enumerate the group database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getgrgid'>getgrgid</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getgrnam'>getgrnam</a>(3) and display the result.</p>
+</dd>
+<dt><strong>gshadow</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setsgent'>setsgent</a>(3), <a href='/3/getsgent'>getsgent</a>(3), and <a href='/3/endsgent'>endsgent</a>(3) to enumerate the gshadow database. When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/getsgnam'>getsgnam</a>(3) and display the result.</p>
+</dd>
+<dt><strong>hosts</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/sethostent'>sethostent</a>(3), <a href='/3/gethostent'>gethostent</a>(3), and <a href='/3/endhostent'>endhostent</a>(3) to enumerate the hosts database. When one or more <code>key</code> arguments are provided, pass each <code>key</code> to <a href='/3/gethostbyaddr'>gethostbyaddr</a>(3) or <a href='/3/gethostbyname2'>gethostbyname2</a>(3), depending on whether a call to <a href='/3/inet_pton'>inet_pton</a>(3) indicates that the <code>key</code> is an IPv6 or IPv4 address or not, and display the result.</p>
+</dd>
+<dt><strong>initgroups</strong></dt>
+<dd><p>When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/getgrouplist'>getgrouplist</a>(3) and display the result. Enumeration is not supported on <strong>initgroups</strong>, so a <code>key</code> must be provided.</p>
+</dd>
+<dt><strong>netgroup</strong></dt>
+<dd><p>When one <code>key</code> is provided, pass the <code>key</code> to <a href='/3/setnetgrent'>setnetgrent</a>(3) and, using <a href='/3/getnetgrent'>getnetgrent</a>(3) display the resulting string triple (<code>hostname</code>, <code>username</code>, <code>domainname</code>). Alternatively, three <code>keys</code> may be provided, which are interpreted as the <code>hostname</code>, <code>username</code>, and <code>domainname</code> to match to a netgroup name via <a href='/3/innetgr'>innetgr</a>(3). Enumeration is not supported on <strong>netgroup</strong>, so either one or three <code>keys</code> must be provided.</p>
+</dd>
+<dt><strong>networks</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setnetent'>setnetent</a>(3), <a href='/3/getnetent'>getnetent</a>(3), and <a href='/3/endnetent'>endnetent</a>(3) to enumerate the networks database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getnetbyaddr'>getnetbyaddr</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getnetbyname'>getnetbyname</a>(3) and display the result.</p>
+</dd>
+<dt><strong>passwd</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setpwent'>setpwent</a>(3), <a href='/3/getpwent'>getpwent</a>(3), and <a href='/3/endpwent'>endpwent</a>(3) to enumerate the passwd database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getpwuid'>getpwuid</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getpwnam'>getpwnam</a>(3) and display the result.</p>
+</dd>
+<dt><strong>protocols</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setprotoent'>setprotoent</a>(3), <a href='/3/getprotoent'>getprotoent</a>(3), and <a href='/3/endprotoent'>endprotoent</a>(3) to enumerate the protocols database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getprotobynumber'>getprotobynumber</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getprotobyname'>getprotobyname</a>(3) and display the result.</p>
+</dd>
+<dt><strong>rpc</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setrpcent'>setrpcent</a>(3), <a href='/3/getrpcent'>getrpcent</a>(3), and <a href='/3/endrpcent'>endrpcent</a>(3) to enumerate the rpc database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getrpcbynumber'>getrpcbynumber</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getrpcbyname'>getrpcbyname</a>(3) and display the result.</p>
+</dd>
+<dt><strong>services</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setservent'>setservent</a>(3), <a href='/3/getservent'>getservent</a>(3), and <a href='/3/endservent'>endservent</a>(3) to enumerate the services database. When one or more <code>key</code> arguments are provided, pass each numeric <code>key</code> to <a href='/3/getservbynumber'>getservbynumber</a>(3) and each nonnumeric <code>key</code> to <a href='/3/getservbyname'>getservbyname</a>(3) and display the result.</p>
+</dd>
+<dt><strong>shadow</strong></dt>
+<dd><p>When no <code>key</code> is provided, use <a href='/3/setspent'>setspent</a>(3), <a href='/3/getspent'>getspent</a>(3), and <a href='/3/endspent'>endspent</a>(3) to enumerate the shadow database. When one or more <code>key</code> arguments are provided, pass each <code>key</code> in succession to <a href='/3/getspnam'>getspnam</a>(3) and display the result.</p>
+</dd>
+</dl>
+</blockquote>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-s <code>service</code></strong>, <strong>--service <code>service</code></strong></dt>
+<dd><p>Override all databases with the specified service. (Since glibc 2.2.5.)</p>
+</dd>
+<dt><strong>-s <code>database</code>:<code>service</code></strong>, <strong>--service <code>database</code>:<code>service</code></strong></dt>
+<dd><p>Override only specified databases with the specified service. The option may be used multiple times, but only the last service for each database will be used. (Since glibc 2.4.)</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--no-idn</strong></dt>
+<dd><p>Disables IDN encoding in lookups for <a href='/3/ahosts</strong>/<strong>getaddrinfo'>ahosts</strong>/<strong>getaddrinfo</a>(3) (Since glibc-2.13.)</p>
+</dd>
+<dt><strong>-?</strong>, <strong>--help</strong></dt>
+<dd><p>Print a usage summary and exit.</p>
+</dd>
+<dt><strong>--usage</strong></dt>
+<dd><p>Print a short usage summary and exit.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Print the version number, license, and disclaimer of warranty for <strong>getent</strong>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>One of the following exit values can be returned by <strong>getent</strong>:</p>
+<blockquote>
+<dl>
+<dt><strong>0</strong></dt>
+<dd><p>Command completed successfully.</p>
+</dd>
+<dt><strong>1</strong></dt>
+<dd><p>Missing arguments, or <code>database</code> unknown.</p>
+</dd>
+<dt><strong>2</strong></dt>
+<dd><p>One or more supplied <code>key</code> could not be found in the <code>database</code>.</p>
+</dd>
+<dt><strong>3</strong></dt>
+<dd><p>Enumeration not supported on this <code>database</code>.</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/nsswitch.conf'>nsswitch.conf</a>(5)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>cciss - HP Smart Array block driver</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>modprobe cciss [ cciss_allow_hpsa=1 ]</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>Note</strong>: This obsolete driver was removed from the kernel in version 4.14, as it is superseded by the <a href='/4/hpsa'>hpsa</a>(4) driver in newer kernels.</p>
+<p><strong>cciss</strong> is a block driver for older HP Smart Array RAID controllers.</p>
+<h2>Options</h2>
+<p><code>cciss_allow_hpsa=1</code>: This option prevents the <strong>cciss</strong> driver from attempting to drive any controllers that the <a href='/4/hpsa'>hpsa</a>(4) driver is capable of controlling, which is to say, the <strong>cciss</strong> driver is restricted by this option to the following controllers:</p>
+<pre><code>    Smart Array 5300
+    Smart Array 5i
+    Smart Array 532
+    Smart Array 5312
+    Smart Array 641
+    Smart Array 642
+    Smart Array 6400
+    Smart Array 6400 EM
+    Smart Array 6i
+    Smart Array P600
+    Smart Array P400i
+    Smart Array E200i
+    Smart Array E200
+    Smart Array E200i
+    Smart Array E200i
+    Smart Array E200i
+    Smart Array E500</code></pre>
+<h2>Supported hardware</h2>
+<p>The <strong>cciss</strong> driver supports the following Smart Array boards:</p>
+<pre><code>    Smart Array 5300
+    Smart Array 5i
+    Smart Array 532
+    Smart Array 5312
+    Smart Array 641
+    Smart Array 642
+    Smart Array 6400
+    Smart Array 6400 U320 Expansion Module
+    Smart Array 6i
+    Smart Array P600
+    Smart Array P800
+    Smart Array E400
+    Smart Array P400i
+    Smart Array E200
+    Smart Array E200i
+    Smart Array E500
+    Smart Array P700m
+    Smart Array P212
+    Smart Array P410
+    Smart Array P410i
+    Smart Array P411
+    Smart Array P812
+    Smart Array P712m
+    Smart Array P711m</code></pre>
+<h2>Configuration details</h2>
+<p>To configure HP Smart Array controllers, use the HP Array Configuration Utility (either <a href='/8/hpacuxe'>hpacuxe</a>(8) or <a href='/8/hpacucli'>hpacucli</a>(8)) or the Offline ROM-based Configuration Utility (ORCA) run from the Smart Array's option ROM at boot time.</p>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<h2>Device nodes</h2>
+<p>The device naming scheme is as follows:</p>
+<p>Major numbers:</p>
+<p>104 cciss0 105 cciss1 106 cciss2 105 cciss3 108 cciss4 109 cciss5 110 cciss6 111 cciss7</p>
+<p>Minor numbers:</p>
+<pre><code>    b7 b6 b5 b4 b3 b2 b1 b0
+    |----+----| |----+----|
+         |           |
+         |           +-------- Partition ID (0=wholedev, 1-15 partition)
+         |
+         +-------------------- Logical Volume number</code></pre>
+<p>The device naming scheme is:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">/dev/cciss/c0d0</td>
+<td style="text-align: left;">Controller 0, disk 0, whole device</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">/dev/cciss/c0d0p1</td>
+<td style="text-align: left;">Controller 0, disk 0, partition 1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">/dev/cciss/c0d0p2</td>
+<td style="text-align: left;">Controller 0, disk 0, partition 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">/dev/cciss/c0d0p3</td>
+<td style="text-align: left;">Controller 0, disk 0, partition 3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">/dev/cciss/c1d1</td>
+<td style="text-align: left;">Controller 1, disk 1, whole device</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">/dev/cciss/c1d1p1</td>
+<td style="text-align: left;">Controller 1, disk 1, partition 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">/dev/cciss/c1d1p2</td>
+<td style="text-align: left;">Controller 1, disk 1, partition 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">/dev/cciss/c1d1p3</td>
+<td style="text-align: left;">Controller 1, disk 1, partition 3</td>
+</tr>
+</tbody>
+</table>
+<h2>Files in /proc</h2>
+<p>The files <code>/proc/driver/cciss/cciss[0-9]+</code> contain information about the configuration of each controller. For example:</p>
+<pre><code>$ cd /proc/driver/cciss
+$ ls -l
+total 0
+-rw-r--r-- 1 root root 0 2010-09-10 10:38 cciss0
+-rw-r--r-- 1 root root 0 2010-09-10 10:38 cciss1
+-rw-r--r-- 1 root root 0 2010-09-10 10:38 cciss2
+$ cat cciss2
+cciss2: HP Smart Array P800 Controller
+Board ID: 0x3223103c
+Firmware Version: 7.14
+IRQ: 16
+Logical drives: 1
+Current Q depth: 0
+Current # commands on controller: 0
+Max Q depth since init: 1
+Max # commands on controller since init: 2
+Max SG entries since init: 32
+Sequential access devices: 0
+
+cciss/c2d0:   36.38GB       RAID 0</code></pre>
+<dl>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/model</code></dt>
+<dd><p>Displays the SCSI INQUIRY page 0 model for logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/rev</code></dt>
+<dd><p>Displays the SCSI INQUIRY page 0 revision for logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/unique_id</code></dt>
+<dd><p>Displays the SCSI INQUIRY page 83 serial number for logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/vendor</code></dt>
+<dd><p>Displays the SCSI INQUIRY page 0 vendor for logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/block:cciss!cXdY</code></dt>
+<dd><p>A symbolic link to <code>/sys/block/cciss!cXdY</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/rescan</code></dt>
+<dd><p>When this file is written to, the driver rescans the controller to discover any new, removed, or modified logical drives.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/resettable</code></dt>
+<dd><p>A value of 1 displayed in this file indicates that the "reset_devices=1" kernel parameter (used by <strong>kdump</strong>) is honored by this controller. A value of 0 indicates that the "reset_devices=1" kernel parameter will not be honored. Some models of Smart Array are not able to honor this parameter.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/lunid</code></dt>
+<dd><p>Displays the 8-byte LUN ID used to address logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/raid_level</code></dt>
+<dd><p>Displays the RAID level of logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+<dt><code>/sys/bus/pci/devices/&lt;dev&gt;/ccissX/cXdY/usage_count</code></dt>
+<dd><p>Displays the usage count (number of opens) of logical drive <code>Y</code> of controller <code>X</code>.</p>
+</dd>
+</dl>
+<h2>SCSI tape drive and medium changer support</h2>
+<p>SCSI sequential access devices and medium changer devices are supported and appropriate device nodes are automatically created (e.g., <code>/dev/st0</code>, <code>/dev/st1</code>, etc.; see <a href='/4/st'>st</a>(4) for more details.) You must enable "SCSI tape drive support for Smart Array 5xxx" and "SCSI support" in your kernel configuration to be able to use SCSI tape drives with your Smart Array 5xxx controller.</p>
+<p>Additionally, note that the driver will not engage the SCSI core at init time. The driver must be directed to dynamically engage the SCSI core via the <code>/proc</code> filesystem entry, which the "block" side of the driver creates as <code>/proc/driver/cciss/cciss*</code> at run time. This is because at driver init time, the SCSI core may not yet be initialized (because the driver is a block driver) and attempting to register it with the SCSI core in such a case would cause a hang. This is best done via an initialization script (typically in <code>/etc/init.d</code>, but could vary depending on distribution). For example:</p>
+<pre><code>for x in /proc/driver/cciss/cciss[0-9]*
+do
+    echo "engage scsi" &gt; $x
+done</code></pre>
+<p>Once the SCSI core is engaged by the driver, it cannot be disengaged (except by unloading the driver, if it happens to be linked as a module.)</p>
+<p>Note also that if no sequential access devices or medium changers are detected, the SCSI core will not be engaged by the action of the above script.</p>
+<h2>Hot plug support for SCSI tape drives</h2>
+<p>Hot plugging of SCSI tape drives is supported, with some caveats. The <strong>cciss</strong> driver must be informed that changes to the SCSI bus have been made. This may be done via the <code>/proc</code> filesystem. For example:</p>
+<p>echo "rescan" &gt; /proc/scsi/cciss0/1</p>
+<p>This causes the driver to:</p>
+<blockquote>
+<ol type="1">
+<li><p>query the adapter about changes to the physical SCSI buses and/or fiber channel arbitrated loop, and</p></li>
+<li><p>make note of any new or removed sequential access devices or medium changers.</p></li>
+</ol>
+</blockquote>
+<p>The driver will output messages indicating which devices have been added or removed and the controller, bus, target, and lun used to address each device. The driver then notifies the SCSI midlayer of these changes.</p>
+<p>Note that the naming convention of the <code>/proc</code> filesystem entries contains a number in addition to the driver name (e.g., "cciss0" instead of just "cciss", which you might expect).</p>
+<p>Note: <code>Only</code> sequential access devices and medium changers are presented as SCSI devices to the SCSI midlayer by the <strong>cciss</strong> driver. Specifically, physical SCSI disk drives are <code>not</code> presented to the SCSI midlayer. The only disk devices that are presented to the kernel are logical drives that the array controller constructs from regions on the physical drives. The logical drives are presented to the block layer (not to the SCSI midlayer). It is important for the driver to prevent the kernel from accessing the physical drives directly, since these drives are used by the array controller to construct the logical drives.</p>
+<h2>SCSI error handling for tape drives and medium changers</h2>
+<p>The Linux SCSI midlayer provides an error-handling protocol that is initiated whenever a SCSI command fails to complete within a certain amount of time (which can vary depending on the command). The <strong>cciss</strong> driver participates in this protocol to some extent. The normal protocol is a four-step process:</p>
+<ul>
+<li><p>First, the device is told to abort the command.</p></li>
+<li><p>If that doesn't work, the device is reset.</p></li>
+<li><p>If that doesn't work, the SCSI bus is reset.</p></li>
+<li><p>If that doesn't work, the host bus adapter is reset.</p></li>
+</ul>
+<p>The <strong>cciss</strong> driver is a block driver as well as a SCSI driver and only the tape drives and medium changers are presented to the SCSI midlayer. Furthermore, unlike more straightforward SCSI drivers, disk I/O continues through the block side during the SCSI error-recovery process. Therefore, the <strong>cciss</strong> driver implements only the first two of these actions, aborting the command, and resetting the device. Note also that most tape drives will not oblige in aborting commands, and sometimes it appears they will not even obey a reset command, though in most circumstances they will. If the command cannot be aborted and the device cannot be reset, the device will be set offline.</p>
+<p>In the event that the error-handling code is triggered and a tape drive is successfully reset or the tardy command is successfully aborted, the tape drive may still not allow I/O to continue until some command is issued that positions the tape to a known position. Typically you must rewind the tape (by issuing <code>mt -f /dev/st0 rewind</code> for example) before I/O can proceed again to a tape drive that was reset.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/4/hpsa'>hpsa</a>(4), <a href='/8/cciss_vol_status'>cciss_vol_status</a>(8), <a href='/8/hpacucli'>hpacucli</a>(8), <a href='/8/hpacuxe'>hpacuxe</a>(8)</p>
+<p><a href="<a href="http://cciss.sf.net">http://cciss.sf.net</a>"></a>, and <code>Documentation/blockdev/cciss.txt</code> and <code>Documentation/ABI/testing/sysfs-bus-pci-devices-cciss</code> in the Linux kernel source tree</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

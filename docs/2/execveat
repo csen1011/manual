@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>execveat - execute program relative to a directory file descriptor</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong>int execveat(int </strong><code>dirfd</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a></strong><code>pathname</code><strong>,</strong><br/>
+<strong> <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>const </strong><code>argv</code><strong>[], <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>const </strong><code>envp</code><strong>[],</strong><br/>
+<strong> int </strong><code>flags</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='execveat'>execveat</a>() system call executes the program referred to by the combination of <code>dirfd</code> and <code>pathname</code>. It operates in exactly the same way as <a href='/2/execve'>execve</a>(2), except for the differences described in this manual page.</p>
+<p>If the pathname given in <code>pathname</code> is relative, then it is interpreted relative to the directory referred to by the file descriptor <code>dirfd</code> (rather than relative to the current working directory of the calling process, as is done by <a href='/2/execve'>execve</a>(2) for a relative pathname).</p>
+<p>If <code>pathname</code> is relative and <code>dirfd</code> is the special value <strong>AT_FDCWD</strong>, then <code>pathname</code> is interpreted relative to the current working directory of the calling process (like <a href='/2/execve'>execve</a>(2)).</p>
+<p>If <code>pathname</code> is absolute, then <code>dirfd</code> is ignored.</p>
+<p>If <code>pathname</code> is an empty string and the <strong>AT_EMPTY_PATH</strong> flag is specified, then the file descriptor <code>dirfd</code> specifies the file to be executed (i.e., <code>dirfd</code> refers to an executable file, rather than a directory).</p>
+<p>The <code>flags</code> argument is a bit mask that can include zero or more of the following flags:</p>
+<dl>
+<dt><strong>AT_EMPTY_PATH</strong></dt>
+<dd><p>If <code>pathname</code> is an empty string, operate on the file referred to by <code>dirfd</code> (which may have been obtained using the <a href='/2/open'>open</a>(2) <strong>O_PATH</strong> flag).</p>
+</dd>
+<dt><strong>AT_SYMLINK_NOFOLLOW</strong></dt>
+<dd><p>If the file identified by <code>dirfd</code> and a non-NULL <code>pathname</code> is a symbolic link, then the call fails with the error <strong>ELOOP</strong>.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='execveat'>execveat</a>() does not return. On error, -1 is returned, and <code>errno</code> is set appropriately.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>The same errors that occur for <a href='/2/execve'>execve</a>(2) can also occur for <a href='execveat'>execveat</a>(). The following additional errors can occur for <a href='execveat'>execveat</a>():</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>dirfd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid flag specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p><code>flags</code> includes <strong>AT_SYMLINK_NOFOLLOW</strong> and the file identified by <code>dirfd</code> and a non-NULL <code>pathname</code> is a symbolic link.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>The program identified by <code>dirfd</code> and <code>pathname</code> requires the use of an interpreter program (such as a script starting with "#!"), but the file descriptor <code>dirfd</code> was opened with the <strong>O_CLOEXEC</strong> flag, with the result that the program file is inaccessible to the launched interpreter. See <a href='#bugs'>BUGS</a>.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p><code>pathname</code> is relative and <code>dirfd</code> is a file descriptor referring to a file other than a directory.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='execveat'>execveat</a>() was added to Linux in kernel 3.19. GNU C library support is pending.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>The <a href='execveat'>execveat</a>() system call is Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>In addition to the reasons explained in <a href='/2/openat'>openat</a>(2), the <a href='execveat'>execveat</a>() system call is also needed to allow <a href='/3/fexecve'>fexecve</a>(3) to be implemented on systems that do not have the <code>/proc</code> filesystem mounted.</p>
+<p>When asked to execute a script file, the <code>argv[0]</code> that is passed to the script interpreter is a string of the form <code>/dev/fd/N</code> or <code>/dev/fd/N/P</code>, where <code>N</code> is the number of the file descriptor passed via the <code>dirfd</code> argument. A string of the first form occurs when <strong>AT_EMPTY_PATH</strong> is employed. A string of the second form occurs when the script is specified via both <code>dirfd</code> and <code>pathname</code>; in this case, <code>P</code> is the value given in <code>pathname</code>.</p>
+<p>For the same reasons described in <a href='/3/fexecve'>fexecve</a>(3), the natural idiom when using <a href='execveat'>execveat</a>() is to set the close-on-exec flag on <code>dirfd</code>. (But see BUGS.)</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The <strong>ENOENT</strong> error described above means that it is not possible to set the close-on-exec flag on the file descriptor given to a call of the form:</p>
+<p>execveat(fd, "", argv, envp, AT_EMPTY_PATH);</p>
+<p>However, the inability to set the close-on-exec flag means that a file descriptor referring to the script leaks through to the script itself. As well as wasting a file descriptor, this leakage can lead to file-descriptor exhaustion in scenarios where scripts recursively employ <a href='execveat'>execveat</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/execve'>execve</a>(2), <a href='/2/openat'>openat</a>(2), <a href='/3/fexecve'>fexecve</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

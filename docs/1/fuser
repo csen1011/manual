@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fuser - identify processes using files or sockets</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>fuser</strong> [<strong>-fuv</strong>] [<strong>-a</strong>|<strong>-s</strong>] [<strong>-4</strong>|<strong>-6</strong>] [<strong>-c</strong>|<strong>-m</strong>|<strong>-n</strong> <code>space</code>] [<strong> -k</strong> [<strong>-i</strong>] [<strong>-M</strong>] [<strong>-w</strong>] [<strong>-</strong> <code>SIGNAL</code>] ] <code>name</code> ...<br/>
+<strong>fuser -l</strong><br/>
+<strong>fuser -V</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>fuser</strong> displays the PIDs of processes using the specified files or file systems. In the default display mode, each file name is followed by a letter denoting the type of access:</p>
+<blockquote>
+<dl>
+<dt><strong>c</strong></dt>
+<dd><p>current directory.</p>
+</dd>
+<dt><strong>e</strong></dt>
+<dd><p>executable being run.</p>
+</dd>
+<dt><strong>f</strong></dt>
+<dd><p>open file. <strong>f</strong> is omitted in default display mode.</p>
+</dd>
+<dt><strong>F</strong></dt>
+<dd><p>open file for writing. <strong>F</strong> is omitted in default display mode.</p>
+</dd>
+<dt><strong>r</strong></dt>
+<dd><p>root directory.</p>
+</dd>
+<dt><strong>m</strong></dt>
+<dd><p>mmap'ed file or shared library.</p>
+</dd>
+<dt><strong>.</strong></dt>
+<dd><p>Placeholder, omitted in default display mode.</p>
+</dd>
+</dl>
+</blockquote>
+<p><strong>fuser</strong> returns a non-zero return code if none of the specified files is accessed or in case of a fatal error. If at least one access has been found, <strong>fuser</strong> returns zero.</p>
+<p>In order to look up processes using TCP and UDP sockets, the corresponding name space has to be selected with the <strong>-n</strong> option. By default <strong>fuser</strong> will look in both IPv6 and IPv4 sockets. To change the default behavior, use the <strong>-4</strong> and <strong>-6</strong> options. The socket(s) can be specified by the local and remote port, and the remote address. All fields are optional, but commas in front of missing fields must be present:</p>
+<p>[<code>lcl_port</code>][,[<code>rmt_host</code>][,[<code>rmt_port</code>]]]</p>
+<p>Either symbolic or numeric values can be used for IP addresses and port numbers.</p>
+<p><strong>fuser</strong> outputs only the PIDs to stdout, everything else is sent to stderr.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-a</strong>, <strong>--all</strong></dt>
+<dd><p>Show all files specified on the command line. By default, only files that are accessed by at least one process are shown.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>Same as <strong>-m</strong> option, used for POSIX compatibility.</p>
+</dd>
+<dt><strong>-f</strong></dt>
+<dd><p>Silently ignored, used for POSIX compatibility.</p>
+</dd>
+<dt><strong>-k</strong>, <strong>--kill</strong></dt>
+<dd><p>Kill processes accessing the file. Unless changed with <strong>-</strong><code>SIGNAL</code> , SIGKILL is sent. An <strong>fuser</strong> process never kills itself, but may kill other <strong>fuser</strong> processes. The effective user ID of the process executing <strong>fuser</strong> is set to its real user ID before attempting to kill.</p>
+</dd>
+<dt><strong>-i</strong>, <strong>--interactive</strong></dt>
+<dd><p>Ask the user for confirmation before killing a process. This option is silently ignored if <strong>-k</strong> is not present too.</p>
+</dd>
+<dt><strong>-I</strong>, <strong>--inode</strong></dt>
+<dd><p>For the name space <strong>file</strong> let all comparisons be based on the inodes of the specified file(s) and never on the file names even on network based file systems.</p>
+</dd>
+<dt><strong>-l</strong>, <strong>--list-signals</strong></dt>
+<dd><p>List all known signal names.</p>
+</dd>
+<dt><strong>-m</strong><code> NAME, </code><strong>--mount </strong><code>NAME</code></dt>
+<dd><p><code>NAME</code> specifies a file on a mounted file system or a block device that is mounted. All processes accessing files on that file system are listed. If a directory is specified, it is automatically changed to <code>NAME</code>/ to use any file system that might be mounted on that directory.</p>
+</dd>
+<dt><strong>-M</strong>, <strong>--ismountpoint</strong></dt>
+<dd><p>Request will be fulfilled only if <code>NAME</code> specifies a mountpoint. This is an invaluable seat belt which prevents you from killing the machine if <code>NAME</code> happens to not be a filesystem.</p>
+</dd>
+<dt><strong>-w</strong></dt>
+<dd><p>Kill only processes which have write access. This option is silently ignored if <strong>-k</strong> is not present too.</p>
+</dd>
+<dt><strong>-n</strong><code> NAMESPACE, </code><strong>--namespace </strong><code>NAMESPACE</code></dt>
+<dd><p>Select a different name space. The name spaces <strong>file</strong> (file names, the default), <strong>udp</strong> (local UDP ports), and <strong>tcp</strong> (local TCP ports) are supported. For ports, either the port number or the symbolic name can be specified. If there is no ambiguity, the shortcut notation <code>name</code><strong>/</strong><code>space</code> (e.g., <code>80</code><strong>/</strong><code>tcp</code><strong>)</strong> can be used.</p>
+</dd>
+<dt><strong>-s</strong>, <strong>--silent</strong></dt>
+<dd><p>Silent operation. <strong>-u</strong> and <strong>-v</strong> are ignored in this mode. <strong>-a</strong> must not be used with <strong>-s</strong>.</p>
+</dd>
+<dt><strong>-</strong><code>SIGNAL</code></dt>
+<dd><p>Use the specified signal instead of SIGKILL when killing processes. Signals can be specified either by name (e.g., <strong>-HUP</strong>) or by number (e.g., <strong>-1</strong>). This option is silently ignored if the <strong>-k</strong> option is not used.</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--user</strong></dt>
+<dd><p>Append the user name of the process owner to each PID.</p>
+</dd>
+<dt><strong>-v</strong>, <strong>--verbose</strong></dt>
+<dd><p>Verbose mode. Processes are shown in a <strong>ps</strong>-like style. The fields PID, USER and COMMAND are similar to <strong>ps</strong>. ACCESS shows how the process accesses the file. Verbose mode will also show when a particular file is being accessed as a mount point, knfs export or swap file. In this case <strong>kernel</strong> is shown instead of the PID.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Display version information.</p>
+</dd>
+<dt><strong>-4</strong>, <strong>--ipv4</strong></dt>
+<dd><p>Search only for IPv4 sockets. This option must not be used with the <strong>-6</strong> option and only has an effect with the tcp and udp namespaces.</p>
+</dd>
+<dt><strong>-6</strong>, <strong>--ipv6</strong></dt>
+<dd><p>Search only for IPv6 sockets. This option must not be used with the <strong>-4</strong> option and only has an effect with the tcp and udp namespaces.</p>
+</dd>
+</dl>
+<ul>
+<li><p>Reset all options and set the signal back to SIGKILL.</p></li>
+</ul>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt>/proc</dt>
+<dd><p>location of the proc file system</p>
+</dd>
+</dl>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<dl>
+<dt><strong>fuser -km /home</strong></dt>
+<dd><p>kills all processes accessing the file system /home in any way.</p>
+</dd>
+<dt><strong>if fuser -s /dev/ttyS1; then :; else </strong><code>command</code><strong>; fi</strong></dt>
+<dd><p>invokes <code>command</code> if no other process is using /dev/ttyS1.</p>
+</dd>
+<dt><strong>fuser telnet/tcp</strong></dt>
+<dd><p>shows all processes at the (local) TELNET port.</p>
+</dd>
+</dl>
+</div></div><h1 id='restrictions'><a href='#restrictions'>RESTRICTIONS</a></h1><div data-for='restrictions' data-hide><div class='section' data-for='restrictions'><div data-more>
+<p>Processes accessing the same file or file system several times in the same way are only shown once.</p>
+<p>If the same object is specified several times on the command line, some of those entries may be ignored.</p>
+<p><strong>fuser</strong> may only be able to gather partial information unless run with privileges. As a consequence, files opened by processes belonging to other users may not be listed and executables may be classified as mapped only.</p>
+<p><strong>fuser</strong> cannot report on any processes that it doesn't have permission to look at the file descriptor table for. The most common time this problem occurs is when looking for TCP or UDP sockets when running <strong>fuser</strong> as a non-root user. In this case <strong>fuser</strong> will report no access.</p>
+<p>Installing <strong>fuser</strong> SUID root will avoid problems associated with partial information, but may be undesirable for security and privacy reasons.</p>
+<p><strong>udp</strong> and <strong>tcp</strong> name spaces, and UNIX domain sockets can't be searched with kernels older than 1.3.78.</p>
+<p>Accesses by the kernel are only shown with the <strong>-v</strong> option.</p>
+<p>The <strong>-k</strong> option only works on processes. If the user is the kernel, <strong>fuser</strong> will print an advice, but take no action beyond that.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p><strong>fuser -m /dev/sgX</strong> will show (or kill with the <strong>-k</strong> flag) all processes, even if you don't have that device configured. There may be other devices it does this for too.</p>
+<p>The mount <strong>-m</strong> option will match any file within the same device as the specified file, use the <strong>-M</strong> option as well if you mean to specify only the mount point.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/kill'>kill</a>(1), <a href='/1/killall'>killall</a>(1), <a href='/8/lsof'>lsof</a>(8), <a href='/1/pkill'>pkill</a>(1), <a href='/1/ps'>ps</a>(1), <a href='/2/kill'>kill</a>(2).</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>org.freedesktop.locale1 - The D-Bus interface of systemd-localed</p>
+</div></div><h1 id='introduction'><a href='#introduction'>INTRODUCTION</a></h1><div data-for='introduction' data-hide><div class='section' data-for='introduction'><div data-more>
+<p><a href='/8/systemd-localed.service'>systemd-localed.service</a>(8) is a system service that can be used to control the system locale and keyboard mapping from user programs. This page describes the D-Bus interface.</p>
+</div></div></div><h1 id='the-d-bus-api'><a href='#the-d-bus-api'>THE D-BUS API</a></h1><div data-for='the-d-bus-api' data-hide><div class='section' data-for='the-d-bus-api'><div data-more>
+<p>The service exposes the following interfaces on the bus:</p>
+<p>.RS 4</p>
+<pre><code>node /org/freedesktop/locale1 {
+  interface org.freedesktop.locale1 {
+    methods:
+      SetLocale(in  as locale,
+                in  b interactive);
+      SetVConsoleKeyboard(in  s keymap,
+                          in  s keymap_toggle,
+                          in  b convert,
+                          in  b interactive);
+      SetX11Keyboard(in  s layout,
+                     in  s model,
+                     in  s variant,
+                     in  s options,
+                     in  b convert,
+                     in  b interactive);
+    properties:
+      readonly as Locale = [..., ...];
+      readonly s X11Layout = ...;
+      readonly s X11Model = ...;
+      readonly s X11Variant = ...;
+      readonly s X11Options = ...;
+      readonly s VConsoleKeymap = ...;
+      readonly s VConsoleKeymapToggle = ...;
+  };
+  interface org.freedesktop.DBus.Peer { ... };
+  interface org.freedesktop.DBus.Introspectable { ... };
+  interface org.freedesktop.DBus.Properties { ... };
+};
+    </code></pre>
+<p>.RE</p>
+<h2>Methods</h2>
+<p>If you set a new system locale all old system locale settings will be dropped and the new settings will be saved to disk. The locale will also be passed to the system manager, and subsequently started daemons will inherit the new system locale. Note that already running daemons will not learn about the new value.</p>
+<p>The <strong>SetVConsoleKeyboard()</strong> method may be used to set the key mapping for the virtual console. Similarly, <strong>SetX11Keyboard()</strong> may be used to set the default key mapping of any X11 servers.</p>
+<p>Note that <strong>SetVConsoleKeyboard()</strong> instantly applies the new key mapping to the console, while <strong>SetX11Keyboard()</strong> simply sets a default that may be used by later sessions.</p>
+<p>The boolean argument <code>convert</code> may be set to optionally convert the console keyboard configuration to X11 keyboard mappings and vice versa. If true and <strong>SetVConsoleKeyboard()</strong> is used, the nearest X11 keyboard setting for the chosen console setting is set. If true and <strong>SetX11Keyboard()</strong> is used, the nearest console keyboard setting for the chosen X11 setting is set. Hence, it is usually sufficient to call only one of the two functions.</p>
+<p>For graphical UIs that need to set the system keyboard mapping simply invoke <strong>SetX11Keyboard()</strong>, set <code>convert=true</code> and ignore <strong>SetVConsoleKeyboard()</strong>.</p>
+<p>Use the empty string for the keymap parameters you wish not to set.</p>
+<p>The <code>interactive</code> boolean parameters can be used to control whether <strong>polkit</strong>[1] should interactively ask the user for authentication credentials if required.</p>
+<h2>Signals</h2>
+<p>Whenever the system locale or keymap is changed via the daemon, <strong>PropertyChanged</strong> signals are sent out to which clients can subscribe.</p>
+<h2>Properties</h2>
+<p>The system locale is shown in the <code>Locale</code> property. It is an array containing environment-variable-assignment-like strings. The following strings are known: <code>LANG=</code>, <code>LC_CTYPE=</code>, <code>LC_NUMERIC=</code>, <code>LC_TIME=</code>, <code>LC_COLLATE=</code>, <code>LC_MONETARY=</code>, <code>LC_MESSAGES=</code>, <code>LC_PAPER=</code>, <code>LC_NAME=</code>, <code>LC_ADDRESS=</code>, <code>LC_TELEPHONE=</code>, <code>LC_MEASUREMENT=</code>, <code>LC_IDENTIFICATION=</code>.</p>
+<p>The <code>X11Layout</code>, <code>X11Model</code>, <code>X11Variant</code>, and <code>X11Options</code> properties show values configurable with <strong>SetX11Keyboard()</strong> described above (or <strong>SetVConsoleKeyboard()</strong> with <code>convert=true</code>). The <code>VConsoleKeymap</code> and <code>VConsoleKeymapToggle</code> properties show values configurable with <strong>SetVConsoleKeyboard()</strong> (or <strong>SetX11Keyboard()</strong> with <code>convert=true</code>).</p>
+<h2>Security</h2>
+<p>Changing the system locale or keymap using this interface is authenticated via polkit. The polkit action for <strong>SetLocale()</strong> is <strong>org.freedesktop.locale1.set-locale</strong>. The polkit action for <strong>SetX11Keyboard()</strong> and <strong>SetVConsoleKeyboard()</strong> is <strong>org.freedesktop.locale1.set-keyboard</strong>.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p><strong>Example 1. Introspect org.freedesktop.locale1 on the bus</strong></p>
+<p>.RS 4</p>
+<pre><code>$ gdbus introspect --system \
+  --dest org.freedesktop.locale1 \
+  --object-path /org/freedesktop/locale1
+      </code></pre>
+<p>.RE</p>
+</div></div><h1 id='versioning'><a href='#versioning'>VERSIONING</a></h1><div data-for='versioning' data-hide><div class='section' data-for='versioning'><div data-more>
+<p>These D-Bus interfaces follow <strong>the usual interface versioning guidelines</strong>[2].</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>polkit</p>
+<p><a href="https://www.freedesktop.org/software/polkit/docs/latest/">https://www.freedesktop.org/software/polkit/docs/latest/</a></p></li>
+<li><p>the usual interface versioning guidelines</p>
+<p><a href="http://0pointer.de/blog/projects/versioning-dbus.html">http://0pointer.de/blog/projects/versioning-dbus.html</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;timerfd_create&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>timerfd_create</a>, timerfd_settime, timerfd_gettime - timers that notify via file descriptors</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/timerfd.h&gt;</a>
+
+int timerfd_create(int clockid, int flags);
+
+int timerfd_settime(int fd, int flags,
+ const struct itimerspec *new_value,
+ struct itimerspec *old_value);
+
+int timerfd_gettime(int fd, struct itimerspec *curr_value);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>These system calls create and operate on a timer that delivers timer expiration notifications via a file descriptor. They provide an alternative to the use of <a href='/2/setitimer'>setitimer</a>(2) or <a href='/2/timer_create'>timer_create</a>(2), with the advantage that the file descriptor may be monitored by <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), and <a href='/7/epoll'>epoll</a>(7).</p>
+<p>The use of these three system calls is analogous to the use of <a href='/2/timer_create'>timer_create</a>(2), <a href='/2/timer_settime'>timer_settime</a>(2), and <a href='/2/timer_gettime'>timer_gettime</a>(2). (There is no analog of <a href='/2/timer_getoverrun'>timer_getoverrun</a>(2), since that functionality is provided by <a href='/2/read'>read</a>(2), as described below.) <a href='timerfd_create'>timerfd_create</a>() creates a new timer object, and returns a file descriptor that refers to that timer. The <code>clockid</code> argument specifies the clock that is used to mark the progress of the timer, and must be one of the following:</p>
+<dl>
+<dt><strong>CLOCK_REALTIME</strong></dt>
+<dd><p>A settable system-wide real-time clock.</p>
+</dd>
+<dt><strong>CLOCK_MONOTONIC</strong></dt>
+<dd><p>A nonsettable monotonically increasing clock that measures time from some unspecified point in the past that does not change after system startup.</p>
+</dd>
+<dt><strong>CLOCK_BOOTTIME</strong> (Since Linux 3.15)</dt>
+<dd><p>Like <strong>CLOCK_MONOTONIC</strong>, this is a monotonically increasing clock. However, whereas the <strong>CLOCK_MONOTONIC</strong> clock does not measure the time while a system is suspended, the <strong>CLOCK_BOOTTIME</strong> clock does include the time during which the system is suspended. This is useful for applications that need to be suspend-aware. <strong>CLOCK_REALTIME</strong> is not suitable for such applications, since that clock is affected by discontinuous changes to the system clock.</p>
+</dd>
+<dt><strong>CLOCK_REALTIME_ALARM</strong> (since Linux 3.11)</dt>
+<dd><p>This clock is like <strong>CLOCK_REALTIME</strong>, but will wake the system if it is suspended. The caller must have the <strong>CAP_WAKE_ALARM</strong> capability in order to set a timer against this clock.</p>
+</dd>
+<dt><strong>CLOCK_BOOTTIME_ALARM</strong> (since Linux 3.11)</dt>
+<dd><p>This clock is like <strong>CLOCK_BOOTTIME</strong>, but will wake the system if it is suspended. The caller must have the <strong>CAP_WAKE_ALARM</strong> capability in order to set a timer against this clock.</p>
+</dd>
+</dl>
+<p>See <a href='/2/clock_getres'>clock_getres</a>(2) for some further details on the above clocks.</p>
+<p>The current value of each of these clocks can be retrieved using <a href='/2/clock_gettime'>clock_gettime</a>(2).</p>
+<p>Starting with Linux 2.6.27, the following values may be bitwise ORed in <code>flags</code> to change the behavior of <a href='timerfd_create'>timerfd_create</a>():</p>
+<dl>
+<dt><strong>TFD_NONBLOCK</strong></dt>
+<dd><p>Set the <strong>O_NONBLOCK</strong> file status flag on the open file description (see <a href='/2/open'>open</a>(2)) referred to by the new file descriptor. Using this flag saves extra calls to <a href='/2/fcntl'>fcntl</a>(2) to achieve the same result.</p>
+</dd>
+<dt><strong>TFD_CLOEXEC</strong></dt>
+<dd><p>Set the close-on-exec (<strong>FD_CLOEXEC</strong>) flag on the new file descriptor. See the description of the <strong>O_CLOEXEC</strong> flag in <a href='/2/open'>open</a>(2) for reasons why this may be useful.</p>
+</dd>
+</dl>
+<p>In Linux versions up to and including 2.6.26, <code>flags</code> must be specified as zero.</p>
+<h2>timerfd_settime()</h2>
+<p><a href='timerfd_settime'>timerfd_settime</a>() arms (starts) or disarms (stops) the timer referred to by the file descriptor <code>fd</code>.</p>
+<p>The <code>new_value</code> argument specifies the initial expiration and interval for the timer. The <code>itimerspec</code> structure used for this argument contains two fields, each of which is in turn a structure of type <code>timespec</code>:</p>
+<pre><code>struct timespec {
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a> tv_sec;                /* Seconds */
+    long   tv_nsec;               /* Nanoseconds */
+};
+
+struct itimerspec {
+    struct timespec it_interval;  /* Interval for periodic timer */
+    struct timespec it_value;     /* Initial expiration */
+};</code></pre>
+<p><code>new_value.it_value</code> specifies the initial expiration of the timer, in seconds and nanoseconds. Setting either field of <code>new_value.it_value</code> to a nonzero value arms the timer. Setting both fields of <code>new_value.it_value</code> to zero disarms the timer.</p>
+<p>Setting one or both fields of <code>new_value.it_interval</code> to nonzero values specifies the period, in seconds and nanoseconds, for repeated timer expirations after the initial expiration. If both fields of <code>new_value.it_interval</code> are zero, the timer expires just once, at the time specified by <code>new_value.it_value</code>.</p>
+<p>By default, the initial expiration time specified in <code>new_value</code> is interpreted relative to the current time on the timer's clock at the time of the call (i.e., <code>new_value.it_value</code> specifies a time relative to the current value of the clock specified by <code>clockid</code>). An absolute timeout can be selected via the <code>flags</code> argument.</p>
+<p>The <code>flags</code> argument is a bit mask that can include the following values:</p>
+<dl>
+<dt><strong>TFD_TIMER_ABSTIME</strong></dt>
+<dd><p>Interpret <code>new_value.it_value</code> as an absolute value on the timer's clock. The timer will expire when the value of the timer's clock reaches the value specified in <code>new_value.it_value</code>.</p>
+</dd>
+<dt><strong>TFD_TIMER_CANCEL_ON_SET</strong></dt>
+<dd><p>If this flag is specified along with <strong>TFD_TIMER_ABSTIME</strong> and the clock for this timer is <strong>CLOCK_REALTIME</strong> or <strong>CLOCK_REALTIME_ALARM</strong>, then mark this timer as cancelable if the real-time clock undergoes a discontinuous change (<a href='/2/settimeofday'>settimeofday</a>(2), <a href='/2/clock_settime'>clock_settime</a>(2), or similar). When such changes occur, a current or future <a href='/2/read'>read</a>(2) from the file descriptor will fail with the error <strong>ECANCELED</strong>.</p>
+</dd>
+</dl>
+<p>If the <code>old_value</code> argument is not NULL, then the <code>itimerspec</code> structure that it points to is used to return the setting of the timer that was current at the time of the call; see the description of <a href='timerfd_gettime'>timerfd_gettime</a>() following. <a href='timerfd_gettime'>timerfd_gettime</a>() returns, in <code>curr_value</code>, an <code>itimerspec</code> structure that contains the current setting of the timer referred to by the file descriptor <code>fd</code>.</p>
+<p>The <code>it_value</code> field returns the amount of time until the timer will next expire. If both fields of this structure are zero, then the timer is currently disarmed. This field always contains a relative value, regardless of whether the <strong>TFD_TIMER_ABSTIME</strong> flag was specified when setting the timer.</p>
+<p>The <code>it_interval</code> field returns the interval of the timer. If both fields of this structure are zero, then the timer is set to expire just once, at the time specified by <code>curr_value.it_value</code>.</p>
+<h2>Operating on a timer file descriptor</h2>
+<p>The file descriptor returned by <a href='timerfd_create'>timerfd_create</a>() supports the following additional operations:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If the timer has already expired one or more times since its settings were last modified using <a href='timerfd_settime'>timerfd_settime</a>(), or since the last successful <a href='/2/read'>read</a>(2), then the buffer given to <a href='/2/read'>read</a>(2) returns an unsigned 8-byte integer (<code>uint64_t</code>) containing the number of expirations that have occurred. (The returned value is in host byte order—that is, the native byte order for integers on the host machine.)</p>
+<p>If no timer expirations have occurred at the time of the <a href='/2/read'>read</a>(2), then the call either blocks until the next timer expiration, or fails with the error <strong>EAGAIN</strong> if the file descriptor has been made nonblocking (via the use of the <a href='/2/fcntl'>fcntl</a>(2) <strong>F_SETFL</strong> operation to set the <strong>O_NONBLOCK</strong> flag).</p>
+<p>A <a href='/2/read'>read</a>(2) fails with the error <strong>EINVAL</strong> if the size of the supplied buffer is less than 8 bytes.</p>
+<p>If the associated clock is either <strong>CLOCK_REALTIME</strong> or <strong>CLOCK_REALTIME_ALARM</strong>, the timer is absolute (<strong>TFD_TIMER_ABSTIME</strong>), and the flag <strong>TFD_TIMER_CANCEL_ON_SET</strong> was specified when calling <a href='timerfd_settime'>timerfd_settime</a>(), then <a href='/2/read'>read</a>(2) fails with the error <strong>ECANCELED</strong> if the real-time clock undergoes a discontinuous change. (This allows the reading application to discover such discontinuous changes to the clock.)</p>
+<p>If the associated clock is either <strong>CLOCK_REALTIME</strong> or <strong>CLOCK_REALTIME_ALARM</strong>, the timer is absolute (<strong>TFD_TIMER_ABSTIME</strong>), and the flag <strong>TFD_TIMER_CANCEL_ON_SET</strong> was <code>not</code> specified when calling <a href='timerfd_settime'>timerfd_settime</a>(), then a discontinuous negative change to the clock (e.g., <a href='/2/clock_settime'>clock_settime</a>(2)) may cause <a href='/2/read'>read</a>(2) to unblock, but return a value of 0 (i.e., no bytes read), if the clock change occurs after the time expired, but before the <a href='/2/read'>read</a>(2) on the file descriptor.</p>
+</dd>
+<dt><a href='/2/poll'>poll</a>(2), <a href='/2/select'>select</a>(2) (and similar)</dt>
+<dd><p>The file descriptor is readable (the <a href='/2/select'>select</a>(2) <code>readfds</code> argument; the <a href='/2/poll'>poll</a>(2) <strong>POLLIN</strong> flag) if one or more timer expirations have occurred.</p>
+<p>The file descriptor also supports the other file-descriptor multiplexing APIs: <a href='/2/pselect'>pselect</a>(2), <a href='/2/ppoll'>ppoll</a>(2), and <a href='/7/epoll'>epoll</a>(7).</p>
+</dd>
+<dt><a href='/2/ioctl'>ioctl</a>(2)</dt>
+<dd><p>The following timerfd-specific command is supported:</p>
+<dl>
+<dt><strong>TFD_IOC_SET_TICKS</strong> (since Linux 3.17)</dt>
+<dd><p>Adjust the number of timer expirations that have occurred. The argument is a pointer to a nonzero 8-byte integer (<code>uint64_t</code>*) containing the new number of expirations. Once the number is set, any waiter on the timer is woken up. The only purpose of this command is to restore the expirations for the purpose of checkpoint/restore. This operation is available only if the kernel was configured with the <strong>CONFIG_CHECKPOINT_RESTORE</strong> option.</p>
+</dd>
+</dl>
+</dd>
+<dt><a href='/2/close'>close</a>(2)</dt>
+<dd><p>When the file descriptor is no longer required it should be closed. When all file descriptors associated with the same timer object have been closed, the timer is disarmed and its resources are freed by the kernel. After a <a href='/2/fork'>fork</a>(2), the child inherits a copy of the file descriptor created by <a href='timerfd_create'>timerfd_create</a>(). The file descriptor refers to the same underlying timer object as the corresponding file descriptor in the parent, and <a href='/2/read'>read</a>(2)s in the child will return information about expirations of the timer. A file descriptor created by <a href='timerfd_create'>timerfd_create</a>() is preserved across <a href='/2/execve'>execve</a>(2), and continues to generate timer expirations if the timer was armed.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='timerfd_create'>timerfd_create</a>() returns a new file descriptor. On error, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+<p><a href='timerfd_settime'>timerfd_settime</a>() and <a href='timerfd_gettime'>timerfd_gettime</a>() return 0 on success; on error they return -1, and set <code>errno</code> to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following program creates a timer and then monitors its progress. The program accepts up to three command-line arguments. The first argument specifies the number of seconds for the initial expiration of the timer. The second argument specifies the interval for the timer, in seconds. The third argument specifies the number of times the program should allow the timer to expire before terminating. The second and third command-line arguments are optional.</p>
+<p>The following shell session demonstrates the use of the program:</p>
+<pre><code>$ a.out 3 1 100
+0.000: timer started
+3.000: read: 1; total=1
+4.000: read: 1; total=2
+^Z  # type control-Z to suspend the program
+[1]+  Stopped                 ./timerfd3_demo 3 1 100
+$ fg # Resume execution after a few seconds
+a.out 3 1 100
+9.660: read: 5; total=7
+10.000: read: 1; total=8
+11.000: read: 1; total=9
+^C  # type control-C to suspend the program</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;sys/timerfd.h&gt;
+#include &lt;time.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;inttypes.h&gt;      /* Definition of PRIu64 */
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;        /* Definition of uint64_t */
+
+#define handle_error(msg) \
+        do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+print_elapsed_time(void)
+{
+    static struct timespec start;
+    struct timespec curr;
+    static int first_call = 1;
+    int secs, nsecs;
+
+    if (first_call) {
+        first_call = 0;
+        if (clock_gettime(CLOCK_MONOTONIC, &amp;start) == -1)
+            handle_error("clock_gettime");
+    }
+
+    if (clock_gettime(CLOCK_MONOTONIC, &amp;curr) == -1)
+        handle_error("clock_gettime");
+
+    secs = curr.tv_sec - start.tv_sec;
+    nsecs = curr.tv_nsec - start.tv_nsec;
+    if (nsecs &lt; 0) {
+        secs--;
+        nsecs += 1000000000;
+    }
+    printf("%d.%03d: ", secs, (nsecs + 500000) / 1000000);
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct itimerspec new_value;
+    int max_exp, fd;
+    struct timespec now;
+    uint64_t exp, tot_exp;
+    ssize_t s;
+
+    if ((argc != 2) &amp;&amp; (argc != 4)) {
+        fprintf(stderr, "%s init-secs [interval-secs max-exp]\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (clock_gettime(CLOCK_REALTIME, &amp;now) == -1)
+        handle_error("clock_gettime");
+
+    /* Create a CLOCK_REALTIME absolute timer with initial
+       expiration and interval as specified in command line */
+
+    new_value.it_value.tv_sec = now.tv_sec + atoi(argv[1]);
+    new_value.it_value.tv_nsec = now.tv_nsec;
+    if (argc == 2) {
+        new_value.it_interval.tv_sec = 0;
+        max_exp = 1;
+    } else {
+        new_value.it_interval.tv_sec = atoi(argv[2]);
+        max_exp = atoi(argv[3]);
+    }
+    new_value.it_interval.tv_nsec = 0;
+
+    fd = timerfd_create(CLOCK_REALTIME, 0);
+    if (fd == -1)
+        handle_error("timerfd_create");
+
+    if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &amp;new_value, NULL) == -1)
+        handle_error("timerfd_settime");
+
+    print_elapsed_time();
+    printf("timer started\n");
+
+    for (tot_exp = 0; tot_exp &lt; max_exp;) {
+        s = read(fd, &amp;exp, sizeof(uint64_t));
+        if (s != sizeof(uint64_t))
+            handle_error("read");
+
+        tot_exp += exp;
+        print_elapsed_time();
+        printf("read: %" PRIu64 "; total=%" PRIu64 "\n", exp, tot_exp);
+    }
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p><a href='timerfd_create'>timerfd_create</a>() can fail with the following errors:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>The <code>clockid</code> is not valid.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> is invalid; or, in Linux 2.6.26 or earlier, <code>flags</code> is nonzero.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>Could not mount (internal) anonymous inode device.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>There was insufficient kernel memory to create the timer.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p><code>clockid</code> was <strong>CLOCK_REALTIME_ALARM</strong> or <strong>CLOCK_BOOTTIME_ALARM</strong> but the caller did not have the <strong>CAP_WAKE_ALARM</strong> capability.</p>
+</dd>
+</dl>
+<p><a href='timerfd_settime'>timerfd_settime</a>() and <a href='timerfd_gettime'>timerfd_gettime</a>() can fail with the following errors:</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>new_value</code>, <code>old_value</code>, or <code>curr_value</code> is not valid a pointer.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>fd</code> is not a valid timerfd file descriptor.</p>
+</dd>
+</dl>
+<p><a href='timerfd_settime'>timerfd_settime</a>() can also fail with the following errors:</p>
+<dl>
+<dt><strong>ECANCELED</strong></dt>
+<dd><p>See <a href='#notes'>NOTES</a>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>new_value</code> is not properly initialized (one of the <code>tv_nsec</code> falls outside the range zero to 999,999,999).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> is invalid.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These system calls are available on Linux since kernel 2.6.25. Library support is provided by glibc since version 2.8.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These system calls are Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Suppose the following scenario for <strong>CLOCK_REALTIME</strong> or <strong>CLOCK_REALTIME_ALARM</strong> timer that was created with <a href='timerfd_create'>timerfd_create</a>():</p>
+<ol type="a">
+<li><p>The timer has been started (<a href='timerfd_settime'>timerfd_settime</a>()) with the <strong>TFD_TIMER_ABSTIME</strong> and <strong>TFD_TIMER_CANCEL_ON_SET</strong> flags;</p></li>
+<li><p>A discontinuous change (e.g., <a href='/2/settimeofday'>settimeofday</a>(2)) is subsequently made to the <strong>CLOCK_REALTIME</strong> clock; and</p></li>
+<li><p>the caller once more calls <a href='timerfd_settime'>timerfd_settime</a>() to rearm the timer (without first doing a <a href='/2/read'>read</a>(2) on the file descriptor).</p></li>
+</ol>
+<p>In this case the following occurs:</p>
+<ul>
+<li><p>The <a href='timerfd_settime'>timerfd_settime</a>() returns -1 with <code>errno</code> set to <strong>ECANCELED</strong>. (This enables the caller to know that the previous timer was affected by a discontinuous change to the clock.)</p></li>
+<li><p>The timer <code>is successfully rearmed</code> with the settings provided in the second <a href='timerfd_settime'>timerfd_settime</a>() call. (This was probably an implementation accident, but won't be fixed now, in case there are applications that depend on this behaviour.)</p></li>
+</ul>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Currently, <a href='timerfd_create'>timerfd_create</a>() supports fewer types of clock IDs than <a href='/2/timer_create'>timer_create</a>(2).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/eventfd'>eventfd</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/select'>select</a>(2), <a href='/2/setitimer'>setitimer</a>(2), <a href='/2/signalfd'>signalfd</a>(2), <a href='/2/timer_create'>timer_create</a>(2), <a href='/2/timer_gettime'>timer_gettime</a>(2), <a href='/2/timer_settime'>timer_settime</a>(2), <a href='/7/epoll'>epoll</a>(7), <a href='/7/time'>time</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

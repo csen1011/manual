@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>regex - POSIX.2 regular expressions</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Regular expressions ("RE"s), as defined in POSIX.2, come in two forms: modern REs (roughly those of <code>egrep</code>; POSIX.2 calls these "extended" REs) and obsolete REs (roughly those of <a href='/1/ed'>ed</a>(1); POSIX.2 "basic" REs). Obsolete REs mostly exist for backward compatibility in some old programs; they will be discussed at the end. POSIX.2 leaves some aspects of RE syntax and semantics open; "" marks decisions on these aspects that may not be fully portable to other POSIX.2 implementations.</p>
+<p>A (modern) RE is one or more nonempty <code>branches</code>, separated by '|'. It matches anything that matches one of the branches.</p>
+<p>A branch is one or more <code>pieces</code>, concatenated. It matches a match for the first, followed by a match for the second, and so on.</p>
+<p>A piece is an <code>atom</code> possibly followed by a single '*', '+', '?', or <code>bound</code>. An atom followed by '*' matches a sequence of 0 or more matches of the atom. An atom followed by '+' matches a sequence of 1 or more matches of the atom. An atom followed by '?' matches a sequence of 0 or 1 matches of the atom.</p>
+<p>A <code>bound</code> is '{' followed by an unsigned decimal integer, possibly followed by ',' possibly followed by another unsigned decimal integer, always followed by '}'. The integers must lie between 0 and <strong>RE_DUP_MAX</strong> (255) inclusive, and if there are two of them, the first may not exceed the second. An atom followed by a bound containing one integer <code>i</code> and no comma matches a sequence of exactly <code>i</code> matches of the atom. An atom followed by a bound containing one integer <code>i</code> and a comma matches a sequence of <code>i</code> or more matches of the atom. An atom followed by a bound containing two integers <code>i</code> and <code>j</code> matches a sequence of <code>i</code> through <code>j</code> (inclusive) matches of the atom.</p>
+<p>An atom is a regular expression enclosed in "<code>()</code>" (matching a match for the regular expression), an empty set of "<code>()</code>" (matching the null string), a <code>bracket expression</code> (see below), '.' (matching any single character), '^' (matching the null string at the beginning of a line), '$' (matching the null string at the end of a line), a '\' followed by one of the characters "<code>^.[$()|*+?{\</code>" (matching that character taken as an ordinary character), a '\' followed by any other character (matching that character taken as an ordinary character, as if the '\' had not been present), or a single character with no other significance (matching that character). A '{' followed by a character other than a digit is an ordinary character, not the beginning of a bound. It is illegal to end an RE with '\'.</p>
+<p>A <code>bracket expression</code> is a list of characters enclosed in "<code>[]</code>". It normally matches any single character from the list (but see below). If the list begins with '^', it matches any single character (but see below) <code>not</code> from the rest of the list. If two characters in the list are separated by '-', this is shorthand for the full <code>range</code> of characters between those two (inclusive) in the collating sequence, for example, "<code>[0-9]</code>" in ASCII matches any decimal digit. It is illegal for two ranges to share an endpoint, for example, "<code>a-c-e</code>". Ranges are very collating-sequence-dependent, and portable programs should avoid relying on them.</p>
+<p>To include a literal ']' in the list, make it the first character (following a possible '^'). To include a literal '-', make it the first or last character, or the second endpoint of a range. To use a literal '-' as the first endpoint of a range, enclose it in "<code>[.</code>" and "<code>.]</code>" to make it a collating element (see below). With the exception of these and some combinations using '[' (see next paragraphs), all other special characters, including '\', lose their special significance within a bracket expression.</p>
+<p>Within a bracket expression, a collating element (a character, a multicharacter sequence that collates as if it were a single character, or a collating-sequence name for either) enclosed in "<code>[.</code>" and "<code>.]</code>" stands for the sequence of characters of that collating element. The sequence is a single element of the bracket expression's list. A bracket expression containing a multicharacter collating element can thus match more than one character, for example, if the collating sequence includes a "ch" collating element, then the RE "<code>[[.ch.]]*c</code>" matches the first five characters of "chchcc".</p>
+<p>Within a bracket expression, a collating element enclosed in "<code>[=</code>" and "<code>=]</code>" is an equivalence class, standing for the sequences of characters of all collating elements equivalent to that one, including itself. (If there are no other equivalent collating elements, the treatment is as if the enclosing delimiters were "<code>[.</code>" and "<code>.]</code>".) For example, if o and are the members of an equivalence class, then "<code>[[=o=]]</code>", "<code>[[==]]</code>", and "<code>[o]</code>" are all synonymous. An equivalence class may not be an endpoint of a range.</p>
+<p>Within a bracket expression, the name of a <code>character class</code> enclosed in "<code>[:</code>" and "<code>:]</code>" stands for the list of all characters belonging to that class. Standard character class names are:</p>
+<blockquote>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">alnum</td>
+<td style="text-align: left;">digit</td>
+<td style="text-align: left;">punct</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">alpha</td>
+<td style="text-align: left;">graph</td>
+<td style="text-align: left;">space</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">blank</td>
+<td style="text-align: left;">lower</td>
+<td style="text-align: left;">upper</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cntrl</td>
+<td style="text-align: left;">print</td>
+<td style="text-align: left;">xdigit</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>These stand for the character classes defined in <a href='/3/wctype'>wctype</a>(3). A locale may provide others. A character class may not be used as an endpoint of a range.</p>
+<p>In the event that an RE could match more than one substring of a given string, the RE matches the one starting earliest in the string. If the RE could match more than one substring starting at that point, it matches the longest. Subexpressions also match the longest possible substrings, subject to the constraint that the whole match be as long as possible, with subexpressions starting earlier in the RE taking priority over ones starting later. Note that higher-level subexpressions thus take priority over their lower-level component subexpressions.</p>
+<p>Match lengths are measured in characters, not collating elements. A null string is considered longer than no match at all. For example, "<code>bb*</code>" matches the three middle characters of "abbbc", "<code>(wee|week)(knights|nights)</code>" matches all ten characters of "weeknights", when "<code>(.*).*</code>" is matched against "abc" the parenthesized subexpression matches all three characters, and when "<code>(a*)*</code>" is matched against "bc" both the whole RE and the parenthesized subexpression match the null string.</p>
+<p>If case-independent matching is specified, the effect is much as if all case distinctions had vanished from the alphabet. When an alphabetic that exists in multiple cases appears as an ordinary character outside a bracket expression, it is effectively transformed into a bracket expression containing both cases, for example, 'x' becomes "<code>[xX]</code>". When it appears inside a bracket expression, all case counterparts of it are added to the bracket expression, so that, for example, "<code>[x]</code>" becomes "<code>[xX]</code>" and "<code>[^x]</code>" becomes "<code>[^xX]</code>".</p>
+<p>No particular limit is imposed on the length of REs. Programs intended to be portable should not employ REs longer than 256 bytes, as an implementation can refuse to accept such REs and remain POSIX-compliant.</p>
+<p>Obsolete ("basic") regular expressions differ in several respects. '|', '+', and '?' are ordinary characters and there is no equivalent for their functionality. The delimiters for bounds are "<code>\{</code>" and "<code>\}</code>", with '{' and '}' by themselves ordinary characters. The parentheses for nested subexpressions are "<code>\(</code>" and "<code>\)</code>", with '(' and ')' by themselves ordinary characters. '^' is an ordinary character except at the beginning of the RE or the beginning of a parenthesized subexpression, '$' is an ordinary character except at the end of the RE or the end of a parenthesized subexpression, and '*' is an ordinary character if it appears at the beginning of the RE or the beginning of a parenthesized subexpression (after a possible leading '^').</p>
+<p>Finally, there is one new type of atom, a <code>back reference</code>: '\' followed by a nonzero decimal digit <code>d</code> matches the same sequence of characters matched by the <code>d</code>th parenthesized subexpression (numbering subexpressions by the positions of their opening parentheses, left to right), so that, for example, "<code>\([bc]\)\1</code>" matches "bb" or "cc" but not "bc".</p>
+</div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Having two kinds of REs is a botch.</p>
+<p>The current POSIX.2 spec says that ')' is an ordinary character in the absence of an unmatched '('; this was an unintentional result of a wording error, and change is likely. Avoid relying on it.</p>
+<p>Back references are a dreadful botch, posing major problems for efficient implementations. They are also somewhat vaguely defined (does "<code>a\(\(b\)*\2\)*d</code>" match "abbbd"?). Avoid using them.</p>
+<p>POSIX.2's specification of case-independent matching is vague. The "one case implies all cases" definition given above is current consensus among implementors as to the right interpretation.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>This page was taken from Henry Spencer's regex package.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/grep'>grep</a>(1), <a href='/3/regex'>regex</a>(3)</p>
+<p>POSIX.2, section 2.8 (Regular Expression Notation).</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

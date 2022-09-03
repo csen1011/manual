@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sysusers.d - Declarative allocation of system users and groups</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>/etc/sysusers.d/*.conf</p>
+<p>/run/sysusers.d/*.conf</p>
+<p>/usr/lib/sysusers.d/*.conf</p>
+<pre><code>#Type Name       ID                  GECOS              Home directory Shell
+u     user_name  uid                 "User Description" /home/dir      /path/to/shell
+u     user_name  uid:gid             "User Description" /home/dir      /path/to/shell
+u     user_name  /file/owned/by/user "User Description" /home/dir      /path/to/shell
+g     group_name gid
+g     group_name /file/owned/by/group
+m     user_name  group_name
+r     -          lowest-highest</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-sysusers</strong> uses the files from sysusers.d directory to create system users and groups and to add users to groups, at package installation or boot time. This tool may be used to allocate system users and groups only, it is not useful for creating non-system (i.e. regular, "human") users and groups, as it accesses /etc/passwd and /etc/group directly, bypassing any more complex user databases, for example any database involving NIS or LDAP.</p>
+</div></div><h1 id='configuration-directories-and-precedence'><a href='#configuration-directories-and-precedence'>CONFIGURATION DIRECTORIES AND PRECEDENCE</a></h1><div data-for='configuration-directories-and-precedence' data-hide><div class='section' data-for='configuration-directories-and-precedence'><div data-more>
+<p>Each configuration file shall be named in the style of <code>package</code>.conf or <code>package</code>-<code>part</code>.conf. The second variant should be used when it is desirable to make it easy to override just this part of configuration.</p>
+<p>Files in /etc/sysusers.d override files with the same name in /usr/lib/sysusers.d and /run/sysusers.d. Files in /run/sysusers.d override files with the same name in /usr/lib/sysusers.d. Packages should install their configuration files in /usr/lib/sysusers.d. Files in /etc/sysusers.d are reserved for the local administrator, who may use this logic to override the configuration files installed by vendor packages. All configuration files are sorted by their filename in lexicographic order, regardless of which of the directories they reside in. If multiple files specify the same path, the entry in the file with the lexicographically earliest name will be applied. All later entries for the same user and group names will be logged as warnings.</p>
+<p>If the administrator wants to disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in /etc/sysusers.d/ bearing the same filename.</p>
+</div></div></div><h1 id='configuration-file-format'><a href='#configuration-file-format'>CONFIGURATION FILE FORMAT</a></h1><div data-for='configuration-file-format' data-hide><div class='section' data-for='configuration-file-format'><div data-more>
+<p>The file format is one line per user or group containing name, ID, GECOS field description, home directory, and login shell:</p>
+<p>.RS 4</p>
+<pre><code>#Type Name     ID             GECOS                 Home directory Shell
+u     httpd    404            "HTTP User"
+u     _authd   /usr/bin/authd "Authorization user"
+u     postgres -              "Postgresql Database" /var/lib/pgsql /libexec/postgresdb
+g     input    -              -
+m     _authd   input
+u     root     0              "Superuser"           /root          /bin/zsh
+r     -        500-900</code></pre>
+<p>.RE</p>
+<p>Empty lines and lines beginning with the "#" character are ignored, and may be used for commenting.</p>
+<h2>Type</h2>
+<p>The type consists of a single letter. The following line types are understood:</p>
+<p><code>u</code></p>
+<blockquote>
+<p>Create a system user and group of the specified name should they not exist yet. The users primary group will be set to the group bearing the same name unless the ID field specifies it. The account will be created disabled, so that logins are not allowed.</p>
+</blockquote>
+<p><code>g</code></p>
+<blockquote>
+<p>Create a system group of the specified name should it not exist yet. Note that <code>u</code> implicitly creates a matching group. The group will be created with no password set.</p>
+</blockquote>
+<p><code>m</code></p>
+<blockquote>
+<p>Add a user to a group. If the user or group do not exist yet, they will be implicitly created.</p>
+</blockquote>
+<p><code>r</code></p>
+<blockquote>
+<p>Add a range of numeric UIDs/GIDs to the pool to allocate new UIDs and GIDs from. If no line of this type is specified, the range of UIDs/GIDs is set to some compiled-in default. Note that both UIDs and GIDs are allocated from the same pool, in order to ensure that users and groups of the same name are likely to carry the same numeric UID and GID.</p>
+</blockquote>
+<h2>Name</h2>
+<p>The name field specifies the user or group name. The specified name must consist only of the characters a-z, A-Z, 0-9, "_" and "-", except for the first character which must be one of a-z, A-Z or "_" (i.e. numbers and "-" are not permitted as first character). The user/group name must have at least one character, and at most 31.</p>
+<p>For further details about the syntax of user/group names, see <strong>User/Group Name Syntax</strong>[1].</p>
+<p>It is strongly recommended to pick user and group names that are unlikely to clash with normal users created by the administrator. A good scheme to guarantee this is by prefixing all system and group names with the underscore, and avoiding too generic names.</p>
+<p>For <code>m</code> lines, this field should contain the user name to add to a group.</p>
+<p>For lines of type <code>r</code>, this field should be set to "-".</p>
+<h2>ID</h2>
+<p>For <code>u</code> and <code>g</code>, the numeric 32-bit UID or GID of the user/group. Do not use IDs 65535 or 4294967295, as they have special placeholder meanings. Specify "-" for automatic UID/GID allocation for the user or group (this is strongly recommended unless it is strictly necessary to use a specific UID or GID). Alternatively, specify an absolute path in the file system. In this case, the UID/GID is read from the paths owner/group. This is useful to create users whose UID/GID match the owners of pre-existing files (such as SUID or SGID binaries). The syntaxes "<code>uid</code>:<code>gid</code>" and "<code>uid</code>:<code>groupname</code>" are supported to allow creating users with specific primary groups. The given group must be created explicitly, or it must already exist. Specifying "-" for the UID in these syntaxes is also supported.</p>
+<p>For <code>m</code> lines, this field should contain the group name to add to a user to.</p>
+<p>For lines of type <code>r</code>, this field should be set to a UID/GID range in the format "FROM-TO", where both values are formatted as decimal ASCII numbers. Alternatively, a single UID/GID may be specified formatted as decimal ASCII numbers.</p>
+<h2>GECOS</h2>
+<p>A short, descriptive string for users to be created, enclosed in quotation marks. Note that this field may not contain colons.</p>
+<p>Only applies to lines of type <code>u</code> and should otherwise be left unset (or "-").</p>
+<h2>Home Directory</h2>
+<p>The home directory for a new system user. If omitted, defaults to the root directory.</p>
+<p>Only applies to lines of type <code>u</code> and should otherwise be left unset (or "-"). It is recommended to omit this, unless software strictly requires a home directory to be set.</p>
+<p><strong>systemd-sysusers</strong> only sets the home directory record in the user database. To actually create the directory, consider adding a corresponding <a href='/5/tmpfiles.d'>tmpfiles.d</a>(5) fragment.</p>
+<h2>Shell</h2>
+<p>The login shell of the user. If not specified, this will be set to /usr/sbin/nologin, except if the UID of the user is 0, in which case /bin/sh will be used.</p>
+<p>Only applies to lines of type <code>u</code> and should otherwise be left unset (or "-"). It is recommended to omit this, unless a shell different /usr/sbin/nologin must be used.</p>
+</div></div></div><h1 id='specifiers'><a href='#specifiers'>SPECIFIERS</a></h1><div data-for='specifiers' data-hide><div class='section' data-for='specifiers'><div data-more>
+<p>Specifiers can be used in the "Name", "ID", "GECOS", "Home directory", and "Shell" fields. An unknown or unresolvable specifier is treated as invalid configuration. The following expansions are understood:</p>
+<p><br/>
+<strong>Table 1. Specifiers available</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Specifier</td>
+<td style="text-align: left;">Meaning</td>
+<td style="text-align: left;">Details</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%a"</td>
+<td style="text-align: left;">Architecture</td>
+<td style="text-align: left;">A short string identifying the architecture of the local system. A string such as <strong>x86</strong>, <strong>x86-64</strong> or <strong>arm64</strong>. See the architectures defined for <code>ConditionArchitecture=</code> in <a href='/5/systemd.unit'>systemd.unit</a>(5) for a full list.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%A"</td>
+<td style="text-align: left;">Operating system image version</td>
+<td style="text-align: left;">The operating system image version identifier of the running system, as read from the <code>IMAGE_VERSION=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%b"</td>
+<td style="text-align: left;">Boot ID</td>
+<td style="text-align: left;">The boot ID of the running system, formatted as string. See <a href='/4/random'>random</a>(4) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%B"</td>
+<td style="text-align: left;">Operating system build ID</td>
+<td style="text-align: left;">The operating system build identifier of the running system, as read from the <code>BUILD_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%H"</td>
+<td style="text-align: left;">Host name</td>
+<td style="text-align: left;">The hostname of the running system.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%l"</td>
+<td style="text-align: left;">Short host name</td>
+<td style="text-align: left;">The hostname of the running system, truncated at the first dot to remove any domain component.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%m"</td>
+<td style="text-align: left;">Machine ID</td>
+<td style="text-align: left;">The machine ID of the running system, formatted as string. See <a href='/5/machine-id'>machine-id</a>(5) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%M"</td>
+<td style="text-align: left;">Operating system image identifier</td>
+<td style="text-align: left;">The operating system image identifier of the running system, as read from the <code>IMAGE_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%o"</td>
+<td style="text-align: left;">Operating system ID</td>
+<td style="text-align: left;">The operating system identifier of the running system, as read from the <code>ID=</code> field of /etc/os-release. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%T"</td>
+<td style="text-align: left;">Directory for temporary files</td>
+<td style="text-align: left;">This is either /tmp or the path "$TMPDIR", "$TEMP" or "$TMP" are set to. (Note that the directory may be specified without a trailing slash.)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%v"</td>
+<td style="text-align: left;">Kernel release</td>
+<td style="text-align: left;">Identical to <strong>uname -r</strong> output.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%V"</td>
+<td style="text-align: left;">Directory for larger and persistent temporary files</td>
+<td style="text-align: left;">This is either /var/tmp or the path "$TMPDIR", "$TEMP" or "$TMP" are set to. (Note that the directory may be specified without a trailing slash.)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%w"</td>
+<td style="text-align: left;">Operating system version ID</td>
+<td style="text-align: left;">The operating system version identifier of the running system, as read from the <code>VERSION_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">"%W"</td>
+<td style="text-align: left;">Operating system variant ID</td>
+<td style="text-align: left;">The operating system variant identifier of the running system, as read from the <code>VARIANT_ID=</code> field of /etc/os-release. If not set, resolves to an empty string. See <a href='/5/os-release'>os-release</a>(5) for more information.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">"%%"</td>
+<td style="text-align: left;">Single percent sign</td>
+<td style="text-align: left;">Use "%%" in place of "%" to specify a single percent sign.</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='idempotence'><a href='#idempotence'>IDEMPOTENCE</a></h1><div data-for='idempotence' data-hide><div class='section' data-for='idempotence'><div data-more>
+<p>Note that <strong>systemd-sysusers</strong> will do nothing if the specified users or groups already exist or the users are members of specified groups, so normally there is no reason to override sysusers.d vendor configuration, except to block certain users or groups from being created.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/8/systemd-sysusers'>systemd-sysusers</a>(8)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>User/Group Name Syntax</p>
+<p><a href="https://systemd.io/USER_NAMES">https://systemd.io/USER_NAMES</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

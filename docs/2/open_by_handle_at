@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>name_to_handle_at, open_by_handle_at - obtain handle for a pathname and open file via a handle</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/stat.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;fcntl.h&gt;</a>
+
+int name_to_handle_at(int dirfd, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>pathname,
+ struct file_handle *handle,
+ int *mount_id, int flags);
+
+int open_by_handle_at(int mount_fd, struct file_handle *handle,
+ int flags);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='name_to_handle_at'>name_to_handle_at</a>() and <a href='open_by_handle_at'>open_by_handle_at</a>() system calls split the functionality of <a href='/2/openat'>openat</a>(2) into two parts: <a href='name_to_handle_at'>name_to_handle_at</a>() returns an opaque handle that corresponds to a specified file; <a href='open_by_handle_at'>open_by_handle_at</a>() opens the file corresponding to a handle returned by a previous call to <a href='name_to_handle_at'>name_to_handle_at</a>() and returns an open file descriptor.</p>
+<h2>name_to_handle_at()</h2>
+<p>The <a href='name_to_handle_at'>name_to_handle_at</a>() system call returns a file handle and a mount ID corresponding to the file specified by the <code>dirfd</code> and <code>pathname</code> arguments. The file handle is returned via the argument <code>handle</code>, which is a pointer to a structure of the following form:</p>
+<pre><code>struct file_handle {
+    unsigned int  handle_bytes;   /* Size of f_handle [in, out] */
+    int           handle_type;    /* Handle type [out] */
+    unsigned char f_handle[0];    /* File identifier (sized by
+                                     caller) [out] */
+};</code></pre>
+<p>It is the caller's responsibility to allocate the structure with a size large enough to hold the handle returned in <code>f_handle</code>. Before the call, the <code>handle_bytes</code> field should be initialized to contain the allocated size for <code>f_handle</code>. (The constant <strong>MAX_HANDLE_SZ</strong>, defined in <code>&lt;fcntl.h&gt;</code>, specifies the maximum expected size for a file handle. It is not a guaranteed upper limit as future filesystems may require more space.) Upon successful return, the <code>handle_bytes</code> field is updated to contain the number of bytes actually written to <code>f_handle</code>.</p>
+<p>The caller can discover the required size for the <code>file_handle</code> structure by making a call in which <code>handle-&gt;handle_bytes</code> is zero; in this case, the call fails with the error <strong>EOVERFLOW</strong> and <code>handle-&gt;handle_bytes</code> is set to indicate the required size; the caller can then use this information to allocate a structure of the correct size (see EXAMPLES below). Some care is needed here as <strong>EOVERFLOW</strong> can also indicate that no file handle is available for this particular name in a filesystem which does normally support file-handle lookup. This case can be detected when the <strong>EOVERFLOW</strong> error is returned without <code>handle_bytes</code> being increased.</p>
+<p>Other than the use of the <code>handle_bytes</code> field, the caller should treat the <code>file_handle</code> structure as an opaque data type: the <code>handle_type</code> and <code>f_handle</code> fields are needed only by a subsequent call to <a href='open_by_handle_at'>open_by_handle_at</a>().</p>
+<p>The <code>flags</code> argument is a bit mask constructed by ORing together zero or more of <strong>AT_EMPTY_PATH</strong> and <strong>AT_SYMLINK_FOLLOW</strong>, described below.</p>
+<p>Together, the <code>pathname</code> and <code>dirfd</code> arguments identify the file for which a handle is to be obtained. There are four distinct cases:</p>
+<ul>
+<li><p>If <code>pathname</code> is a nonempty string containing an absolute pathname, then a handle is returned for the file referred to by that pathname. In this case, <code>dirfd</code> is ignored.</p></li>
+<li><p>If <code>pathname</code> is a nonempty string containing a relative pathname and <code>dirfd</code> has the special value <strong>AT_FDCWD</strong>, then <code>pathname</code> is interpreted relative to the current working directory of the caller, and a handle is returned for the file to which it refers.</p></li>
+<li><p>If <code>pathname</code> is a nonempty string containing a relative pathname and <code>dirfd</code> is a file descriptor referring to a directory, then <code>pathname</code> is interpreted relative to the directory referred to by <code>dirfd</code>, and a handle is returned for the file to which it refers. (See <a href='/2/openat'>openat</a>(2) for an explanation of why "directory file descriptors" are useful.)</p></li>
+<li><p>If <code>pathname</code> is an empty string and <code>flags</code> specifies the value <strong>AT_EMPTY_PATH</strong>, then <code>dirfd</code> can be an open file descriptor referring to any type of file, or <strong>AT_FDCWD</strong>, meaning the current working directory, and a handle is returned for the file to which it refers.</p></li>
+</ul>
+<p>The <code>mount_id</code> argument returns an identifier for the filesystem mount that corresponds to <code>pathname</code>. This corresponds to the first field in one of the records in <code>/proc/self/mountinfo</code>. Opening the pathname in the fifth field of that record yields a file descriptor for the mount point; that file descriptor can be used in a subsequent call to <a href='open_by_handle_at'>open_by_handle_at</a>(). <code>mount_id</code> is returned both for a successful call and for a call that results in the error <strong>EOVERFLOW</strong>.</p>
+<p>By default, <a href='name_to_handle_at'>name_to_handle_at</a>() does not dereference <code>pathname</code> if it is a symbolic link, and thus returns a handle for the link itself. If <strong>AT_SYMLINK_FOLLOW</strong> is specified in <code>flags</code>, <code>pathname</code> is dereferenced if it is a symbolic link (so that the call returns a handle for the file referred to by the link).</p>
+<p><a href='name_to_handle_at'>name_to_handle_at</a>() does not trigger a mount when the final component of the pathname is an automount point. When a filesystem supports both file handles and automount points, a <a href='name_to_handle_at'>name_to_handle_at</a>() call on an automount point will return with error <strong>EOVERFLOW</strong> without having increased <code>handle_bytes</code>. This can happen since Linux 4.13 with NFS when accessing a directory which is on a separate filesystem on the server. In this case, the automount can be triggered by adding a "/" to the end of the pathname.</p>
+<h2>open_by_handle_at()</h2>
+<p>The <a href='open_by_handle_at'>open_by_handle_at</a>() system call opens the file referred to by <code>handle</code>, a file handle returned by a previous call to <a href='name_to_handle_at'>name_to_handle_at</a>().</p>
+<p>The <code>mount_fd</code> argument is a file descriptor for any object (file, directory, etc.) in the mounted filesystem with respect to which <code>handle</code> should be interpreted. The special value <strong>AT_FDCWD</strong> can be specified, meaning the current working directory of the caller.</p>
+<p>The <code>flags</code> argument is as for <a href='/2/open'>open</a>(2). If <code>handle</code> refers to a symbolic link, the caller must specify the <strong>O_PATH</strong> flag, and the symbolic link is not dereferenced; the <strong>O_NOFOLLOW</strong> flag, if specified, is ignored.</p>
+<p>The caller must have the <strong>CAP_DAC_READ_SEARCH</strong> capability to invoke <a href='open_by_handle_at'>open_by_handle_at</a>().</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='name_to_handle_at'>name_to_handle_at</a>() returns 0, and <a href='open_by_handle_at'>open_by_handle_at</a>() returns a file descriptor (a nonnegative integer).</p>
+<p>In the event of an error, both system calls return -1 and set <code>errno</code> to indicate the cause of the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The two programs below demonstrate the use of <a href='name_to_handle_at'>name_to_handle_at</a>() and <a href='open_by_handle_at'>open_by_handle_at</a>(). The first program (<code>t_name_to_handle_at.c</code>) uses <a href='name_to_handle_at'>name_to_handle_at</a>() to obtain the file handle and mount ID for the file specified in its command-line argument; the handle and mount ID are written to standard output.</p>
+<p>The second program (<code>t_open_by_handle_at.c</code>) reads a mount ID and file handle from standard input. The program then employs <a href='open_by_handle_at'>open_by_handle_at</a>() to open the file using that handle. If an optional command-line argument is supplied, then the <code>mount_fd</code> argument for <a href='open_by_handle_at'>open_by_handle_at</a>() is obtained by opening the directory named in that argument. Otherwise, <code>mount_fd</code> is obtained by scanning <code>/proc/self/mountinfo</code> to find a record whose mount ID matches the mount ID read from standard input, and the mount directory specified in that record is opened. (These programs do not deal with the fact that mount IDs are not persistent.)</p>
+<p>The following shell session demonstrates the use of these two programs:</p>
+<pre><code>$ echo 'Can you please think about it?' &gt; cecilia.txt
+$ ./t_name_to_handle_at cecilia.txt &gt; fh
+$ ./t_open_by_handle_at &lt; fh
+open_by_handle_at: Operation not permitted
+$ sudo ./t_open_by_handle_at &lt; fh      # Need CAP_SYS_ADMIN
+Read 31 bytes
+$ rm cecilia.txt</code></pre>
+<p>Now we delete and (quickly) re-create the file so that it has the same content and (by chance) the same inode. Nevertheless, <a href='open_by_handle_at'>open_by_handle_at</a>() recognizes that the original file referred to by the file handle no longer exists.</p>
+<pre><code>$ stat --printf="%i\n" cecilia.txt     # Display inode number
+4072121
+$ rm cecilia.txt
+$ echo 'Can you please think about it?' &gt; cecilia.txt
+$ stat --printf="%i\n" cecilia.txt     # Check inode number
+4072121
+$ sudo ./t_open_by_handle_at &lt; fh
+open_by_handle_at: Stale NFS file handle</code></pre>
+<h2>Program source: t_name_to_handle_at.c</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct file_handle *fhp;
+    int mount_id, fhsize, flags, dirfd;
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>pathname;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s pathname\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    pathname = argv[1];
+
+    /* Allocate file_handle structure */
+
+    fhsize = sizeof(*fhp);
+    fhp = malloc(fhsize);
+    if (fhp == NULL)
+        errExit("malloc");
+
+    /* Make an initial call to name_to_handle_at() to discover
+       the size required for file handle */
+
+    dirfd = AT_FDCWD;           /* For name_to_handle_at() calls */
+    flags = 0;                  /* For name_to_handle_at() calls */
+    fhp-&gt;handle_bytes = 0;
+    if (name_to_handle_at(dirfd, pathname, fhp,
+                &amp;mount_id, flags) != -1 || errno != EOVERFLOW) {
+        fprintf(stderr, "Unexpected result from name_to_handle_at()\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Reallocate file_handle structure with correct size */
+
+    fhsize = sizeof(*fhp) + fhp-&gt;handle_bytes;
+    fhp = realloc(fhp, fhsize);         /* Copies fhp-&gt;handle_bytes */
+    if (fhp == NULL)
+        errExit("realloc");
+
+    /* Get file handle from pathname supplied on command line */
+
+    if (name_to_handle_at(dirfd, pathname, fhp, &amp;mount_id, flags) == -1)
+        errExit("name_to_handle_at");
+
+    /* Write mount ID, file handle size, and file handle to stdout,
+       for later reuse by t_open_by_handle_at.c */
+
+    printf("%d\n", mount_id);
+    printf("%u %d   ", fhp-&gt;handle_bytes, fhp-&gt;handle_type);
+    for (int j = 0; j &lt; fhp-&gt;handle_bytes; j++)
+        printf(" %02x", fhp-&gt;f_handle[j]);
+    printf("\n");
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<h2>Program source: t_open_by_handle_at.c</h2>
+<pre><code>#define _GNU_SOURCE
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+/* Scan /proc/self/mountinfo to find the line whose mount ID matches
+   'mount_id'. (An easier way to do this is to install and use the
+   'libmount' library provided by the 'util-linux' project.)
+   Open the corresponding mount path and return the resulting file
+   descriptor. */
+
+static int
+open_mount_path_by_id(int mount_id)
+{
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>linep;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> lsize;
+    char mount_path[PATH_MAX];
+    int mi_mount_id, found;
+    ssize_t nread;
+    FILE *fp;
+
+    fp = fopen("/proc/self/mountinfo", "r");
+    if (fp == NULL)
+        errExit("fopen");
+
+    found = 0;
+    linep = NULL;
+    while (!found) {
+        nread = getline(&amp;linep, &amp;lsize, fp);
+        if (nread == -1)
+            break;
+
+        nread = sscanf(linep, "%d %*d %*s %*s %s",
+                       &amp;mi_mount_id, mount_path);
+        if (nread != 2) {
+            fprintf(stderr, "Bad sscanf()\n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (mi_mount_id == mount_id)
+            found = 1;
+    }
+    free(linep);
+
+    fclose(fp);
+
+    if (!found) {
+        fprintf(stderr, "Could not find mount point\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return open(mount_path, O_RDONLY);
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct file_handle *fhp;
+    int mount_id, fd, mount_fd, handle_bytes;
+    ssize_t nread;
+    char buf[1000];
+#define LINE_SIZE 100
+    char line1[LINE_SIZE], line2[LINE_SIZE];
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>nextp;
+
+    if ((argc &gt; 1 &amp;&amp; strcmp(argv[1], "--help") == 0) || argc &gt; 2) {
+        fprintf(stderr, "Usage: %s [mount-path]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Standard input contains mount ID and file handle information:
+
+         Line 1: &lt;mount_id&gt;
+         Line 2: &lt;handle_bytes&gt; &lt;handle_type&gt;   &lt;bytes of handle in hex&gt;
+    */
+
+    if ((fgets(line1, sizeof(line1), stdin) == NULL) ||
+           (fgets(line2, sizeof(line2), stdin) == NULL)) {
+        fprintf(stderr, "Missing mount_id / file handle\n");
+        exit(EXIT_FAILURE);
+    }
+
+    mount_id = atoi(line1);
+
+    handle_bytes = strtoul(line2, &amp;nextp, 0);
+
+    /* Given handle_bytes, we can now allocate file_handle structure */
+
+    fhp = malloc(sizeof(*fhp) + handle_bytes);
+    if (fhp == NULL)
+        errExit("malloc");
+
+    fhp-&gt;handle_bytes = handle_bytes;
+
+    fhp-&gt;handle_type = strtoul(nextp, &amp;nextp, 0);
+
+    for (int j = 0; j &lt; fhp-&gt;handle_bytes; j++)
+        fhp-&gt;f_handle[j] = strtoul(nextp, &amp;nextp, 16);
+
+    /* Obtain file descriptor for mount point, either by opening
+       the pathname specified on the command line, or by scanning
+       /proc/self/mounts to find a mount that matches the 'mount_id'
+       that we received from stdin. */
+
+    if (argc &gt; 1)
+        mount_fd = open(argv[1], O_RDONLY);
+    else
+        mount_fd = open_mount_path_by_id(mount_id);
+
+    if (mount_fd == -1)
+        errExit("opening mount fd");
+
+    /* Open file using handle and mount point */
+
+    fd = open_by_handle_at(mount_fd, fhp, O_RDONLY);
+    if (fd == -1)
+        errExit("open_by_handle_at");
+
+    /* Try reading a few bytes from the file */
+
+    nread = read(fd, buf, sizeof(buf));
+    if (nread == -1)
+        errExit("read");
+
+    printf("Read %zd bytes\n", nread);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p><a href='name_to_handle_at'>name_to_handle_at</a>() and <a href='open_by_handle_at'>open_by_handle_at</a>() can fail for the same errors as <a href='/2/openat'>openat</a>(2). In addition, they can fail with the errors noted below.</p>
+<p><a href='name_to_handle_at'>name_to_handle_at</a>() can fail with the following errors:</p>
+<dl>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>pathname</code>, <code>mount_id</code>, or <code>handle</code> points outside your accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> includes an invalid bit value.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>handle-&gt;handle_bytes</code> is greater than <strong>MAX_HANDLE_SZ</strong>.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p><code>pathname</code> is an empty string, but <strong>AT_EMPTY_PATH</strong> was not specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>The file descriptor supplied in <code>dirfd</code> does not refer to a directory, and it is not the case that both <code>flags</code> includes <strong>AT_EMPTY_PATH</strong> and <code>pathname</code> is an empty string.</p>
+</dd>
+<dt><strong>EOPNOTSUPP</strong></dt>
+<dd><p>The filesystem does not support decoding of a pathname to a file handle.</p>
+</dd>
+<dt><strong>EOVERFLOW</strong></dt>
+<dd><p>The <code>handle-&gt;handle_bytes</code> value passed into the call was too small. When this error occurs, <code>handle-&gt;handle_bytes</code> is updated to indicate the required size for the handle.</p>
+</dd>
+</dl>
+<p><a href='open_by_handle_at'>open_by_handle_at</a>() can fail with the following errors:</p>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>mount_fd</code> is not an open file descriptor.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>handle</code> points outside your accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>handle-&gt;handle_bytes</code> is greater than <strong>MAX_HANDLE_SZ</strong> or is equal to zero.</p>
+</dd>
+<dt><strong>ELOOP</strong></dt>
+<dd><p><code>handle</code> refers to a symbolic link, but <strong>O_PATH</strong> was not specified in <code>flags</code>.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller does not have the <strong>CAP_DAC_READ_SEARCH</strong> capability.</p>
+</dd>
+<dt><strong>ESTALE</strong></dt>
+<dd><p>The specified <code>handle</code> is not valid. This error will occur if, for example, the file has been deleted.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These system calls first appeared in Linux 2.6.39. Library support is provided in glibc since version 2.14.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These system calls are nonstandard Linux extensions.</p>
+<p>FreeBSD has a broadly similar pair of system calls in the form of <a href='getfh'>getfh</a>() and <a href='openfh'>openfh</a>().</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A file handle can be generated in one process using <a href='name_to_handle_at'>name_to_handle_at</a>() and later used in a different process that calls <a href='open_by_handle_at'>open_by_handle_at</a>().</p>
+<p>Some filesystem don't support the translation of pathnames to file handles, for example, <code>/proc</code>, <code>/sys</code>, and various network filesystems.</p>
+<p>A file handle may become invalid ("stale") if a file is deleted, or for other filesystem-specific reasons. Invalid handles are notified by an <strong>ESTALE</strong> error from <a href='open_by_handle_at'>open_by_handle_at</a>().</p>
+<p>These system calls are designed for use by user-space file servers. For example, a user-space NFS server might generate a file handle and pass it to an NFS client. Later, when the client wants to open the file, it could pass the handle back to the server. This sort of functionality allows a user-space file server to operate in a stateless fashion with respect to the files it serves.</p>
+<p>If <code>pathname</code> refers to a symbolic link and <code>flags</code> does not specify <strong>AT_SYMLINK_FOLLOW</strong>, then <a href='name_to_handle_at'>name_to_handle_at</a>() returns a handle for the link (rather than the file to which it refers). The process receiving the handle can later perform operations on the symbolic link by converting the handle to a file descriptor using <a href='open_by_handle_at'>open_by_handle_at</a>() with the <strong>O_PATH</strong> flag, and then passing the file descriptor as the <code>dirfd</code> argument in system calls such as <a href='/2/readlinkat'>readlinkat</a>(2) and <a href='/2/fchownat'>fchownat</a>(2).</p>
+<h2>Obtaining a persistent filesystem ID</h2>
+<p>The mount IDs in <code>/proc/self/mountinfo</code> can be reused as filesystems are unmounted and mounted. Therefore, the mount ID returned by <a href='name_to_handle_at'>name_to_handle_at</a>() (in <code>*mount_id</code>) should not be treated as a persistent identifier for the corresponding mounted filesystem. However, an application can use the information in the <code>mountinfo</code> record that corresponds to the mount ID to derive a persistent identifier.</p>
+<p>For example, one can use the device name in the fifth field of the <code>mountinfo</code> record to search for the corresponding device UUID via the symbolic links in <code>/dev/disks/by-uuid</code>. (A more comfortable way of obtaining the UUID is to use the <a href='/3/libblkid'>libblkid</a>(3) library.) That process can then be reversed, using the UUID to look up the device name, and then obtaining the corresponding mount point, in order to produce the <code>mount_fd</code> argument used by <a href='open_by_handle_at'>open_by_handle_at</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/open'>open</a>(2), <a href='/3/libblkid'>libblkid</a>(3), <a href='/8/blkid'>blkid</a>(8), <a href='/8/findfs'>findfs</a>(8), <a href='/8/mount'>mount</a>(8)</p>
+<p>The <code>libblkid</code> and <code>libmount</code> documentation in the latest <code>util-linux</code> release at <a href="<a href="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</a>"></a></p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

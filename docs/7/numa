@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>numa - overview of Non-Uniform Memory Architecture</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Non-Uniform Memory Access (NUMA) refers to multiprocessor systems whose memory is divided into multiple memory nodes. The access time of a memory node depends on the relative locations of the accessing CPU and the accessed node. (This contrasts with a symmetric multiprocessor system, where the access time for all of the memory is the same for all CPUs.) Normally, each CPU on a NUMA system has a local memory node whose contents can be accessed faster than the memory in the node local to another CPU or the memory on a bus shared by all CPUs.</p>
+<h2>NUMA system calls</h2>
+<p>The Linux kernel implements the following NUMA-related system calls: <a href='/2/get_mempolicy'>get_mempolicy</a>(2), <a href='/2/mbind'>mbind</a>(2), <a href='/2/migrate_pages'>migrate_pages</a>(2), <a href='/2/move_pages'>move_pages</a>(2), and <a href='/2/set_mempolicy'>set_mempolicy</a>(2). However, applications should normally use the interface provided by <code>libnuma</code>; see "Library Support" below.</p>
+<h2>/proc/[number]/numa_maps (since Linux 2.6.14)</h2>
+<p>This file displays information about a process's NUMA memory policy and allocation.</p>
+<p>Each line contains information about a memory range used by the process, displaying—among other information—the effective memory policy for that memory range and on which nodes the pages have been allocated.</p>
+<p><code>numa_maps</code> is a read-only file. When <code>/proc/&lt;pid&gt;/numa_maps</code> is read, the kernel will scan the virtual address space of the process and report how memory is used. One line is displayed for each unique memory range of the process.</p>
+<p>The first field of each line shows the starting address of the memory range. This field allows a correlation with the contents of the <code>/proc/&lt;pid&gt;/maps</code> file, which contains the end address of the range and other information, such as the access permissions and sharing.</p>
+<p>The second field shows the memory policy currently in effect for the memory range. Note that the effective policy is not necessarily the policy installed by the process for that memory range. Specifically, if the process installed a "default" policy for that range, the effective policy for that range will be the process policy, which may or may not be "default".</p>
+<p>The rest of the line contains information about the pages allocated in the memory range, as follows:</p>
+<dl>
+<dt><code>N&lt;node&gt;=&lt;nr_pages&gt;</code></dt>
+<dd><p>The number of pages allocated on <code>&lt;node&gt;</code>. <code>&lt;nr_pages&gt;</code> includes only pages currently mapped by the process. Page migration and memory reclaim may have temporarily unmapped pages associated with this memory range. These pages may show up again only after the process has attempted to reference them. If the memory range represents a shared memory area or file mapping, other processes may currently have additional pages mapped in a corresponding memory range.</p>
+</dd>
+<dt><code>file=&lt;filename&gt;</code></dt>
+<dd><p>The file backing the memory range. If the file is mapped as private, write accesses may have generated COW (Copy-On-Write) pages in this memory range. These pages are displayed as anonymous pages.</p>
+</dd>
+<dt><code>heap</code></dt>
+<dd><p>Memory range is used for the heap.</p>
+</dd>
+<dt><code>stack</code></dt>
+<dd><p>Memory range is used for the stack.</p>
+</dd>
+<dt><code>huge</code></dt>
+<dd><p>Huge memory range. The page counts shown are huge pages and not regular sized pages.</p>
+</dd>
+<dt><code>anon=&lt;pages&gt;</code></dt>
+<dd><p>The number of anonymous page in the range.</p>
+</dd>
+<dt><code>dirty=&lt;pages&gt;</code></dt>
+<dd><p>Number of dirty pages.</p>
+</dd>
+<dt><code>mapped=&lt;pages&gt;</code></dt>
+<dd><p>Total number of mapped pages, if different from <code>dirty</code> and <code>anon</code> pages.</p>
+</dd>
+<dt><code>mapmax=&lt;count&gt;</code></dt>
+<dd><p>Maximum mapcount (number of processes mapping a single page) encountered during the scan. This may be used as an indicator of the degree of sharing occurring in a given memory range.</p>
+</dd>
+<dt><code>swapcache=&lt;count&gt;</code></dt>
+<dd><p>Number of pages that have an associated entry on a swap device.</p>
+</dd>
+<dt><code>active=&lt;pages&gt;</code></dt>
+<dd><p>The number of pages on the active list. This field is shown only if different from the number of pages in this range. This means that some inactive pages exist in the memory range that may be removed from memory by the swapper soon.</p>
+</dd>
+<dt><code>writeback=&lt;pages&gt;</code></dt>
+<dd><p>Number of pages that are currently being written out to disk.</p>
+</dd>
+</dl>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>No standards govern NUMA interfaces.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The Linux NUMA system calls and <code>/proc</code> interface are available only if the kernel was configured and built with the <strong>CONFIG_NUMA</strong> option.</p>
+<h2>Library support</h2>
+<p>Link with <code>-lnuma</code> to get the system call definitions. <code>libnuma</code> and the required <code>&lt;numaif.h&gt;</code> header are available in the <code>numactl</code> package.</p>
+<p>However, applications should not use these system calls directly. Instead, the higher level interface provided by the <a href='/3/numa'>numa</a>(3) functions in the <code>numactl</code> package is recommended. The <code>numactl</code> package is available at <a href="<a href="ftp://oss.sgi.com/www/projects/libnuma/download/">ftp://oss.sgi.com/www/projects/libnuma/download/</a>"></a>. The package is also included in some Linux distributions. Some distributions include the development library and header in the separate <code>numactl-devel</code> package.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/get_mempolicy'>get_mempolicy</a>(2), <a href='/2/mbind'>mbind</a>(2), <a href='/2/move_pages'>move_pages</a>(2), <a href='/2/set_mempolicy'>set_mempolicy</a>(2), <a href='/3/numa'>numa</a>(3), <a href='/7/cpuset'>cpuset</a>(7), <a href='/8/numactl'>numactl</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

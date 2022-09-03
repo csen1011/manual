@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-fstab-generator - Unit generator for /etc/fstab</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>/lib/systemd/system-generators/systemd-fstab-generator</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>systemd-fstab-generator is a generator that translates /etc/fstab (see <a href='/5/fstab'>fstab</a>(5) for details) into native systemd units early at boot and when configuration of the system manager is reloaded. This will instantiate mount and swap units as necessary.</p>
+<p>The <code>passno</code> field is treated like a simple boolean, and the ordering information is discarded. However, if the root file system is checked, it is checked before all the other file systems.</p>
+<p>See <a href='/5/systemd.mount'>systemd.mount</a>(5) and <a href='/5/systemd.swap'>systemd.swap</a>(5) for more information about special /etc/fstab mount options this generator understands.</p>
+<p>One special topic is handling of symbolic links. Historical init implementations supported symlinks in /etc/fstab. Because mount units will refuse mounts where the target is a symbolic link, this generator will resolve any symlinks as far as possible when processing /etc/fstab in order to enhance backwards compatibility. If a symlink target does not exist at the time that this generator runs, it is assumed that the symlink target is the final target of the mount.</p>
+<p>systemd-fstab-generator implements <a href='/7/systemd.generator'>systemd.generator</a>(7).</p>
+</div></div><h1 id='kernel-command-line'><a href='#kernel-command-line'>KERNEL COMMAND LINE</a></h1><div data-for='kernel-command-line' data-hide><div class='section' data-for='kernel-command-line'><div data-more>
+<p>systemd-fstab-generator understands the following kernel command line parameters:</p>
+<p><code>fstab=</code>, <code>rd.fstab=</code></p>
+<blockquote>
+<p>Takes a boolean argument. Defaults to "yes". If "no", causes the generator to ignore any mounts or swap devices configured in /etc/fstab. <code>rd.fstab=</code> is honored only by the initial RAM disk (initrd) while <code>fstab=</code> is honored by both the main system and the initrd.</p>
+</blockquote>
+<p><code>root=</code></p>
+<blockquote>
+<p>Configures the operating systems root filesystem to mount when running in the initrd. This accepts a device node path (usually /dev/disk/by-uuid/... or /dev/disk/by-label/... or similar), or the special values "gpt-auto" and "tmpfs".</p>
+<p>Use "gpt-auto" to explicitly request automatic root file system discovery via <a href='/8/systemd-gpt-auto-generator'>systemd-gpt-auto-generator</a>(8).</p>
+<p>Use "tmpfs" in order to mount a <a href='/5/tmpfs'>tmpfs</a>(5) file system as root file system of the OS. This is useful in combination with <code>mount.usr=</code> (see below) in order to combine a volatile root file system with a separate, immutable /usr/ file system. Also see <code>systemd.volatile=</code> below.</p>
+</blockquote>
+<p><code>rootfstype=</code></p>
+<blockquote>
+<p>Takes the root filesystem type that will be passed to the mount command. <code>rootfstype=</code> is honored by the initrd.</p>
+</blockquote>
+<p><code>rootflags=</code></p>
+<blockquote>
+<p>Takes the root filesystem mount options to use. <code>rootflags=</code> is honored by the initrd.</p>
+<p>Note that unlike most kernel command line options this setting does not override settings made in configuration files (specifically: the mount option string in /etc/fstab). See <a href='/8/systemd-remount-fs.service'>systemd-remount-fs.service</a>(8).</p>
+</blockquote>
+<p><code>mount.usr=</code></p>
+<blockquote>
+<p>Takes the /usr/ filesystem to be mounted by the initrd. If <code>mount.usrfstype=</code> or <code>mount.usrflags=</code> is set, then <code>mount.usr=</code> will default to the value set in <code>root=</code>.</p>
+<p>Otherwise, this parameter defaults to the /usr/ entry found in /etc/fstab on the root filesystem.</p>
+<p><code>mount.usr=</code> is honored by the initrd.</p>
+</blockquote>
+<p><code>mount.usrfstype=</code></p>
+<blockquote>
+<p>Takes the /usr/ filesystem type that will be passed to the mount command. If <code>mount.usr=</code> or <code>mount.usrflags=</code> is set, then <code>mount.usrfstype=</code> will default to the value set in <code>rootfstype=</code>.</p>
+<p>Otherwise, this value will be read from the /usr/ entry in /etc/fstab on the root filesystem.</p>
+<p><code>mount.usrfstype=</code> is honored by the initrd.</p>
+</blockquote>
+<p><code>mount.usrflags=</code></p>
+<blockquote>
+<p>Takes the /usr/ filesystem mount options to use. If <code>mount.usr=</code> or <code>mount.usrfstype=</code> is set, then <code>mount.usrflags=</code> will default to the value set in <code>rootflags=</code>.</p>
+<p>Otherwise, this value will be read from the /usr/ entry in /etc/fstab on the root filesystem.</p>
+<p><code>mount.usrflags=</code> is honored by the initrd.</p>
+</blockquote>
+<p><code>systemd.volatile=</code></p>
+<blockquote>
+<p>Controls whether the system shall boot up in volatile mode. Takes a boolean argument or the special value <strong>state</strong>.</p>
+<p>If false (the default), this generator makes no changes to the mount tree and the system is booted up in normal mode.</p>
+<p>If true the generator ensures <a href='/8/systemd-volatile-root.service'>systemd-volatile-root.service</a>(8) is run as part of the initial RAM disk ("initrd"). This service changes the mount table before transitioning to the host system, so that a volatile memory file system ("tmpfs") is used as root directory, with only /usr/ mounted into it from the configured root file system, in read-only mode. This way the system operates in fully stateless mode, with all configuration and state reset at boot and lost at shutdown, as /etc/ and /var/ will be served from the (initially unpopulated) volatile memory file system.</p>
+<p>If set to <strong>state</strong> the generator will leave the root directory mount point unaltered, however will mount a "tmpfs" file system to /var/. In this mode the normal system configuration (i.e. the contents of "/etc/") is in effect (and may be modified during system runtime), however the system state (i.e. the contents of "/var/") is reset at boot and lost at shutdown.</p>
+<p>If this setting is set to "overlay" the root file system is set up as "overlayfs" mount combining the read-only root directory with a writable "tmpfs", so that no modifications are made to disk, but the file system may be modified nonetheless with all changes being lost at reboot.</p>
+<p>Note that in none of these modes the root directory, /etc/, /var/ or any other resources stored in the root file system are physically removed. Its thus safe to boot a system that is normally operated in non-volatile mode temporarily into volatile mode, without losing data.</p>
+<p>Note that with the exception of "overlay" mode, enabling this setting will only work correctly on operating systems that can boot up with only /usr/ mounted, and are able to automatically populate /etc/, and also /var/ in case of "systemd.volatile=yes".</p>
+<p>Also see <code>root=tmpfs</code> above, for a method to combine a "tmpfs" file system with a regular /usr/ file system (as configured via <code>mount.usr=</code>). The main distinction between <code>systemd.volatile=yes</code>, and <code>root=tmpfs</code> in combination <code>mount.usr=</code> is that the former operates on top of a regular root file system and temporarily obstructs the files and directories above its /usr/ subdirectory, while the latter does not hide any files, but simply mounts a unpopulated tmpfs as root file system and combines it with a user picked /usr/ file system.</p>
+</blockquote>
+<p><code>systemd.swap</code></p>
+<blockquote>
+<p>Takes a boolean argument or enables the option if specified without an argument. If disabled, causes the generator to ignore any swap devices configured in /etc/fstab. Defaults to enabled.</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/5/fstab'>fstab</a>(5), <a href='/5/systemd.mount'>systemd.mount</a>(5), <a href='/5/systemd.swap'>systemd.swap</a>(5), <a href='/8/systemd-cryptsetup-generator'>systemd-cryptsetup-generator</a>(8), <a href='/8/systemd-gpt-auto-generator'>systemd-gpt-auto-generator</a>(8), <a href='/7/kernel-command-line'>kernel-command-line</a>(7)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

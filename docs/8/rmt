@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>rmt - remote magnetic tape server</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>rmt</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>Rmt</strong> provides remote access to files and devices for <a href='/1/tar'>tar</a>(1), <a href='/1/cpio'>cpio</a>(1), and similar backup utilities. It is normally called by running <a href='/1/rsh'>rsh</a>(1) or <a href='/1/ssh'>ssh</a>(1) to the remote machine, optionally using a different login name if one is supplied.</p>
+<p>The calling program communicates with <strong>rmt</strong> by sending requests on its standard input and reading replies from the standard output. A request consists of a request letter followed by an argument (if required) and a newline character. Additional data, if any, are sent after the newline. On success, <strong>rmt</strong> returns</p>
+<p><strong>A</strong><code>number</code><strong>\n</strong></p>
+<p>where <code>number</code> is an ASCII representation of a decimal return code. Additional data are returned after this line. On error, the following response is returned:</p>
+<p><strong>E</strong><code>errno</code><strong>\n</strong><code>error-message</code><strong>\n</strong></p>
+<p>where <code>errno</code> is one of the system error codes, as described in <a href='/3/errno'>errno</a>(3), and <code>error-message</code> is a one-line human-readable description of the error, as printed by <a href='/3/perror'>perror</a>(3).</p>
+<p>Available commands and possible responses are discussed in detail in the subsequent section.</p>
+</div></div><h1 id='commands'><a href='#commands'>COMMANDS</a></h1><div data-for='commands' data-hide><div class='section' data-for='commands'><div data-more>
+<dl>
+<dt><strong>O</strong><code>device</code><strong>\n</strong><code>flags</code><strong>\n</strong></dt>
+<dd><p>Opens the <code>device</code> with given <code>flags</code>. If a device had already been opened, it is closed before opening the new one.</p>
+</dd>
+</dl>
+<p><strong>Arguments</strong></p>
+<blockquote>
+<dl>
+<dt><code>device</code></dt>
+<dd><p>The name of the device to open.</p>
+</dd>
+<dt><code>flags</code></dt>
+<dd><p>Flags for <a href='/2/open'>open</a>(2): a decimal number, or any valid <strong>O_*</strong> constant from <strong>fcntl.h</strong> (the initial <strong>O_</strong> may be omitted), or a bitwise or (using <strong>|</strong>) of any number of these, e.g.:</p>
+</dd>
+</dl>
+<pre><code>576
+64|512
+CREAT|TRUNC</code></pre>
+<blockquote>
+<p>In addition, a combined form is also allowed, i.e. a decimal mode followed by its symbolic representation. In this case the symbolic representation is given preference.</p>
+</blockquote>
+<p><strong>Reply</strong></p>
+<blockquote>
+<p><strong>A0\n</strong> on success.</p>
+</blockquote>
+<p><strong>Extensions</strong></p>
+<blockquote>
+<p>BSD version allows only decimal number as <code>flags</code>.</p>
+</blockquote>
+<dl>
+<dt><strong>C</strong>[<code>device</code>]<strong>\n</strong></dt>
+<dd><p>Close the currently open device.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><p><br/>
+Any arguments are silently ignored.</p>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+<strong>A0\n</strong> on success.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>L</strong><code>whence</code><strong>\n</strong><code>offset</code><strong>\n</strong></dt>
+<dd><p>Performs an <a href='/2/lseek'>lseek</a>(2) on the currently open device with the specified parameters.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><dl>
+<dt><code>whence</code></dt>
+<dd><p>Where to measure offset from. Valid values are:</p>
+</dd>
+</dl>
+<pre><code>	0, SET, SEEK_SET	seek from the file beginning
+	1, CUR, SEEK_CUR	seek from the current location
+	2, END, SEEK_END	seek from the file end</code></pre>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+<strong>A</strong><code>offset</code><strong>\n</strong> on success. The <code>offset</code> is the new offset in file.</p>
+</dd>
+<dt><strong>Extensions</strong></dt>
+<dd><p>BSD version allows only 0,1,2 as <code>whence</code>.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>R</strong><code>count</code><strong>\n</strong></dt>
+<dd><p><br/>
+Read <code>count</code> bytes of data from the current device.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><dl>
+<dt><code>count</code></dt>
+<dd><p>number of bytes to read.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+On success:</p>
+</dd>
+</dl>
+<p><strong>A</strong><code>rdcount</code><strong>\n</strong></p>
+<p>followed by <code>rdcount</code> bytes of data read from the device.</p>
+</dd>
+<dt><strong>W</strong><code>count</code><strong>\n</strong></dt>
+<dd><p>Writes data onto the current device. The command is followed by <code>count</code> bytes of input data.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><dl>
+<dt><code>count</code></dt>
+<dd><p>Number of bytes to write.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+On success: <strong>A</strong><code>wrcount</code><strong>\n</strong>, where <code>wrcount</code> is the number of bytes actually written.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>I</strong><code>opcode</code><strong>\n</strong><code>count</code><strong>\n</strong></dt>
+<dd><p>Perform a <strong>MTIOCOP</strong> <a href='/2/ioctl'>ioctl</a>(2) command with the specified paramedters.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><dl>
+<dt><code>opcode</code></dt>
+<dd><p><strong>MTIOCOP</strong> operation code.</p>
+</dd>
+<dt><code>count</code></dt>
+<dd><p>mt_count.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+On success: <strong>A0\n</strong>.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>S\n</strong></dt>
+<dd><p>Returns the status of the currently open device, as obtained from a <strong>MTIOCGET</strong> <a href='/2/ioctl'>ioctl</a>(2) call.</p>
+<dl>
+<dt><strong>Arguments</strong></dt>
+<dd><p><br/>
+None</p>
+</dd>
+<dt><strong>Reply</strong></dt>
+<dd><p><br/>
+On success: <strong>A</strong><code>count</code><strong>\n</strong> followed by <code>count</code> bytes of data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/tar'>tar</a>(1).</p>
+</div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Using this utility as a general-purpose remote file access tool is discouraged.</p>
+</div></div></div><h1 id='bug-reports'><a href='#bug-reports'>BUG REPORTS</a></h1><div data-for='bug-reports' data-hide><div class='section' data-for='bug-reports'><div data-more>
+<p>Report bugs to &lt;<a href="mailto:bug-tar@gnu.org">bug-tar@gnu.org</a>&gt;.</p>
+</div></div></div><h1 id='history'><a href='#history'>HISTORY</a></h1><div data-for='history' data-hide><div class='section' data-for='history'><div data-more>
+<p>The <strong>rmt</strong> command appeared in 4.2BSD. The GNU <strong>rmt</strong> is written from scratch, using the BSD specification.</p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2013, 2018 Free Software Foundation, Inc.<br/>
+</p>
+<p>License GPLv3+: GNU GPL version 3 or later &lt;<a href="http://gnu.org/licenses/gpl.html&amp;gt;">http://gnu.org/licenses/gpl.html&gt;</a><br/>
+</p>
+<p>This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

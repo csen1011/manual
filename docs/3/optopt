@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getopt, getopt_long, getopt_long_only, optarg, optind, opterr, optopt - Parse command-line options</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;unistd.h&gt;</a>
+
+int getopt(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a> const argv[],
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>optstring);
+
+extern <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>optarg;
+extern int optind, opterr, optopt;
+
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;getopt.h&gt;</a>
+
+int getopt_long(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a> const argv[],
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>optstring,
+ const struct option *longopts, int *longindex);
+
+int getopt_long_only(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a> const argv[],
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>optstring,
+ const struct option *longopts, int *longindex);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getopt'>getopt</a>(): _POSIX_C_SOURCE &gt;= 2 || _XOPEN_SOURCE<br/>
+<a href='getopt_long'>getopt_long</a>(), <a href='getopt_long_only'>getopt_long_only</a>(): _GNU_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='getopt'>getopt</a>() function parses the command-line arguments. Its arguments <code>argc</code> and <code>argv</code> are the argument count and array as passed to the <code>main</code>() function on program invocation. An element of <code>argv</code> that starts with '-' (and is not exactly "-" or "--") is an option element. The characters of this element (aside from the initial '-') are option characters. If <a href='getopt'>getopt</a>() is called repeatedly, it returns successively each of the option characters from each of the option elements.</p>
+<p>The variable <code>optind</code> is the index of the next element to be processed in <code>argv</code>. The system initializes this value to 1. The caller can reset it to 1 to restart scanning of the same <code>argv</code>, or when scanning a new argument vector.</p>
+<p>If <a href='getopt'>getopt</a>() finds another option character, it returns that character, updating the external variable <code>optind</code> and a static variable <code>nextchar</code> so that the next call to <a href='getopt'>getopt</a>() can resume the scan with the following option character or <code>argv</code>-element.</p>
+<p>If there are no more option characters, <a href='getopt'>getopt</a>() returns -1. Then <code>optind</code> is the index in <code>argv</code> of the first <code>argv</code>-element that is not an option.</p>
+<p><code>optstring</code> is a string containing the legitimate option characters. If such a character is followed by a colon, the option requires an argument, so <a href='getopt'>getopt</a>() places a pointer to the following text in the same <code>argv</code>-element, or the text of the following <code>argv</code>-element, in <code>optarg</code>. Two colons mean an option takes an optional arg; if there is text in the current <code>argv</code>-element (i.e., in the same word as the option name itself, for example, "-oarg"), then it is returned in <code>optarg</code>, otherwise <code>optarg</code> is set to zero. This is a GNU extension. If <code>optstring</code> contains <strong>W</strong> followed by a semicolon, then <strong>-W foo</strong> is treated as the long option <strong>--foo</strong>. (The <strong>-W</strong> option is reserved by POSIX.2 for implementation extensions.) This behavior is a GNU extension, not available with libraries before glibc 2.</p>
+<p>By default, <a href='getopt'>getopt</a>() permutes the contents of <code>argv</code> as it scans, so that eventually all the nonoptions are at the end. Two other scanning modes are also implemented. If the first character of <code>optstring</code> is '+' or the environment variable <strong>POSIXLY_CORRECT</strong> is set, then option processing stops as soon as a nonoption argument is encountered. If the first character of <code>optstring</code> is '-', then each nonoption <code>argv</code>-element is handled as if it were the argument of an option with character code 1. (This is used by programs that were written to expect options and other <code>argv</code>-elements in any order and that care about the ordering of the two.) The special argument "--" forces an end of option-scanning regardless of the scanning mode.</p>
+<p>While processing the option list, <a href='getopt'>getopt</a>() can detect two kinds of errors: (1) an option character that was not specified in <code>optstring</code> and (2) a missing option argument (i.e., an option at the end of the command line without an expected argument). Such errors are handled and reported as follows:</p>
+<ul>
+<li><p>By default, <a href='getopt'>getopt</a>() prints an error message on standard error, places the erroneous option character in <code>optopt</code>, and returns '?' as the function result.</p></li>
+<li><p>If the caller has set the global variable <code>opterr</code> to zero, then <a href='getopt'>getopt</a>() does not print an error message. The caller can determine that there was an error by testing whether the function return value is '?'. (By default, <code>opterr</code> has a nonzero value.)</p></li>
+<li><p>If the first character (following any optional '+' or '-' described above) of <code>optstring</code> is a colon (':'), then <a href='getopt'>getopt</a>() likewise does not print an error message. In addition, it returns ':' instead of '?' to indicate a missing option argument. This allows the caller to distinguish the two different types of errors. The <a href='getopt_long'>getopt_long</a>() function works like <a href='getopt'>getopt</a>() except that it also accepts long options, started with two dashes. (If the program accepts only long options, then <code>optstring</code> should be specified as an empty string (""), not NULL.) Long option names may be abbreviated if the abbreviation is unique or is an exact match for some defined option. A long option may take a parameter, of the form <strong>--arg=param</strong> or <strong>--arg param</strong>.</p></li>
+</ul>
+<p><code>longopts</code> is a pointer to the first element of an array of <code>struct option</code> declared in <code>&lt;getopt.h&gt;</code> as</p>
+<pre><code>struct option {
+    <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name;
+    int         has_arg;
+    int        *flag;
+    int         val;
+};</code></pre>
+<p>The meanings of the different fields are:</p>
+<dl>
+<dt><code>name</code></dt>
+<dd><p>is the name of the long option.</p>
+</dd>
+<dt><code>has_arg</code></dt>
+<dd><p>is: <strong>no_argument</strong> (or 0) if the option does not take an argument; <strong>required_argument</strong> (or 1) if the option requires an argument; or <strong>optional_argument</strong> (or 2) if the option takes an optional argument.</p>
+</dd>
+<dt><code>flag</code></dt>
+<dd><p>specifies how results are returned for a long option. If <code>flag</code> is NULL, then <a href='getopt_long'>getopt_long</a>() returns <code>val</code>. (For example, the calling program may set <code>val</code> to the equivalent short option character.) Otherwise, <a href='getopt_long'>getopt_long</a>() returns 0, and <code>flag</code> points to a variable which is set to <code>val</code> if the option is found, but left unchanged if the option is not found.</p>
+</dd>
+<dt><code>val</code></dt>
+<dd><p>is the value to return, or to load into the variable pointed to by <code>flag</code>.</p>
+</dd>
+</dl>
+<p>The last element of the array has to be filled with zeros.</p>
+<p>If <code>longindex</code> is not NULL, it points to a variable which is set to the index of the long option relative to <code>longopts</code>.</p>
+<p><a href='getopt_long_only'>getopt_long_only</a>() is like <a href='getopt_long'>getopt_long</a>(), but '-' as well as "--" can indicate a long option. If an option that starts with '-' (not "--") doesn't match a long option, but does match a short option, it is parsed as a short option instead.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>If an option was successfully found, then <a href='getopt'>getopt</a>() returns the option character. If all command-line options have been parsed, then <a href='getopt'>getopt</a>() returns -1. If <a href='getopt'>getopt</a>() encounters an option character that was not in <code>optstring</code>, then '?' is returned. If <a href='getopt'>getopt</a>() encounters an option with a missing argument, then the return value depends on the first character in <code>optstring</code>: if it is ':', then ':' is returned; otherwise '?' is returned.</p>
+<p><a href='getopt_long'>getopt_long</a>() and <a href='getopt_long_only'>getopt_long_only</a>() also return the option character when a short option is recognized. For a long option, they return <code>val</code> if <code>flag</code> is NULL, and 0 otherwise. Error and -1 returns are the same as for <a href='getopt'>getopt</a>(), plus '?' for an ambiguous match or an extraneous parameter.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<h2>getopt()</h2>
+<p>The following trivial example program uses <a href='getopt'>getopt</a>() to handle two program options: <code>-n</code>, with no associated value; and <code>-t val</code>, which expects an associated value.</p>
+<pre><code>#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int flags, opt;
+    int nsecs, tfnd;
+
+    nsecs = 0;
+    tfnd = 0;
+    flags = 0;
+    while ((opt = getopt(argc, argv, "nt:")) != -1) {
+        switch (opt) {
+        case 'n':
+            flags = 1;
+            break;
+        case 't':
+            nsecs = atoi(optarg);
+            tfnd = 1;
+            break;
+        default: /* '?' */
+            fprintf(stderr, "Usage: %s [-t nsecs] [-n] name\n",
+                    argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    printf("flags=%d; tfnd=%d; nsecs=%d; optind=%d\n",
+            flags, tfnd, nsecs, optind);
+
+    if (optind &gt;= argc) {
+        fprintf(stderr, "Expected argument after options\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("name argument = %s\n", argv[optind]);
+
+    /* Other code omitted */
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+<h2>getopt_long()</h2>
+<p>The following example program illustrates the use of <a href='getopt_long'>getopt_long</a>() with most of its features.</p>
+<pre><code>#include &lt;stdio.h&gt;     /* for printf */
+#include &lt;stdlib.h&gt;    /* for exit */
+#include &lt;getopt.h&gt;
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>*argv)
+{
+    int c;
+    int digit_optind = 0;
+
+    while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"add",     required_argument, 0,  0 },
+            {"append",  no_argument,       0,  0 },
+            {"delete",  required_argument, 0,  0 },
+            {"verbose", no_argument,       0,  0 },
+            {"create",  required_argument, 0, 'c'},
+            {"file",    required_argument, 0,  0 },
+            {0,         0,                 0,  0 }
+        };
+
+        c = getopt_long(argc, argv, "abc:d:012",
+                 long_options, &amp;option_index);
+        if (c == -1)
+            break;
+
+        switch (c) {
+        case 0:
+            printf("option %s", long_options[option_index].name);
+            if (optarg)
+                printf(" with arg %s", optarg);
+            printf("\n");
+            break;
+
+        case '0':
+        case '1':
+        case '2':
+            if (digit_optind != 0 &amp;&amp; digit_optind != this_option_optind)
+              printf("digits occur in two different argv-elements.\n");
+            digit_optind = this_option_optind;
+            printf("option %c\n", c);
+            break;
+
+        case 'a':
+            printf("option a\n");
+            break;
+
+        case 'b':
+            printf("option b\n");
+            break;
+
+        case 'c':
+            printf("option c with value '%s'\n", optarg);
+            break;
+
+        case 'd':
+            printf("option d with value '%s'\n", optarg);
+            break;
+
+        case '?':
+            break;
+
+        default:
+            printf("?? getopt returned character code 0%o ??\n", c);
+        }
+    }
+
+    if (optind &lt; argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind &lt; argc)
+            printf("%s ", argv[optind++]);
+        printf("\n");
+    }
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<dl>
+<dt><strong>POSIXLY_CORRECT</strong></dt>
+<dd><p>If this is set, then option processing stops as soon as a nonoption argument is encountered.</p>
+</dd>
+<dt><strong>_&lt;PID&gt;_GNU_nonoption_argv_flags_</strong></dt>
+<dd><p>This variable was used by <a href='/1/bash'>bash</a>(1) 2.0 to communicate to glibc which arguments are the results of wildcard expansion and so should not be considered as options. This behavior was removed in <a href='/1/bash'>bash</a>(1) version 2.01, but the support remains in glibc.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getopt'>getopt</a>(), <a href='getopt_long'>getopt_long</a>(), <a href='getopt_long_only'>getopt_long_only</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Unsafe race:getopt env</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<dl>
+<dt><a href='getopt'>getopt</a>():</dt>
+<dd><p>POSIX.1-2001, POSIX.1-2008, and POSIX.2, provided the environment variable <strong>POSIXLY_CORRECT</strong> is set. Otherwise, the elements of <code>argv</code> aren't really <code>const</code>, because these functions permute them. Nevertheless, <code>const</code> is used in the prototype to be compatible with other systems.</p>
+<p>The use of '+' and '-' in <code>optstring</code> is a GNU extension.</p>
+<p>On some older implementations, <a href='getopt'>getopt</a>() was declared in <code>&lt;stdio.h&gt;</code>. SUSv1 permitted the declaration to appear in either <code>&lt;unistd.h&gt;</code> or <code>&lt;stdio.h&gt;</code>. POSIX.1-1996 marked the use of <code>&lt;stdio.h&gt;</code> for this purpose as LEGACY. POSIX.1-2001 does not require the declaration to appear in <code>&lt;stdio.h&gt;</code>.</p>
+</dd>
+<dt><a href='getopt_long'>getopt_long</a>() and <a href='getopt_long_only'>getopt_long_only</a>():</dt>
+<dd><p>These functions are GNU extensions.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A program that scans multiple argument vectors, or rescans the same vector more than once, and wants to make use of GNU extensions such as '+' and '-' at the start of <code>optstring</code>, or changes the value of <strong>POSIXLY_CORRECT</strong> between scans, must reinitialize <a href='getopt'>getopt</a>() by resetting <code>optind</code> to 0, rather than the traditional value of 1. (Resetting to 0 forces the invocation of an internal initialization routine that rechecks <strong>POSIXLY_CORRECT</strong> and checks for GNU extensions in <code>optstring</code>.)</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/getopt'>getopt</a>(1), <a href='/3/getsubopt'>getsubopt</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

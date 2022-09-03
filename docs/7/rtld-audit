@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>rtld-audit - auditing API for the dynamic linker</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>#define _GNU_SOURCE /* See feature_test_macros(7) */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;link.h&gt;</a></code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The GNU dynamic linker (run-time linker) provides an auditing API that allows an application to be notified when various dynamic linking events occur. This API is very similar to the auditing interface provided by the Solaris run-time linker. The necessary constants and prototypes are defined by including <code>&lt;link.h&gt;</code>.</p>
+<p>To use this interface, the programmer creates a shared library that implements a standard set of function names. Not all of the functions need to be implemented: in most cases, if the programmer is not interested in a particular class of auditing event, then no implementation needs to be provided for the corresponding auditing function.</p>
+<p>To employ the auditing interface, the environment variable <strong>LD_AUDIT</strong> must be defined to contain a colon-separated list of shared libraries, each of which can implement (parts of) the auditing API. When an auditable event occurs, the corresponding function is invoked in each library, in the order that the libraries are listed.</p>
+<h2>la_version()</h2>
+<pre><code>unsigned int la_version(unsigned int version);</code></pre>
+<p>This is the only function that <code>must</code> be defined by an auditing library: it performs the initial handshake between the dynamic linker and the auditing library. When invoking this function, the dynamic linker passes, in <code>version</code>, the highest version of the auditing interface that the linker supports.</p>
+<p>A typical implementation of this function simply returns the constant <strong>LAV_CURRENT</strong>, which indicates the version of <code>&lt;link.h&gt;</code> that was used to build the audit module. If the dynamic linker does not support this version of the audit interface, it will refuse to activate this audit module. If the function returns zero, the dynamic linker also does not activate this audit module.</p>
+<p>In order to enable backwards compatibility with older dynamic linkers, an audit module can examine the <code>version</code> argument and return an earlier version than <strong>LAV_CURRENT</strong>, assuming the module can adjust its implementation to match the requirements of the previous version of the audit interface. The <strong>la_version</strong> function should not return the value of <code>version</code> without further checks because it could correspond to an interface that does not match the <code>&lt;link.h&gt;</code> definitions used to build the audit module.</p>
+<h2>la_objsearch()</h2>
+<pre><code><a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>la_objsearch(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name, uintptr_t *cookie,
+ unsigned int flag);</code></pre>
+<p>The dynamic linker invokes this function to inform the auditing library that it is about to search for a shared object. The <code>name</code> argument is the filename or pathname that is to be searched for. <code>cookie</code> identifies the shared object that initiated the search. <code>flag</code> is set to one of the following values:</p>
+<dl>
+<dt><strong>LA_SER_ORIG</strong></dt>
+<dd><p>This is the original name that is being searched for. Typically, this name comes from an ELF <strong>DT_NEEDED</strong> entry, or is the <code>filename</code> argument given to <a href='/3/dlopen'>dlopen</a>(3).</p>
+</dd>
+<dt><strong>LA_SER_LIBPATH</strong></dt>
+<dd><p><code>name</code> was created using a directory specified in <strong>LD_LIBRARY_PATH</strong>.</p>
+</dd>
+<dt><strong>LA_SER_RUNPATH</strong></dt>
+<dd><p><code>name</code> was created using a directory specified in an ELF <strong>DT_RPATH</strong> or <strong>DT_RUNPATH</strong> list.</p>
+</dd>
+<dt><strong>LA_SER_CONFIG</strong></dt>
+<dd><p><code>name</code> was found via the <a href='/8/ldconfig'>ldconfig</a>(8) cache (<code>/etc/ld.so.cache</code>).</p>
+</dd>
+<dt><strong>LA_SER_DEFAULT</strong></dt>
+<dd><p><code>name</code> was found via a search of one of the default directories.</p>
+</dd>
+<dt><strong>LA_SER_SECURE</strong></dt>
+<dd><p><code>name</code> is specific to a secure object (unused on Linux).</p>
+</dd>
+</dl>
+<p>As its function result, <a href='la_objsearch'>la_objsearch</a>() returns the pathname that the dynamic linker should use for further processing. If NULL is returned, then this pathname is ignored for further processing. If this audit library simply intends to monitor search paths, then <code>name</code> should be returned.</p>
+<h2>la_activity()</h2>
+<pre><code>void la_activity( uintptr_t *cookie, unsigned int flag);</code></pre>
+<p>The dynamic linker calls this function to inform the auditing library that link-map activity is occurring. <code>cookie</code> identifies the object at the head of the link map. When the dynamic linker invokes this function, <code>flag</code> is set to one of the following values:</p>
+<dl>
+<dt><strong>LA_ACT_ADD</strong></dt>
+<dd><p>New objects are being added to the link map.</p>
+</dd>
+<dt><strong>LA_ACT_DELETE</strong></dt>
+<dd><p>Objects are being removed from the link map.</p>
+</dd>
+<dt><strong>LA_ACT_CONSISTENT</strong></dt>
+<dd><p>Link-map activity has been completed: the map is once again consistent.</p>
+</dd>
+</dl>
+<h2>la_objopen()</h2>
+<pre><code>unsigned int la_objopen(struct link_map *map, Lmid_t lmid,
+ uintptr_t *cookie);</code></pre>
+<p>The dynamic linker calls this function when a new shared object is loaded. The <code>map</code> argument is a pointer to a link-map structure that describes the object. The <code>lmid</code> field has one of the following values</p>
+<dl>
+<dt><strong>LM_ID_BASE</strong></dt>
+<dd><p>Link map is part of the initial namespace.</p>
+</dd>
+<dt><strong>LM_ID_NEWLM</strong></dt>
+<dd><p>Link map is part of a new namespace requested via <a href='/3/dlmopen'>dlmopen</a>(3).</p>
+</dd>
+</dl>
+<p><code>cookie</code> is a pointer to an identifier for this object. The identifier is provided to later calls to functions in the auditing library in order to identify this object. This identifier is initialized to point to object's link map, but the audit library can change the identifier to some other value that it may prefer to use to identify the object.</p>
+<p>As its return value, <a href='la_objopen'>la_objopen</a>() returns a bit mask created by ORing zero or more of the following constants, which allow the auditing library to select the objects to be monitored by <a href='la_symbind*'>la_symbind*</a>():</p>
+<dl>
+<dt><strong>LA_FLG_BINDTO</strong></dt>
+<dd><p>Audit symbol bindings to this object.</p>
+</dd>
+<dt><strong>LA_FLG_BINDFROM</strong></dt>
+<dd><p>Audit symbol bindings from this object.</p>
+</dd>
+</dl>
+<p>A return value of 0 from <a href='la_objopen'>la_objopen</a>() indicates that no symbol bindings should be audited for this object.</p>
+<h2>la_objclose()</h2>
+<pre><code>unsigned int la_objclose(uintptr_t *cookie);</code></pre>
+<p>The dynamic linker invokes this function after any finalization code for the object has been executed, before the object is unloaded. The <code>cookie</code> argument is the identifier obtained from a previous invocation of <a href='la_objopen'>la_objopen</a>().</p>
+<p>In the current implementation, the value returned by <a href='la_objclose'>la_objclose</a>() is ignored.</p>
+<h2>la_preinit()</h2>
+<pre><code>void la_preinit(uintptr_t *cookie);</code></pre>
+<p>The dynamic linker invokes this function after all shared objects have been loaded, before control is passed to the application (i.e., before calling <code>main</code>()). Note that <code>main</code>() may still later dynamically load objects using <a href='/3/dlopen'>dlopen</a>(3).</p>
+<h2>la_symbind*()</h2>
+<pre><code>uintptr_t la_symbind32(Elf32_Sym *sym, unsigned int ndx,
+ uintptr_t *refcook, uintptr_t *defcook,
+ unsigned int *flags, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname);
+uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx,
+ uintptr_t *refcook, uintptr_t *defcook,
+ unsigned int *flags, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname);</code></pre>
+<p>The dynamic linker invokes one of these functions when a symbol binding occurs between two shared objects that have been marked for auditing notification by <a href='la_objopen'>la_objopen</a>(). The <a href='la_symbind32'>la_symbind32</a>() function is employed on 32-bit platforms; the <a href='la_symbind64'>la_symbind64</a>() function is employed on 64-bit platforms.</p>
+<p>The <code>sym</code> argument is a pointer to a structure that provides information about the symbol being bound. The structure definition is shown in <code>&lt;elf.h&gt;</code>. Among the fields of this structure, <code>st_value</code> indicates the address to which the symbol is bound.</p>
+<p>The <code>ndx</code> argument gives the index of the symbol in the symbol table of the bound shared object.</p>
+<p>The <code>refcook</code> argument identifies the shared object that is making the symbol reference; this is the same identifier that is provided to the <a href='la_objopen'>la_objopen</a>() function that returned <strong>LA_FLG_BINDFROM</strong>. The <code>defcook</code> argument identifies the shared object that defines the referenced symbol; this is the same identifier that is provided to the <a href='la_objopen'>la_objopen</a>() function that returned <strong>LA_FLG_BINDTO</strong>.</p>
+<p>The <code>symname</code> argument points a string containing the name of the symbol.</p>
+<p>The <code>flags</code> argument is a bit mask that both provides information about the symbol and can be used to modify further auditing of this PLT (Procedure Linkage Table) entry. The dynamic linker may supply the following bit values in this argument:</p>
+<dl>
+<dt><strong>LA_SYMB_DLSYM</strong></dt>
+<dd><p>The binding resulted from a call to <a href='/3/dlsym'>dlsym</a>(3).</p>
+</dd>
+<dt><strong>LA_SYMB_ALTVALUE</strong></dt>
+<dd><p>A previous <a href='la_symbind*'>la_symbind*</a>() call returned an alternate value for this symbol.</p>
+</dd>
+</dl>
+<p>By default, if the auditing library implements <a href='la_pltenter'>la_pltenter</a>() and <a href='la_pltexit'>la_pltexit</a>() functions (see below), then these functions are invoked, after <a href='la_symbind'>la_symbind</a>(), for PLT entries, each time the symbol is referenced. The following flags can be ORed into <code>*flags</code> to change this default behavior:</p>
+<dl>
+<dt><strong>LA_SYMB_NOPLTENTER</strong></dt>
+<dd><p>Don't call <a href='la_pltenter'>la_pltenter</a>() for this symbol.</p>
+</dd>
+<dt><strong>LA_SYMB_NOPLTEXIT</strong></dt>
+<dd><p>Don't call <a href='la_pltexit'>la_pltexit</a>() for this symbol.</p>
+</dd>
+</dl>
+<p>The return value of <a href='la_symbind32'>la_symbind32</a>() and <a href='la_symbind64'>la_symbind64</a>() is the address to which control should be passed after the function returns. If the auditing library is simply monitoring symbol bindings, then it should return <code>sym-&gt;st_value</code>. A different value may be returned if the library wishes to direct control to an alternate location.</p>
+<h2>la_pltenter()</h2>
+<p>The precise name and argument types for this function depend on the hardware platform. (The appropriate definition is supplied by <code>&lt;link.h&gt;</code>.) Here is the definition for x86-32:</p>
+<pre><code>Elf32_Addr la_i86_gnu_pltenter(Elf32_Sym *sym, unsigned int ndx,
+ uintptr_t *refcook, uintptr_t *defcook,
+ La_i86_regs *regs, unsigned int *flags,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname, long *framesizep);</code></pre>
+<p>This function is invoked just before a PLT entry is called, between two shared objects that have been marked for binding notification.</p>
+<p>The <code>sym</code>, <code>ndx</code>, <code>refcook</code>, <code>defcook</code>, and <code>symname</code> are as for <a href='la_symbind*'>la_symbind*</a>().</p>
+<p>The <code>regs</code> argument points to a structure (defined in <code>&lt;link.h&gt;</code>) containing the values of registers to be used for the call to this PLT entry.</p>
+<p>The <code>flags</code> argument points to a bit mask that conveys information about, and can be used to modify subsequent auditing of, this PLT entry, as for <a href='la_symbind*'>la_symbind*</a>().</p>
+<p>The <code>framesizep</code> argument points to a <code>long int</code> buffer that can be used to explicitly set the frame size used for the call to this PLT entry. If different <a href='la_pltenter'>la_pltenter</a>() invocations for this symbol return different values, then the maximum returned value is used. The <a href='la_pltexit'>la_pltexit</a>() function is called only if this buffer is explicitly set to a suitable value.</p>
+<p>The return value of <a href='la_pltenter'>la_pltenter</a>() is as for <a href='la_symbind*'>la_symbind*</a>().</p>
+<h2>la_pltexit()</h2>
+<p>The precise name and argument types for this function depend on the hardware platform. (The appropriate definition is supplied by <code>&lt;link.h&gt;</code>.) Here is the definition for x86-32:</p>
+<pre><code>unsigned int la_i86_gnu_pltexit(Elf32_Sym *sym, unsigned int ndx,
+ uintptr_t *refcook, uintptr_t *defcook,
+ const La_i86_regs *inregs, La_i86_retval *outregs,
+ <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname);</code></pre>
+<p>This function is called when a PLT entry, made between two shared objects that have been marked for binding notification, returns. The function is called just before control returns to the caller of the PLT entry.</p>
+<p>The <code>sym</code>, <code>ndx</code>, <code>refcook</code>, <code>defcook</code>, and <code>symname</code> are as for <a href='la_symbind*'>la_symbind*</a>().</p>
+<p>The <code>inregs</code> argument points to a structure (defined in <code>&lt;link.h&gt;</code>) containing the values of registers used for the call to this PLT entry. The <code>outregs</code> argument points to a structure (defined in <code>&lt;link.h&gt;</code>) containing return values for the call to this PLT entry. These values can be modified by the caller, and the changes will be visible to the caller of the PLT entry.</p>
+<p>In the current GNU implementation, the return value of <a href='la_pltexit'>la_pltexit</a>() is ignored.</p>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This API is nonstandard, but very similar to the Solaris API, described in the Solaris <code>Linker and Libraries Guide</code>, in the chapter <code>Runtime Linker Auditing Interface</code>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Note the following differences from the Solaris dynamic linker auditing API:</p>
+<ul>
+<li><p>The Solaris <a href='la_objfilter'>la_objfilter</a>() interface is not supported by the GNU implementation.</p></li>
+<li><p>The Solaris <a href='la_symbind32'>la_symbind32</a>() and <a href='la_pltexit'>la_pltexit</a>() functions do not provide a <code>symname</code> argument.</p></li>
+<li><p>The Solaris <a href='la_pltexit'>la_pltexit</a>() function does not provide <code>inregs</code> and <code>outregs</code> arguments (but does provide a <code>retval</code> argument with the function return value).</p></li>
+</ul>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In glibc versions up to and include 2.9, specifying more than one audit library in <strong>LD_AUDIT</strong> results in a run-time crash. This is reportedly fixed in glibc 2.10.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>#include &lt;link.h&gt;
+#include &lt;stdio.h&gt;
+
+unsigned int
+la_version(unsigned int version)
+{
+    printf("la_version(): version = %u; LAV_CURRENT = %u\n",
+            version, LAV_CURRENT);
+
+    return LAV_CURRENT;
+}
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>
+la_objsearch(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>name, uintptr_t *cookie, unsigned int flag)
+{
+    printf("la_objsearch(): name = %s; cookie = %p", name, cookie);
+    printf("; flag = %s\n",
+            (flag == LA_SER_ORIG) ?    "LA_SER_ORIG" :
+            (flag == LA_SER_LIBPATH) ? "LA_SER_LIBPATH" :
+            (flag == LA_SER_RUNPATH) ? "LA_SER_RUNPATH" :
+            (flag == LA_SER_DEFAULT) ? "LA_SER_DEFAULT" :
+            (flag == LA_SER_CONFIG) ?  "LA_SER_CONFIG" :
+            (flag == LA_SER_SECURE) ?  "LA_SER_SECURE" :
+            "???");
+
+    return name;
+}
+
+void
+la_activity (uintptr_t *cookie, unsigned int flag)
+{
+    printf("la_activity(): cookie = %p; flag = %s\n", cookie,
+            (flag == LA_ACT_CONSISTENT) ? "LA_ACT_CONSISTENT" :
+            (flag == LA_ACT_ADD) ?        "LA_ACT_ADD" :
+            (flag == LA_ACT_DELETE) ?     "LA_ACT_DELETE" :
+            "???");
+}
+
+unsigned int
+la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
+{
+    printf("la_objopen(): loading \"%s\"; lmid = %s; cookie=%p\n",
+            map-&gt;l_name,
+            (lmid == LM_ID_BASE) ?  "LM_ID_BASE" :
+            (lmid == LM_ID_NEWLM) ? "LM_ID_NEWLM" :
+            "???",
+            cookie);
+
+    return LA_FLG_BINDTO | LA_FLG_BINDFROM;
+}
+
+unsigned int
+la_objclose (uintptr_t *cookie)
+{
+    printf("la_objclose(): %p\n", cookie);
+
+    return 0;
+}
+
+void
+la_preinit(uintptr_t *cookie)
+{
+    printf("la_preinit(): %p\n", cookie);
+}
+
+uintptr_t
+la_symbind32(Elf32_Sym *sym, unsigned int ndx, uintptr_t *refcook,
+        uintptr_t *defcook, unsigned int *flags, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname)
+{
+    printf("la_symbind32(): symname = %s; sym-&gt;st_value = %p\n",
+            symname, sym-&gt;st_value);
+    printf("        ndx = %u; flags = %#x", ndx, *flags);
+    printf("; refcook = %p; defcook = %p\n", refcook, defcook);
+
+    return sym-&gt;st_value;
+}
+
+uintptr_t
+la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook,
+        uintptr_t *defcook, unsigned int *flags, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname)
+{
+    printf("la_symbind64(): symname = %s; sym-&gt;st_value = %p\n",
+            symname, sym-&gt;st_value);
+    printf("        ndx = %u; flags = %#x", ndx, *flags);
+    printf("; refcook = %p; defcook = %p\n", refcook, defcook);
+
+    return sym-&gt;st_value;
+}
+
+Elf32_Addr
+la_i86_gnu_pltenter(Elf32_Sym *sym, unsigned int ndx,
+        uintptr_t *refcook, uintptr_t *defcook, La_i86_regs *regs,
+        unsigned int *flags, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>symname, long *framesizep)
+{
+    printf("la_i86_gnu_pltenter(): %s (%p)\n", symname, sym-&gt;st_value);
+
+    return sym-&gt;st_value;
+}</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ldd'>ldd</a>(1), <a href='/3/dlopen'>dlopen</a>(3), <strong><a href="http://ld.so">ld.so</a></strong>(8), <a href='/8/ldconfig'>ldconfig</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

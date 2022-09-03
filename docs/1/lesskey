@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>lesskey - specify key bindings for less</p>
+</div></div><h1 id='synopsis-deprecated'><a href='#synopsis-deprecated'>SYNOPSIS (DEPRECATED)</a></h1><div data-for='synopsis-deprecated' data-hide><div class='section' data-for='synopsis-deprecated'><div data-more>
+<p><strong>lesskey [-o output] [--] [input]</strong><br/>
+<strong>lesskey [--output=output] [--] [input]</strong><br/>
+<strong>lesskey -V</strong><br/>
+<strong>lesskey --version</strong></p>
+</div></div></div><h1 id='scope'><a href='#scope'>SCOPE</a></h1><div data-for='scope' data-hide><div class='section' data-for='scope'><div data-more>
+<p>This document describes the format of the <code>lesskey</code> source file, which is used by <code>less</code> version 582 and later. In previous versions of <code>less</code>, a separate program called <code>lesskey</code> was used to compile the <code>lesskey</code> source file into a format understood by <code>less</code>. This compilation step is no longer required and the <code>lesskey</code> program is therefore deprecated although the file format remains supported by <code>less</code> itself.</p>
+</div></div></div><h1 id='file-format'><a href='#file-format'>FILE FORMAT</a></h1><div data-for='file-format' data-hide><div class='section' data-for='file-format'><div data-more>
+<p>The input file consists of one or more <code>sections.</code> Each section starts with a line that identifies the type of section. Possible sections are:</p>
+<ul>
+<li><p>Defines new command keys.</p></li>
+<li><p>Defines new line-editing keys.</p></li>
+<li><p>Defines environment variables.</p></li>
+</ul>
+<p>Blank lines and lines which start with a pound sign (#) are ignored, except for the special section header lines.</p>
+</div></div></div><h1 id='command-section'><a href='#command-section'>COMMAND SECTION</a></h1><div data-for='command-section' data-hide><div class='section' data-for='command-section'><div data-more>
+<p>The command section begins with the line</p>
+<p>#command</p>
+<p>If the command section is the first section in the file, this line may be omitted. The command section consists of lines of the form:</p>
+<p><code>string</code> &lt;whitespace&gt; <code>action</code> [extra-string] &lt;newline&gt;</p>
+<p>Whitespace is any sequence of one or more spaces and/or tabs. The <code>string</code> is the command key(s) which invoke the action. The <code>string</code> may be a single command key, or a sequence of up to 15 keys. The <code>action</code> is the name of the less action, from the list below. The characters in the <code>string</code> may appear literally, or be prefixed by a caret to indicate a control key. A backslash followed by one to three octal digits may be used to specify a character by its octal value. A backslash followed by certain characters specifies input characters as follows:</p>
+<ul>
+<li><p>BACKSPACE</p></li>
+<li><p>ESCAPE</p></li>
+<li><p>NEWLINE</p></li>
+<li><p>RETURN</p></li>
+<li><p>TAB</p></li>
+<li><p>UP ARROW</p></li>
+<li><p>DOWN ARROW</p></li>
+<li><p>RIGHT ARROW</p></li>
+<li><p>LEFT ARROW</p></li>
+<li><p>PAGE UP</p></li>
+<li><p>PAGE DOWN</p></li>
+<li><p>HOME</p></li>
+<li><p>END</p></li>
+<li><p>DELETE</p></li>
+</ul>
+<p>A backslash followed by any other character indicates that character is to be taken literally. Characters which must be preceded by backslash include caret, space, tab and the backslash itself.</p>
+<p>An action may be followed by an "extra" string. When such a command is entered while running <code>less</code>, the action is performed, and then the extra string is parsed, just as if it were typed in to <code>less</code>. This feature can be used in certain cases to extend the functionality of a command. For example, see the "{" and ":t" commands in the example below. The extra string has a special meaning for the "quit" action: when <code>less</code> quits, the first character of the extra string is used as its exit status.</p>
+</div></div></div><h1 id='example'><a href='#example'>EXAMPLE</a></h1><div class='section' data-for='example'><div data-more>
+<p>The following input file sets the -i option whenever <code>less</code> is run, and specifies the character set to be "latin1":</p>
+<pre><code>	#env
+	LESS = -i
+	LESSCHARSET = latin1</code></pre>
+</div></div><h1 id='precedence'><a href='#precedence'>PRECEDENCE</a></h1><div data-for='precedence' data-hide><div class='section' data-for='precedence'><div data-more>
+<p>Commands specified by <code>lesskey</code> take precedence over the default commands. A default command key may be disabled by including it in the input file with the action "invalid". Alternatively, a key may be defined to do nothing by using the action "noaction". "noaction" is similar to "invalid", but <code>less</code> will give an error beep for an "invalid" command, but not for a "noaction" command. In addition, ALL default commands may be disabled by adding this control line to the input file:</p>
+<p>#stop</p>
+<p>This will cause all default commands to be ignored. The #stop line should be the last line in that section of the file.</p>
+<p>Be aware that #stop can be dangerous. Since all default commands are disabled, you must provide sufficient commands before the #stop line to enable all necessary actions. For example, failure to provide a "quit" command can lead to frustration.</p>
+</div></div></div><h1 id='line-editing-section'><a href='#line-editing-section'>LINE EDITING SECTION</a></h1><div data-for='line-editing-section' data-hide><div class='section' data-for='line-editing-section'><div data-more>
+<p>The line-editing section begins with the line:</p>
+<p>#line-edit</p>
+<p>This section specifies new key bindings for the line editing commands, in a manner similar to the way key bindings for ordinary commands are specified in the #command section. The line-editing section consists of a list of keys and actions, one per line as in the example below.</p>
+</div></div></div><h1 id='less-environment-variables'><a href='#less-environment-variables'>LESS ENVIRONMENT VARIABLES</a></h1><div data-for='less-environment-variables' data-hide><div class='section' data-for='less-environment-variables'><div data-more>
+<p>The environment variable section begins with the line</p>
+<p>#env</p>
+<p>Following this line is a list of environment variable assignments. Each line consists of an environment variable name, an equals sign (=) and the value to be assigned to the environment variable. White space before and after the equals sign is ignored. Variables assigned in this way are visible only to <code>less</code>. If a variable is specified in the system environment and also in a lesskey file, the value in the lesskey file takes precedence. Although the lesskey file can be used to override variables set in the environment, the main purpose of assigning variables in the lesskey file is simply to have all <code>less</code> configuration information stored in one file.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/less'>less</a>(1)</p>
+</div></div><h1 id='warnings'><a href='#warnings'>WARNINGS</a></h1><div data-for='warnings' data-hide><div class='section' data-for='warnings'><div data-more>
+<p>On MS-DOS and OS/2 systems, certain keys send a sequence of characters which start with a NUL character (0). This NUL character should be represented as \340 in a lesskey file.</p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (C) 1984-2021 Mark Nudelman</p>
+<p>less is part of the GNU project and is free software. You can redistribute it and/or modify it under the terms of either (1) the GNU General Public License as published by the Free Software Foundation; or (2) the Less License. See the file README in the less distribution for more details regarding redistribution. You should have received a copy of the GNU General Public License along with the source for less; see the file COPYING. If not, write to the Free Software Foundation, 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA. You should also have received a copy of the Less License; see the file LICENSE.</p>
+<p>less is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Mark Nudelman<br/>
+Report bugs at <a href="https://github.com/gwsw/less/issues">https://github.com/gwsw/less/issues</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

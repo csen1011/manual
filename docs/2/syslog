@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;syslog&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>syslog</a>, klogctl - read and/or clear kernel message ring buffer; set console_loglevel</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>int syslog(int type, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>bufp, int len);
+ /* No wrapper provided in glibc */
+
+/* The glibc interface */
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/klog.h&gt;</a>
+
+int klogctl(int type, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>bufp, int len);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><code>Note</code>: Probably, you are looking for the C library function <a href='syslog'>syslog</a>(), which talks to <a href='/8/syslogd'>syslogd</a>(8); see <a href='/3/syslog'>syslog</a>(3) for details.</p>
+<p>This page describes the kernel <a href='syslog'>syslog</a>() system call, which is used to control the kernel <code>printk</code>() buffer; the glibc wrapper function for the system call is called <a href='klogctl'>klogctl</a>().</p>
+<h2>The kernel log buffer</h2>
+<p>The kernel has a cyclic buffer of length <strong>LOG_BUF_LEN</strong> in which messages given as arguments to the kernel function <a href='printk'>printk</a>() are stored (regardless of their log level). In early kernels, <strong>LOG_BUF_LEN</strong> had the value 4096; from kernel 1.3.54, it was 8192; from kernel 2.1.113, it was 16384; since kernel 2.4.23/2.6, the value is a kernel configuration option (<strong>CONFIG_LOG_BUF_SHIFT</strong>, default value dependent on the architecture). Since Linux 2.6.6, the size can be queried with command type 10 (see below).</p>
+<h2>Commands</h2>
+<p>The <code>type</code> argument determines the action taken by this function. The list below specifies the values for <code>type</code>. The symbolic names are defined in the kernel source, but are not exported to user space; you will either need to use the numbers, or define the names yourself.</p>
+<dl>
+<dt><strong>SYSLOG_ACTION_CLOSE</strong> (0)</dt>
+<dd><p>Close the log. Currently a NOP.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_OPEN</strong> (1)</dt>
+<dd><p>Open the log. Currently a NOP.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_READ</strong> (2)</dt>
+<dd><p>Read from the log. The call waits until the kernel log buffer is nonempty, and then reads at most <code>len</code> bytes into the buffer pointed to by <code>bufp</code>. The call returns the number of bytes read. Bytes read from the log disappear from the log buffer: the information can be read only once. This is the function executed by the kernel when a user program reads <code>/proc/kmsg</code>.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_READ_ALL</strong> (3)</dt>
+<dd><p>Read all messages remaining in the ring buffer, placing them in the buffer pointed to by <code>bufp</code>. The call reads the last <code>len</code> bytes from the log buffer (nondestructively), but will not read more than was written into the buffer since the last "clear ring buffer" command (see command 5 below)). The call returns the number of bytes read.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_READ_CLEAR</strong> (4)</dt>
+<dd><p>Read and clear all messages remaining in the ring buffer. The call does precisely the same as for a <code>type</code> of 3, but also executes the "clear ring buffer" command.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_CLEAR</strong> (5)</dt>
+<dd><p>The call executes just the "clear ring buffer" command. The <code>bufp</code> and <code>len</code> arguments are ignored.</p>
+<p>This command does not really clear the ring buffer. Rather, it sets a kernel bookkeeping variable that determines the results returned by commands 3 (<strong>SYSLOG_ACTION_READ_ALL</strong>) and 4 (<strong>SYSLOG_ACTION_READ_CLEAR</strong>). This command has no effect on commands 2 (<strong>SYSLOG_ACTION_READ</strong>) and 9 (<strong>SYSLOG_ACTION_SIZE_UNREAD</strong>).</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_CONSOLE_OFF</strong> (6)</dt>
+<dd><p>The command saves the current value of <code>console_loglevel</code> and then sets <code>console_loglevel</code> to <code>minimum_console_loglevel</code>, so that no messages are printed to the console. Before Linux 2.6.32, the command simply sets <code>console_loglevel</code> to <code>minimum_console_loglevel</code>. See the discussion of <code>/proc/sys/kernel/printk</code>, below.</p>
+<p>The <code>bufp</code> and <code>len</code> arguments are ignored.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_CONSOLE_ON</strong> (7)</dt>
+<dd><p>If a previous <strong>SYSLOG_ACTION_CONSOLE_OFF</strong> command has been performed, this command restores <code>console_loglevel</code> to the value that was saved by that command. Before Linux 2.6.32, this command simply sets <code>console_loglevel</code> to <code>default_console_loglevel</code>. See the discussion of <code>/proc/sys/kernel/printk</code>, below.</p>
+<p>The <code>bufp</code> and <code>len</code> arguments are ignored.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_CONSOLE_LEVEL</strong> (8)</dt>
+<dd><p>The call sets <code>console_loglevel</code> to the value given in <code>len</code>, which must be an integer between 1 and 8 (inclusive). The kernel silently enforces a minimum value of <code>minimum_console_loglevel</code> for <code>len</code>. See the <code>log level</code> section for details. The <code>bufp</code> argument is ignored.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_SIZE_UNREAD</strong> (9) (since Linux 2.4.10)</dt>
+<dd><p>The call returns the number of bytes currently available to be read from the kernel log buffer via command 2 (<strong>SYSLOG_ACTION_READ</strong>). The <code>bufp</code> and <code>len</code> arguments are ignored.</p>
+</dd>
+<dt><strong>SYSLOG_ACTION_SIZE_BUFFER</strong> (10) (since Linux 2.6.6)</dt>
+<dd><p>This command returns the total size of the kernel log buffer. The <code>bufp</code> and <code>len</code> arguments are ignored.</p>
+</dd>
+</dl>
+<p>All commands except 3 and 10 require privilege. In Linux kernels before 2.6.37, command types 3 and 10 are allowed to unprivileged processes; since Linux 2.6.37, these commands are allowed to unprivileged processes only if <code>/proc/sys/kernel/dmesg_restrict</code> has the value 0. Before Linux 2.6.37, "privileged" means that the caller has the <strong>CAP_SYS_ADMIN</strong> capability. Since Linux 2.6.37, "privileged" means that the caller has either the <strong>CAP_SYS_ADMIN</strong> capability (now deprecated for this purpose) or the (new) <strong>CAP_SYSLOG</strong> capability.</p>
+<h2>/proc/sys/kernel/printk</h2>
+<p><code>/proc/sys/kernel/printk</code> is a writable file containing four integer values that influence kernel <code>printk()</code> behavior when printing or logging error messages. The four values are:</p>
+<dl>
+<dt><code>console_loglevel</code></dt>
+<dd><p>Only messages with a log level lower than this value will be printed to the console. The default value for this field is <strong>DEFAULT_CONSOLE_LOGLEVEL</strong> (7), but it is set to 4 if the kernel command line contains the word "quiet", 10 if the kernel command line contains the word "debug", and to 15 in case of a kernel fault (the 10 and 15 are just silly, and equivalent to 8). The value of <code>console_loglevel</code> can be set (to a value in the range 1–8) by a <a href='syslog'>syslog</a>() call with a <code>type</code> of 8.</p>
+</dd>
+<dt><code>default_message_loglevel</code></dt>
+<dd><p>This value will be used as the log level for <code>printk()</code> messages that do not have an explicit level. Up to and including Linux 2.6.38, the hard-coded default value for this field was 4 (<strong>KERN_WARNING</strong>); since Linux 2.6.39, the default value is a defined by the kernel configuration option <strong>CONFIG_DEFAULT_MESSAGE_LOGLEVEL</strong>, which defaults to 4.</p>
+</dd>
+<dt><code>minimum_console_loglevel</code></dt>
+<dd><p>The value in this field is the minimum value to which <code>console_loglevel</code> can be set.</p>
+</dd>
+<dt><code>default_console_loglevel</code></dt>
+<dd><p>This is the default value for <code>console_loglevel</code>.</p>
+</dd>
+</dl>
+<h2>The log level</h2>
+<p>Every <code>printk</code>() message has its own log level. If the log level is not explicitly specified as part of the message, it defaults to <code>default_message_loglevel</code>. The conventional meaning of the log level is as follows:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Kernel constant</td>
+<td style="text-align: left;">Level value</td>
+<td style="text-align: left;">Meaning</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">KERN_EMERG</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">System is unusable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KERN_ALERT</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Action must be taken immediately</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">KERN_CRIT</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">Critical conditions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KERN_ERR</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Error conditions</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">KERN_WARNING</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Warning conditions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KERN_NOTICE</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">Normal but significant condition</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">KERN_INFO</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">Informational</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KERN_DEBUG</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">Debug-level messages</td>
+</tr>
+</tbody>
+</table>
+<p>The kernel <code>printk()</code> routine will print a message on the console only if it has a log level less than the value of <code>console_loglevel</code>.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>For <code>type</code> equal to 2, 3, or 4, a successful call to <a href='syslog'>syslog</a>() returns the number of bytes read. For <code>type</code> 9, <a href='syslog'>syslog</a>() returns the number of bytes currently available to be read on the kernel log buffer. For <code>type</code> 10, <a href='syslog'>syslog</a>() returns the total size of the kernel log buffer. For other values of <code>type</code>, 0 is returned on success.</p>
+<p>In case of error, -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Bad arguments (e.g., bad <code>type</code>; or for <code>type</code> 2, 3, or 4, <code>buf</code> is NULL, or <code>len</code> is less than zero; or for <code>type</code> 8, the <code>level</code> is outside the range 1 to 8).</p>
+</dd>
+<dt><strong>ENOSYS</strong></dt>
+<dd><p>This <a href='syslog'>syslog</a>() system call is not available, because the kernel was compiled with the <strong>CONFIG_PRINTK</strong> kernel-configuration option disabled.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>An attempt was made to change <code>console_loglevel</code> or clear the kernel message ring buffer by a process without sufficient privilege (more precisely: without the <strong>CAP_SYS_ADMIN</strong> or <strong>CAP_SYSLOG</strong> capability).</p>
+</dd>
+<dt><strong>ERESTARTSYS</strong></dt>
+<dd><p>System call was interrupted by a signal; nothing was read. (This can be seen only during a trace.)</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>This system call is Linux-specific and should not be used in programs intended to be portable.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>From the very start, people noted that it is unfortunate that a system call and a library routine of the same name are entirely different animals.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/dmesg'>dmesg</a>(1), <a href='/3/syslog'>syslog</a>(3), <a href='/7/capabilities'>capabilities</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

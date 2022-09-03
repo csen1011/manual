@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>shmget - allocates a System V shared memory segment</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/ipc.h&gt;</strong><br/>
+<strong>#include &lt;sys/shm.h&gt;</strong></p>
+<p><strong>int shmget(key_t </strong><code>key</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> </strong><code>size</code><strong>, int </strong><code>shmflg</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='shmget'>shmget</a>() returns the identifier of the System V shared memory segment associated with the value of the argument <code>key</code>. It may be used either to obtain the identifier of a previously created shared memory segment (when <code>shmflg</code> is zero and <code>key</code> does not have the value <strong>IPC_PRIVATE</strong>), or to create a new set.</p>
+<p>A new shared memory segment, with size equal to the value of <code>size</code> rounded up to a multiple of <strong>PAGE_SIZE</strong>, is created if <code>key</code> has the value <strong>IPC_PRIVATE</strong> or <code>key</code> isn't <strong>IPC_PRIVATE</strong>, no shared memory segment corresponding to <code>key</code> exists, and <strong>IPC_CREAT</strong> is specified in <code>shmflg</code>.</p>
+<p>If <code>shmflg</code> specifies both <strong>IPC_CREAT</strong> and <strong>IPC_EXCL</strong> and a shared memory segment already exists for <code>key</code>, then <a href='shmget'>shmget</a>() fails with <code>errno</code> set to <strong>EEXIST</strong>. (This is analogous to the effect of the combination <strong>O_CREAT | O_EXCL</strong> for <a href='/2/open'>open</a>(2).)</p>
+<p>The value <code>shmflg</code> is composed of:</p>
+<dl>
+<dt><strong>IPC_CREAT</strong></dt>
+<dd><p>Create a new segment. If this flag is not used, then <a href='shmget'>shmget</a>() will find the segment associated with <code>key</code> and check to see if the user has permission to access the segment.</p>
+</dd>
+<dt><strong>IPC_EXCL</strong></dt>
+<dd><p>This flag is used with <strong>IPC_CREAT</strong> to ensure that this call creates the segment. If the segment already exists, the call fails.</p>
+</dd>
+<dt><strong>SHM_HUGETLB</strong> (since Linux 2.6)</dt>
+<dd><p>Allocate the segment using "huge pages." See the Linux kernel source file <code>Documentation/admin-guide/mm/hugetlbpage.rst</code> for further information.</p>
+</dd>
+<dt><strong>SHM_HUGE_2MB</strong>, <strong>SHM_HUGE_1GB</strong> (since Linux 3.8)</dt>
+<dd><p>Used in conjunction with <strong>SHM_HUGETLB</strong> to select alternative hugetlb page sizes (respectively, 2 MB and 1 GB) on systems that support multiple hugetlb page sizes.</p>
+<p>More generally, the desired huge page size can be configured by encoding the base-2 logarithm of the desired page size in the six bits at the offset <strong>SHM_HUGE_SHIFT</strong>. Thus, the above two constants are defined as:</p>
+<pre><code>#define SHM_HUGE_2MB    (21 &lt;&lt; SHM_HUGE_SHIFT)
+#define SHM_HUGE_1GB    (30 &lt;&lt; SHM_HUGE_SHIFT)</code></pre>
+<p>For some additional details, see the discussion of the similarly named constants in <a href='/2/mmap'>mmap</a>(2).</p>
+</dd>
+<dt><strong>SHM_NORESERVE</strong> (since Linux 2.6.15)</dt>
+<dd><p>This flag serves the same purpose as the <a href='/2/mmap'>mmap</a>(2) <strong>MAP_NORESERVE</strong> flag. Do not reserve swap space for this segment. When swap space is reserved, one has the guarantee that it is possible to modify the segment. When swap space is not reserved one might get <strong>SIGSEGV</strong> upon a write if no physical memory is available. See also the discussion of the file <code>/proc/sys/vm/overcommit_memory</code> in <a href='/5/proc'>proc</a>(5).</p>
+</dd>
+</dl>
+<p>In addition to the above flags, the least significant 9 bits of <code>shmflg</code> specify the permissions granted to the owner, group, and others. These bits have the same format, and the same meaning, as the <code>mode</code> argument of <a href='/2/open'>open</a>(2). Presently, execute permissions are not used by the system.</p>
+<p>When a new shared memory segment is created, its contents are initialized to zero values, and its associated data structure, <code>shmid_ds</code> (see <a href='/2/shmctl'>shmctl</a>(2)), is initialized as follows:</p>
+<ul>
+<li><p><code>shm_perm.cuid</code> and <code>shm_perm.uid</code> are set to the effective user ID of the calling process.</p></li>
+<li><p><code>shm_perm.cgid</code> and <code>shm_perm.gid</code> are set to the effective group ID of the calling process.</p></li>
+<li><p>The least significant 9 bits of <code>shm_perm.mode</code> are set to the least significant 9 bit of <code>shmflg</code>.</p></li>
+<li><p><code>shm_segsz</code> is set to the value of <code>size</code>.</p></li>
+<li><p><code>shm_lpid</code>, <code>shm_nattch</code>, <code>shm_atime</code>, and <code>shm_dtime</code> are set to 0.</p></li>
+<li><p><code>shm_ctime</code> is set to the current time.</p></li>
+</ul>
+<p>If the shared memory segment already exists, the permissions are verified, and a check is made to see if it is marked for destruction.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, a valid shared memory identifier is returned. On error, -1 is returned, and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>See <a href='/2/shmop'>shmop</a>(2).</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>On failure, <code>errno</code> is set to one of the following:</p>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The user does not have permission to access the shared memory segment, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p><strong>IPC_CREAT</strong> and <strong>IPC_EXCL</strong> were specified in <code>shmflg</code>, but a shared memory segment already exists for <code>key</code>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>A new segment was to be created and <code>size</code> is less than <strong>SHMMIN</strong> or greater than <strong>SHMMAX</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>A segment for the given <code>key</code> exists, but <code>size</code> is greater than the size of that segment.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>No segment exists for the given <code>key</code>, and <strong>IPC_CREAT</strong> was not specified.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>No memory could be allocated for segment overhead.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>All possible shared memory IDs have been taken (<strong>SHMMNI</strong>), or allocating a segment of the requested <code>size</code> would cause the system to exceed the system-wide limit on shared memory (<strong>SHMALL</strong>).</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The <strong>SHM_HUGETLB</strong> flag was specified, but the caller was not privileged (did not have the <strong>CAP_IPC_LOCK</strong> capability).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+<p><strong>SHM_HUGETLB</strong> and <strong>SHM_NORESERVE</strong> are Linux extensions.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p><strong>IPC_PRIVATE</strong> isn't a flag field but a <code>key_t</code> type. If this special value is used for <code>key</code>, the system call ignores all but the least significant 9 bits of <code>shmflg</code> and creates a new shared memory segment. The following limits on shared memory segment resources affect the <a href='shmget'>shmget</a>() call:</p>
+<dl>
+<dt><strong>SHMALL</strong></dt>
+<dd><p>System-wide limit on the total amount of shared memory, measured in units of the system page size.</p>
+<p>On Linux, this limit can be read and modified via <code>/proc/sys/kernel/shmall</code>. Since Linux 3.16, the default value for this limit is:</p>
+<p>ULONG_MAX - 2^24</p>
+<p>The effect of this value (which is suitable for both 32-bit and 64-bit systems) is to impose no limitation on allocations. This value, rather than <strong>ULONG_MAX</strong>, was chosen as the default to prevent some cases where historical applications simply raised the existing limit without first checking its current value. Such applications would cause the value to overflow if the limit was set at <strong>ULONG_MAX</strong>.</p>
+<p>From Linux 2.4 up to Linux 3.15, the default value for this limit was:</p>
+<p>SHMMAX / PAGE_SIZE * (SHMMNI / 16)</p>
+<p>If <strong>SHMMAX</strong> and <strong>SHMMNI</strong> were not modified, then multiplying the result of this formula by the page size (to get a value in bytes) yielded a value of 8 GB as the limit on the total memory used by all shared memory segments.</p>
+</dd>
+<dt><strong>SHMMAX</strong></dt>
+<dd><p>Maximum size in bytes for a shared memory segment.</p>
+<p>On Linux, this limit can be read and modified via <code>/proc/sys/kernel/shmmax</code>. Since Linux 3.16, the default value for this limit is:</p>
+<p>ULONG_MAX - 2^24</p>
+<p>The effect of this value (which is suitable for both 32-bit and 64-bit systems) is to impose no limitation on allocations. See the description of <strong>SHMALL</strong> for a discussion of why this default value (rather than <strong>ULONG_MAX</strong>) is used.</p>
+<p>From Linux 2.2 up to Linux 3.15, the default value of this limit was 0x2000000 (32 MB).</p>
+<p>Because it is not possible to map just part of a shared memory segment, the amount of virtual memory places another limit on the maximum size of a usable segment: for example, on i386 the largest segments that can be mapped have a size of around 2.8 GB, and on x86-64 the limit is around 127 TB.</p>
+</dd>
+<dt><strong>SHMMIN</strong></dt>
+<dd><p>Minimum size in bytes for a shared memory segment: implementation dependent (currently 1 byte, though <strong>PAGE_SIZE</strong> is the effective minimum size).</p>
+</dd>
+<dt><strong>SHMMNI</strong></dt>
+<dd><p>System-wide limit on the number of shared memory segments. In Linux 2.2, the default value for this limit was 128; since Linux 2.4, the default value is 4096.</p>
+<p>On Linux, this limit can be read and modified via <code>/proc/sys/kernel/shmmni</code>.</p>
+</dd>
+</dl>
+<p>The implementation has no specific limits for the per-process maximum number of shared memory segments (<strong>SHMSEG</strong>).</p>
+<h2>Linux notes</h2>
+<p>Until version 2.3.30, Linux would return <strong>EIDRM</strong> for a <a href='shmget'>shmget</a>() on a shared memory segment scheduled for deletion.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>The name choice <strong>IPC_PRIVATE</strong> was perhaps unfortunate, <strong>IPC_NEW</strong> would more clearly show its function.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/memfd_create'>memfd_create</a>(2), <a href='/2/shmat'>shmat</a>(2), <a href='/2/shmctl'>shmctl</a>(2), <a href='/2/shmdt'>shmdt</a>(2), <a href='/3/ftok'>ftok</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/shm_overview'>shm_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

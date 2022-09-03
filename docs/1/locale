@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>locale - get locale-specific information</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>locale [option]
+locale [option] -a
+locale [option] -m
+locale [option] name...</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <strong>locale</strong> command displays information about the current locale, or all locales, on standard output.</p>
+<p>When invoked without arguments, <strong>locale</strong> displays the current locale settings for each locale category (see <a href='/5/locale'>locale</a>(5)), based on the settings of the environment variables that control the locale (see <a href='/7/locale'>locale</a>(7)). Values for variables set in the environment are printed without double quotes, implied values are printed with double quotes.</p>
+<p>If either the <strong>-a</strong> or the <strong>-m</strong> option (or one of their long-format equivalents) is specified, the behavior is as follows:</p>
+<dl>
+<dt><strong>-a</strong>, <strong>--all-locales</strong></dt>
+<dd><p>Display a list of all available locales. The <strong>-v</strong> option causes the <strong>LC_IDENTIFICATION</strong> metadata about each locale to be included in the output.</p>
+</dd>
+<dt><strong>-m</strong>, <strong>--charmaps</strong></dt>
+<dd><p>Display the available charmaps (character set description files). To display the current character set for the locale, use <strong>locale -c charmap</strong>.</p>
+</dd>
+</dl>
+<p>The <strong>locale</strong> command can also be provided with one or more arguments, which are the names of locale keywords (for example, <code>date_fmt</code>, <code>ctype-class-names</code>, <code>yesexpr</code>, or <code>decimal_point</code>) or locale categories (for example, <strong>LC_CTYPE</strong> or <strong>LC_TIME</strong>). For each argument, the following is displayed:</p>
+<ul>
+<li><p>For a locale keyword, the value of that keyword to be displayed.</p></li>
+<li><p>For a locale category, the values of all keywords in that category are displayed.</p></li>
+</ul>
+<p>When arguments are supplied, the following options are meaningful:</p>
+<dl>
+<dt><strong>-c</strong>, <strong>--category-name</strong></dt>
+<dd><p>For a category name argument, write the name of the locale category on a separate line preceding the list of keyword values for that category.</p>
+<p>For a keyword name argument, write the name of the locale category for this keyword on a separate line preceding the keyword value.</p>
+<p>This option improves readability when multiple name arguments are specified. It can be combined with the <strong>-k</strong> option.</p>
+</dd>
+<dt><strong>-k</strong>, <strong>--keyword-name</strong></dt>
+<dd><p>For each keyword whose value is being displayed, include also the name of that keyword, so that the output has the format:</p>
+<p><code>keyword</code>="<code>value</code>"</p>
+</dd>
+</dl>
+<p>The <strong>locale</strong> command also knows about the following options:</p>
+<dl>
+<dt><strong>-v</strong>, <strong>--verbose</strong></dt>
+<dd><p>Display additional information for some command-line option and argument combinations.</p>
+</dd>
+<dt><strong>-?</strong>, <strong>--help</strong></dt>
+<dd><p>Display a summary of command-line options and arguments and exit.</p>
+</dd>
+<dt><strong>--usage</strong></dt>
+<dd><p>Display a short usage message and exit.</p>
+</dd>
+<dt><strong>-V</strong>, <strong>--version</strong></dt>
+<dd><p>Display the program version and exit.</p>
+</dd>
+</dl>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<dl>
+<dt><code>/usr/lib/locale/locale-archive</code></dt>
+<dd><p>Usual default locale archive location.</p>
+</dd>
+<dt><code>/usr/share/i18n/locales</code></dt>
+<dd><p>Usual default path for locale definition files.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<pre><code>$ locale
+LANG=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=
+
+$ locale date_fmt
+%a %b %e %H:%M:%S %Z %Y
+
+$ locale -k date_fmt
+date_fmt="%a %b %e %H:%M:%S %Z %Y"
+
+$ locale -ck date_fmt
+LC_TIME
+date_fmt="%a %b %e %H:%M:%S %Z %Y"
+
+$ locale LC_TELEPHONE
++%c (%a) %l
+(%a) %l
+11
+1
+UTF-8
+
+$ locale -k LC_TELEPHONE
+tel_int_fmt="+%c (%a) %l"
+tel_dom_fmt="(%a) %l"
+int_select="11"
+int_prefix="1"
+telephone-codeset="UTF-8"</code></pre>
+<p>The following example compiles a custom locale from the <code>./wrk</code> directory with the <a href='/1/localedef'>localedef</a>(1) utility under the <code>$HOME/.locale</code> directory, then tests the result with the <a href='/1/date'>date</a>(1) command, and then sets the environment variables <strong>LOCPATH</strong> and <strong>LANG</strong> in the shell profile file so that the custom locale will be used in the subsequent user sessions:</p>
+<pre><code>$ mkdir -p $HOME/.locale
+$ I18NPATH=./wrk/ localedef -f UTF-8 -i fi_SE $HOME/.locale/fi_SE.UTF-8
+$ LOCPATH=$HOME/.locale LC_ALL=fi_SE.UTF-8 date
+$ echo "export LOCPATH=\$HOME/.locale" &gt;&gt; $HOME/.bashrc
+$ echo "export LANG=fi_SE.UTF-8" &gt;&gt; $HOME/.bashrc</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/localedef'>localedef</a>(1), <a href='/5/charmap'>charmap</a>(5), <a href='/5/locale'>locale</a>(5), <a href='/7/locale'>locale</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

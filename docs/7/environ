@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>environ - user environment</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code>extern <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>*environ;</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The variable <code>environ</code> points to an array of pointers to strings called the "environment". The last pointer in this array has the value NULL. (This variable must be declared in the user program, but is declared in the header file <code>&lt;unistd.h&gt;</code> if the <strong>_GNU_SOURCE</strong> feature test macro is defined.) This array of strings is made available to the process by the <a href='/3/exec'>exec</a>(3) call that started the process. When a child process is created via <a href='/2/fork'>fork</a>(2), it inherits a <code>copy</code> of its parent's environment.</p>
+<p>By convention the strings in <code>environ</code> have the form "<code>name</code><strong>=</strong><code>value</code>". Common examples are:</p>
+<dl>
+<dt><strong>USER</strong></dt>
+<dd><p>The name of the logged-in user (used by some BSD-derived programs).</p>
+</dd>
+<dt><strong>LOGNAME</strong></dt>
+<dd><p>The name of the logged-in user (used by some System-V derived programs).</p>
+</dd>
+<dt><strong>HOME</strong></dt>
+<dd><p>A user's login directory, set by <a href='/1/login'>login</a>(1) from the password file <a href='/5/passwd'>passwd</a>(5).</p>
+</dd>
+<dt><strong>LANG</strong></dt>
+<dd><p>The name of a locale to use for locale categories when not overridden by <strong>LC_ALL</strong> or more specific environment variables such as <strong>LC_COLLATE</strong>, <strong>LC_CTYPE</strong>, <strong>LC_MESSAGES</strong>, <strong>LC_MONETARY</strong>, <strong>LC_NUMERIC</strong>, and <strong>LC_TIME</strong> (see <a href='/7/locale'>locale</a>(7) for further details of the <strong>LC_*</strong> environment variables).</p>
+</dd>
+<dt><strong>PATH</strong></dt>
+<dd><p>The sequence of directory prefixes that <a href='/1/sh'>sh</a>(1) and many other programs apply in searching for a file known by an incomplete pathname. The prefixes are separated by '<strong>:</strong>'. (Similarly one has <strong>CDPATH</strong> used by some shells to find the target of a change directory command, <strong>MANPATH</strong> used by <a href='/1/man'>man</a>(1) to find manual pages, and so on)</p>
+</dd>
+<dt><strong>PWD</strong></dt>
+<dd><p>The current working directory. Set by some shells.</p>
+</dd>
+<dt><strong>SHELL</strong></dt>
+<dd><p>The pathname of the user's login shell.</p>
+</dd>
+<dt><strong>TERM</strong></dt>
+<dd><p>The terminal type for which output is to be prepared.</p>
+</dd>
+<dt><strong>PAGER</strong></dt>
+<dd><p>The user's preferred utility to display text files.</p>
+</dd>
+<dt><strong>EDITOR</strong>/<strong>VISUAL</strong></dt>
+<dd><p>The user's preferred utility to edit text files.</p>
+</dd>
+</dl>
+<p>Names may be placed in the shell's environment by the <code>export</code> command in <a href='/1/sh'>sh</a>(1), or by the <code>setenv</code> command if you use <a href='/1/csh'>csh</a>(1).</p>
+<p>The initial environment of the shell is populated in various ways, such as definitions from <code>/etc/environment</code> that are processed by <a href='/8/pam_env'>pam_env</a>(8) for all users at login time (on systems that employ <a href='/8/pam'>pam</a>(8)). In addition, various shell initialization scripts, such as the system-wide <code>/etc/profile</code> script and per-user initializations script may include commands that add variables to the shell's environment; see the manual page of your preferred shell for details.</p>
+<p>Bourne-style shells support the syntax</p>
+<p>NAME=value command</p>
+<p>to create an environment variable definition only in the scope of the process that executes <code>command</code>. Multiple variable definitions, separated by white space, may precede <code>command</code>.</p>
+<p>Arguments may also be placed in the environment at the point of an <a href='/3/exec'>exec</a>(3). A C program can manipulate its environment using the functions <a href='/3/getenv'>getenv</a>(3), <a href='/3/putenv'>putenv</a>(3), <a href='/3/setenv'>setenv</a>(3), and <a href='/3/unsetenv'>unsetenv</a>(3).</p>
+<p>Note that the behavior of many programs and library routines is influenced by the presence or value of certain environment variables. Examples include the following:</p>
+<ul>
+<li><p>The variables <strong>LANG</strong>, <strong>LANGUAGE</strong>, <strong>NLSPATH</strong>, <strong>LOCPATH</strong>, <strong>LC_ALL</strong>, <strong>LC_MESSAGES</strong>, and so on influence locale handling; see <a href='/3/catopen'>catopen</a>(3), <a href='/3/gettext'>gettext</a>(3), and <a href='/7/locale'>locale</a>(7).</p></li>
+<li><p><strong>TMPDIR</strong> influences the path prefix of names created by <a href='/3/tempnam'>tempnam</a>(3) and other routines, and the temporary directory used by <a href='/1/sort'>sort</a>(1) and other programs.</p></li>
+<li><p><strong>LD_LIBRARY_PATH</strong>, <strong>LD_PRELOAD</strong>, and other <strong>LD_*</strong> variables influence the behavior of the dynamic loader/linker.</p></li>
+<li><p><strong>POSIXLY_CORRECT</strong> makes certain programs and library routines follow the prescriptions of POSIX.</p></li>
+<li><p>The behavior of <a href='/3/malloc'>malloc</a>(3) is influenced by <strong>MALLOC_*</strong> variables.</p></li>
+<li><p>The variable <strong>HOSTALIASES</strong> gives the name of a file containing aliases to be used with <a href='/3/gethostbyname'>gethostbyname</a>(3).</p></li>
+<li><p><strong>TZ</strong> and <strong>TZDIR</strong> give timezone information used by <a href='/3/tzset'>tzset</a>(3) and through that by functions like <a href='/3/ctime'>ctime</a>(3), <a href='/3/localtime'>localtime</a>(3), <a href='/3/mktime'>mktime</a>(3), <a href='/3/strftime'>strftime</a>(3). See also <a href='/8/tzselect'>tzselect</a>(8).</p></li>
+<li><p><strong>TERMCAP</strong> gives information on how to address a given terminal (or gives the name of a file containing such information).</p></li>
+<li><p><strong>COLUMNS</strong> and <strong>LINES</strong> tell applications about the window size, possibly overriding the actual size.</p></li>
+<li><p><strong>PRINTER</strong> or <strong>LPDEST</strong> may specify the desired printer to use. See <a href='/1/lpr'>lpr</a>(1).</p></li>
+</ul>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The <a href='/2/prctl'>prctl</a>(2) <strong>PR_SET_MM_ENV_START</strong> and <strong>PR_SET_MM_ENV_END</strong> operations can be used to control the location of the process's environment.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>Clearly there is a security risk here. Many a system command has been tricked into mischief by a user who specified unusual values for <strong>IFS</strong> or <strong>LD_LIBRARY_PATH</strong>.</p>
+<p>There is also the risk of name space pollution. Programs like <code>make</code> and <code>autoconf</code> allow overriding of default utility names from the environment with similarly named variables in all caps. Thus one uses <strong>CC</strong> to select the desired C compiler (and similarly <strong>MAKE</strong>, <strong>AR</strong>, <strong>AS</strong>, <strong>FC</strong>, <strong>LD</strong>, <strong>LEX</strong>, <strong>RM</strong>, <strong>YACC</strong>, etc.). However, in some traditional uses such an environment variable gives options for the program instead of a pathname. Thus, one has <strong>MORE</strong>, <strong>LESS</strong>, and <strong>GZIP</strong>. Such usage is considered mistaken, and to be avoided in new programs. The authors of <code>gzip</code> should consider renaming their option to <strong>GZIP_OPT</strong>.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/bash'>bash</a>(1), <a href='/1/csh'>csh</a>(1), <a href='/1/env'>env</a>(1), <a href='/1/login'>login</a>(1), <a href='/1/printenv'>printenv</a>(1), <a href='/1/sh'>sh</a>(1), <a href='/1/tcsh'>tcsh</a>(1), <a href='/2/execve'>execve</a>(2), <a href='/3/clearenv'>clearenv</a>(3), <a href='/3/exec'>exec</a>(3), <a href='/3/getenv'>getenv</a>(3), <a href='/3/putenv'>putenv</a>(3), <a href='/3/setenv'>setenv</a>(3), <a href='/3/unsetenv'>unsetenv</a>(3), <a href='/7/locale'>locale</a>(7), <strong><a href="http://ld.so">ld.so</a></strong>(8), <a href='/8/pam_env'>pam_env</a>(8)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

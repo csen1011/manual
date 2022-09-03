@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;systemd-resolved.service&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>systemd-resolved.service</a>, systemd-resolved - Network Name Resolution manager</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>systemd-resolved.service</p>
+<p>/lib/systemd/systemd-resolved</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-resolved</strong> is a system service that provides network name resolution to local applications. It implements a caching and validating DNS/DNSSEC stub resolver, as well as an LLMNR and MulticastDNS resolver and responder. Local applications may submit network name resolution requests via three interfaces:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The native, fully-featured API <strong>systemd-resolved</strong> exposes on the bus, see <a href='/5/org.freedesktop.resolve1'>org.freedesktop.resolve1</a>(5) and <a href='/5/org.freedesktop.LogControl1'>org.freedesktop.LogControl1</a>(5) for details. Usage of this API is generally recommended to clients as it is asynchronous and fully featured (for example, properly returns DNSSEC validation status and interface scope for addresses as necessary for supporting link-local networking).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The glibc <a href='/3/getaddrinfo'>getaddrinfo</a>(3) API as defined by <strong>RFC3493</strong>[1] and its related resolver functions, including <a href='/3/gethostbyname'>gethostbyname</a>(3). This API is widely supported, including beyond the Linux platform. In its current form it does not expose DNSSEC validation status information however, and is synchronous only. This API is backed by the glibc Name Service Switch (<a href='/5/nss'>nss</a>(5)). Usage of the glibc NSS module <a href='/8/nss-resolve'>nss-resolve</a>(8) is required in order to allow glibcs NSS resolver functions to resolve hostnames via <strong>systemd-resolved</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Additionally, <strong>systemd-resolved</strong> provides a local DNS stub listener on IP address 127.0.0.53 on the local loopback interface. Programs issuing DNS requests directly, bypassing any local API may be directed to this stub, in order to connect them to <strong>systemd-resolved</strong>. Note however that it is strongly recommended that local programs use the glibc NSS or bus APIs instead (as described above), as various network resolution concepts (such as link-local addressing, or LLMNR Unicode domains) cannot be mapped to the unicast DNS protocol.</p>
+</blockquote>
+<p>The DNS servers contacted are determined from the global settings in /etc/systemd/resolved.conf, the per-link static settings in /etc/systemd/network/*.network files (in case <a href='/8/systemd-networkd.service'>systemd-networkd.service</a>(8) is used), the per-link dynamic settings received over DHCP, information provided via <a href='/1/resolvectl'>resolvectl</a>(1), and any DNS server information made available by other system services. See <a href='/5/resolved.conf'>resolved.conf</a>(5) and <a href='/5/systemd.network'>systemd.network</a>(5) for details about systemds own configuration files for DNS servers. To improve compatibility, /etc/resolv.conf is read in order to discover configured system DNS servers, but only if it is not a symlink to /run/systemd/resolve/stub-resolv.conf, /usr/lib/systemd/resolv.conf or /run/systemd/resolve/resolv.conf (see below).</p>
+</div></div><h1 id='synthetic-records'><a href='#synthetic-records'>SYNTHETIC RECORDS</a></h1><div data-for='synthetic-records' data-hide><div class='section' data-for='synthetic-records'><div data-more>
+<p><strong>systemd-resolved</strong> synthesizes DNS resource records (RRs) for the following cases:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The local, configured hostname is resolved to all locally configured IP addresses ordered by their scope, or — if none are configured — the IPv4 address 127.0.0.2 (which is on the local loopback interface) and the IPv6 address ::1 (which is the local host).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The hostnames "localhost" and "localhost.localdomain" as well as any hostname ending in ".localhost" or ".localhost.localdomain" are resolved to the IP addresses 127.0.0.1 and ::1.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The hostname "_gateway" is resolved to all current default routing gateway addresses, ordered by their metric. This assigns a stable hostname to the current gateway, useful for referencing it independently of the current network configuration state.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The hostname "_outbound" is resolved to the local IPv4 and IPv6 addresses that are most likely used for communication with other hosts. This is determined by requesting a routing decision to the configured default gateways from the kernel and then using the local IP addresses selected by this decision. This hostname is only available if there is at least one local default gateway configured. This assigns a stable hostname to the local outbound IP addresses, useful for referencing them independently of the current network configuration state.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The mappings defined in /etc/hosts are resolved to their configured addresses and back, but they will not affect lookups for non-address types (like MX). Support for /etc/hosts may be disabled with <code>ReadEtcHosts=no</code>, see <a href='/5/resolved.conf'>resolved.conf</a>(5).</p>
+</blockquote>
+</div></div></div><h1 id='protocols-and-routing'><a href='#protocols-and-routing'>PROTOCOLS AND ROUTING</a></h1><div data-for='protocols-and-routing' data-hide><div class='section' data-for='protocols-and-routing'><div data-more>
+<p>The lookup requests that systemd-resolved.service receives are routed to the available DNS servers, LLMNR, and MulticastDNS interfaces according to the following rules:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Names for which synthetic records are generated (the local hostname, "localhost" and "localdomain", local gateway, as listed in the previous section) and addresses configured in /etc/hosts are never routed to the network and a reply is sent immediately.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Single-label names are resolved using LLMNR on all local interfaces where LLMNR is enabled. Lookups for IPv4 addresses are only sent via LLMNR on IPv4, and lookups for IPv6 addresses are only sent via LLMNR on IPv6. Note that lookups for single-label synthesized names are not routed to LLMNR, MulticastDNS or unicast DNS.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Queries for the address records (A and AAAA) of single-label non-synthesized names are resolved via unicast DNS using search domains. For any interface which defines search domains, such look-ups are routed to the servers defined for that interface, suffixed with each of those search domains. When global search domains are defined, such look-ups are routed to the global servers. For each search domain, queries are performed by suffixing the name with each of the search domains in turn. Additionally, lookup of single-label names via unicast DNS may be enabled with the <code>ResolveUnicastSingleLabel=yes</code> setting. The details of which servers are queried and how the final reply is chosen are described below. Note that this means that address queries for single-label names are never sent out to remote DNS servers by default, and resolution is only possible if search domains are defined.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Multi-label names with the domain suffix ".local" are resolved using MulticastDNS on all local interfaces where MulticastDNS is enabled. As with LLMNR, IPv4 address lookups are sent via IPv4 and IPv6 address lookups are sent via IPv6.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Queries for multi-label names are routed via unicast DNS on local interfaces that have a DNS server configured, plus the globally configured DNS servers if there are any. Which interfaces are used is determined by the routing logic based on search and route-only domains, described below. Note that by default, lookups for domains with the ".local" suffix are not routed to DNS servers, unless the domain is specified explicitly as routing or search domain for the DNS server and interface. This means that on networks where the ".local" domain is defined in a site-specific DNS server, explicit search or routing domains need to be configured to make lookups work within this DNS domain. Note that these days, its generally recommended to avoid defining ".local" in a DNS server, as <strong>RFC6762</strong>[2] reserves this domain for exclusive MulticastDNS use.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Address lookups (reverse lookups) are routed similarly to multi-label names, with the exception that addresses from the link-local address range are never routed to unicast DNS and are only resolved using LLMNR and MulticastDNS (when enabled).</p>
+</blockquote>
+<p>If lookups are routed to multiple interfaces, the first successful response is returned (thus effectively merging the lookup zones on all matching interfaces). If the lookup failed on all interfaces, the last failing response is returned.</p>
+<p>Routing of lookups is determined by the per-interface routing domains (search and route-only) and global search domains. See <a href='/5/systemd.network'>systemd.network</a>(5) and <a href='/1/resolvectl'>resolvectl</a>(1) for a description how those settings are set dynamically and the discussion of <code>Domains=</code> in <a href='/5/resolved.conf'>resolved.conf</a>(5) for a description of globally configured DNS settings.</p>
+<p>The following query routing logic applies for unicast DNS lookups initiated by systemd-resolved.service:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If a name to look up matches (that is: is equal to or has as suffix) any of the configured routing domains (search or route-only) of any link, or the globally configured DNS settings, "best matching" routing domain is determined: the matching one with the most labels. The query is then sent to all DNS servers of any links or the globally configured DNS servers associated with this "best matching" routing domain. (Note that more than one link might have this same "best matching" routing domain configured, in which case the query is sent to all of them in parallel).</p>
+<p>In case of single-label names, when search domains are defined, the same logic applies, except that the name is first suffixed by each of the search domains in turn. Note that this search logic doesnt apply to any names with at least one dot. Also see the discussion about compatibility with the traditional glibc resolver below.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If a query does not match any configured routing domain (either per-link or global), it is sent to all DNS servers that are configured on links with the <code>DefaultRoute=</code> option set, as well as the globally configured DNS server.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>If there is no link configured as <code>DefaultRoute=</code> and no global DNS server configured, one of the compiled-in fallback DNS servers is used.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Otherwise the unicast DNS query fails, as no suitable DNS servers can be determined.</p>
+</blockquote>
+<p>The <code>DefaultRoute=</code> option is a boolean setting configurable with <strong>resolvectl</strong> or in .network files. If not set, it is implicitly determined based on the configured DNS domains for a link: if theres a route-only domain other than "~.", it defaults to false, otherwise to true.</p>
+<p>Effectively this means: in order to support single-label non-synthesized names, define appropriate search domains. In order to preferably route all DNS queries not explicitly matched by routing domain configuration to a specific link, configure a "~." route-only domain on it. This will ensure that other links will not be considered for these queries (unless they too carry such a routing domain). In order to route all such DNS queries to a specific link only if no other link is preferred, set the <code>DefaultRoute=</code> option for the link to true and do not configure a "~." route-only domain on it. Finally, in order to ensure that a specific link never receives any DNS traffic not matching any of its configured routing domains, set the <code>DefaultRoute=</code> option for it to false.</p>
+<p>See <a href='/5/org.freedesktop.resolve1'>org.freedesktop.resolve1</a>(5) for information about the D-Bus APIs systemd-resolved provides.</p>
+</div></div></div><h1 id='compatibility-with-the-traditional-glibc-stub-resolver'><a href='#compatibility-with-the-traditional-glibc-stub-resolver'>COMPATIBILITY WITH THE TRADITIONAL GLIBC STUB RESOLVER</a></h1><div data-for='compatibility-with-the-traditional-glibc-stub-resolver' data-hide><div class='section' data-for='compatibility-with-the-traditional-glibc-stub-resolver'><div data-more>
+<p>This section provides a short summary of differences in the stub resolver implemented by <a href='/8/nss-resolve'>nss-resolve</a>(8) together with <strong>systemd-resolved</strong> and the traditional stub resolver implemented in nss-dns.</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Some names are always resolved internally (see Synthetic Records above). Traditionally they would be resolved by nss-files if provided in /etc/hosts. But note that the details of how a query is constructed are under the control of the client library. nss-dns will first try to resolve names using search domains and even if those queries are routed to systemd-resolved, it will send them out over the network using the usual rules for multi-label name routing [3].</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Single-label names are not resolved for A and AAAA records using unicast DNS (unless overridden with <code>ResolveUnicastSingleLabel=</code>, see <a href='/5/resolved.conf'>resolved.conf</a>(5)). This is similar to the <strong>no-tld-query</strong> option being set in <a href='/5/resolv.conf'>resolv.conf</a>(5).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Search domains are not used for <code>suffixing</code> of multi-label names. (Search domains are nevertheless used for lookup <code>routing</code>, for names that were originally specified as single-label or multi-label.) Any name with at least one dot is always interpreted as a FQDN. nss-dns would resolve names both as relative (using search domains) and absolute FQDN names. Some names would be resolved as relative first, and after that query has failed, as absolute, while other names would be resolved in opposite order. The <code>ndots</code> option in /etc/resolv.conf was used to control how many dots the name needs to have to be resolved as relative first. This stub resolver does not implement this at all: multi-label names are only resolved as FQDNs.[4]</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>This resolver has a notion of the special ".local" domain used for MulticastDNS, and will not route queries with that suffix to unicast DNS servers unless explicitly configured, see above. Also, reverse lookups for link-local addresses are not sent to unicast DNS servers.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>This resolver reads and caches /etc/hosts internally. (In other words, nss-resolve replaces nss-files in addition to nss-dns). Entries in /etc/hosts have highest priority.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>This resolver also implements LLMNR and MulticastDNS in addition to the classic unicast DNS protocol, and will resolve single-label names using LLMNR (when enabled) and names ending in ".local" using MulticastDNS (when enabled).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Environment variables <code>$LOCALDOMAIN</code> and <code>$RES_OPTIONS</code> described in <a href='/5/resolv.conf'>resolv.conf</a>(5) are not supported currently.</p>
+</blockquote>
+</div></div></div><h1 id='etcresolvconf'><a href='#etcresolvconf'>/ETC/RESOLV.CONF</a></h1><div data-for='etcresolvconf' data-hide><div class='section' data-for='etcresolvconf'><div data-more>
+<p>Four modes of handling /etc/resolv.conf (see <a href='/5/resolv.conf'>resolv.conf</a>(5)) are supported:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>systemd-resolved</strong> maintains the /run/systemd/resolve/stub-resolv.conf file for compatibility with traditional Linux programs. This file may be symlinked from /etc/resolv.conf. This file lists the 127.0.0.53 DNS stub (see above) as the only DNS server. It also contains a list of search domains that are in use by systemd-resolved. The list of search domains is always kept up-to-date. Note that /run/systemd/resolve/stub-resolv.conf should not be used directly by applications, but only through a symlink from /etc/resolv.conf. This file may be symlinked from /etc/resolv.conf in order to connect all local clients that bypass local DNS APIs to <strong>systemd-resolved</strong> with correct search domains settings. This mode of operation is recommended.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>A static file /usr/lib/systemd/resolv.conf is provided that lists the 127.0.0.53 DNS stub (see above) as only DNS server. This file may be symlinked from /etc/resolv.conf in order to connect all local clients that bypass local DNS APIs to <strong>systemd-resolved</strong>. This file does not contain any search domains.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>systemd-resolved</strong> maintains the /run/systemd/resolve/resolv.conf file for compatibility with traditional Linux programs. This file may be symlinked from /etc/resolv.conf and is always kept up-to-date, containing information about all known DNS servers. Note the file formats limitations: it does not know a concept of per-interface DNS servers and hence only contains system-wide DNS server definitions. Note that /run/systemd/resolve/resolv.conf should not be used directly by applications, but only through a symlink from /etc/resolv.conf. If this mode of operation is used local clients that bypass any local DNS API will also bypass <strong>systemd-resolved</strong> and will talk directly to the known DNS servers.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Alternatively, /etc/resolv.conf may be managed by other packages, in which case <strong>systemd-resolved</strong> will read it for DNS configuration data. In this mode of operation <strong>systemd-resolved</strong> is consumer rather than provider of this configuration file.</p>
+</blockquote>
+<p>Note that the selected mode of operation for this file is detected fully automatically, depending on whether /etc/resolv.conf is a symlink to /run/systemd/resolve/resolv.conf or lists 127.0.0.53 as DNS server.</p>
+</div></div></div><h1 id='signals'><a href='#signals'>SIGNALS</a></h1><div data-for='signals' data-hide><div class='section' data-for='signals'><div data-more>
+<p><strong>SIGUSR1</strong></p>
+<blockquote>
+<p>Upon reception of the <strong>SIGUSR1</strong> process signal <strong>systemd-resolved</strong> will dump the contents of all DNS resource record caches it maintains, as well as all feature level information it learnt about configured DNS servers into the system logs.</p>
+</blockquote>
+<p><strong>SIGUSR2</strong></p>
+<blockquote>
+<p>Upon reception of the <strong>SIGUSR2</strong> process signal <strong>systemd-resolved</strong> will flush all caches it maintains. Note that it should normally not be necessary to request this explicitly – except for debugging purposes – as <strong>systemd-resolved</strong> flushes the caches automatically anyway any time the hosts network configuration changes. Sending this signal to <strong>systemd-resolved</strong> is equivalent to the <strong>resolvectl flush-caches</strong> command, however the latter is recommended since it operates in a synchronous way.</p>
+</blockquote>
+<p><strong>SIGRTMIN+1</strong></p>
+<blockquote>
+<p>Upon reception of the <strong>SIGRTMIN+1</strong> process signal <strong>systemd-resolved</strong> will forget everything it learnt about the configured DNS servers. Specifically any information about server feature support is flushed out, and the server feature probing logic is restarted on the next request, starting with the most fully featured level. Note that it should normally not be necessary to request this explicitly – except for debugging purposes – as <strong>systemd-resolved</strong> automatically forgets learnt information any time the DNS server configuration changes. Sending this signal to <strong>systemd-resolved</strong> is equivalent to the <strong>resolvectl reset-server-features</strong> command, however the latter is recommended since it operates in a synchronous way.</p>
+</blockquote>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/5/resolved.conf'>resolved.conf</a>(5), <a href='/5/dnssec-trust-anchors.d'>dnssec-trust-anchors.d</a>(5), <a href='/8/nss-resolve'>nss-resolve</a>(8), <a href='/1/resolvectl'>resolvectl</a>(1), <a href='/5/resolv.conf'>resolv.conf</a>(5), <a href='/5/hosts'>hosts</a>(5), <a href='/5/systemd.network'>systemd.network</a>(5), <a href='/8/systemd-networkd.service'>systemd-networkd.service</a>(8)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>RFC3493</p>
+<p><a href="https://tools.ietf.org/html/rfc3493">https://tools.ietf.org/html/rfc3493</a></p></li>
+<li><p>RFC6762</p>
+<p><a href="https://tools.ietf.org/html/rfc6762">https://tools.ietf.org/html/rfc6762</a></p></li>
+<li><p>For example, if /etc/resolv.conf has</p></li>
+</ul>
+<blockquote>
+<p>.RS 4</p>
+<pre><code>nameserver 127.0.0.53
+search <a href="http://foobar.com">foobar.com</a> <a href="http://barbar.com">barbar.com</a>
+      </code></pre>
+<p>.RE</p>
+<p>and we look up "localhost", nss-dns will send the following queries to systemd-resolved listening on 127.0.0.53:53: first "<a href="http://localhost.foobar.com">localhost.foobar.com</a>", then "<a href="http://localhost.barbar.com">localhost.barbar.com</a>", and finally "localhost". If (hopefully) the first two queries fail, systemd-resolved will synthesize an answer for the third query.</p>
+</blockquote>
+<blockquote>
+<p>When using nss-dns with any search domains, it is thus crucial to always configure nss-files with higher priority and provide mappings for names that should not be resolved using search domains.</p>
+</blockquote>
+<ul>
+<li><p>There are currently more than 1500 top-level domain names defined, and new ones are added regularly, often using "attractive" names that are also likely to be used locally. Not looking up multi-label names in this fashion avoids fragility in both directions: a valid global name could be obscured by a local name, and resolution of a relative local name could suddenly break when a new top-level domain is created, or when a new subdomain of a top-level domain in registered. Resolving any given name as either relative or absolute avoids this ambiguity.</p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

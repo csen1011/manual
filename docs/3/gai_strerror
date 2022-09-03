@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>getaddrinfo, freeaddrinfo, gai_strerror - network address and service translation</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/socket.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;netdb.h&gt;</a>
+
+int getaddrinfo(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>node, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>service,
+ const struct addrinfo *hints,
+ struct addrinfo **res);
+
+void freeaddrinfo(struct addrinfo *res);
+
+<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>gai_strerror(int errcode);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='getaddrinfo'>getaddrinfo</a>(), <a href='freeaddrinfo'>freeaddrinfo</a>(), <a href='gai_strerror'>gai_strerror</a>(): Since glibc 2.22: _POSIX_C_SOURCE &gt;= 200112L Glibc 2.21 and earlier: _POSIX_C_SOURCE</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Given <code>node</code> and <code>service</code>, which identify an Internet host and a service, <a href='getaddrinfo'>getaddrinfo</a>() returns one or more <code>addrinfo</code> structures, each of which contains an Internet address that can be specified in a call to <a href='/2/bind'>bind</a>(2) or <a href='/2/connect'>connect</a>(2). The <a href='getaddrinfo'>getaddrinfo</a>() function combines the functionality provided by the <a href='/3/gethostbyname'>gethostbyname</a>(3) and <a href='/3/getservbyname'>getservbyname</a>(3) functions into a single interface, but unlike the latter functions, <a href='getaddrinfo'>getaddrinfo</a>() is reentrant and allows programs to eliminate IPv4-versus-IPv6 dependencies.</p>
+<p>The <code>addrinfo</code> structure used by <a href='getaddrinfo'>getaddrinfo</a>() contains the following fields:</p>
+<pre><code>struct addrinfo {
+    int              ai_flags;
+    int              ai_family;
+    int              ai_socktype;
+    int              ai_protocol;
+    socklen_t        ai_addrlen;
+    struct sockaddr *ai_addr;
+    char            *ai_canonname;
+    struct addrinfo *ai_next;
+};</code></pre>
+<p>The <code>hints</code> argument points to an <code>addrinfo</code> structure that specifies criteria for selecting the socket address structures returned in the list pointed to by <code>res</code>. If <code>hints</code> is not NULL it points to an <code>addrinfo</code> structure whose <code>ai_family</code>, <code>ai_socktype</code>, and <code>ai_protocol</code> specify criteria that limit the set of socket addresses returned by <a href='getaddrinfo'>getaddrinfo</a>(), as follows:</p>
+<dl>
+<dt><code>ai_family</code></dt>
+<dd><p>This field specifies the desired address family for the returned addresses. Valid values for this field include <strong>AF_INET</strong> and <strong>AF_INET6</strong>. The value <strong>AF_UNSPEC</strong> indicates that <a href='getaddrinfo'>getaddrinfo</a>() should return socket addresses for any address family (either IPv4 or IPv6, for example) that can be used with <code>node</code> and <code>service</code>.</p>
+</dd>
+<dt><code>ai_socktype</code></dt>
+<dd><p>This field specifies the preferred socket type, for example <strong>SOCK_STREAM</strong> or <strong>SOCK_DGRAM</strong>. Specifying 0 in this field indicates that socket addresses of any type can be returned by <a href='getaddrinfo'>getaddrinfo</a>().</p>
+</dd>
+<dt><code>ai_protocol</code></dt>
+<dd><p>This field specifies the protocol for the returned socket addresses. Specifying 0 in this field indicates that socket addresses with any protocol can be returned by <a href='getaddrinfo'>getaddrinfo</a>().</p>
+</dd>
+<dt><code>ai_flags</code></dt>
+<dd><p>This field specifies additional options, described below. Multiple flags are specified by bitwise OR-ing them together.</p>
+</dd>
+</dl>
+<p>All the other fields in the structure pointed to by <code>hints</code> must contain either 0 or a null pointer, as appropriate.</p>
+<p>Specifying <code>hints</code> as NULL is equivalent to setting <code>ai_socktype</code> and <code>ai_protocol</code> to 0; <code>ai_family</code> to <strong>AF_UNSPEC</strong>; and <code>ai_flags</code> to <strong>(AI_V4MAPPED | AI_ADDRCONFIG)</strong>. (POSIX specifies different defaults for <code>ai_flags</code>; see NOTES.) <code>node</code> specifies either a numerical network address (for IPv4, numbers-and-dots notation as supported by <a href='/3/inet_aton'>inet_aton</a>(3); for IPv6, hexadecimal string format as supported by <a href='/3/inet_pton'>inet_pton</a>(3)), or a network hostname, whose network addresses are looked up and resolved. If <code>hints.ai_flags</code> contains the <strong>AI_NUMERICHOST</strong> flag, then <code>node</code> must be a numerical network address. The <strong>AI_NUMERICHOST</strong> flag suppresses any potentially lengthy network host address lookups.</p>
+<p>If the <strong>AI_PASSIVE</strong> flag is specified in <code>hints.ai_flags</code>, and <code>node</code> is NULL, then the returned socket addresses will be suitable for <a href='/2/bind'>bind</a>(2)ing a socket that will <a href='/2/accept'>accept</a>(2) connections. The returned socket address will contain the "wildcard address" (<strong>INADDR_ANY</strong> for IPv4 addresses, <strong>IN6ADDR_ANY_INIT</strong> for IPv6 address). The wildcard address is used by applications (typically servers) that intend to accept connections on any of the host's network addresses. If <code>node</code> is not NULL, then the <strong>AI_PASSIVE</strong> flag is ignored.</p>
+<p>If the <strong>AI_PASSIVE</strong> flag is not set in <code>hints.ai_flags</code>, then the returned socket addresses will be suitable for use with <a href='/2/connect'>connect</a>(2), <a href='/2/sendto'>sendto</a>(2), or <a href='/2/sendmsg'>sendmsg</a>(2). If <code>node</code> is NULL, then the network address will be set to the loopback interface address (<strong>INADDR_LOOPBACK</strong> for IPv4 addresses, <strong>IN6ADDR_LOOPBACK_INIT</strong> for IPv6 address); this is used by applications that intend to communicate with peers running on the same host.</p>
+<p><code>service</code> sets the port in each returned address structure. If this argument is a service name (see <a href='/5/services'>services</a>(5)), it is translated to the corresponding port number. This argument can also be specified as a decimal number, which is simply converted to binary. If <code>service</code> is NULL, then the port number of the returned socket addresses will be left uninitialized. If <strong>AI_NUMERICSERV</strong> is specified in <code>hints.ai_flags</code> and <code>service</code> is not NULL, then <code>service</code> must point to a string containing a numeric port number. This flag is used to inhibit the invocation of a name resolution service in cases where it is known not to be required.</p>
+<p>Either <code>node</code> or <code>service</code>, but not both, may be NULL.</p>
+<p>The <a href='getaddrinfo'>getaddrinfo</a>() function allocates and initializes a linked list of <code>addrinfo</code> structures, one for each network address that matches <code>node</code> and <code>service</code>, subject to any restrictions imposed by <code>hints</code>, and returns a pointer to the start of the list in <code>res</code>. The items in the linked list are linked by the <code>ai_next</code> field.</p>
+<p>There are several reasons why the linked list may have more than one <code>addrinfo</code> structure, including: the network host is multihomed, accessible over multiple protocols (e.g., both <strong>AF_INET</strong> and <strong>AF_INET6</strong>); or the same service is available from multiple socket types (one <strong>SOCK_STREAM</strong> address and another <strong>SOCK_DGRAM</strong> address, for example). Normally, the application should try using the addresses in the order in which they are returned. The sorting function used within <a href='getaddrinfo'>getaddrinfo</a>() is defined in RFC 3484; the order can be tweaked for a particular system by editing <code>/etc/gai.conf</code> (available since glibc 2.5).</p>
+<p>If <code>hints.ai_flags</code> includes the <strong>AI_CANONNAME</strong> flag, then the <code>ai_canonname</code> field of the first of the <code>addrinfo</code> structures in the returned list is set to point to the official name of the host.</p>
+<p>The remaining fields of each returned <code>addrinfo</code> structure are initialized as follows:</p>
+<ul>
+<li><p>The <code>ai_family</code>, <code>ai_socktype</code>, and <code>ai_protocol</code> fields return the socket creation parameters (i.e., these fields have the same meaning as the corresponding arguments of <a href='/2/socket'>socket</a>(2)). For example, <code>ai_family</code> might return <strong>AF_INET</strong> or <strong>AF_INET6</strong>; <code>ai_socktype</code> might return <strong>SOCK_DGRAM</strong> or <strong>SOCK_STREAM</strong>; and <code>ai_protocol</code> returns the protocol for the socket.</p></li>
+<li><p>A pointer to the socket address is placed in the <code>ai_addr</code> field, and the length of the socket address, in bytes, is placed in the <code>ai_addrlen</code> field.</p></li>
+</ul>
+<p>If <code>hints.ai_flags</code> includes the <strong>AI_ADDRCONFIG</strong> flag, then IPv4 addresses are returned in the list pointed to by <code>res</code> only if the local system has at least one IPv4 address configured, and IPv6 addresses are returned only if the local system has at least one IPv6 address configured. The loopback address is not considered for this case as valid as a configured address. This flag is useful on, for example, IPv4-only systems, to ensure that <a href='getaddrinfo'>getaddrinfo</a>() does not return IPv6 socket addresses that would always fail in <a href='/2/connect'>connect</a>(2) or <a href='/2/bind'>bind</a>(2).</p>
+<p>If <code>hints.ai_flags</code> specifies the <strong>AI_V4MAPPED</strong> flag, and <code>hints.ai_family</code> was specified as <strong>AF_INET6</strong>, and no matching IPv6 addresses could be found, then return IPv4-mapped IPv6 addresses in the list pointed to by <code>res</code>. If both <strong>AI_V4MAPPED</strong> and <strong>AI_ALL</strong> are specified in <code>hints.ai_flags</code>, then return both IPv6 and IPv4-mapped IPv6 addresses in the list pointed to by <code>res</code>. <strong>AI_ALL</strong> is ignored if <strong>AI_V4MAPPED</strong> is not also specified.</p>
+<p>The <a href='freeaddrinfo'>freeaddrinfo</a>() function frees the memory that was allocated for the dynamically allocated linked list <code>res</code>.</p>
+<h2>Extensions to getaddrinfo() for Internationalized Domain Names</h2>
+<p>Starting with glibc 2.3.4, <a href='getaddrinfo'>getaddrinfo</a>() has been extended to selectively allow the incoming and outgoing hostnames to be transparently converted to and from the Internationalized Domain Name (IDN) format (see RFC 3490, <code>Internationalizing Domain Names in Applications (IDNA)</code>). Four new flags are defined:</p>
+<dl>
+<dt><strong>AI_IDN</strong></dt>
+<dd><p>If this flag is specified, then the node name given in <code>node</code> is converted to IDN format if necessary. The source encoding is that of the current locale.</p>
+<p>If the input name contains non-ASCII characters, then the IDN encoding is used. Those parts of the node name (delimited by dots) that contain non-ASCII characters are encoded using ASCII Compatible Encoding (ACE) before being passed to the name resolution functions.</p>
+</dd>
+<dt><strong>AI_CANONIDN</strong></dt>
+<dd><p>After a successful name lookup, and if the <strong>AI_CANONNAME</strong> flag was specified, <a href='getaddrinfo'>getaddrinfo</a>() will return the canonical name of the node corresponding to the <code>addrinfo</code> structure value passed back. The return value is an exact copy of the value returned by the name resolution function.</p>
+<p>If the name is encoded using ACE, then it will contain the <code>xn--</code> prefix for one or more components of the name. To convert these components into a readable form the <strong>AI_CANONIDN</strong> flag can be passed in addition to <strong>AI_CANONNAME</strong>. The resulting string is encoded using the current locale's encoding.</p>
+</dd>
+<dt><strong>AI_IDN_ALLOW_UNASSIGNED</strong>, <strong>AI_IDN_USE_STD3_ASCII_RULES</strong></dt>
+<dd><p>Setting these flags will enable the IDNA_ALLOW_UNASSIGNED (allow unassigned Unicode code points) and IDNA_USE_STD3_ASCII_RULES (check output to make sure it is a STD3 conforming hostname) flags respectively to be used in the IDNA handling.</p>
+</dd>
+</dl>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p><a href='getaddrinfo'>getaddrinfo</a>() returns 0 if it succeeds, or one of the following nonzero error codes:</p>
+<dl>
+<dt><strong>EAI_ADDRFAMILY</strong></dt>
+<dd><p>The specified network host does not have any network addresses in the requested address family.</p>
+</dd>
+<dt><strong>EAI_AGAIN</strong></dt>
+<dd><p>The name server returned a temporary failure indication. Try again later.</p>
+</dd>
+<dt><strong>EAI_BADFLAGS</strong></dt>
+<dd><p><code>hints.ai_flags</code> contains invalid flags; or, <code>hints.ai_flags</code> included <strong>AI_CANONNAME</strong> and <code>name</code> was NULL.</p>
+</dd>
+<dt><strong>EAI_FAIL</strong></dt>
+<dd><p>The name server returned a permanent failure indication.</p>
+</dd>
+<dt><strong>EAI_FAMILY</strong></dt>
+<dd><p>The requested address family is not supported.</p>
+</dd>
+<dt><strong>EAI_MEMORY</strong></dt>
+<dd><p>Out of memory.</p>
+</dd>
+<dt><strong>EAI_NODATA</strong></dt>
+<dd><p>The specified network host exists, but does not have any network addresses defined.</p>
+</dd>
+<dt><strong>EAI_NONAME</strong></dt>
+<dd><p>The <code>node</code> or <code>service</code> is not known; or both <code>node</code> and <code>service</code> are NULL; or <strong>AI_NUMERICSERV</strong> was specified in <code>hints.ai_flags</code> and <code>service</code> was not a numeric port-number string.</p>
+</dd>
+<dt><strong>EAI_SERVICE</strong></dt>
+<dd><p>The requested service is not available for the requested socket type. It may be available through another socket type. For example, this error could occur if <code>service</code> was "shell" (a service available only on stream sockets), and either <code>hints.ai_protocol</code> was <strong>IPPROTO_UDP</strong>, or <code>hints.ai_socktype</code> was <strong>SOCK_DGRAM</strong>; or the error could occur if <code>service</code> was not NULL, and <code>hints.ai_socktype</code> was <strong>SOCK_RAW</strong> (a socket type that does not support the concept of services).</p>
+</dd>
+<dt><strong>EAI_SOCKTYPE</strong></dt>
+<dd><p>The requested socket type is not supported. This could occur, for example, if <code>hints.ai_socktype</code> and <code>hints.ai_protocol</code> are inconsistent (e.g., <strong>SOCK_DGRAM</strong> and <strong>IPPROTO_TCP</strong>, respectively).</p>
+</dd>
+<dt><strong>EAI_SYSTEM</strong></dt>
+<dd><p>Other system error, check <code>errno</code> for details.</p>
+</dd>
+</dl>
+<p>The <a href='gai_strerror'>gai_strerror</a>() function translates these error codes to a human readable string, suitable for error reporting.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following programs demonstrate the use of <a href='getaddrinfo'>getaddrinfo</a>(), <a href='gai_strerror'>gai_strerror</a>(), <a href='freeaddrinfo'>freeaddrinfo</a>(), and <a href='/3/getnameinfo'>getnameinfo</a>(3). The programs are an echo server and client for UDP datagrams.</p>
+<h2>Server program</h2>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netdb.h&gt;
+
+#define BUF_SIZE 500
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+    int sfd, s;
+    struct sockaddr_storage peer_addr;
+    socklen_t peer_addr_len;
+    ssize_t nread;
+    char buf[BUF_SIZE];
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s port\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&amp;hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+    hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+    hints.ai_protocol = 0;          /* Any protocol */
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
+
+    s = getaddrinfo(NULL, argv[1], &amp;hints, &amp;result);
+    if (s != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+    }
+
+    /* getaddrinfo() returns a list of address structures.
+       Try each address until we successfully bind(2).
+       If socket(2) (or bind(2)) fails, we (close the socket
+       and) try the next address. */
+
+    for (rp = result; rp != NULL; rp = rp-&gt;ai_next) {
+        sfd = socket(rp-&gt;ai_family, rp-&gt;ai_socktype,
+                rp-&gt;ai_protocol);
+        if (sfd == -1)
+            continue;
+
+        if (bind(sfd, rp-&gt;ai_addr, rp-&gt;ai_addrlen) == 0)
+            break;                  /* Success */
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result);           /* No longer needed */
+
+    if (rp == NULL) {               /* No address succeeded */
+        fprintf(stderr, "Could not bind\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Read datagrams and echo them back to sender */
+
+    for (;;) {
+        peer_addr_len = sizeof(peer_addr);
+        nread = recvfrom(sfd, buf, BUF_SIZE, 0,
+                (struct sockaddr *) &amp;peer_addr, &amp;peer_addr_len);
+        if (nread == -1)
+            continue;               /* Ignore failed request */
+
+        char host[NI_MAXHOST], service[NI_MAXSERV];
+
+        s = getnameinfo((struct sockaddr *) &amp;peer_addr,
+                        peer_addr_len, host, NI_MAXHOST,
+                        service, NI_MAXSERV, NI_NUMERICSERV);
+        if (s == 0)
+            printf("Received %zd bytes from %s:%s\n",
+                    nread, host, service);
+        else
+            fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
+
+        if (sendto(sfd, buf, nread, 0,
+                    (struct sockaddr *) &amp;peer_addr,
+                    peer_addr_len) != nread)
+            fprintf(stderr, "Error sending response\n");
+    }
+}</code></pre>
+<h2>Client program</h2>
+<pre><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+#define BUF_SIZE 500
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+    int sfd, s;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> len;
+    ssize_t nread;
+    char buf[BUF_SIZE];
+
+    if (argc &lt; 3) {
+        fprintf(stderr, "Usage: %s host port msg...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Obtain address(es) matching host/port */
+
+    memset(&amp;hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;          /* Any protocol */
+
+    s = getaddrinfo(argv[1], argv[2], &amp;hints, &amp;result);
+    if (s != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+    }
+
+    /* getaddrinfo() returns a list of address structures.
+       Try each address until we successfully connect(2).
+       If socket(2) (or connect(2)) fails, we (close the socket
+       and) try the next address. */
+
+    for (rp = result; rp != NULL; rp = rp-&gt;ai_next) {
+        sfd = socket(rp-&gt;ai_family, rp-&gt;ai_socktype,
+                     rp-&gt;ai_protocol);
+        if (sfd == -1)
+            continue;
+
+        if (connect(sfd, rp-&gt;ai_addr, rp-&gt;ai_addrlen) != -1)
+            break;                  /* Success */
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result);           /* No longer needed */
+
+    if (rp == NULL) {               /* No address succeeded */
+        fprintf(stderr, "Could not connect\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Send remaining command-line arguments as separate
+       datagrams, and read responses from server */
+
+    for (int j = 3; j &lt; argc; j++) {
+        len = strlen(argv[j]) + 1;
+                /* +1 for terminating null byte */
+
+        if (len &gt; BUF_SIZE) {
+            fprintf(stderr,
+                    "Ignoring long message in argument %d\n", j);
+            continue;
+        }
+
+        if (write(sfd, argv[j], len) != len) {
+            fprintf(stderr, "partial/failed write\n");
+            exit(EXIT_FAILURE);
+        }
+
+        nread = read(sfd, buf, BUF_SIZE);
+        if (nread == -1) {
+            perror("read");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("Received %zd bytes: %s\n", nread, buf);
+    }
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/etc/gai.conf</code></p>
+</div></div></div><h1 id='attributes'><a href='#attributes'>ATTRIBUTES</a></h1><div data-for='attributes' data-hide><div class='section' data-for='attributes'><div data-more>
+<p>For an explanation of the terms used in this section, see <a href='/7/attributes'>attributes</a>(7).</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Interface</td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Value</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='getaddrinfo'>getaddrinfo</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe env locale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='freeaddrinfo'>freeaddrinfo</a>(), <a href='gai_strerror'>gai_strerror</a>()</td>
+<td style="text-align: left;">Thread safety</td>
+<td style="text-align: left;">MT-Safe</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008. The <a href='getaddrinfo'>getaddrinfo</a>() function is documented in RFC 2553.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p><a href='getaddrinfo'>getaddrinfo</a>() supports the <code>address</code><strong>%</strong><code>scope-id</code> notation for specifying the IPv6 scope-ID.</p>
+<p><strong>AI_ADDRCONFIG</strong>, <strong>AI_ALL</strong>, and <strong>AI_V4MAPPED</strong> are available since glibc 2.3.3. <strong>AI_NUMERICSERV</strong> is available since glibc 2.3.4.</p>
+<p>According to POSIX.1, specifying <code>hints</code> as NULL should cause <code>ai_flags</code> to be assumed as 0. The GNU C library instead assumes a value of <strong>(AI_V4MAPPED | AI_ADDRCONFIG)</strong> for this case, since this value is considered an improvement on the specification.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/3/getaddrinfo_a'>getaddrinfo_a</a>(3), <a href='/3/gethostbyname'>gethostbyname</a>(3), <a href='/3/getnameinfo'>getnameinfo</a>(3), <a href='/3/inet'>inet</a>(3), <a href='/5/gai.conf'>gai.conf</a>(5), <a href='/7/hostname'>hostname</a>(7), <a href='/7/ip'>ip</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

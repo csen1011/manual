@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>cpuset - confine processes to processor and memory node subsets</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The cpuset filesystem is a pseudo-filesystem interface to the kernel cpuset mechanism, which is used to control the processor placement and memory placement of processes. It is commonly mounted at <code>/dev/cpuset</code>.</p>
+<p>On systems with kernels compiled with built in support for cpusets, all processes are attached to a cpuset, and cpusets are always present. If a system supports cpusets, then it will have the entry <strong>nodev cpuset</strong> in the file <code>/proc/filesystems</code>. By mounting the cpuset filesystem (see the <strong>EXAMPLES</strong> section below), the administrator can configure the cpusets on a system to control the processor and memory placement of processes on that system. By default, if the cpuset configuration on a system is not modified or if the cpuset filesystem is not even mounted, then the cpuset mechanism, though present, has no effect on the system's behavior.</p>
+<p>A cpuset defines a list of CPUs and memory nodes.</p>
+<p>The CPUs of a system include all the logical processing units on which a process can execute, including, if present, multiple processor cores within a package and Hyper-Threads within a processor core. Memory nodes include all distinct banks of main memory; small and SMP systems typically have just one memory node that contains all the system's main memory, while NUMA (non-uniform memory access) systems have multiple memory nodes.</p>
+<p>Cpusets are represented as directories in a hierarchical pseudo-filesystem, where the top directory in the hierarchy (<code>/dev/cpuset</code>) represents the entire system (all online CPUs and memory nodes) and any cpuset that is the child (descendant) of another parent cpuset contains a subset of that parent's CPUs and memory nodes. The directories and files representing cpusets have normal filesystem permissions.</p>
+<p>Every process in the system belongs to exactly one cpuset. A process is confined to run only on the CPUs in the cpuset it belongs to, and to allocate memory only on the memory nodes in that cpuset. When a process <a href='/2/fork'>fork</a>(2)s, the child process is placed in the same cpuset as its parent. With sufficient privilege, a process may be moved from one cpuset to another and the allowed CPUs and memory nodes of an existing cpuset may be changed.</p>
+<p>When the system begins booting, a single cpuset is defined that includes all CPUs and memory nodes on the system, and all processes are in that cpuset. During the boot process, or later during normal system operation, other cpusets may be created, as subdirectories of this top cpuset, under the control of the system administrator, and processes may be placed in these other cpusets.</p>
+<p>Cpusets are integrated with the <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2) scheduling affinity mechanism and the <a href='/2/mbind'>mbind</a>(2) and <a href='/2/set_mempolicy'>set_mempolicy</a>(2) memory-placement mechanisms in the kernel. Neither of these mechanisms let a process make use of a CPU or memory node that is not allowed by that process's cpuset. If changes to a process's cpuset placement conflict with these other mechanisms, then cpuset placement is enforced even if it means overriding these other mechanisms. The kernel accomplishes this overriding by silently restricting the CPUs and memory nodes requested by these other mechanisms to those allowed by the invoking process's cpuset. This can result in these other calls returning an error, if for example, such a call ends up requesting an empty set of CPUs or memory nodes, after that request is restricted to the invoking process's cpuset.</p>
+<p>Typically, a cpuset is used to manage the CPU and memory-node confinement for a set of cooperating processes such as a batch scheduler job, and these other mechanisms are used to manage the placement of individual processes or memory regions within that set or job.</p>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p>Each directory below <code>/dev/cpuset</code> represents a cpuset and contains a fixed set of pseudo-files describing the state of that cpuset.</p>
+<p>New cpusets are created using the <a href='/2/mkdir'>mkdir</a>(2) system call or the <a href='/1/mkdir'>mkdir</a>(1) command. The properties of a cpuset, such as its flags, allowed CPUs and memory nodes, and attached processes, are queried and modified by reading or writing to the appropriate file in that cpuset's directory, as listed below.</p>
+<p>The pseudo-files in each cpuset directory are automatically created when the cpuset is created, as a result of the <a href='/2/mkdir'>mkdir</a>(2) invocation. It is not possible to directly add or remove these pseudo-files.</p>
+<p>A cpuset directory that contains no child cpuset directories, and has no attached processes, can be removed using <a href='/2/rmdir'>rmdir</a>(2) or <a href='/1/rmdir'>rmdir</a>(1). It is not necessary, or possible, to remove the pseudo-files inside the directory before removing it.</p>
+<p>The pseudo-files in each cpuset directory are small text files that may be read and written using traditional shell utilities such as <a href='/1/cat'>cat</a>(1), and <a href='/1/echo'>echo</a>(1), or from a program by using file I/O library functions or system calls, such as <a href='/2/open'>open</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/write'>write</a>(2), and <a href='/2/close'>close</a>(2).</p>
+<p>The pseudo-files in a cpuset directory represent internal kernel state and do not have any persistent image on disk. Each of these per-cpuset files is listed and described below.</p>
+<dl>
+<dt><code>tasks</code></dt>
+<dd><p>List of the process IDs (PIDs) of the processes in that cpuset. The list is formatted as a series of ASCII decimal numbers, each followed by a newline. A process may be added to a cpuset (automatically removing it from the cpuset that previously contained it) by writing its PID to that cpuset's <code>tasks</code> file (with or without a trailing newline).</p>
+<p><strong>Warning:</strong> only one PID may be written to the <code>tasks</code> file at a time. If a string is written that contains more than one PID, only the first one will be used.</p>
+</dd>
+<dt><code>notify_on_release</code></dt>
+<dd><p>Flag (0 or 1). If set (1), that cpuset will receive special handling after it is released, that is, after all processes cease using it (i.e., terminate or are moved to a different cpuset) and all child cpuset directories have been removed. See the <strong>Notify On Release</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.cpus</code></dt>
+<dd><p>List of the physical numbers of the CPUs on which processes in that cpuset are allowed to execute. See <strong>List Format</strong> below for a description of the format of <code>cpus</code>.</p>
+<p>The CPUs allowed to a cpuset may be changed by writing a new list to its <code>cpus</code> file.</p>
+</dd>
+<dt><code>cpuset.cpu_exclusive</code></dt>
+<dd><p>Flag (0 or 1). If set (1), the cpuset has exclusive use of its CPUs (no sibling or cousin cpuset may overlap CPUs). By default, this is off (0). Newly created cpusets also initially default this to off (0).</p>
+<p>Two cpusets are <code>sibling</code> cpusets if they share the same parent cpuset in the <code>/dev/cpuset</code> hierarchy. Two cpusets are <code>cousin</code> cpusets if neither is the ancestor of the other. Regardless of the <code>cpu_exclusive</code> setting, if one cpuset is the ancestor of another, and if both of these cpusets have nonempty <code>cpus</code>, then their <code>cpus</code> must overlap, because the <code>cpus</code> of any cpuset are always a subset of the <code>cpus</code> of its parent cpuset.</p>
+</dd>
+<dt><code>cpuset.mems</code></dt>
+<dd><p>List of memory nodes on which processes in this cpuset are allowed to allocate memory. See <strong>List Format</strong> below for a description of the format of <code>mems</code>.</p>
+</dd>
+<dt><code>cpuset.mem_exclusive</code></dt>
+<dd><p>Flag (0 or 1). If set (1), the cpuset has exclusive use of its memory nodes (no sibling or cousin may overlap). Also if set (1), the cpuset is a <strong>Hardwall</strong> cpuset (see below). By default, this is off (0). Newly created cpusets also initially default this to off (0).</p>
+<p>Regardless of the <code>mem_exclusive</code> setting, if one cpuset is the ancestor of another, then their memory nodes must overlap, because the memory nodes of any cpuset are always a subset of the memory nodes of that cpuset's parent cpuset.</p>
+</dd>
+<dt><code>cpuset.mem_hardwall</code> (since Linux 2.6.26)</dt>
+<dd><p>Flag (0 or 1). If set (1), the cpuset is a <strong>Hardwall</strong> cpuset (see below). Unlike <strong>mem_exclusive</strong>, there is no constraint on whether cpusets marked <strong>mem_hardwall</strong> may have overlapping memory nodes with sibling or cousin cpusets. By default, this is off (0). Newly created cpusets also initially default this to off (0).</p>
+</dd>
+<dt><code>cpuset.memory_migrate</code> (since Linux 2.6.16)</dt>
+<dd><p>Flag (0 or 1). If set (1), then memory migration is enabled. By default, this is off (0). See the <strong>Memory Migration</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.memory_pressure</code> (since Linux 2.6.16)</dt>
+<dd><p>A measure of how much memory pressure the processes in this cpuset are causing. See the <strong>Memory Pressure</strong> section, below. Unless <code>memory_pressure_enabled</code> is enabled, always has value zero (0). This file is read-only. See the <strong>WARNINGS</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.memory_pressure_enabled</code> (since Linux 2.6.16)</dt>
+<dd><p>Flag (0 or 1). This file is present only in the root cpuset, normally <code>/dev/cpuset</code>. If set (1), the <code>memory_pressure</code> calculations are enabled for all cpusets in the system. By default, this is off (0). See the <strong>Memory Pressure</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.memory_spread_page</code> (since Linux 2.6.17)</dt>
+<dd><p>Flag (0 or 1). If set (1), pages in the kernel page cache (filesystem buffers) are uniformly spread across the cpuset. By default, this is off (0) in the top cpuset, and inherited from the parent cpuset in newly created cpusets. See the <strong>Memory Spread</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.memory_spread_slab</code> (since Linux 2.6.17)</dt>
+<dd><p>Flag (0 or 1). If set (1), the kernel slab caches for file I/O (directory and inode structures) are uniformly spread across the cpuset. By default, is off (0) in the top cpuset, and inherited from the parent cpuset in newly created cpusets. See the <strong>Memory Spread</strong> section, below.</p>
+</dd>
+<dt><code>cpuset.sched_load_balance</code> (since Linux 2.6.24)</dt>
+<dd><p>Flag (0 or 1). If set (1, the default) the kernel will automatically load balance processes in that cpuset over the allowed CPUs in that cpuset. If cleared (0) the kernel will avoid load balancing processes in this cpuset, <code>unless</code> some other cpuset with overlapping CPUs has its <code>sched_load_balance</code> flag set. See <strong>Scheduler Load Balancing</strong>, below, for further details.</p>
+</dd>
+<dt><code>cpuset.sched_relax_domain_level</code> (since Linux 2.6.26)</dt>
+<dd><p>Integer, between -1 and a small positive value. The <code>sched_relax_domain_level</code> controls the width of the range of CPUs over which the kernel scheduler performs immediate rebalancing of runnable tasks across CPUs. If <code>sched_load_balance</code> is disabled, then the setting of <code>sched_relax_domain_level</code> does not matter, as no such load balancing is done. If <code>sched_load_balance</code> is enabled, then the higher the value of the <code>sched_relax_domain_level</code>, the wider the range of CPUs over which immediate load balancing is attempted. See <strong>Scheduler Relax Domain Level</strong>, below, for further details.</p>
+</dd>
+</dl>
+<p>In addition to the above pseudo-files in each directory below <code>/dev/cpuset</code>, each process has a pseudo-file, <code>/proc/&lt;pid&gt;/cpuset</code>, that displays the path of the process's cpuset directory relative to the root of the cpuset filesystem.</p>
+<p>Also the <code>/proc/&lt;pid&gt;/status</code> file for each process has four added lines, displaying the process's <code>Cpus_allowed</code> (on which CPUs it may be scheduled) and <code>Mems_allowed</code> (on which memory nodes it may obtain memory), in the two formats <strong>Mask Format</strong> and <strong>List Format</strong> (see below) as shown in the following example:</p>
+<pre><code>Cpus_allowed:   ffffffff,ffffffff,ffffffff,ffffffff
+Cpus_allowed_list:     0-127
+Mems_allowed:   ffffffff,ffffffff
+Mems_allowed_list:     0-63</code></pre>
+<p>The "allowed" fields were added in Linux 2.6.24; the "allowed_list" fields were added in Linux 2.6.26.</p>
+</div></div></div><h1 id='extended-capabilities'><a href='#extended-capabilities'>EXTENDED CAPABILITIES</a></h1><div data-for='extended-capabilities' data-hide><div class='section' data-for='extended-capabilities'><div data-more>
+<p>In addition to controlling which <code>cpus</code> and <code>mems</code> a process is allowed to use, cpusets provide the following extended capabilities.</p>
+<h2>Exclusive cpusets</h2>
+<p>If a cpuset is marked <code>cpu_exclusive</code> or <code>mem_exclusive</code>, no other cpuset, other than a direct ancestor or descendant, may share any of the same CPUs or memory nodes.</p>
+<p>A cpuset that is <code>mem_exclusive</code> restricts kernel allocations for buffer cache pages and other internal kernel data pages commonly shared by the kernel across multiple users. All cpusets, whether <code>mem_exclusive</code> or not, restrict allocations of memory for user space. This enables configuring a system so that several independent jobs can share common kernel data, while isolating each job's user allocation in its own cpuset. To do this, construct a large <code>mem_exclusive</code> cpuset to hold all the jobs, and construct child, non-<code>mem_exclusive</code> cpusets for each individual job. Only a small amount of kernel memory, such as requests from interrupt handlers, is allowed to be placed on memory nodes outside even a <code>mem_exclusive</code> cpuset.</p>
+<h2>Hardwall</h2>
+<p>A cpuset that has <code>mem_exclusive</code> or <code>mem_hardwall</code> set is a <code>hardwall</code> cpuset. A <code>hardwall</code> cpuset restricts kernel allocations for page, buffer, and other data commonly shared by the kernel across multiple users. All cpusets, whether <code>hardwall</code> or not, restrict allocations of memory for user space.</p>
+<p>This enables configuring a system so that several independent jobs can share common kernel data, such as filesystem pages, while isolating each job's user allocation in its own cpuset. To do this, construct a large <code>hardwall</code> cpuset to hold all the jobs, and construct child cpusets for each individual job which are not <code>hardwall</code> cpusets.</p>
+<p>Only a small amount of kernel memory, such as requests from interrupt handlers, is allowed to be taken outside even a <code>hardwall</code> cpuset.</p>
+<h2>Notify on release</h2>
+<p>If the <code>notify_on_release</code> flag is enabled (1) in a cpuset, then whenever the last process in the cpuset leaves (exits or attaches to some other cpuset) and the last child cpuset of that cpuset is removed, the kernel will run the command <code>/sbin/cpuset_release_agent</code>, supplying the pathname (relative to the mount point of the cpuset filesystem) of the abandoned cpuset. This enables automatic removal of abandoned cpusets.</p>
+<p>The default value of <code>notify_on_release</code> in the root cpuset at system boot is disabled (0). The default value of other cpusets at creation is the current value of their parent's <code>notify_on_release</code> setting.</p>
+<p>The command <code>/sbin/cpuset_release_agent</code> is invoked, with the name (<code>/dev/cpuset</code> relative path) of the to-be-released cpuset in <code>argv[1]</code>.</p>
+<p>The usual contents of the command <code>/sbin/cpuset_release_agent</code> is simply the shell script:</p>
+<pre><code>#!/bin/sh
+rmdir /dev/cpuset/$1</code></pre>
+<p>As with other flag values below, this flag can be changed by writing an ASCII number 0 or 1 (with optional trailing newline) into the file, to clear or set the flag, respectively.</p>
+<h2>Memory pressure</h2>
+<p>The <code>memory_pressure</code> of a cpuset provides a simple per-cpuset running average of the rate that the processes in a cpuset are attempting to free up in-use memory on the nodes of the cpuset to satisfy additional memory requests.</p>
+<p>This enables batch managers that are monitoring jobs running in dedicated cpusets to efficiently detect what level of memory pressure that job is causing.</p>
+<p>This is useful both on tightly managed systems running a wide mix of submitted jobs, which may choose to terminate or reprioritize jobs that are trying to use more memory than allowed on the nodes assigned them, and with tightly coupled, long-running, massively parallel scientific computing jobs that will dramatically fail to meet required performance goals if they start to use more memory than allowed to them.</p>
+<p>This mechanism provides a very economical way for the batch manager to monitor a cpuset for signs of memory pressure. It's up to the batch manager or other user code to decide what action to take if it detects signs of memory pressure.</p>
+<p>Unless memory pressure calculation is enabled by setting the pseudo-file <code>/dev/cpuset/cpuset.memory_pressure_enabled</code>, it is not computed for any cpuset, and reads from any <code>memory_pressure</code> always return zero, as represented by the ASCII string "0\n". See the <strong>WARNINGS</strong> section, below.</p>
+<p>A per-cpuset, running average is employed for the following reasons:</p>
+<ul>
+<li><p>Because this meter is per-cpuset rather than per-process or per virtual memory region, the system load imposed by a batch scheduler monitoring this metric is sharply reduced on large systems, because a scan of the tasklist can be avoided on each set of queries.</p></li>
+<li><p>Because this meter is a running average rather than an accumulating counter, a batch scheduler can detect memory pressure with a single read, instead of having to read and accumulate results for a period of time.</p></li>
+<li><p>Because this meter is per-cpuset rather than per-process, the batch scheduler can obtain the key information—memory pressure in a cpuset—with a single read, rather than having to query and accumulate results over all the (dynamically changing) set of processes in the cpuset.</p></li>
+</ul>
+<p>The <code>memory_pressure</code> of a cpuset is calculated using a per-cpuset simple digital filter that is kept within the kernel. For each cpuset, this filter tracks the recent rate at which processes attached to that cpuset enter the kernel direct reclaim code.</p>
+<p>The kernel direct reclaim code is entered whenever a process has to satisfy a memory page request by first finding some other page to repurpose, due to lack of any readily available already free pages. Dirty filesystem pages are repurposed by first writing them to disk. Unmodified filesystem buffer pages are repurposed by simply dropping them, though if that page is needed again, it will have to be reread from disk.</p>
+<p>The <code>cpuset.memory_pressure</code> file provides an integer number representing the recent (half-life of 10 seconds) rate of entries to the direct reclaim code caused by any process in the cpuset, in units of reclaims attempted per second, times 1000.</p>
+<h2>Memory spread</h2>
+<p>There are two Boolean flag files per cpuset that control where the kernel allocates pages for the filesystem buffers and related in-kernel data structures. They are called <code>cpuset.memory_spread_page</code> and <code>cpuset.memory_spread_slab</code>.</p>
+<p>If the per-cpuset Boolean flag file <code>cpuset.memory_spread_page</code> is set, then the kernel will spread the filesystem buffers (page cache) evenly over all the nodes that the faulting process is allowed to use, instead of preferring to put those pages on the node where the process is running.</p>
+<p>If the per-cpuset Boolean flag file <code>cpuset.memory_spread_slab</code> is set, then the kernel will spread some filesystem-related slab caches, such as those for inodes and directory entries, evenly over all the nodes that the faulting process is allowed to use, instead of preferring to put those pages on the node where the process is running.</p>
+<p>The setting of these flags does not affect the data segment (see <a href='/2/brk'>brk</a>(2)) or stack segment pages of a process.</p>
+<p>By default, both kinds of memory spreading are off and the kernel prefers to allocate memory pages on the node local to where the requesting process is running. If that node is not allowed by the process's NUMA memory policy or cpuset configuration or if there are insufficient free memory pages on that node, then the kernel looks for the nearest node that is allowed and has sufficient free memory.</p>
+<p>When new cpusets are created, they inherit the memory spread settings of their parent.</p>
+<p>Setting memory spreading causes allocations for the affected page or slab caches to ignore the process's NUMA memory policy and be spread instead. However, the effect of these changes in memory placement caused by cpuset-specified memory spreading is hidden from the <a href='/2/mbind'>mbind</a>(2) or <a href='/2/set_mempolicy'>set_mempolicy</a>(2) calls. These two NUMA memory policy calls always appear to behave as if no cpuset-specified memory spreading is in effect, even if it is. If cpuset memory spreading is subsequently turned off, the NUMA memory policy most recently specified by these calls is automatically reapplied.</p>
+<p>Both <code>cpuset.memory_spread_page</code> and <code>cpuset.memory_spread_slab</code> are Boolean flag files. By default, they contain "0", meaning that the feature is off for that cpuset. If a "1" is written to that file, that turns the named feature on.</p>
+<p>Cpuset-specified memory spreading behaves similarly to what is known (in other contexts) as round-robin or interleave memory placement.</p>
+<p>Cpuset-specified memory spreading can provide substantial performance improvements for jobs that:</p>
+<ol type="a">
+<li><p>need to place thread-local data on memory nodes close to the CPUs which are running the threads that most frequently access that data; but also</p></li>
+<li><p>need to access large filesystem data sets that must to be spread across the several nodes in the job's cpuset in order to fit.</p></li>
+</ol>
+<p>Without this policy, the memory allocation across the nodes in the job's cpuset can become very uneven, especially for jobs that might have just a single thread initializing or reading in the data set.</p>
+<h2>Memory migration</h2>
+<p>Normally, under the default setting (disabled) of <code>cpuset.memory_migrate</code>, once a page is allocated (given a physical page of main memory), then that page stays on whatever node it was allocated, so long as it remains allocated, even if the cpuset's memory-placement policy <code>mems</code> subsequently changes.</p>
+<p>When memory migration is enabled in a cpuset, if the <code>mems</code> setting of the cpuset is changed, then any memory page in use by any process in the cpuset that is on a memory node that is no longer allowed will be migrated to a memory node that is allowed.</p>
+<p>Furthermore, if a process is moved into a cpuset with <code>memory_migrate</code> enabled, any memory pages it uses that were on memory nodes allowed in its previous cpuset, but which are not allowed in its new cpuset, will be migrated to a memory node allowed in the new cpuset.</p>
+<p>The relative placement of a migrated page within the cpuset is preserved during these migration operations if possible. For example, if the page was on the second valid node of the prior cpuset, then the page will be placed on the second valid node of the new cpuset, if possible.</p>
+<h2>Scheduler load balancing</h2>
+<p>The kernel scheduler automatically load balances processes. If one CPU is underutilized, the kernel will look for processes on other more overloaded CPUs and move those processes to the underutilized CPU, within the constraints of such placement mechanisms as cpusets and <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2).</p>
+<p>The algorithmic cost of load balancing and its impact on key shared kernel data structures such as the process list increases more than linearly with the number of CPUs being balanced. For example, it costs more to load balance across one large set of CPUs than it does to balance across two smaller sets of CPUs, each of half the size of the larger set. (The precise relationship between the number of CPUs being balanced and the cost of load balancing depends on implementation details of the kernel process scheduler, which is subject to change over time, as improved kernel scheduler algorithms are implemented.)</p>
+<p>The per-cpuset flag <code>sched_load_balance</code> provides a mechanism to suppress this automatic scheduler load balancing in cases where it is not needed and suppressing it would have worthwhile performance benefits.</p>
+<p>By default, load balancing is done across all CPUs, except those marked isolated using the kernel boot time "isolcpus=" argument. (See <strong>Scheduler Relax Domain Level</strong>, below, to change this default.)</p>
+<p>This default load balancing across all CPUs is not well suited to the following two situations:</p>
+<ul>
+<li><p>On large systems, load balancing across many CPUs is expensive. If the system is managed using cpusets to place independent jobs on separate sets of CPUs, full load balancing is unnecessary.</p></li>
+<li><p>Systems supporting real-time on some CPUs need to minimize system overhead on those CPUs, including avoiding process load balancing if that is not needed.</p></li>
+</ul>
+<p>When the per-cpuset flag <code>sched_load_balance</code> is enabled (the default setting), it requests load balancing across all the CPUs in that cpuset's allowed CPUs, ensuring that load balancing can move a process (not otherwise pinned, as by <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2)) from any CPU in that cpuset to any other.</p>
+<p>When the per-cpuset flag <code>sched_load_balance</code> is disabled, then the scheduler will avoid load balancing across the CPUs in that cpuset, <code>except</code> in so far as is necessary because some overlapping cpuset has <code>sched_load_balance</code> enabled.</p>
+<p>So, for example, if the top cpuset has the flag <code>sched_load_balance</code> enabled, then the scheduler will load balance across all CPUs, and the setting of the <code>sched_load_balance</code> flag in other cpusets has no effect, as we're already fully load balancing.</p>
+<p>Therefore in the above two situations, the flag <code>sched_load_balance</code> should be disabled in the top cpuset, and only some of the smaller, child cpusets would have this flag enabled.</p>
+<p>When doing this, you don't usually want to leave any unpinned processes in the top cpuset that might use nontrivial amounts of CPU, as such processes may be artificially constrained to some subset of CPUs, depending on the particulars of this flag setting in descendant cpusets. Even if such a process could use spare CPU cycles in some other CPUs, the kernel scheduler might not consider the possibility of load balancing that process to the underused CPU.</p>
+<p>Of course, processes pinned to a particular CPU can be left in a cpuset that disables <code>sched_load_balance</code> as those processes aren't going anywhere else anyway.</p>
+<h2>Scheduler relax domain level</h2>
+<p>The kernel scheduler performs immediate load balancing whenever a CPU becomes free or another task becomes runnable. This load balancing works to ensure that as many CPUs as possible are usefully employed running tasks. The kernel also performs periodic load balancing off the software clock described in <a href='/7/time'>time</a>(7). The setting of <code>sched_relax_domain_level</code> applies only to immediate load balancing. Regardless of the <code>sched_relax_domain_level</code> setting, periodic load balancing is attempted over all CPUs (unless disabled by turning off <code>sched_load_balance</code>.) In any case, of course, tasks will be scheduled to run only on CPUs allowed by their cpuset, as modified by <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2) system calls.</p>
+<p>On small systems, such as those with just a few CPUs, immediate load balancing is useful to improve system interactivity and to minimize wasteful idle CPU cycles. But on large systems, attempting immediate load balancing across a large number of CPUs can be more costly than it is worth, depending on the particular performance characteristics of the job mix and the hardware.</p>
+<p>The exact meaning of the small integer values of <code>sched_relax_domain_level</code> will depend on internal implementation details of the kernel scheduler code and on the non-uniform architecture of the hardware. Both of these will evolve over time and vary by system architecture and kernel version.</p>
+<p>As of this writing, when this capability was introduced in Linux 2.6.26, on certain popular architectures, the positive values of <code>sched_relax_domain_level</code> have the following meanings.</p>
+<ol type="1">
+<li><p>Perform immediate load balancing across Hyper-Thread siblings on the same core.</p></li>
+<li><p>Perform immediate load balancing across other cores in the same package.</p></li>
+<li><p>Perform immediate load balancing across other CPUs on the same node or blade.</p></li>
+<li><p>Perform immediate load balancing across over several (implementation detail) nodes [On NUMA systems].</p></li>
+<li><p>Perform immediate load balancing across over all CPUs in system [On NUMA systems].</p></li>
+</ol>
+<p>The <code>sched_relax_domain_level</code> value of zero (0) always means don't perform immediate load balancing, hence that load balancing is done only periodically, not immediately when a CPU becomes available or another task becomes runnable.</p>
+<p>The <code>sched_relax_domain_level</code> value of minus one (-1) always means use the system default value. The system default value can vary by architecture and kernel version. This system default value can be changed by kernel boot-time "relax_domain_level=" argument.</p>
+<p>In the case of multiple overlapping cpusets which have conflicting <code>sched_relax_domain_level</code> values, then the highest such value applies to all CPUs in any of the overlapping cpusets. In such cases, the value <strong>minus one (-1)</strong> is the lowest value, overridden by any other value, and the value <strong>zero (0)</strong> is the next lowest value.</p>
+</div></div></div><h1 id='formats'><a href='#formats'>FORMATS</a></h1><div data-for='formats' data-hide><div class='section' data-for='formats'><div data-more>
+<p>The following formats are used to represent sets of CPUs and memory nodes.</p>
+<h2>Mask format</h2>
+<p>The <strong>Mask Format</strong> is used to represent CPU and memory-node bit masks in the <code>/proc/&lt;pid&gt;/status</code> file.</p>
+<p>This format displays each 32-bit word in hexadecimal (using ASCII characters "0" - "9" and "a" - "f"); words are filled with leading zeros, if required. For masks longer than one word, a comma separator is used between words. Words are displayed in big-endian order, which has the most significant bit first. The hex digits within a word are also in big-endian order.</p>
+<p>The number of 32-bit words displayed is the minimum number needed to display all bits of the bit mask, based on the size of the bit mask.</p>
+<p>Examples of the <strong>Mask Format</strong>:</p>
+<pre><code>00000001                        # just bit 0 set
+40000000,00000000,00000000      # just bit 94 set
+00000001,00000000,00000000      # just bit 64 set
+000000ff,00000000               # bits 32-39 set
+00000000,000e3862               # 1,5,6,11-13,17-19 set</code></pre>
+<p>A mask with bits 0, 1, 2, 4, 8, 16, 32, and 64 set displays as:</p>
+<pre><code>00000001,00000001,00010117</code></pre>
+<p>The first "1" is for bit 64, the second for bit 32, the third for bit 16, the fourth for bit 8, the fifth for bit 4, and the "7" is for bits 2, 1, and 0.</p>
+<h2>List format</h2>
+<p>The <strong>List Format</strong> for <code>cpus</code> and <code>mems</code> is a comma-separated list of CPU or memory-node numbers and ranges of numbers, in ASCII decimal.</p>
+<p>Examples of the <strong>List Format</strong>:</p>
+<pre><code>0-4,9           # bits 0, 1, 2, 3, 4, and 9 set
+0-2,7,12-14     # bits 0, 1, 2, 7, 12, 13, and 14 set</code></pre>
+</div></div></div><h1 id='rules'><a href='#rules'>RULES</a></h1><div data-for='rules' data-hide><div class='section' data-for='rules'><div data-more>
+<p>The following rules apply to each cpuset:</p>
+<ul>
+<li><p>Its CPUs and memory nodes must be a (possibly equal) subset of its parent's.</p></li>
+<li><p>It can be marked <code>cpu_exclusive</code> only if its parent is.</p></li>
+<li><p>It can be marked <code>mem_exclusive</code> only if its parent is.</p></li>
+<li><p>If it is <code>cpu_exclusive</code>, its CPUs may not overlap any sibling.</p></li>
+<li><p>If it is <code>memory_exclusive</code>, its memory nodes may not overlap any sibling.</p></li>
+</ul>
+</div></div></div><h1 id='permissions'><a href='#permissions'>PERMISSIONS</a></h1><div data-for='permissions' data-hide><div class='section' data-for='permissions'><div data-more>
+<p>The permissions of a cpuset are determined by the permissions of the directories and pseudo-files in the cpuset filesystem, normally mounted at <code>/dev/cpuset</code>.</p>
+<p>For instance, a process can put itself in some other cpuset (than its current one) if it can write the <code>tasks</code> file for that cpuset. This requires execute permission on the encompassing directories and write permission on the <code>tasks</code> file.</p>
+<p>An additional constraint is applied to requests to place some other process in a cpuset. One process may not attach another to a cpuset unless it would have permission to send that process a signal (see <a href='/2/kill'>kill</a>(2)).</p>
+<p>A process may create a child cpuset if it can access and write the parent cpuset directory. It can modify the CPUs or memory nodes in a cpuset if it can access that cpuset's directory (execute permissions on the each of the parent directories) and write the corresponding <code>cpus</code> or <code>mems</code> file.</p>
+<p>There is one minor difference between the manner in which these permissions are evaluated and the manner in which normal filesystem operation permissions are evaluated. The kernel interprets relative pathnames starting at a process's current working directory. Even if one is operating on a cpuset file, relative pathnames are interpreted relative to the process's current working directory, not relative to the process's current cpuset. The only ways that cpuset paths relative to a process's current cpuset can be used are if either the process's current working directory is its cpuset (it first did a <strong>cd</strong> or <a href='/2/chdir'>chdir</a>(2) to its cpuset directory beneath <code>/dev/cpuset</code>, which is a bit unusual) or if some user code converts the relative cpuset path to a full filesystem path.</p>
+<p>In theory, this means that user code should specify cpusets using absolute pathnames, which requires knowing the mount point of the cpuset filesystem (usually, but not necessarily, <code>/dev/cpuset</code>). In practice, all user level code that this author is aware of simply assumes that if the cpuset filesystem is mounted, then it is mounted at <code>/dev/cpuset</code>. Furthermore, it is common practice for carefully written user code to verify the presence of the pseudo-file <code>/dev/cpuset/tasks</code> in order to verify that the cpuset pseudo-filesystem is currently mounted.</p>
+</div></div></div><h1 id='warnings'><a href='#warnings'>WARNINGS</a></h1><div data-for='warnings' data-hide><div class='section' data-for='warnings'><div data-more>
+<h2>Enabling memory_pressure</h2>
+<p>By default, the per-cpuset file <code>cpuset.memory_pressure</code> always contains zero (0). Unless this feature is enabled by writing "1" to the pseudo-file <code>/dev/cpuset/cpuset.memory_pressure_enabled</code>, the kernel does not compute per-cpuset <code>memory_pressure</code>.</p>
+<h2>Using the echo command</h2>
+<p>When using the <strong>echo</strong> command at the shell prompt to change the values of cpuset files, beware that the built-in <strong>echo</strong> command in some shells does not display an error message if the <a href='/2/write'>write</a>(2) system call fails. For example, if the command:</p>
+<pre><code>echo 19 &gt; cpuset.mems</code></pre>
+<p>failed because memory node 19 was not allowed (perhaps the current system does not have a memory node 19), then the <strong>echo</strong> command might not display any error. It is better to use the <strong>/bin/echo</strong> external command to change cpuset file settings, as this command will display <a href='/2/write'>write</a>(2) errors, as in the example:</p>
+<pre><code>/bin/echo 19 &gt; cpuset.mems
+/bin/echo: write error: Invalid argument</code></pre>
+</div></div></div><h1 id='exceptions'><a href='#exceptions'>EXCEPTIONS</a></h1><div data-for='exceptions' data-hide><div class='section' data-for='exceptions'><div data-more>
+<h2>Memory placement</h2>
+<p>Not all allocations of system memory are constrained by cpusets, for the following reasons.</p>
+<p>If hot-plug functionality is used to remove all the CPUs that are currently assigned to a cpuset, then the kernel will automatically update the <code>cpus_allowed</code> of all processes attached to CPUs in that cpuset to allow all CPUs. When memory hot-plug functionality for removing memory nodes is available, a similar exception is expected to apply there as well. In general, the kernel prefers to violate cpuset placement, rather than starving a process that has had all its allowed CPUs or memory nodes taken offline. User code should reconfigure cpusets to refer only to online CPUs and memory nodes when using hot-plug to add or remove such resources.</p>
+<p>A few kernel-critical, internal memory-allocation requests, marked GFP_ATOMIC, must be satisfied immediately. The kernel may drop some request or malfunction if one of these allocations fail. If such a request cannot be satisfied within the current process's cpuset, then we relax the cpuset, and look for memory anywhere we can find it. It's better to violate the cpuset than stress the kernel.</p>
+<p>Allocations of memory requested by kernel drivers while processing an interrupt lack any relevant process context, and are not confined by cpusets.</p>
+<h2>Renaming cpusets</h2>
+<p>You can use the <a href='/2/rename'>rename</a>(2) system call to rename cpusets. Only simple renaming is supported; that is, changing the name of a cpuset directory is permitted, but moving a directory into a different directory is not permitted.</p>
+</div></div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>The Linux kernel implementation of cpusets sets <code>errno</code> to specify the reason for a failed system call affecting cpusets.</p>
+<p>The possible <code>errno</code> settings and their meaning when set on a failed cpuset call are as listed below.</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>Attempted a <a href='/2/write'>write</a>(2) on a special cpuset file with a length larger than some kernel-determined upper limit on the length of such writes.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) the process ID (PID) of a process to a cpuset <code>tasks</code> file when one lacks permission to move that process.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Attempted to add, using <a href='/2/write'>write</a>(2), a CPU or memory node to a cpuset, when that CPU or memory node was not already in its parent.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Attempted to set, using <a href='/2/write'>write</a>(2), <code>cpuset.cpu_exclusive</code> or <code>cpuset.mem_exclusive</code> on a cpuset whose parent lacks the same setting.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a <code>cpuset.memory_pressure</code> file.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>Attempted to create a file in a cpuset directory.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p>Attempted to remove, using <a href='/2/rmdir'>rmdir</a>(2), a cpuset with attached processes.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p>Attempted to remove, using <a href='/2/rmdir'>rmdir</a>(2), a cpuset with child cpusets.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p>Attempted to remove a CPU or memory node from a cpuset that is also in a child of that cpuset.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p>Attempted to create, using <a href='/2/mkdir'>mkdir</a>(2), a cpuset that already exists.</p>
+</dd>
+<dt><strong>EEXIST</strong></dt>
+<dd><p>Attempted to <a href='/2/rename'>rename</a>(2) a cpuset to a name that already exists.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>Attempted to <a href='/2/read'>read</a>(2) or <a href='/2/write'>write</a>(2) a cpuset file using a buffer that is outside the writing processes accessible address space.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to change a cpuset, using <a href='/2/write'>write</a>(2), in a way that would violate a <code>cpu_exclusive</code> or <code>mem_exclusive</code> attribute of that cpuset or any of its siblings.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) an empty <code>cpuset.cpus</code> or <code>cpuset.mems</code> list to a cpuset which has attached processes or child cpusets.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a <code>cpuset.cpus</code> or <code>cpuset.mems</code> list which included a range with the second number smaller than the first number.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a <code>cpuset.cpus</code> or <code>cpuset.mems</code> list which included an invalid character in the string.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a list to a <code>cpuset.cpus</code> file that did not include any online CPUs.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a list to a <code>cpuset.mems</code> file that did not include any online memory nodes.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a list to a <code>cpuset.mems</code> file that included a node that held no memory.</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) a string to a cpuset <code>tasks</code> file that does not begin with an ASCII decimal integer.</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>Attempted to <a href='/2/rename'>rename</a>(2) a cpuset into a different directory.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p>Attempted to <a href='/2/read'>read</a>(2) a <code>/proc/&lt;pid&gt;/cpuset</code> file for a cpuset path that is longer than the kernel page size.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p>Attempted to create, using <a href='/2/mkdir'>mkdir</a>(2), a cpuset whose base directory name is longer than 255 characters.</p>
+</dd>
+<dt><strong>ENAMETOOLONG</strong></dt>
+<dd><p>Attempted to create, using <a href='/2/mkdir'>mkdir</a>(2), a cpuset whose full pathname, including the mount point (typically "/dev/cpuset/") prefix, is longer than 4095 characters.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>The cpuset was removed by another process at the same time as a <a href='/2/write'>write</a>(2) was attempted on one of the pseudo-files in the cpuset directory.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>Attempted to create, using <a href='/2/mkdir'>mkdir</a>(2), a cpuset in a parent cpuset that doesn't exist.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p>Attempted to <a href='/2/access'>access</a>(2) or <a href='/2/open'>open</a>(2) a nonexistent file in a cpuset directory.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient memory is available within the kernel; can occur on a variety of system calls affecting cpusets, but only if the system is extremely short of memory.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) the process ID (PID) of a process to a cpuset <code>tasks</code> file when the cpuset had an empty <code>cpuset.cpus</code> or empty <code>cpuset.mems</code> setting.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) an empty <code>cpuset.cpus</code> or <code>cpuset.mems</code> setting to a cpuset that has tasks attached.</p>
+</dd>
+<dt><strong>ENOTDIR</strong></dt>
+<dd><p>Attempted to <a href='/2/rename'>rename</a>(2) a nonexistent cpuset.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>Attempted to remove a file from a cpuset directory.</p>
+</dd>
+<dt><strong>ERANGE</strong></dt>
+<dd><p>Specified a <code>cpuset.cpus</code> or <code>cpuset.mems</code> list to the kernel which included a number too large for the kernel to set in its bit masks.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>Attempted to <a href='/2/write'>write</a>(2) the process ID (PID) of a nonexistent process to a cpuset <code>tasks</code> file.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>Cpusets appeared in version 2.6.12 of the Linux kernel.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Despite its name, the <code>pid</code> parameter is actually a thread ID, and each thread in a threaded group can be attached to a different cpuset. The value returned from a call to <a href='/2/gettid'>gettid</a>(2) can be passed in the argument <code>pid</code>.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p><code>cpuset.memory_pressure</code> cpuset files can be opened for writing, creation, or truncation, but then the <a href='/2/write'>write</a>(2) fails with <code>errno</code> set to <strong>EACCES</strong>, and the creation and truncation options on <a href='/2/open'>open</a>(2) have no effect.</p>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The following examples demonstrate querying and setting cpuset options using shell commands.</p>
+<h2>Creating and attaching to a cpuset.</h2>
+<p>To create a new cpuset and attach the current command shell to it, the steps are:</p>
+<ol type="1">
+<li><p>mkdir /dev/cpuset (if not already done)</p></li>
+<li><p>mount -t cpuset none /dev/cpuset (if not already done)</p></li>
+<li><p>Create the new cpuset using <a href='/1/mkdir'>mkdir</a>(1).</p></li>
+<li><p>Assign CPUs and memory nodes to the new cpuset.</p></li>
+<li><p>Attach the shell to the new cpuset.</p></li>
+</ol>
+<p>For example, the following sequence of commands will set up a cpuset named "Charlie", containing just CPUs 2 and 3, and memory node 1, and then attach the current shell to that cpuset.</p>
+<pre><code>$ mkdir /dev/cpuset
+$ mount -t cpuset cpuset /dev/cpuset
+$ cd /dev/cpuset
+$ mkdir Charlie
+$ cd Charlie
+$ /bin/echo 2-3 &gt; cpuset.cpus
+$ /bin/echo 1 &gt; cpuset.mems
+$ /bin/echo $$ &gt; tasks
+# The current shell is now running in cpuset Charlie
+# The next line should display '/Charlie'
+$ cat /proc/self/cpuset</code></pre>
+<p>To migrate a job (the set of processes attached to a cpuset) to different CPUs and memory nodes in the system, including moving the memory pages currently allocated to that job, perform the following steps.</p>
+<ol type="1">
+<li><p>Let's say we want to move the job in cpuset <code>alpha</code> (CPUs 4–7 and memory nodes 2–3) to a new cpuset <code>beta</code> (CPUs 16–19 and memory nodes 8–9).</p></li>
+<li><p>First create the new cpuset <code>beta</code>.</p></li>
+<li><p>Then allow CPUs 16–19 and memory nodes 8–9 in <code>beta</code>.</p></li>
+<li><p>Then enable <code>memory_migration</code> in <code>beta</code>.</p></li>
+<li><p>Then move each process from <code>alpha</code> to <code>beta</code>.</p></li>
+</ol>
+<p>The following sequence of commands accomplishes this.</p>
+<pre><code>$ cd /dev/cpuset
+$ mkdir beta
+$ cd beta
+$ /bin/echo 16-19 &gt; cpuset.cpus
+$ /bin/echo 8-9 &gt; cpuset.mems
+$ /bin/echo 1 &gt; cpuset.memory_migrate
+$ while read i; do /bin/echo $i; done &lt; ../alpha/tasks &gt; tasks</code></pre>
+<p>The above should move any processes in <code>alpha</code> to <code>beta</code>, and any memory held by these processes on memory nodes 2–3 to memory nodes 8–9, respectively.</p>
+<p>Notice that the last step of the above sequence did not do:</p>
+<pre><code>$ cp ../alpha/tasks tasks</code></pre>
+<p>The <code>while</code> loop, rather than the seemingly easier use of the <a href='/1/cp'>cp</a>(1) command, was necessary because only one process PID at a time may be written to the <code>tasks</code> file.</p>
+<p>The same effect (writing one PID at a time) as the <code>while</code> loop can be accomplished more efficiently, in fewer keystrokes and in syntax that works on any shell, but alas more obscurely, by using the <strong>-u</strong> (unbuffered) option of <a href='/1/sed'>sed</a>(1):</p>
+<pre><code>$ sed -un p &lt; ../alpha/tasks &gt; tasks</code></pre>
+</div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/taskset'>taskset</a>(1), <a href='/2/get_mempolicy'>get_mempolicy</a>(2), <a href='/2/getcpu'>getcpu</a>(2), <a href='/2/mbind'>mbind</a>(2), <a href='/2/sched_getaffinity'>sched_getaffinity</a>(2), <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2), <a href='/2/sched_setscheduler'>sched_setscheduler</a>(2), <a href='/2/set_mempolicy'>set_mempolicy</a>(2), <a href='/3/CPU_SET'>CPU_SET</a>(3), <a href='/5/proc'>proc</a>(5), <a href='/7/cgroups'>cgroups</a>(7), <a href='/7/numa'>numa</a>(7), <a href='/7/sched'>sched</a>(7), <a href='/8/migratepages'>migratepages</a>(8), <a href='/8/numactl'>numactl</a>(8)</p>
+<p><code>Documentation/admin-guide/cgroup-v1/cpusets.rst</code> in the Linux kernel source tree (or <code>Documentation/cgroup-v1/cpusets.txt</code> before Linux 4.18, and <code>Documentation/cpusets.txt</code> before Linux 2.6.29)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

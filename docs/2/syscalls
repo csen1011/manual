@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>syscalls - Linux system calls</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>Linux system calls.</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The system call is the fundamental interface between an application and the Linux kernel.</p>
+<h2>System calls and library wrapper functions</h2>
+<p>System calls are generally not invoked directly, but rather via wrapper functions in glibc (or perhaps some other library). For details of direct invocation of a system call, see <a href='/2/intro'>intro</a>(2). Often, but not always, the name of the wrapper function is the same as the name of the system call that it invokes. For example, glibc contains a function <a href='chdir'>chdir</a>() which invokes the underlying "chdir" system call.</p>
+<p>Often the glibc wrapper function is quite thin, doing little work other than copying arguments to the right registers before invoking the system call, and then setting <code>errno</code> appropriately after the system call has returned. (These are the same steps that are performed by <a href='/2/syscall'>syscall</a>(2), which can be used to invoke system calls for which no wrapper function is provided.) Note: system calls indicate a failure by returning a negative error number to the caller on architectures without a separate error register/flag, as noted in <a href='/2/syscall'>syscall</a>(2); when this happens, the wrapper function negates the returned error number (to make it positive), copies it to <code>errno</code>, and returns -1 to the caller of the wrapper.</p>
+<p>Sometimes, however, the wrapper function does some extra work before invoking the system call. For example, nowadays there are (for reasons described below) two related system calls, <a href='/2/truncate'>truncate</a>(2) and <a href='/2/truncate64'>truncate64</a>(2), and the glibc <a href='truncate'>truncate</a>() wrapper function checks which of those system calls are provided by the kernel and determines which should be employed.</p>
+<h2>System call list</h2>
+<p>Below is a list of the Linux system calls. In the list, the <code>Kernel</code> column indicates the kernel version for those system calls that were new in Linux 2.2, or have appeared since that kernel version. Note the following points:</p>
+<ul>
+<li><p>Where no kernel version is indicated, the system call appeared in kernel 1.0 or earlier.</p></li>
+<li><p>Where a system call is marked "1.2" this means the system call probably appeared in a 1.1.x kernel version, and first appeared in a stable kernel with 1.2. (Development of the 1.2 kernel was initiated from a branch of kernel 1.0.6 via the 1.1.x unstable kernel series.)</p></li>
+<li><p>Where a system call is marked "2.0" this means the system call probably appeared in a 1.3.x kernel version, and first appeared in a stable kernel with 2.0. (Development of the 2.0 kernel was initiated from a branch of kernel 1.2.x, somewhere around 1.2.10, via the 1.3.x unstable kernel series.)</p></li>
+<li><p>Where a system call is marked "2.2" this means the system call probably appeared in a 2.1.x kernel version, and first appeared in a stable kernel with 2.2.0. (Development of the 2.2 kernel was initiated from a branch of kernel 2.0.21 via the 2.1.x unstable kernel series.)</p></li>
+<li><p>Where a system call is marked "2.4" this means the system call probably appeared in a 2.3.x kernel version, and first appeared in a stable kernel with 2.4.0. (Development of the 2.4 kernel was initiated from a branch of kernel 2.2.8 via the 2.3.x unstable kernel series.)</p></li>
+<li><p>Where a system call is marked "2.6" this means the system call probably appeared in a 2.5.x kernel version, and first appeared in a stable kernel with 2.6.0. (Development of kernel 2.6 was initiated from a branch of kernel 2.4.15 via the 2.5.x unstable kernel series.)</p></li>
+<li><p>Starting with kernel 2.6.0, the development model changed, and new system calls may appear in each 2.6.x release. In this case, the exact version number where the system call appeared is shown. This convention continues with the 3.x kernel series, which followed on from kernel 2.6.39; and the 4.x kernel series, which followed on from kernel 3.19; and the 5.x kernel series, which followed on from kernel 4.20.</p></li>
+<li><p>In some cases, a system call was added to a stable kernel series after it branched from the previous stable kernel series, and then backported into the earlier stable kernel series. For example some system calls that appeared in 2.6.x were also backported into a 2.4.x release after 2.4.15. When this is so, the version where the system call appeared in both of the major kernel series is listed.</p></li>
+</ul>
+<p>The list of system calls that are available as at kernel 5.10 (or in a few cases only on older kernels) is as follows:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>System call</strong></td>
+<td style="text-align: left;"><strong>Kernel</strong></td>
+<td style="text-align: left;"><strong>Notes</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/_llseek'>_llseek</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/_newselect'>_newselect</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/_sysctl'>_sysctl</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Removed in 5.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/accept'>accept</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/accept4'>accept4</a>(2)</td>
+<td style="text-align: left;">2.6.28</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/access'>access</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/acct'>acct</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/add_key'>add_key</a>(2)</td>
+<td style="text-align: left;">2.6.10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/adjtimex'>adjtimex</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/alarm'>alarm</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/alloc_hugepages'>alloc_hugepages</a>(2)</td>
+<td style="text-align: left;">2.5.36</td>
+<td style="text-align: left;">Removed in 2.5.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/arc_gettls'>arc_gettls</a>(2)</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">ARC only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/arc_settls'>arc_settls</a>(2)</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">ARC only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/arc_usr_cmpxchg'>arc_usr_cmpxchg</a>(2)</td>
+<td style="text-align: left;">4.9</td>
+<td style="text-align: left;">ARC only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/arch_prctl'>arch_prctl</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;">x86_64, x86 since 4.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/atomic_barrier'>atomic_barrier</a>(2)</td>
+<td style="text-align: left;">2.6.34</td>
+<td style="text-align: left;">m68k only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/atomic_cmpxchg_32'>atomic_cmpxchg_32</a>(2)</td>
+<td style="text-align: left;">2.6.34</td>
+<td style="text-align: left;">m68k only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/bdflush'>bdflush</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">Deprecated (does nothing)<br/>
+since 2.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/bind'>bind</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/bpf'>bpf</a>(2)</td>
+<td style="text-align: left;">3.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/brk'>brk</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/breakpoint'>breakpoint</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">ARM OABI only, defined with<br/>
+<strong>__ARM_NR</strong> prefix</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/cacheflush'>cacheflush</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">Not on x86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/capget'>capget</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/capset'>capset</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/chdir'>chdir</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/chmod'>chmod</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/chown'>chown</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">See <a href='/2/chown'>chown</a>(2) for<br/>
+version details</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/chown32'>chown32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/chroot'>chroot</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/clock_adjtime'>clock_adjtime</a>(2)</td>
+<td style="text-align: left;">2.6.39</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/clock_getres'>clock_getres</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/clock_gettime'>clock_gettime</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/clock_nanosleep'>clock_nanosleep</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/clock_settime'>clock_settime</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/clone2'>clone2</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">IA-64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/clone'>clone</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/clone3'>clone3</a>(2)</td>
+<td style="text-align: left;">5.3</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/close'>close</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/close_range'>close_range</a>(2)</td>
+<td style="text-align: left;">5.9</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/connect'>connect</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/copy_file_range'>copy_file_range</a>(2)</td>
+<td style="text-align: left;">4.5</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/creat'>creat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/create_module'>create_module</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Removed in 2.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/delete_module'>delete_module</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/dup'>dup</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/dup2'>dup2</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/dup3'>dup3</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/epoll_create'>epoll_create</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/epoll_create1'>epoll_create1</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/epoll_ctl'>epoll_ctl</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/epoll_pwait'>epoll_pwait</a>(2)</td>
+<td style="text-align: left;">2.6.19</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/epoll_wait'>epoll_wait</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/eventfd'>eventfd</a>(2)</td>
+<td style="text-align: left;">2.6.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/eventfd2'>eventfd2</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/execv'>execv</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">SPARC/SPARC64 only, for<br/>
+compatibility with SunOS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/execve'>execve</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/execveat'>execveat</a>(2)</td>
+<td style="text-align: left;">3.19</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/exit'>exit</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/exit_group'>exit_group</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/faccessat'>faccessat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/faccessat2'>faccessat2</a>(2)</td>
+<td style="text-align: left;">5.8</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fadvise64'>fadvise64</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fadvise64_64'>fadvise64_64</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fallocate'>fallocate</a>(2)</td>
+<td style="text-align: left;">2.6.23</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fanotify_init'>fanotify_init</a>(2)</td>
+<td style="text-align: left;">2.6.37</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fanotify_mark'>fanotify_mark</a>(2)</td>
+<td style="text-align: left;">2.6.37</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fchdir'>fchdir</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fchmod'>fchmod</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fchmodat'>fchmodat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fchown'>fchown</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fchown32'>fchown32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fchownat'>fchownat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fcntl'>fcntl</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fcntl64'>fcntl64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fdatasync'>fdatasync</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fgetxattr'>fgetxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/finit_module'>finit_module</a>(2)</td>
+<td style="text-align: left;">3.8</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/flistxattr'>flistxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/flock'>flock</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fork'>fork</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/free_hugepages'>free_hugepages</a>(2)</td>
+<td style="text-align: left;">2.5.36</td>
+<td style="text-align: left;">Removed in 2.5.44</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fremovexattr'>fremovexattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fsconfig'>fsconfig</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fsetxattr'>fsetxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fsmount'>fsmount</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fsopen'>fsopen</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fspick'>fspick</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fstat'>fstat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fstat64'>fstat64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fstatat64'>fstatat64</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fstatfs'>fstatfs</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/fstatfs64'>fstatfs64</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/fsync'>fsync</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ftruncate'>ftruncate</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/ftruncate64'>ftruncate64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/futex'>futex</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/futimesat'>futimesat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/get_kernel_syms'>get_kernel_syms</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Removed in 2.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/get_mempolicy'>get_mempolicy</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/get_robust_list'>get_robust_list</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/get_thread_area'>get_thread_area</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/get_tls'>get_tls</a>(2)</td>
+<td style="text-align: left;">4.15</td>
+<td style="text-align: left;">ARM OABI only, has<br/>
+<strong>__ARM_NR</strong> prefix</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getcpu'>getcpu</a>(2)</td>
+<td style="text-align: left;">2.6.19</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getcwd'>getcwd</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getdents'>getdents</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getdents64'>getdents64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getdomainname'>getdomainname</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">SPARC, SPARC64; available<br/>
+as <a href='/2/osf_getdomainname'>osf_getdomainname</a>(2)<br/>
+on Alpha since Linux 2.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getdtablesize'>getdtablesize</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">SPARC (removed in 2.6.26),<br/>
+available on Alpha as<br/>
+<a href='/2/osf_getdtablesize'>osf_getdtablesize</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getegid'>getegid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getegid32'>getegid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/geteuid'>geteuid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/geteuid32'>geteuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getgid'>getgid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getgid32'>getgid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getgroups'>getgroups</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getgroups32'>getgroups32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/gethostname'>gethostname</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha, was available on<br/>
+SPARC up to Linux 2.6.26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getitimer'>getitimer</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getpeername'>getpeername</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getpagesize'>getpagesize</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Not on x86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getpgid'>getpgid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getpgrp'>getpgrp</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getpid'>getpid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getppid'>getppid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getpriority'>getpriority</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getrandom'>getrandom</a>(2)</td>
+<td style="text-align: left;">3.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getresgid'>getresgid</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getresgid32'>getresgid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getresuid'>getresuid</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getresuid32'>getresuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getrlimit'>getrlimit</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getrusage'>getrusage</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getsid'>getsid</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getsockname'>getsockname</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getsockopt'>getsockopt</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/gettid'>gettid</a>(2)</td>
+<td style="text-align: left;">2.4.11</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/gettimeofday'>gettimeofday</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getuid'>getuid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getuid32'>getuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getunwind'>getunwind</a>(2)</td>
+<td style="text-align: left;">2.4.8</td>
+<td style="text-align: left;">IA-64 only; deprecated</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getxattr'>getxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getxgid'>getxgid</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha only; see NOTES</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/getxpid'>getxpid</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha only; see NOTES</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/getxuid'>getxuid</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha only; see NOTES</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/init_module'>init_module</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/inotify_add_watch'>inotify_add_watch</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/inotify_init'>inotify_init</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/inotify_init1'>inotify_init1</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/inotify_rm_watch'>inotify_rm_watch</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/io_cancel'>io_cancel</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/io_destroy'>io_destroy</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/io_getevents'>io_getevents</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/io_pgetevents'>io_pgetevents</a>(2)</td>
+<td style="text-align: left;">4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/io_setup'>io_setup</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/io_submit'>io_submit</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/io_uring_enter'>io_uring_enter</a>(2)</td>
+<td style="text-align: left;">5.1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/io_uring_register'>io_uring_register</a>(2)</td>
+<td style="text-align: left;">5.1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/io_uring_setup'>io_uring_setup</a>(2)</td>
+<td style="text-align: left;">5.1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/ioctl'>ioctl</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ioperm'>ioperm</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/iopl'>iopl</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ioprio_get'>ioprio_get</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/ioprio_set'>ioprio_set</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ipc'>ipc</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/kcmp'>kcmp</a>(2)</td>
+<td style="text-align: left;">3.5</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/kern_features'>kern_features</a>(2)</td>
+<td style="text-align: left;">3.7</td>
+<td style="text-align: left;">SPARC64 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/kexec_file_load'>kexec_file_load</a>(2)</td>
+<td style="text-align: left;">3.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/kexec_load'>kexec_load</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/keyctl'>keyctl</a>(2)</td>
+<td style="text-align: left;">2.6.10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/kill'>kill</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/lchown'>lchown</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">See <a href='/2/chown'>chown</a>(2) for<br/>
+version details</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/lchown32'>lchown32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/lgetxattr'>lgetxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/link'>link</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/linkat'>linkat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/listen'>listen</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/listxattr'>listxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/llistxattr'>llistxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/lookup_dcookie'>lookup_dcookie</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/lremovexattr'>lremovexattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/lseek'>lseek</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/lsetxattr'>lsetxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/lstat'>lstat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/lstat64'>lstat64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/madvise'>madvise</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mbind'>mbind</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/memory_ordering'>memory_ordering</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">SPARC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/membarrier'>membarrier</a>(2)</td>
+<td style="text-align: left;">3.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/memfd_create'>memfd_create</a>(2)</td>
+<td style="text-align: left;">3.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/migrate_pages'>migrate_pages</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mincore'>mincore</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mkdir'>mkdir</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mkdirat'>mkdirat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mknod'>mknod</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mknodat'>mknodat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mlock'>mlock</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mlock2'>mlock2</a>(2)</td>
+<td style="text-align: left;">4.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mlockall'>mlockall</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mmap'>mmap</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mmap2'>mmap2</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/modify_ldt'>modify_ldt</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mount'>mount</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/move_mount'>move_mount</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/move_pages'>move_pages</a>(2)</td>
+<td style="text-align: left;">2.6.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mprotect'>mprotect</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mq_getsetattr'>mq_getsetattr</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mq_notify'>mq_notify</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mq_open'>mq_open</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mq_timedreceive'>mq_timedreceive</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mq_timedsend'>mq_timedsend</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/mq_unlink'>mq_unlink</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/mremap'>mremap</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/msgctl'>msgctl</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/msgget'>msgget</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/msgrcv'>msgrcv</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/msgsnd'>msgsnd</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/msync'>msync</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/munlock'>munlock</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/munlockall'>munlockall</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/munmap'>munmap</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/name_to_handle_at'>name_to_handle_at</a>(2)</td>
+<td style="text-align: left;">2.6.39</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/nanosleep'>nanosleep</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/newfstatat'>newfstatat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;">See <a href='/2/stat'>stat</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/nfsservctl'>nfsservctl</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">Removed in 3.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/nice'>nice</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/old_adjtimex'>old_adjtimex</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha only; see NOTES</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/old_getrlimit'>old_getrlimit</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">Old variant of <a href='/2/getrlimit'>getrlimit</a>(2)<br/>
+that used a different value<br/>
+for <strong>RLIM_INFINITY</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/oldfstat'>oldfstat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/oldlstat'>oldlstat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/oldolduname'>oldolduname</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/oldstat'>oldstat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/oldumount'>oldumount</a>(2)</td>
+<td style="text-align: left;">2.4.116</td>
+<td style="text-align: left;">Name of the old <a href='/2/umount'>umount</a>(2)<br/>
+syscall on Alpha</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/olduname'>olduname</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/open'>open</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/open_by_handle_at'>open_by_handle_at</a>(2)</td>
+<td style="text-align: left;">2.6.39</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/open_tree'>open_tree</a>(2)</td>
+<td style="text-align: left;">5.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/openat'>openat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/openat2'>openat2</a>(2)</td>
+<td style="text-align: left;">5.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/or1k_atomic'>or1k_atomic</a>(2)</td>
+<td style="text-align: left;">3.1</td>
+<td style="text-align: left;">OpenRISC 1000 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pause'>pause</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pciconfig_iobase'>pciconfig_iobase</a>(2)</td>
+<td style="text-align: left;">2.2.15; 2.4</td>
+<td style="text-align: left;">Not on x86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pciconfig_read'>pciconfig_read</a>(2)</td>
+<td style="text-align: left;">2.0.26; 2.2</td>
+<td style="text-align: left;">Not on x86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pciconfig_write'>pciconfig_write</a>(2)</td>
+<td style="text-align: left;">2.0.26; 2.2</td>
+<td style="text-align: left;">Not on x86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/perf_event_open'>perf_event_open</a>(2)</td>
+<td style="text-align: left;">2.6.31</td>
+<td style="text-align: left;">Was perf_counter_open() in<br/>
+2.6.31; renamed in 2.6.32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/personality'>personality</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/perfctr'>perfctr</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">SPARC only; removed in 2.6.34</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/perfmonctl'>perfmonctl</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">IA-64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pidfd_getfd'>pidfd_getfd</a>(2)</td>
+<td style="text-align: left;">5.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pidfd_send_signal'>pidfd_send_signal</a>(2)</td>
+<td style="text-align: left;">5.1</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pidfd_open'>pidfd_open</a>(2)</td>
+<td style="text-align: left;">5.3</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pipe'>pipe</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pipe2'>pipe2</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pivot_root'>pivot_root</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pkey_alloc'>pkey_alloc</a>(2)</td>
+<td style="text-align: left;">4.8</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pkey_free'>pkey_free</a>(2)</td>
+<td style="text-align: left;">4.8</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pkey_mprotect'>pkey_mprotect</a>(2)</td>
+<td style="text-align: left;">4.8</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/poll'>poll</a>(2)</td>
+<td style="text-align: left;">2.0.36; 2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ppoll'>ppoll</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/prctl'>prctl</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pread64'>pread64</a>(2)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Added as "pread" in 2.2;<br/>
+renamed "pread64" in 2.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/preadv'>preadv</a>(2)</td>
+<td style="text-align: left;">2.6.30</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/preadv2'>preadv2</a>(2)</td>
+<td style="text-align: left;">4.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/prlimit64'>prlimit64</a>(2)</td>
+<td style="text-align: left;">2.6.36</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/process_madvise'>process_madvise</a>(2)</td>
+<td style="text-align: left;">5.10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/process_vm_readv'>process_vm_readv</a>(2)</td>
+<td style="text-align: left;">3.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/process_vm_writev'>process_vm_writev</a>(2)</td>
+<td style="text-align: left;">3.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pselect6'>pselect6</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ptrace'>ptrace</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pwrite64'>pwrite64</a>(2)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Added as "pwrite" in 2.2;<br/>
+renamed "pwrite64" in 2.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/pwritev'>pwritev</a>(2)</td>
+<td style="text-align: left;">2.6.30</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/pwritev2'>pwritev2</a>(2)</td>
+<td style="text-align: left;">4.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/query_module'>query_module</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">Removed in 2.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/quotactl'>quotactl</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/read'>read</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/readahead'>readahead</a>(2)</td>
+<td style="text-align: left;">2.4.13</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/readdir'>readdir</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/readlink'>readlink</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/readlinkat'>readlinkat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/readv'>readv</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/reboot'>reboot</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/recv'>recv</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/recvfrom'>recvfrom</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/recvmsg'>recvmsg</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/recvmmsg'>recvmmsg</a>(2)</td>
+<td style="text-align: left;">2.6.33</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/remap_file_pages'>remap_file_pages</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;">Deprecated since 3.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/removexattr'>removexattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rename'>rename</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/renameat'>renameat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/renameat2'>renameat2</a>(2)</td>
+<td style="text-align: left;">3.15</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/request_key'>request_key</a>(2)</td>
+<td style="text-align: left;">2.6.10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/restart_syscall'>restart_syscall</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/riscv_flush_icache'>riscv_flush_icache</a>(2)</td>
+<td style="text-align: left;">4.15</td>
+<td style="text-align: left;">RISC-V only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rmdir'>rmdir</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/rseq'>rseq</a>(2)</td>
+<td style="text-align: left;">4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rt_sigaction'>rt_sigaction</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/rt_sigpending'>rt_sigpending</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rt_sigprocmask'>rt_sigprocmask</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/rt_sigqueueinfo'>rt_sigqueueinfo</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rt_sigreturn'>rt_sigreturn</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/rt_sigsuspend'>rt_sigsuspend</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rt_sigtimedwait'>rt_sigtimedwait</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/rt_tgsigqueueinfo'>rt_tgsigqueueinfo</a>(2)</td>
+<td style="text-align: left;">2.6.31</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/rtas'>rtas</a>(2)</td>
+<td style="text-align: left;">2.6.2</td>
+<td style="text-align: left;">PowerPC/PowerPC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/s390_runtime_instr'>s390_runtime_instr</a>(2)</td>
+<td style="text-align: left;">3.7</td>
+<td style="text-align: left;">s390 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/s390_pci_mmio_read'>s390_pci_mmio_read</a>(2)</td>
+<td style="text-align: left;">3.19</td>
+<td style="text-align: left;">s390 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/s390_pci_mmio_write'>s390_pci_mmio_write</a>(2)</td>
+<td style="text-align: left;">3.19</td>
+<td style="text-align: left;">s390 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/s390_sthyi'>s390_sthyi</a>(2)</td>
+<td style="text-align: left;">4.15</td>
+<td style="text-align: left;">s390 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/s390_guarded_storage'>s390_guarded_storage</a>(2)</td>
+<td style="text-align: left;">4.12</td>
+<td style="text-align: left;">s390 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_get_affinity'>sched_get_affinity</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;">Name of <a href='/2/sched_getaffinity'>sched_getaffinity</a>(2)<br/>
+on SPARC and SPARC64</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_get_priority_max'>sched_get_priority_max</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_get_priority_min'>sched_get_priority_min</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_getaffinity'>sched_getaffinity</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_getattr'>sched_getattr</a>(2)</td>
+<td style="text-align: left;">3.14</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_getparam'>sched_getparam</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_getscheduler'>sched_getscheduler</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_rr_get_interval'>sched_rr_get_interval</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_set_affinity'>sched_set_affinity</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;">Name of <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2)<br/>
+on SPARC and SPARC64</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_setaffinity'>sched_setaffinity</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_setattr'>sched_setattr</a>(2)</td>
+<td style="text-align: left;">3.14</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_setparam'>sched_setparam</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sched_setscheduler'>sched_setscheduler</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sched_yield'>sched_yield</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/seccomp'>seccomp</a>(2)</td>
+<td style="text-align: left;">3.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/select'>select</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/semctl'>semctl</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/semget'>semget</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/semop'>semop</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/semtimedop'>semtimedop</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/send'>send</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sendfile'>sendfile</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sendfile64'>sendfile64</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.19</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sendmmsg'>sendmmsg</a>(2)</td>
+<td style="text-align: left;">3.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sendmsg'>sendmsg</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sendto'>sendto</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/set_mempolicy'>set_mempolicy</a>(2)</td>
+<td style="text-align: left;">2.6.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/set_robust_list'>set_robust_list</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/set_thread_area'>set_thread_area</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/set_tid_address'>set_tid_address</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/set_tls'>set_tls</a>(2)</td>
+<td style="text-align: left;">2.6.11</td>
+<td style="text-align: left;">ARM OABI/EABI only (constant<br/>
+has <strong>__ARM_NR</strong> prefix)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setdomainname'>setdomainname</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setfsgid'>setfsgid</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setfsgid32'>setfsgid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setfsuid'>setfsuid</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setfsuid32'>setfsuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setgid'>setgid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setgid32'>setgid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setgroups'>setgroups</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setgroups32'>setgroups32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sethae'>sethae</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alpha only; see NOTES</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sethostname'>sethostname</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setitimer'>setitimer</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setns'>setns</a>(2)</td>
+<td style="text-align: left;">3.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setpgid'>setpgid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setpgrp'>setpgrp</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">Alternative name for<br/>
+<a href='/2/setpgid'>setpgid</a>(2) on Alpha</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setpriority'>setpriority</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setregid'>setregid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setregid32'>setregid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setresgid'>setresgid</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setresgid32'>setresgid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setresuid'>setresuid</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setresuid32'>setresuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setreuid'>setreuid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setreuid32'>setreuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setrlimit'>setrlimit</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setsid'>setsid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setsockopt'>setsockopt</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/settimeofday'>settimeofday</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setuid'>setuid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setuid32'>setuid32</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/setup'>setup</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Removed in 2.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/setxattr'>setxattr</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.18</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sgetmask'>sgetmask</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/shmat'>shmat</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/shmctl'>shmctl</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/shmdt'>shmdt</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/shmget'>shmget</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/ipc'>ipc</a>(2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/shutdown'>shutdown</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sigaction'>sigaction</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sigaltstack'>sigaltstack</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/signal'>signal</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/signalfd'>signalfd</a>(2)</td>
+<td style="text-align: left;">2.6.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/signalfd4'>signalfd4</a>(2)</td>
+<td style="text-align: left;">2.6.27</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sigpending'>sigpending</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sigprocmask'>sigprocmask</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sigreturn'>sigreturn</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sigsuspend'>sigsuspend</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/socket'>socket</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/socketcall'>socketcall</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/socketpair'>socketpair</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">See notes on <a href='/2/socketcall'>socketcall</a>(2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/spill'>spill</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;">Xtensa only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/splice'>splice</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/spu_create'>spu_create</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;">PowerPC/PowerPC64 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/spu_run'>spu_run</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;">PowerPC/PowerPC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ssetmask'>ssetmask</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/stat'>stat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/stat64'>stat64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/statfs'>statfs</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/statfs64'>statfs64</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/statx'>statx</a>(2)</td>
+<td style="text-align: left;">4.11</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/stime'>stime</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/subpage_prot'>subpage_prot</a>(2)</td>
+<td style="text-align: left;">2.6.25</td>
+<td style="text-align: left;">PowerPC/PowerPC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/swapcontext'>swapcontext</a>(2)</td>
+<td style="text-align: left;">2.6.3</td>
+<td style="text-align: left;">PowerPC/PowerPC64 only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/switch_endian'>switch_endian</a>(2)</td>
+<td style="text-align: left;">4.1</td>
+<td style="text-align: left;">PowerPC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/swapoff'>swapoff</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/swapon'>swapon</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/symlink'>symlink</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/symlinkat'>symlinkat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sync'>sync</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sync_file_range'>sync_file_range</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sync_file_range2'>sync_file_range2</a>(2)</td>
+<td style="text-align: left;">2.6.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/syncfs'>syncfs</a>(2)</td>
+<td style="text-align: left;">2.6.39</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sys_debug_setcontext'>sys_debug_setcontext</a>(2)</td>
+<td style="text-align: left;">2.6.11</td>
+<td style="text-align: left;">PowerPC only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/syscall'>syscall</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Still available on ARM OABI<br/>
+and MIPS O32 ABI</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/sysfs'>sysfs</a>(2)</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sysinfo'>sysinfo</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/syslog'>syslog</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/sysmips'>sysmips</a>(2)</td>
+<td style="text-align: left;">2.6.0</td>
+<td style="text-align: left;">MIPS only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/tee'>tee</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/tgkill'>tgkill</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/time'>time</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/timer_create'>timer_create</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/timer_delete'>timer_delete</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/timer_getoverrun'>timer_getoverrun</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/timer_gettime'>timer_gettime</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/timer_settime'>timer_settime</a>(2)</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/timerfd_create'>timerfd_create</a>(2)</td>
+<td style="text-align: left;">2.6.25</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/timerfd_gettime'>timerfd_gettime</a>(2)</td>
+<td style="text-align: left;">2.6.25</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/timerfd_settime'>timerfd_settime</a>(2)</td>
+<td style="text-align: left;">2.6.25</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/times'>times</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/tkill'>tkill</a>(2)</td>
+<td style="text-align: left;">2.6; 2.4.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/truncate'>truncate</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/truncate64'>truncate64</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/ugetrlimit'>ugetrlimit</a>(2)</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/umask'>umask</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/umount'>umount</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/umount2'>umount2</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/uname'>uname</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/unlink'>unlink</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/unlinkat'>unlinkat</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/unshare'>unshare</a>(2)</td>
+<td style="text-align: left;">2.6.16</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/uselib'>uselib</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/ustat'>ustat</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/userfaultfd'>userfaultfd</a>(2)</td>
+<td style="text-align: left;">4.3</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/usr26'>usr26</a>(2)</td>
+<td style="text-align: left;">2.4.8.1</td>
+<td style="text-align: left;">ARM OABI only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/usr32'>usr32</a>(2)</td>
+<td style="text-align: left;">2.4.8.1</td>
+<td style="text-align: left;">ARM OABI only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/utime'>utime</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/utimensat'>utimensat</a>(2)</td>
+<td style="text-align: left;">2.6.22</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/utimes'>utimes</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/utrap_install'>utrap_install</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">SPARC64 only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/vfork'>vfork</a>(2)</td>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/vhangup'>vhangup</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/vm86old'>vm86old</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Was "vm86"; renamed in<br/>
+2.0.28/2.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/vm86'>vm86</a>(2)</td>
+<td style="text-align: left;">2.0.28; 2.2</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/vmsplice'>vmsplice</a>(2)</td>
+<td style="text-align: left;">2.6.17</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/wait4'>wait4</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/waitid'>waitid</a>(2)</td>
+<td style="text-align: left;">2.6.10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/waitpid'>waitpid</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/write'>write</a>(2)</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href='/2/writev'>writev</a>(2)</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href='/2/xtensa'>xtensa</a>(2)</td>
+<td style="text-align: left;">2.6.13</td>
+<td style="text-align: left;">Xtensa only</td>
+</tr>
+</tbody>
+</table>
+<p>On many platforms, including x86-32, socket calls are all multiplexed (via glibc wrapper functions) through <a href='/2/socketcall'>socketcall</a>(2) and similarly System V IPC calls are multiplexed through <a href='/2/ipc'>ipc</a>(2).</p>
+<p>Although slots are reserved for them in the system call table, the following system calls are not implemented in the standard kernel: <a href='/2/afs_syscall'>afs_syscall</a>(2),<strong></strong> <a href='/2/break'>break</a>(2),<strong></strong> <a href='/2/ftime'>ftime</a>(2),<strong></strong> <a href='/2/getpmsg'>getpmsg</a>(2),<strong></strong> <a href='/2/gtty'>gtty</a>(2),<strong></strong> <a href='/2/idle'>idle</a>(2),<strong></strong> <a href='/2/lock'>lock</a>(2),<strong></strong> <a href='/2/madvise1'>madvise1</a>(2),<strong></strong> <a href='/2/mpx'>mpx</a>(2),<strong></strong> <a href='/2/phys'>phys</a>(2),<strong></strong> <a href='/2/prof'>prof</a>(2),<strong></strong> <a href='/2/profil'>profil</a>(2),<strong></strong> <a href='/2/putpmsg'>putpmsg</a>(2),<strong></strong> <a href='/2/security'>security</a>(2),<strong></strong> <a href='/2/stty'>stty</a>(2),<strong></strong> <a href='/2/tuxcall'>tuxcall</a>(2),<strong></strong> <a href='/2/ulimit'>ulimit</a>(2),<strong></strong> and <a href='/2/vserver'>vserver</a>(2)<strong></strong> (see also <a href='/2/unimplemented'>unimplemented</a>(2)). However, <a href='/3/ftime'>ftime</a>(3), <a href='/3/profil'>profil</a>(3), and <a href='/3/ulimit'>ulimit</a>(3) exist as library routines. The slot for <a href='/2/phys'>phys</a>(2) is in use since kernel 2.1.116 for <a href='/2/umount'>umount</a>(2); <a href='/2/phys'>phys</a>(2) will never be implemented. The <a href='/2/getpmsg'>getpmsg</a>(2) and <a href='/2/putpmsg'>putpmsg</a>(2) calls are for kernels patched to support STREAMS, and may never be in the standard kernel.</p>
+<p>There was briefly <a href='/2/set_zone_reclaim'>set_zone_reclaim</a>(2), added in Linux 2.6.13, and removed in 2.6.16; this system call was never available to user space. Some system calls only ever existed on Linux architectures that have since been removed from the kernel:</p>
+<dl>
+<dt>AVR32 (port removed in Linux 4.12)</dt>
+<dd><ul>
+<li><p><a href='/2/pread'>pread</a>(2)</p></li>
+<li><p><a href='/2/pwrite'>pwrite</a>(2)</p></li>
+</ul>
+</dd>
+<dt>Blackfin (port removed in Linux 4.17)</dt>
+<dd><ul>
+<li><p><a href='/2/bfin_spinlock'>bfin_spinlock</a>(2) (added in Linux 2.6.22)</p></li>
+<li><p><a href='/2/dma_memcpy'>dma_memcpy</a>(2) (added in Linux 2.6.22)</p></li>
+<li><p><a href='/2/pread'>pread</a>(2) (added in Linux 2.6.22)</p></li>
+<li><p><a href='/2/pwrite'>pwrite</a>(2) (added in Linux 2.6.22)</p></li>
+<li><p><a href='/2/sram_alloc'>sram_alloc</a>(2) (added in Linux 2.6.22)</p></li>
+<li><p><a href='/2/sram_free'>sram_free</a>(2) (added in Linux 2.6.22)</p></li>
+</ul>
+</dd>
+<dt>Metag (port removed in Linux 4.17)</dt>
+<dd><ul>
+<li><p><a href='/2/metag_get_tls'>metag_get_tls</a>(2) (add in Linux 3.9)</p></li>
+<li><p><a href='/2/metag_set_fpu_flags'>metag_set_fpu_flags</a>(2) (add in Linux 3.9)</p></li>
+<li><p><a href='/2/metag_set_tls'>metag_set_tls</a>(2) (add in Linux 3.9)</p></li>
+<li><p><a href='/2/metag_setglobalbit'>metag_setglobalbit</a>(2) (add in Linux 3.9)</p></li>
+</ul>
+</dd>
+<dt>Tile (port removed in Linux 4.17)</dt>
+<dd><ul>
+<li><p><a href='/2/cmpxchg_badaddr'>cmpxchg_badaddr</a>(2) (added in Linux 2.6.36)</p></li>
+</ul>
+</dd>
+</dl>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Roughly speaking, the code belonging to the system call with number __NR_xxx defined in <code>/usr/include/asm/unistd.h</code> can be found in the Linux kernel source in the routine <code>sys_xxx</code>(). There are many exceptions, however, mostly because older system calls were superseded by newer ones, and this has been treated somewhat unsystematically. On platforms with proprietary operating-system emulation, such as sparc, sparc64, and alpha, there are many additional system calls; mips64 also contains a full set of 32-bit system calls.</p>
+<p>Over time, changes to the interfaces of some system calls have been necessary. One reason for such changes was the need to increase the size of structures or scalar values passed to the system call. Because of these changes, certain architectures (notably, longstanding 32-bit architectures such as i386) now have various groups of related system calls (e.g., <a href='/2/truncate'>truncate</a>(2) and <a href='/2/truncate64'>truncate64</a>(2)) which perform similar tasks, but which vary in details such as the size of their arguments. (As noted earlier, applications are generally unaware of this: the glibc wrapper functions do some work to ensure that the right system call is invoked, and that ABI compatibility is preserved for old binaries.) Examples of systems calls that exist in multiple versions are the following:</p>
+<ul>
+<li><p>By now there are three different versions of <a href='/2/stat'>stat</a>(2): <code>sys_stat</code>() (slot <code>__NR_oldstat</code>), <code>sys_newstat</code>() (slot <code>__NR_stat</code>), and <code>sys_stat64</code>() (slot <code>__NR_stat64</code>), with the last being the most current. A similar story applies for <a href='/2/lstat'>lstat</a>(2) and <a href='/2/fstat'>fstat</a>(2).</p></li>
+<li><p>Similarly, the defines <code>__NR_oldolduname</code>, <code>__NR_olduname</code>, and <code>__NR_uname</code> refer to the routines <code>sys_olduname</code>(), <code>sys_uname</code>(), and <code>sys_newuname</code>().</p></li>
+<li><p>In Linux 2.0, a new version of <a href='/2/vm86'>vm86</a>(2) appeared, with the old and the new kernel routines being named <code>sys_vm86old</code>() and <code>sys_vm86</code>().</p></li>
+<li><p>In Linux 2.4, a new version of <a href='/2/getrlimit'>getrlimit</a>(2) appeared, with the old and the new kernel routines being named <code>sys_old_getrlimit</code>() (slot <code>__NR_getrlimit</code>) and <code>sys_getrlimit</code>() (slot <code>__NR_ugetrlimit</code>).</p></li>
+<li><p>Linux 2.4 increased the size of user and group IDs from 16 to 32 bits. To support this change, a range of system calls were added (e.g., <a href='/2/chown32'>chown32</a>(2), <a href='/2/getuid32'>getuid32</a>(2), <a href='/2/getgroups32'>getgroups32</a>(2), <a href='/2/setresuid32'>setresuid32</a>(2)), superseding earlier calls of the same name without the "32" suffix.</p></li>
+<li><p>Linux 2.4 added support for applications on 32-bit architectures to access large files (i.e., files for which the sizes and file offsets can't be represented in 32 bits.) To support this change, replacements were required for system calls that deal with file offsets and sizes. Thus the following system calls were added: <a href='/2/fcntl64'>fcntl64</a>(2), <a href='/2/getdents64'>getdents64</a>(2), <a href='/2/stat64'>stat64</a>(2), <a href='/2/statfs64'>statfs64</a>(2), <a href='/2/truncate64'>truncate64</a>(2), and their analogs that work with file descriptors or symbolic links. These system calls supersede the older system calls which, except in the case of the "stat" calls, have the same name without the "64" suffix.</p>
+<p>On newer platforms that only have 64-bit file access and 32-bit UIDs/GIDs (e.g., alpha, ia64, s390x, x86-64), there is just a single version of the UID/GID and file access system calls. On platforms (typically, 32-bit platforms) where the *64 and *32 calls exist, the other versions are obsolete.</p></li>
+<li><p>The <code>rt_sig*</code> calls were added in kernel 2.2 to support the addition of real-time signals (see <a href='/7/signal'>signal</a>(7)). These system calls supersede the older system calls of the same name without the "rt_" prefix.</p></li>
+<li><p>The <a href='/2/select'>select</a>(2) and <a href='/2/mmap'>mmap</a>(2) system calls use five or more arguments, which caused problems in the way argument passing on the i386 used to be set up. Thus, while other architectures have <code>sys_select</code>() and <code>sys_mmap</code>() corresponding to <code>__NR_select</code> and <code>__NR_mmap</code>, on i386 one finds <code>old_select</code>() and <code>old_mmap</code>() (routines that use a pointer to an argument block) instead. These days passing five arguments is not a problem any more, and there is a <code>__NR__newselect</code> that corresponds directly to <code>sys_select</code>() and similarly <code>__NR_mmap2</code>. s390x is the only 64-bit architecture that has <code>old_mmap</code>().</p></li>
+</ul>
+<h2>Architecture-specific details: Alpha</h2>
+<ul>
+<li><p><a href='/2/getxgid'>getxgid</a>(2) returns a pair of GID and effective GID via registers <strong>r0</strong> and <strong>r20</strong>; it is provided instead of <a href='/2/getgid'>getgid</a>(2) and <a href='/2/getegid'>getegid</a>(2).</p></li>
+<li><p><a href='/2/getxpid'>getxpid</a>(2) returns a pair of PID and parent PID via registers <strong>r0</strong> and <strong>r20</strong>; it is provided instead of <a href='/2/getpid'>getpid</a>(2) and <a href='/2/getppid'>getppid</a>(2).</p></li>
+<li><p><a href='/2/old_adjtimex'>old_adjtimex</a>(2) is a variant of <a href='/2/adjtimex'>adjtimex</a>(2) that uses <code>struct timeval32</code>, for compatibility with OSF/1.</p></li>
+<li><p><a href='/2/getxuid'>getxuid</a>(2) returns a pair of GID and effective GID via registers <strong>r0</strong> and <strong>r20</strong>; it is provided instead of <a href='/2/getuid'>getuid</a>(2) and <a href='/2/geteuid'>geteuid</a>(2).</p></li>
+<li><p><a href='/2/sethae'>sethae</a>(2) is used for configuring the Host Address Extension register on low-cost Alphas in order to access address space beyond first 27 bits.</p></li>
+</ul>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/intro'>intro</a>(2), <a href='/2/syscall'>syscall</a>(2), <a href='/2/unimplemented'>unimplemented</a>(2), <a href='/3/errno'>errno</a>(3), <a href='/7/libc'>libc</a>(7), <a href='/7/vdso'>vdso</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

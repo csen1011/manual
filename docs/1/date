@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>date - print or set the system date and time</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>date</strong> [<code>OPTION</code>]... [<code>+FORMAT</code>]<br/>
+<strong>date</strong> [<code>-u|--utc|--universal</code>] [<code>MMDDhhmm</code>[[<code>CC</code>]<code>YY</code>][<code>.ss</code>]]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Display the current time in the given FORMAT, or set the system date.</p>
+<p>Mandatory arguments to long options are mandatory for short options too.</p>
+<dl>
+<dt><strong>-d</strong>, <strong>--date</strong>=<code>STRING</code></dt>
+<dd><p>display time described by STRING, not 'now'</p>
+</dd>
+<dt><strong>--debug</strong></dt>
+<dd><p>annotate the parsed date, and warn about questionable usage to stderr</p>
+</dd>
+<dt><strong>-f</strong>, <strong>--file</strong>=<code>DATEFILE</code></dt>
+<dd><p>like <strong>--date</strong>; once for each line of DATEFILE</p>
+</dd>
+<dt><strong>-I[FMT]</strong>, <strong>--iso-8601</strong>[=<code>FMT</code>]</dt>
+<dd><p>output date/time in ISO 8601 format. FMT='date' for date only (the default), 'hours', 'minutes', 'seconds', or 'ns' for date and time to the indicated precision. Example: 2006-08-14T02:34:56-06:00</p>
+</dd>
+<dt><strong>-R</strong>, <strong>--rfc-email</strong></dt>
+<dd><p>output date and time in RFC 5322 format. Example: Mon, 14 Aug 2006 02:34:56 <strong>-0600</strong></p>
+</dd>
+<dt><strong>--rfc-3339</strong>=<code>FMT</code></dt>
+<dd><p>output date/time in RFC 3339 format. FMT='date', 'seconds', or 'ns' for date and time to the indicated precision. Example: 2006-08-14 02:34:56-06:00</p>
+</dd>
+<dt><strong>-r</strong>, <strong>--reference</strong>=<code>FILE</code></dt>
+<dd><p>display the last modification time of FILE</p>
+</dd>
+<dt><strong>-s</strong>, <strong>--set</strong>=<code>STRING</code></dt>
+<dd><p>set time described by STRING</p>
+</dd>
+<dt><strong>-u</strong>, <strong>--utc</strong>, <strong>--universal</strong></dt>
+<dd><p>print or set Coordinated Universal Time (UTC)</p>
+</dd>
+<dt><strong>--help</strong></dt>
+<dd><p>display this help and exit</p>
+</dd>
+<dt><strong>--version</strong></dt>
+<dd><p>output version information and exit</p>
+</dd>
+</dl>
+<p>FORMAT controls the output. Interpreted sequences are:</p>
+<dl>
+<dt>%%</dt>
+<dd><p>a literal %</p>
+</dd>
+<dt>%a</dt>
+<dd><p>locale's abbreviated weekday name (e.g., Sun)</p>
+</dd>
+<dt>%A</dt>
+<dd><p>locale's full weekday name (e.g., Sunday)</p>
+</dd>
+<dt>%b</dt>
+<dd><p>locale's abbreviated month name (e.g., Jan)</p>
+</dd>
+<dt>%B</dt>
+<dd><p>locale's full month name (e.g., January)</p>
+</dd>
+<dt>%c</dt>
+<dd><p>locale's date and time (e.g., Thu Mar 3 23:05:25 2005)</p>
+</dd>
+<dt>%C</dt>
+<dd><p>century; like %Y, except omit last two digits (e.g., 20)</p>
+</dd>
+<dt>%d</dt>
+<dd><p>day of month (e.g., 01)</p>
+</dd>
+<dt>%D</dt>
+<dd><p>date; same as %m/%d/%y</p>
+</dd>
+<dt>%e</dt>
+<dd><p>day of month, space padded; same as %_d</p>
+</dd>
+<dt>%F</dt>
+<dd><p>full date; like %+4Y-%m-%d</p>
+</dd>
+<dt>%g</dt>
+<dd><p>last two digits of year of ISO week number (see %G)</p>
+</dd>
+<dt>%G</dt>
+<dd><p>year of ISO week number (see %V); normally useful only with %V</p>
+</dd>
+<dt>%h</dt>
+<dd><p>same as %b</p>
+</dd>
+<dt>%H</dt>
+<dd><p>hour (00..23)</p>
+</dd>
+<dt>%I</dt>
+<dd><p>hour (01..12)</p>
+</dd>
+<dt>%j</dt>
+<dd><p>day of year (001..366)</p>
+</dd>
+<dt>%k</dt>
+<dd><p>hour, space padded ( 0..23); same as %_H</p>
+</dd>
+<dt>%l</dt>
+<dd><p>hour, space padded ( 1..12); same as %_I</p>
+</dd>
+<dt>%m</dt>
+<dd><p>month (01..12)</p>
+</dd>
+<dt>%M</dt>
+<dd><p>minute (00..59)</p>
+</dd>
+<dt>%n</dt>
+<dd><p>a newline</p>
+</dd>
+<dt>%N</dt>
+<dd><p>nanoseconds (000000000..999999999)</p>
+</dd>
+<dt>%p</dt>
+<dd><p>locale's equivalent of either AM or PM; blank if not known</p>
+</dd>
+<dt>%P</dt>
+<dd><p>like %p, but lower case</p>
+</dd>
+<dt>%q</dt>
+<dd><p>quarter of year (1..4)</p>
+</dd>
+<dt>%r</dt>
+<dd><p>locale's 12-hour clock time (e.g., 11:11:04 PM)</p>
+</dd>
+<dt>%R</dt>
+<dd><p>24-hour hour and minute; same as %H:%M</p>
+</dd>
+<dt>%s</dt>
+<dd><p>seconds since 1970-01-01 00:00:00 UTC</p>
+</dd>
+<dt>%S</dt>
+<dd><p>second (00..60)</p>
+</dd>
+<dt>%t</dt>
+<dd><p>a tab</p>
+</dd>
+<dt>%T</dt>
+<dd><p>time; same as %H:%M:%S</p>
+</dd>
+<dt>%u</dt>
+<dd><p>day of week (1..7); 1 is Monday</p>
+</dd>
+<dt>%U</dt>
+<dd><p>week number of year, with Sunday as first day of week (00..53)</p>
+</dd>
+<dt>%V</dt>
+<dd><p>ISO week number, with Monday as first day of week (01..53)</p>
+</dd>
+<dt>%w</dt>
+<dd><p>day of week (0..6); 0 is Sunday</p>
+</dd>
+<dt>%W</dt>
+<dd><p>week number of year, with Monday as first day of week (00..53)</p>
+</dd>
+<dt>%x</dt>
+<dd><p>locale's date representation (e.g., 12/31/99)</p>
+</dd>
+<dt>%X</dt>
+<dd><p>locale's time representation (e.g., 23:13:48)</p>
+</dd>
+<dt>%y</dt>
+<dd><p>last two digits of year (00..99)</p>
+</dd>
+<dt>%Y</dt>
+<dd><p>year</p>
+</dd>
+<dt>%z</dt>
+<dd><p>+hhmm numeric time zone (e.g., <strong>-0400</strong>)</p>
+</dd>
+<dt>%:z</dt>
+<dd><p>+hh:mm numeric time zone (e.g., <strong>-04</strong>:00)</p>
+</dd>
+<dt>%::z</dt>
+<dd><p>+hh:mm:ss numeric time zone (e.g., <strong>-04</strong>:00:00)</p>
+</dd>
+<dt>%:::z</dt>
+<dd><p>numeric time zone with : to necessary precision (e.g., <strong>-04</strong>, +05:30)</p>
+</dd>
+<dt>%Z</dt>
+<dd><p>alphabetic time zone abbreviation (e.g., EDT)</p>
+</dd>
+</dl>
+<p>By default, date pads numeric fields with zeroes. The following optional flags may follow '%':</p>
+<dl>
+<dt>-</dt>
+<dd><p>(hyphen) do not pad the field</p>
+</dd>
+<dt>_</dt>
+<dd><p>(underscore) pad with spaces</p>
+</dd>
+<dt>0</dt>
+<dd><p>(zero) pad with zeros</p>
+</dd>
+<dt>+</dt>
+<dd><p>pad with zeros, and put '+' before future years with &gt;4 digits</p>
+</dd>
+<dt>^</dt>
+<dd><p>use upper case if possible</p>
+</dd>
+<dt>#</dt>
+<dd><p>use opposite case if possible</p>
+</dd>
+</dl>
+<p>After any flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if available.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Convert seconds since the epoch (1970-01-01 UTC) to a date</p>
+<blockquote>
+<p><code>$ date --date='@2147483647'</code></p>
+</blockquote>
+<p>Show the time on the west coast of the US (use tzselect(1) to find TZ)</p>
+<blockquote>
+<p><code>$ TZ='America/Los_Angeles' date</code></p>
+</blockquote>
+<p>Show the local time for 9AM next Friday on the west coast of the US</p>
+<blockquote>
+<p><code>$ date --date='TZ="America/Los_Angeles" 09:00 next Fri'</code></p>
+</blockquote>
+</div></div><h1 id='date-string'><a href='#date-string'>DATE STRING</a></h1><div data-for='date-string' data-hide><div class='section' data-for='date-string'><div data-more>
+<p>The --date=STRING is a mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or "2004-02-29 16:21:42" or even "next Thursday". A date string may contain items indicating calendar date, time of day, time zone, day of week, relative time, relative date, and numbers. An empty string indicates the beginning of the day. The date string format is more complex than is easily documented here but is fully described in the info documentation.</p>
+</div></div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>Written by David MacKenzie.</p>
+</div></div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>GNU coreutils online help: &lt;<a href="https://www.gnu.org/software/coreutils/&amp;gt;">https://www.gnu.org/software/coreutils/&gt;</a><br/>
+Report any translation bugs to &lt;<a href="https://translationproject.org/team/&amp;gt;">https://translationproject.org/team/&gt;</a></p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright © 2020 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later &lt;<a href="https://gnu.org/licenses/gpl.html&amp;gt;">https://gnu.org/licenses/gpl.html&gt;</a>.<br/>
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>Full documentation &lt;<a href="https://www.gnu.org/software/coreutils/date&amp;gt;">https://www.gnu.org/software/coreutils/date&gt;</a><br/>
+or available locally via: info '(coreutils) date invocation'</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

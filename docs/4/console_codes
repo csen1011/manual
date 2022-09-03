@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>console_codes - Linux console escape and control sequences</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The Linux console implements a large subset of the VT102 and ECMA-48/ISO 6429/ANSI X3.64 terminal controls, plus certain private-mode sequences for changing the color palette, character-set mapping, and so on. In the tabular descriptions below, the second column gives ECMA-48 or DEC mnemonics (the latter if prefixed with DEC) for the given function. Sequences without a mnemonic are neither ECMA-48 nor VT102.</p>
+<p>After all the normal output processing has been done, and a stream of characters arrives at the console driver for actual printing, the first thing that happens is a translation from the code used for processing to the code used for printing.</p>
+<p>If the console is in UTF-8 mode, then the incoming bytes are first assembled into 16-bit Unicode codes. Otherwise, each byte is transformed according to the current mapping table (which translates it to a Unicode value). See the <strong>Character Sets</strong> section below for discussion.</p>
+<p>In the normal case, the Unicode value is converted to a font index, and this is stored in video memory, so that the corresponding glyph (as found in video ROM) appears on the screen. Note that the use of Unicode (and the design of the PC hardware) allows us to use 512 different glyphs simultaneously.</p>
+<p>If the current Unicode value is a control character, or we are currently processing an escape sequence, the value will treated specially. Instead of being turned into a font index and rendered as a glyph, it may trigger cursor movement or other control functions. See the <strong>Linux Console Controls</strong> section below for discussion.</p>
+<p>It is generally not good practice to hard-wire terminal controls into programs. Linux supports a <a href='/5/terminfo'>terminfo</a>(5) database of terminal capabilities. Rather than emitting console escape sequences by hand, you will almost always want to use a terminfo-aware screen library or utility such as <a href='/3/ncurses'>ncurses</a>(3), <a href='/1/tput'>tput</a>(1), or <a href='/1/reset'>reset</a>(1).</p>
+<h2>Linux console controls</h2>
+<p>This section describes all the control characters and escape sequences that invoke special functions (i.e., anything other than writing a glyph at the current cursor location) on the Linux console.</p>
+<p><strong>Control characters</strong></p>
+<p>A character is a control character if (before transformation according to the mapping table) it has one of the 14 codes 00 (NUL), 07 (BEL), 08 (BS), 09 (HT), 0a (LF), 0b (VT), 0c (FF), 0d (CR), 0e (SO), 0f (SI), 18 (CAN), 1a (SUB), 1b (ESC), 7f (DEL). One can set a "display control characters" mode (see below), and allow 07, 09, 0b, 18, 1a, 7f to be displayed as glyphs. On the other hand, in UTF-8 mode all codes 00–1f are regarded as control characters, regardless of any "display control characters" mode.</p>
+<p>If we have a control character, it is acted upon immediately and then discarded (even in the middle of an escape sequence) and the escape sequence continues with the next character. (However, ESC starts a new escape sequence, possibly aborting a previous unfinished one, and CAN and SUB abort any escape sequence.) The recognized control characters are BEL, BS, HT, LF, VT, FF, CR, SO, SI, CAN, SUB, ESC, DEL, CSI. They do what one would expect:</p>
+<p>BEL (0x07, <strong>^G</strong>) beeps;</p>
+<p>BS (0x08, <strong>^H</strong>) backspaces one column (but not past the beginning of the line);</p>
+<p>HT (0x09, <strong>^I</strong>) goes to the next tab stop or to the end of the line if there is no earlier tab stop;</p>
+<p>LF (0x0A, <strong>^J</strong>), VT (0x0B, <strong>^K</strong>) and FF (0x0C, <strong>^L</strong>) all give a linefeed, and if LF/NL (new-line mode) is set also a carriage return;</p>
+<p>CR (0x0D, <strong>^M</strong>) gives a carriage return;</p>
+<p>SO (0x0E, <strong>^N</strong>) activates the G1 character set;</p>
+<p>SI (0x0F, <strong>^O</strong>) activates the G0 character set;</p>
+<p>CAN (0x18, <strong>^X</strong>) and SUB (0x1A, <strong>^Z</strong>) abort escape sequences;</p>
+<p>ESC (0x1B, <strong>^[</strong>) starts an escape sequence;</p>
+<p>DEL (0x7F) is ignored;</p>
+<p>CSI (0x9B) is equivalent to ESC [.</p>
+<p><strong>ESC- but not CSI-sequences</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC c</td>
+<td style="text-align: left;">RIS</td>
+<td style="text-align: left;">Reset.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC D</td>
+<td style="text-align: left;">IND</td>
+<td style="text-align: left;">Linefeed.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC E</td>
+<td style="text-align: left;">NEL</td>
+<td style="text-align: left;">Newline.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC H</td>
+<td style="text-align: left;">HTS</td>
+<td style="text-align: left;">Set tab stop at current column.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC M</td>
+<td style="text-align: left;">RI</td>
+<td style="text-align: left;">Reverse linefeed.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC Z</td>
+<td style="text-align: left;">DECID</td>
+<td style="text-align: left;">DEC private identification. The kernel returns the string ESC [ ? 6 c, claiming that it is a VT102.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC 7</td>
+<td style="text-align: left;">DECSC</td>
+<td style="text-align: left;">Save current state (cursor coordinates, attributes, character sets pointed at by G0, G1).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC 8</td>
+<td style="text-align: left;">DECRC</td>
+<td style="text-align: left;">Restore state most recently saved by ESC 7.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [</td>
+<td style="text-align: left;">CSI</td>
+<td style="text-align: left;">Control sequence introducer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC %</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Start sequence selecting character set</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC % @</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select default (ISO 646 / ISO 8859-1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC % G</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select UTF-8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC % 8</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select UTF-8 (obsolete)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC # 8</td>
+<td style="text-align: left;">DECALN</td>
+<td style="text-align: left;">DEC screen alignment test - fill screen with E's.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC (</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Start sequence defining G0 character set</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ( B</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select default (ISO 8859-1 mapping)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ( 0</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select VT100 graphics mapping</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ( U</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select null mapping - straight to character ROM</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ( K</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   Select user mapping - the map that is loaded by</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">   the utility <a href='/8/mapscrn'>mapscrn</a>(8).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC )</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Start sequence defining G1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">(followed by one of B, 0, U, K, as above).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC &gt;</td>
+<td style="text-align: left;">DECPNM</td>
+<td style="text-align: left;">Set numeric keypad mode</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC =</td>
+<td style="text-align: left;">DECPAM</td>
+<td style="text-align: left;">Set application keypad mode</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ]</td>
+<td style="text-align: left;">OSC</td>
+<td style="text-align: left;">(Should be: Operating system command) ESC ] P <code>nrrggbb</code>: set palette, with parameter given in 7 hexadecimal digits after the final P :-(. Here <code>n</code> is the color (0–15), and <code>rrggbb</code> indicates the red/green/blue values (0–255). ESC ] R: reset palette</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ECMA-48 CSI sequences</strong></p>
+<p>CSI (or ESC [) is followed by a sequence of parameters, at most NPAR (16), that are decimal numbers separated by semicolons. An empty or absent parameter is taken to be 0. The sequence of parameters may be preceded by a single question mark.</p>
+<p>However, after CSI [ (or ESC [ [) a single character is read and this entire sequence is ignored. (The idea is to ignore an echoed function key.)</p>
+<p>The action of a CSI sequence is determined by its final character.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">@</td>
+<td style="text-align: left;">ICH</td>
+<td style="text-align: left;">Insert the indicated # of blank characters.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">CUU</td>
+<td style="text-align: left;">Move cursor up the indicated # of rows.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">CUD</td>
+<td style="text-align: left;">Move cursor down the indicated # of rows.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">CUF</td>
+<td style="text-align: left;">Move cursor right the indicated # of columns.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">CUB</td>
+<td style="text-align: left;">Move cursor left the indicated # of columns.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">E</td>
+<td style="text-align: left;">CNL</td>
+<td style="text-align: left;">Move cursor down the indicated # of rows, to column 1.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">CPL</td>
+<td style="text-align: left;">Move cursor up the indicated # of rows, to column 1.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G</td>
+<td style="text-align: left;">CHA</td>
+<td style="text-align: left;">Move cursor to indicated column in current row.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">H</td>
+<td style="text-align: left;">CUP</td>
+<td style="text-align: left;">Move cursor to the indicated row, column (origin at 1,1).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">J</td>
+<td style="text-align: left;">ED</td>
+<td style="text-align: left;">Erase display (default: from cursor to end of display).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 1 J: erase from start to cursor.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 2 J: erase whole display.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 3 J: erase whole display including scroll-back</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">buffer (since Linux 3.0).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">K</td>
+<td style="text-align: left;">EL</td>
+<td style="text-align: left;">Erase line (default: from cursor to end of line).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 1 K: erase from start of line to cursor.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 2 K: erase whole line.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">L</td>
+<td style="text-align: left;">IL</td>
+<td style="text-align: left;">Insert the indicated # of blank lines.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">M</td>
+<td style="text-align: left;">DL</td>
+<td style="text-align: left;">Delete the indicated # of lines.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P</td>
+<td style="text-align: left;">DCH</td>
+<td style="text-align: left;">Delete the indicated # of characters on current line.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">X</td>
+<td style="text-align: left;">ECH</td>
+<td style="text-align: left;">Erase the indicated # of characters on current line.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">a</td>
+<td style="text-align: left;">HPR</td>
+<td style="text-align: left;">Move cursor right the indicated # of columns.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">c</td>
+<td style="text-align: left;">DA</td>
+<td style="text-align: left;">Answer ESC [ ? 6 c: "I am a VT102".</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d</td>
+<td style="text-align: left;">VPA</td>
+<td style="text-align: left;">Move cursor to the indicated row, current column.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">e</td>
+<td style="text-align: left;">VPR</td>
+<td style="text-align: left;">Move cursor down the indicated # of rows.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">f</td>
+<td style="text-align: left;">HVP</td>
+<td style="text-align: left;">Move cursor to the indicated row, column.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">g</td>
+<td style="text-align: left;">TBC</td>
+<td style="text-align: left;">Without parameter: clear tab stop at current position.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 3 g: delete all tab stops.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">h</td>
+<td style="text-align: left;">SM</td>
+<td style="text-align: left;">Set Mode (see below).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">l</td>
+<td style="text-align: left;">RM</td>
+<td style="text-align: left;">Reset Mode (see below).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">m</td>
+<td style="text-align: left;">SGR</td>
+<td style="text-align: left;">Set attributes (see below).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">n</td>
+<td style="text-align: left;">DSR</td>
+<td style="text-align: left;">Status report (see below).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">q</td>
+<td style="text-align: left;">DECLL</td>
+<td style="text-align: left;">Set keyboard LEDs.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 0 q: clear all LEDs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 1 q: set Scroll Lock LED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 2 q: set Num Lock LED</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ESC [ 3 q: set Caps Lock LED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">DECSTBM</td>
+<td style="text-align: left;">Set scrolling region; parameters are top and bottom row.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">s</td>
+<td style="text-align: left;">?</td>
+<td style="text-align: left;">Save cursor location.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">u</td>
+<td style="text-align: left;">?</td>
+<td style="text-align: left;">Restore cursor location.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">`</td>
+<td style="text-align: left;">HPA</td>
+<td style="text-align: left;">Move cursor to indicated column in current row.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ECMA-48 Set Graphics Rendition</strong></p>
+<p>The ECMA-48 SGR sequence ESC [ <code>parameters</code> m sets display attributes. Several attributes can be set in the same sequence, separated by semicolons. An empty parameter (between semicolons or string initiator or terminator) is interpreted as a zero.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">param</td>
+<td style="text-align: left;">result</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">reset all attributes to their defaults</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">set bold</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">set half-bright (simulated with color on a color display)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">set underscore (simulated with color on a color display) (the colors used to simulate dim or underline are set using ESC ] ...)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">set blink</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">set reverse video</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">reset selected mapping, display control flag, and toggle meta flag (ECMA-48 says "primary font").</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">select null mapping, set display control flag, reset toggle meta flag (ECMA-48 says "first alternate font").</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">select null mapping, set display control flag, set toggle meta flag (ECMA-48 says "second alternate font"). The toggle meta flag causes the high bit of a byte to be toggled before the mapping table translation is done.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">set underline; before Linux 4.17, this value set normal intensity (as is done in many other terminals)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">22</td>
+<td style="text-align: left;">set normal intensity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">underline off</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25</td>
+<td style="text-align: left;">blink off</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">reverse video off</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30</td>
+<td style="text-align: left;">set black foreground</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">31</td>
+<td style="text-align: left;">set red foreground</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">32</td>
+<td style="text-align: left;">set green foreground</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">33</td>
+<td style="text-align: left;">set brown foreground</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">34</td>
+<td style="text-align: left;">set blue foreground</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">35</td>
+<td style="text-align: left;">set magenta foreground</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">set cyan foreground</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">set white foreground</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">38</td>
+<td style="text-align: left;">256/24-bit foreground color follows, shoehorned into 16 basic colors (before Linux 3.16: set underscore on, set default foreground color)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">39</td>
+<td style="text-align: left;">set default foreground color (before Linux 3.16: set underscore off, set default foreground color)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">set black background</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">41</td>
+<td style="text-align: left;">set red background</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">42</td>
+<td style="text-align: left;">set green background</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">43</td>
+<td style="text-align: left;">set brown background</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">44</td>
+<td style="text-align: left;">set blue background</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45</td>
+<td style="text-align: left;">set magenta background</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">46</td>
+<td style="text-align: left;">set cyan background</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">47</td>
+<td style="text-align: left;">set white background</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">48</td>
+<td style="text-align: left;">256/24-bit background color follows, shoehorned into 8 basic colors</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">49</td>
+<td style="text-align: left;">set default background color</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">90..97</td>
+<td style="text-align: left;">set foreground to bright versions of 30..37</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">100.107</td>
+<td style="text-align: left;">set background, same as 40..47 (bright not supported)</td>
+</tr>
+</tbody>
+</table>
+<p>Commands 38 and 48 require further arguments:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">;5;x</td>
+<td style="text-align: left;">256 color: values 0..15 are IBGR (black, red, green, ... white), 16..231 a 6x6x6 color cube, 232..255 a grayscale ramp</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">;2;r;g;b</td>
+<td style="text-align: left;">24-bit color, r/g/b components are in the range 0..255</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ECMA-48 Mode Switches</strong></p>
+<dl>
+<dt>ESC [ 3 h</dt>
+<dd><p>DECCRM (default off): Display control chars.</p>
+</dd>
+<dt>ESC [ 4 h</dt>
+<dd><p>DECIM (default off): Set insert mode.</p>
+</dd>
+<dt>ESC [ 20 h</dt>
+<dd><p>LF/NL (default off): Automatically follow echo of LF, VT or FF with CR. <strong>ECMA-48 Status Report Commands</strong> ESC [ 5 n Device status report (DSR): Answer is ESC [ 0 n (Terminal OK).</p>
+</dd>
+<dt>ESC [ 6 n</dt>
+<dd><p>Cursor position report (CPR): Answer is ESC [ <code>y</code> ; <code>x</code> R, where <code>x,y</code> is the cursor location. <strong>DEC Private Mode (DECSET/DECRST) sequences</strong></p>
+</dd>
+</dl>
+<p>We list the Set Mode sequences; the Reset Mode sequences are obtained by replacing the final 'h' by 'l'.</p>
+<dl>
+<dt>ESC [ ? 1 h</dt>
+<dd><p>DECCKM (default off): When set, the cursor keys send an ESC O prefix, rather than ESC [.</p>
+</dd>
+<dt>ESC [ ? 3 h</dt>
+<dd><p>DECCOLM (default off = 80 columns): 80/132 col mode switch. The driver sources note that this alone does not suffice; some user-mode utility such as <a href='/8/resizecons'>resizecons</a>(8) has to change the hardware registers on the console video card.</p>
+</dd>
+<dt>ESC [ ? 5 h</dt>
+<dd><p>DECSCNM (default off): Set reverse-video mode.</p>
+</dd>
+<dt>ESC [ ? 6 h</dt>
+<dd><p>DECOM (default off): When set, cursor addressing is relative to the upper left corner of the scrolling region.</p>
+</dd>
+<dt>ESC [ ? 7 h</dt>
+<dd><p>DECAWM (default on): Set autowrap on. In this mode, a graphic character emitted after column 80 (or column 132 of DECCOLM is on) forces a wrap to the beginning of the following line first.</p>
+</dd>
+<dt>ESC [ ? 8 h</dt>
+<dd><p>DECARM (default on): Set keyboard autorepeat on.</p>
+</dd>
+<dt>ESC [ ? 9 h</dt>
+<dd><p>X10 Mouse Reporting (default off): Set reporting mode to 1 (or reset to 0)—see below.</p>
+</dd>
+<dt>ESC [ ? 25 h</dt>
+<dd><p>DECTECM (default on): Make cursor visible.</p>
+</dd>
+<dt>ESC [ ? 1000 h</dt>
+<dd><p>X11 Mouse Reporting (default off): Set reporting mode to 2 (or reset to 0)—see below. <strong>Linux Console Private CSI Sequences</strong></p>
+</dd>
+</dl>
+<p>They are native to the Linux console driver. Colors are in SGR parameters: 0 = black, 1 = red, 2 = green, 3 = brown, 4 = blue, 5 = magenta, 6 = cyan, 7 = white; 8–15 = bright versions of 0–7.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 1 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set color <code>n</code> as the underline color.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC [ 2 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set color <code>n</code> as the dim color.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 8 ]</td>
+<td style="text-align: left;">Make the current color pair the default attributes.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC [ 9 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set screen blank timeout to <code>n</code> minutes.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 10 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set bell frequency in Hz.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC [ 11 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set bell duration in msec.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 12 ; <code>n</code> ]</td>
+<td style="text-align: left;">Bring specified console to the front.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC [ 13 ]</td>
+<td style="text-align: left;">Unblank the screen.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 14 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set the VESA powerdown interval in minutes.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC [ 15 ]</td>
+<td style="text-align: left;">Bring the previous console to the front (since Linux 2.6.0).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC [ 16 ; <code>n</code> ]</td>
+<td style="text-align: left;">Set the cursor blink interval in milliseconds (since Linux 4.2).</td>
+</tr>
+</tbody>
+</table>
+<h2>Character sets</h2>
+<p>The kernel knows about 4 translations of bytes into console-screen symbols. The four tables are: a) Latin1 -&gt; PC, b) VT100 graphics -&gt; PC, c) PC -&gt; PC, d) user-defined.</p>
+<p>There are two character sets, called G0 and G1, and one of them is the current character set. (Initially G0.) Typing <strong>^N</strong> causes G1 to become current, <strong>^O</strong> causes G0 to become current.</p>
+<p>These variables G0 and G1 point at a translation table, and can be changed by the user. Initially they point at tables a) and b), respectively. The sequences ESC ( B and ESC ( 0 and ESC ( U and ESC ( K cause G0 to point at translation table a), b), c) and d), respectively. The sequences ESC ) B and ESC ) 0 and ESC ) U and ESC ) K cause G1 to point at translation table a), b), c) and d), respectively.</p>
+<p>The sequence ESC c causes a terminal reset, which is what you want if the screen is all garbled. The oft-advised "echo ^V^O" will make only G0 current, but there is no guarantee that G0 points at table a). In some distributions there is a program <a href='/1/reset'>reset</a>(1) that just does "echo ^[c". If your terminfo entry for the console is correct (and has an entry rs1=\Ec), then "tput reset" will also work.</p>
+<p>The user-defined mapping table can be set using <a href='/8/mapscrn'>mapscrn</a>(8). The result of the mapping is that if a symbol c is printed, the symbol s = map[c] is sent to the video memory. The bitmap that corresponds to s is found in the character ROM, and can be changed using <a href='/8/setfont'>setfont</a>(8).</p>
+<h2>Mouse tracking</h2>
+<p>The mouse tracking facility is intended to return <a href='/1/xterm'>xterm</a>(1)-compatible mouse status reports. Because the console driver has no way to know the device or type of the mouse, these reports are returned in the console input stream only when the virtual terminal driver receives a mouse update ioctl. These ioctls must be generated by a mouse-aware user-mode application such as the <a href='/8/gpm'>gpm</a>(8) daemon.</p>
+<p>The mouse tracking escape sequences generated by <a href='/1/xterm'>xterm</a>(1) encode numeric parameters in a single character as <code>value</code>+040. For example, '!' is 1. The screen coordinate system is 1-based.</p>
+<p>The X10 compatibility mode sends an escape sequence on button press encoding the location and the mouse button pressed. It is enabled by sending ESC [ ? 9 h and disabled with ESC [ ? 9 l. On button press, <a href='/1/xterm'>xterm</a>(1) sends ESC [ M <code>bxy</code> (6 characters). Here <code>b</code> is button-1, and <code>x</code> and <code>y</code> are the x and y coordinates of the mouse when the button was pressed. This is the same code the kernel also produces.</p>
+<p>Normal tracking mode (not implemented in Linux 2.0.24) sends an escape sequence on both button press and release. Modifier information is also sent. It is enabled by sending ESC [ ? 1000 h and disabled with ESC [ ? 1000 l. On button press or release, <a href='/1/xterm'>xterm</a>(1) sends ESC [ M <code>bxy</code>. The low two bits of <code>b</code> encode button information: 0=MB1 pressed, 1=MB2 pressed, 2=MB3 pressed, 3=release. The upper bits encode what modifiers were down when the button was pressed and are added together: 4=Shift, 8=Meta, 16=Control. Again <code>x</code> and <code>y</code> are the x and y coordinates of the mouse event. The upper left corner is (1,1).</p>
+<h2>Comparisons with other terminals</h2>
+<p>Many different terminal types are described, like the Linux console, as being "VT100-compatible". Here we discuss differences between the Linux console and the two most important others, the DEC VT102 and <a href='/1/xterm'>xterm</a>(1). <strong>Control-character handling</strong></p>
+<p>The VT102 also recognized the following control characters:</p>
+<p>NUL (0x00) was ignored;</p>
+<p>ENQ (0x05) triggered an answerback message;</p>
+<p>DC1 (0x11, <strong>^Q</strong>, XON) resumed transmission;</p>
+<p>DC3 (0x13, <strong>^S</strong>, XOFF) caused VT100 to ignore (and stop transmitting) all codes except XOFF and XON.</p>
+<p>VT100-like DC1/DC3 processing may be enabled by the terminal driver.</p>
+<p>The <a href='/1/xterm'>xterm</a>(1) program (in VT100 mode) recognizes the control characters BEL, BS, HT, LF, VT, FF, CR, SO, SI, ESC. <strong>Escape sequences</strong></p>
+<p>VT100 console sequences not implemented on the Linux console:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC N</td>
+<td style="text-align: left;">SS2</td>
+<td style="text-align: left;">Single shift 2. (Select G2 character set for the next</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">character only.)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC O</td>
+<td style="text-align: left;">SS3</td>
+<td style="text-align: left;">Single shift 3. (Select G3 character set for the next</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">character only.)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC P</td>
+<td style="text-align: left;">DCS</td>
+<td style="text-align: left;">Device control string (ended by ESC \)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC X</td>
+<td style="text-align: left;">SOS</td>
+<td style="text-align: left;">Start of string.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ^</td>
+<td style="text-align: left;">PM</td>
+<td style="text-align: left;">Privacy message (ended by ESC \)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC \</td>
+<td style="text-align: left;">ST</td>
+<td style="text-align: left;">String terminator</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC * ...</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Designate G2 character set</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC + ...</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Designate G3 character set</td>
+</tr>
+</tbody>
+</table>
+<p>The program <a href='/1/xterm'>xterm</a>(1) (in VT100 mode) recognizes ESC c, ESC # 8, ESC &gt;, ESC =, ESC D, ESC E, ESC H, ESC M, ESC N, ESC O, ESC P ... ESC \, ESC Z (it answers ESC [ ? 1 ; 2 c, "I am a VT100 with advanced video option") and ESC ^ ... ESC \ with the same meanings as indicated above. It accepts ESC (, ESC ), ESC *, ESC + followed by 0, A, B for the DEC special character and line drawing set, UK, and US-ASCII, respectively.</p>
+<p>The user can configure <a href='/1/xterm'>xterm</a>(1) to respond to VT220-specific control sequences, and it will identify itself as a VT52, VT100, and up depending on the way it is configured and initialized.</p>
+<p>It accepts ESC ] (OSC) for the setting of certain resources. In addition to the ECMA-48 string terminator (ST), <a href='/1/xterm'>xterm</a>(1) accepts a BEL to terminate an OSC string. These are a few of the OSC control sequences recognized by <a href='/1/xterm'>xterm</a>(1):</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC ] 0 ; <code>txt</code> ST</td>
+<td style="text-align: left;">Set icon name and window title to <code>txt</code>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ] 1 ; <code>txt</code> ST</td>
+<td style="text-align: left;">Set icon name to <code>txt</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ] 2 ; <code>txt</code> ST</td>
+<td style="text-align: left;">Set window title to <code>txt</code>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ] 4 ; <code>num</code>; <code>txt</code> ST</td>
+<td style="text-align: left;">Set ANSI color <code>num</code> to <code>txt</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC ] 10 ; <code>txt</code> ST</td>
+<td style="text-align: left;">Set dynamic text color to <code>txt</code>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ] 4 6 ; <code>name</code> ST</td>
+<td style="text-align: left;">Change log file to <code>name</code> (normally disabled</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">by a compile-time option)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ] 5 0 ; <code>fn</code> ST</td>
+<td style="text-align: left;">Set font to <code>fn</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>It recognizes the following with slightly modified meaning (saving more state, behaving closer to VT100/VT220):</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC 7 DECSC</td>
+<td style="text-align: left;">Save cursor</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC 8 DECRC</td>
+<td style="text-align: left;">Restore cursor</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>It also recognizes</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC F</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Cursor to lower left corner of screen (if enabled by</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href='/1/xterm'>xterm</a>(1)'s <strong>hpLowerleftBugCompat</strong> resource)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC l</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Memory lock (per HP terminals).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Locks memory above the cursor.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC m</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Memory unlock (per HP terminals).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC n</td>
+<td style="text-align: left;">LS2</td>
+<td style="text-align: left;">Invoke the G2 character set.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC o</td>
+<td style="text-align: left;">LS3</td>
+<td style="text-align: left;">Invoke the G3 character set.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC |</td>
+<td style="text-align: left;">LS3R</td>
+<td style="text-align: left;">Invoke the G3 character set as GR.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Has no visible effect in xterm.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC }</td>
+<td style="text-align: left;">LS2R</td>
+<td style="text-align: left;">Invoke the G2 character set as GR.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Has no visible effect in xterm.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC ~</td>
+<td style="text-align: left;">LS1R</td>
+<td style="text-align: left;">Invoke the G1 character set as GR.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Has no visible effect in xterm.</td>
+</tr>
+</tbody>
+</table>
+<p>It also recognizes ESC % and provides a more complete UTF-8 implementation than Linux console. <strong>CSI Sequences</strong></p>
+<p>Old versions of <a href='/1/xterm'>xterm</a>(1), for example, from X11R5, interpret the blink SGR as a bold SGR. Later versions which implemented ANSI colors, for example, XFree86 3.1.2A in 1995, improved this by allowing the blink attribute to be displayed as a color. Modern versions of xterm implement blink SGR as blinking text and still allow colored text as an alternate rendering of SGRs. Stock X11R6 versions did not recognize the color-setting SGRs until the X11R6.8 release, which incorporated XFree86 xterm. All ECMA-48 CSI sequences recognized by Linux are also recognized by <code>xterm</code>, however <a href='/1/xterm'>xterm</a>(1) implements several ECMA-48 and DEC control sequences not recognized by Linux.</p>
+<p>The <a href='/1/xterm'>xterm</a>(1) program recognizes all of the DEC Private Mode sequences listed above, but none of the Linux private-mode sequences. For discussion of <a href='/1/xterm'>xterm</a>(1)'s own private-mode sequences, refer to the <code>Xterm Control Sequences</code> document by Edward Moy, Stephen Gildea, and Thomas E. Dickey available with the X distribution. That document, though terse, is much longer than this manual page. For a chronological overview,</p>
+<blockquote>
+<p><a href="<a href="http://invisible-island.net/xterm/xterm.log.html">http://invisible-island.net/xterm/xterm.log.html</a>"></a></p>
+</blockquote>
+<p>details changes to xterm.</p>
+<p>The <code>vttest</code> program</p>
+<blockquote>
+<p><a href="<a href="http://invisible-island.net/vttest/">http://invisible-island.net/vttest/</a>"></a></p>
+</blockquote>
+<p>demonstrates many of these control sequences. The <a href='/1/xterm'>xterm</a>(1) source distribution also contains sample scripts which exercise other features.</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>ESC 8 (DECRC) is not able to restore the character set changed with ESC %.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In 2.0.23, CSI is broken, and NUL is not ignored inside escape sequences.</p>
+<p>Some older kernel versions (after 2.0) interpret 8-bit control sequences. These "C1 controls" use codes between 128 and 159 to replace ESC [, ESC ] and similar two-byte control sequence initiators. There are fragments of that in modern kernels (either overlooked or broken by changes to support UTF-8), but the implementation is incomplete and should be regarded as unreliable.</p>
+<p>Linux "private mode" sequences do not follow the rules in ECMA-48 for private mode control sequences. In particular, those ending with ] do not use a standard terminating character. The OSC (set palette) sequence is a greater problem, since <a href='/1/xterm'>xterm</a>(1) may interpret this as a control sequence which requires a string terminator (ST). Unlike the <a href='/1/setterm'>setterm</a>(1) sequences which will be ignored (since they are invalid control sequences), the palette sequence will make <a href='/1/xterm'>xterm</a>(1) appear to hang (though pressing the return-key will fix that). To accommodate applications which have been hardcoded to use Linux control sequences, set the <a href='/1/xterm'>xterm</a>(1) resource <strong>brokenLinuxOSC</strong> to true.</p>
+<p>An older version of this document implied that Linux recognizes the ECMA-48 control sequence for invisible text. It is ignored.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/ioctl_console'>ioctl_console</a>(2), <a href='/7/charsets'>charsets</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

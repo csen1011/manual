@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;random&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>random</a>, urandom - kernel random number source devices</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p>#include &lt;linux/random.h&gt;</p>
+<p><strong>int ioctl(</strong><code>fd</code><strong>, RND</strong><code>request</code><strong>, </strong><code>param</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The character special files <code>/dev/random</code> and <code>/dev/urandom</code> (present since Linux 1.3.30) provide an interface to the kernel's random number generator. The file <code>/dev/random</code> has major device number 1 and minor device number 8. The file <code>/dev/urandom</code> has major device number 1 and minor device number 9.</p>
+<p>The random number generator gathers environmental noise from device drivers and other sources into an entropy pool. The generator also keeps an estimate of the number of bits of noise in the entropy pool. From this entropy pool, random numbers are created.</p>
+<p>Linux 3.17 and later provides the simpler and safer <a href='/2/getrandom'>getrandom</a>(2) interface which requires no special files; see the <a href='/2/getrandom'>getrandom</a>(2) manual page for details.</p>
+<p>When read, the <code>/dev/urandom</code> device returns random bytes using a pseudorandom number generator seeded from the entropy pool. Reads from this device do not block (i.e., the CPU is not yielded), but can incur an appreciable delay when requesting large amounts of data.</p>
+<p>When read during early boot time, <code>/dev/urandom</code> may return data prior to the entropy pool being initialized. If this is of concern in your application, use <a href='/2/getrandom'>getrandom</a>(2) or <code>/dev/random</code> instead.</p>
+<p>The <code>/dev/random</code> device is a legacy interface which dates back to a time where the cryptographic primitives used in the implementation of <code>/dev/urandom</code> were not widely trusted. It will return random bytes only within the estimated number of bits of fresh noise in the entropy pool, blocking if necessary. <code>/dev/random</code> is suitable for applications that need high quality randomness, and can afford indeterminate delays.</p>
+<p>When the entropy pool is empty, reads from <code>/dev/random</code> will block until additional environmental noise is gathered. If <a href='/2/open'>open</a>(2) is called for <code>/dev/random</code> with the <strong>O_NONBLOCK</strong> flag, a subsequent <a href='/2/read'>read</a>(2) will not block if the requested number of bytes is not available. Instead, the available bytes are returned. If no byte is available, <a href='/2/read'>read</a>(2) will return -1 and <code>errno</code> will be set to <strong>EAGAIN</strong>.</p>
+<p>The <strong>O_NONBLOCK</strong> flag has no effect when opening <code>/dev/urandom</code>. When calling <a href='/2/read'>read</a>(2) for the device <code>/dev/urandom</code>, reads of up to 256 bytes will return as many bytes as are requested and will not be interrupted by a signal handler. Reads with a buffer over this limit may return less than the requested number of bytes or fail with the error <strong>EINTR</strong>, if interrupted by a signal handler.</p>
+<p>Since Linux 3.16, a <a href='/2/read'>read</a>(2) from <code>/dev/urandom</code> will return at most 32 MB. A <a href='/2/read'>read</a>(2) from <code>/dev/random</code> will return at most 512 bytes (340 bytes on Linux kernels before version 2.6.12).</p>
+<p>Writing to <code>/dev/random</code> or <code>/dev/urandom</code> will update the entropy pool with the data written, but this will not result in a higher entropy count. This means that it will impact the contents read from both files, but it will not make reads from <code>/dev/random</code> faster.</p>
+<h2>Usage</h2>
+<p>The <code>/dev/random</code> interface is considered a legacy interface, and <code>/dev/urandom</code> is preferred and sufficient in all use cases, with the exception of applications which require randomness during early boot time; for these applications, <a href='/2/getrandom'>getrandom</a>(2) must be used instead, because it will block until the entropy pool is initialized.</p>
+<p>If a seed file is saved across reboots as recommended below, the output is cryptographically secure against attackers without local root access as soon as it is reloaded in the boot sequence, and perfectly adequate for network encryption session keys. (All major Linux distributions have saved the seed file across reboots since 2000 at least.) Since reads from <code>/dev/random</code> may block, users will usually want to open it in nonblocking mode (or perform a read with timeout), and provide some sort of user notification if the desired entropy is not immediately available. If your system does not have <code>/dev/random</code> and <code>/dev/urandom</code> created already, they can be created with the following commands:</p>
+<pre><code>mknod -m 666 /dev/random c 1 8
+mknod -m 666 /dev/urandom c 1 9
+chown root:root /dev/random /dev/urandom</code></pre>
+<p>When a Linux system starts up without much operator interaction, the entropy pool may be in a fairly predictable state. This reduces the actual amount of noise in the entropy pool below the estimate. In order to counteract this effect, it helps to carry entropy pool information across shut-downs and start-ups. To do this, add the lines to an appropriate script which is run during the Linux system start-up sequence:</p>
+<pre><code>echo "Initializing random number generator..."
+random_seed=/var/run/random-seed
+# Carry a random seed from start-up to start-up
+# Load and then save the whole entropy pool
+if [ -f $random_seed ]; then
+    cat $random_seed &gt;/dev/urandom
+else
+    touch $random_seed
+fi
+chmod 600 $random_seed
+poolfile=/proc/sys/kernel/random/poolsize
+[ -r $poolfile ] &amp;&amp; bits=$(cat $poolfile) || bits=4096
+bytes=$(expr $bits / 8)
+dd if=/dev/urandom of=$random_seed count=1 bs=$bytes</code></pre>
+<p>Also, add the following lines in an appropriate script which is run during the Linux system shutdown:</p>
+<pre><code># Carry a random seed from shut-down to start-up
+# Save the whole entropy pool
+echo "Saving random seed..."
+random_seed=/var/run/random-seed
+touch $random_seed
+chmod 600 $random_seed
+poolfile=/proc/sys/kernel/random/poolsize
+[ -r $poolfile ] &amp;&amp; bits=$(cat $poolfile) || bits=4096
+bytes=$(expr $bits / 8)
+dd if=/dev/urandom of=$random_seed count=1 bs=$bytes</code></pre>
+<p>In the above examples, we assume Linux 2.6.0 or later, where <code>/proc/sys/kernel/random/poolsize</code> returns the size of the entropy pool in bits (see below). The files in the directory <code>/proc/sys/kernel/random</code> (present since 2.3.16) provide additional information about the <code>/dev/random</code> device:</p>
+<dl>
+<dt><code>entropy_avail</code></dt>
+<dd><p>This read-only file gives the available entropy, in bits. This will be a number in the range 0 to 4096.</p>
+</dd>
+<dt><code>poolsize</code></dt>
+<dd><p>This file gives the size of the entropy pool. The semantics of this file vary across kernel versions:</p>
+<dl>
+<dt>Linux 2.4:</dt>
+<dd><p>This file gives the size of the entropy pool in <code>bytes</code>. Normally, this file will have the value 512, but it is writable, and can be changed to any value for which an algorithm is available. The choices are 32, 64, 128, 256, 512, 1024, or 2048.</p>
+</dd>
+<dt>Linux 2.6 and later:</dt>
+<dd><p>This file is read-only, and gives the size of the entropy pool in <code>bits</code>. It contains the value 4096.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>read_wakeup_threshold</code></dt>
+<dd><p>This file contains the number of bits of entropy required for waking up processes that sleep waiting for entropy from <code>/dev/random</code>. The default is 64.</p>
+</dd>
+<dt><code>write_wakeup_threshold</code></dt>
+<dd><p>This file contains the number of bits of entropy below which we wake up processes that do a <a href='/2/select'>select</a>(2) or <a href='/2/poll'>poll</a>(2) for write access to <code>/dev/random</code>. These values can be changed by writing to the files.</p>
+</dd>
+<dt><code>uuid</code> and <code>boot_id</code></dt>
+<dd><p>These read-only files contain random strings like 6fd5a44b-35f4-4ad4-a9b9-6b9be13e1fe9. The former is generated afresh for each read, the latter was generated once. The following <a href='/2/ioctl'>ioctl</a>(2) requests are defined on file descriptors connected to either <code>/dev/random</code> or <code>/dev/urandom</code>. All requests performed will interact with the input entropy pool impacting both <code>/dev/random</code> and <code>/dev/urandom</code>. The <strong>CAP_SYS_ADMIN</strong> capability is required for all requests except <strong>RNDGETENTCNT</strong>.</p>
+</dd>
+<dt><strong>RNDGETENTCNT</strong></dt>
+<dd><p>Retrieve the entropy count of the input pool, the contents will be the same as the <code>entropy_avail</code> file under proc. The result will be stored in the int pointed to by the argument.</p>
+</dd>
+<dt><strong>RNDADDTOENTCNT</strong></dt>
+<dd><p>Increment or decrement the entropy count of the input pool by the value pointed to by the argument.</p>
+</dd>
+<dt><strong>RNDGETPOOL</strong></dt>
+<dd><p>Removed in Linux 2.6.9.</p>
+</dd>
+<dt><strong>RNDADDENTROPY</strong></dt>
+<dd><p>Add some additional entropy to the input pool, incrementing the entropy count. This differs from writing to <code>/dev/random</code> or <code>/dev/urandom</code>, which only adds some data but does not increment the entropy count. The following structure is used:</p>
+<pre><code>struct rand_pool_info {
+    int    entropy_count;
+    int    buf_size;
+    __u32  buf[0];
+};</code></pre>
+<p>Here <code>entropy_count</code> is the value added to (or subtracted from) the entropy count, and <code>buf</code> is the buffer of size <code>buf_size</code> which gets added to the entropy pool.</p>
+</dd>
+<dt><strong>RNDZAPENTCNT</strong>, <strong>RNDCLEARPOOL</strong></dt>
+<dd><p>Zero the entropy count of all pools and add some system data (such as wall clock) to the pools.</p>
+</dd>
+</dl>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/dev/random</code><br/>
+<code>/dev/urandom</code></p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For an overview and comparison of the various interfaces that can be used to obtain randomness, see <a href='/7/random'>random</a>(7).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>During early boot time, reads from <code>/dev/urandom</code> may return data prior to the entropy pool being initialized.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/mknod'>mknod</a>(1), <a href='/2/getrandom'>getrandom</a>(2), <a href='/7/random'>random</a>(7)</p>
+<p>RFC 1750, "Randomness Recommendations for Security"</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

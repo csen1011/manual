@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><a data-bs-content='This is the man page for &lt;code&gt;msgrcv&lt;/code&gt; and 1 related function.' data-bs-toggle='popover' tabindex='0'>msgrcv</a>, msgsnd - System V message queue operations</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/types.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/ipc.h&gt;</a>
+<a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sys/msg.h&gt;</a>
+
+int msgsnd(int msqid, const void *msgp, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> msgsz, int msgflg);
+
+ssize_t msgrcv(int msqid, void *msgp, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> msgsz, long msgtyp,
+ int msgflg);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='msgsnd'>msgsnd</a>() and <a href='msgrcv'>msgrcv</a>() system calls are used to send messages to, and receive messages from, a System V message queue. The calling process must have write permission on the message queue in order to send a message, and read permission to receive a message.</p>
+<p>The <code>msgp</code> argument is a pointer to a caller-defined structure of the following general form:</p>
+<pre><code>struct msgbuf {
+    long mtype;       /* message type, must be &gt; 0 */
+    char mtext[1];    /* message data */
+};</code></pre>
+<p>The <code>mtext</code> field is an array (or other structure) whose size is specified by <code>msgsz</code>, a nonnegative integer value. Messages of zero length (i.e., no <code>mtext</code> field) are permitted. The <code>mtype</code> field must have a strictly positive integer value. This value can be used by the receiving process for message selection (see the description of <a href='msgrcv'>msgrcv</a>() below).</p>
+<h2>msgsnd()</h2>
+<p>The <a href='msgsnd'>msgsnd</a>() system call appends a copy of the message pointed to by <code>msgp</code> to the message queue whose identifier is specified by <code>msqid</code>.</p>
+<p>If sufficient space is available in the queue, <a href='msgsnd'>msgsnd</a>() succeeds immediately. The queue capacity is governed by the <code>msg_qbytes</code> field in the associated data structure for the message queue. During queue creation this field is initialized to <strong>MSGMNB</strong> bytes, but this limit can be modified using <a href='/2/msgctl'>msgctl</a>(2). A message queue is considered to be full if either of the following conditions is true:</p>
+<ul>
+<li><p>Adding a new message to the queue would cause the total number of bytes in the queue to exceed the queue's maximum size (the <code>msg_qbytes</code> field).</p></li>
+<li><p>Adding another message to the queue would cause the total number of messages in the queue to exceed the queue's maximum size (the <code>msg_qbytes</code> field). This check is necessary to prevent an unlimited number of zero-length messages being placed on the queue. Although such messages contain no data, they nevertheless consume (locked) kernel memory.</p></li>
+</ul>
+<p>If insufficient space is available in the queue, then the default behavior of <a href='msgsnd'>msgsnd</a>() is to block until space becomes available. If <strong>IPC_NOWAIT</strong> is specified in <code>msgflg</code>, then the call instead fails with the error <strong>EAGAIN</strong>.</p>
+<p>A blocked <a href='msgsnd'>msgsnd</a>() call may also fail if:</p>
+<ul>
+<li><p>the queue is removed, in which case the system call fails with <code>errno</code> set to <strong>EIDRM</strong>; or</p></li>
+<li><p>a signal is caught, in which case the system call fails with <code>errno</code> set to <strong>EINTR</strong>;<strong>see</strong> <a href='/7/signal'>signal</a>(7). (<a href='msgsnd'>msgsnd</a>() is never automatically restarted after being interrupted by a signal handler, regardless of the setting of the <strong>SA_RESTART</strong> flag when establishing a signal handler.)</p></li>
+</ul>
+<p>Upon successful completion the message queue data structure is updated as follows:</p>
+<ul>
+<li><p><code>msg_lspid</code> is set to the process ID of the calling process.</p></li>
+<li><p><code>msg_qnum</code> is incremented by 1.</p></li>
+<li><p><code>msg_stime</code> is set to the current time.</p></li>
+</ul>
+<h2>msgrcv()</h2>
+<p>The <a href='msgrcv'>msgrcv</a>() system call removes a message from the queue specified by <code>msqid</code> and places it in the buffer pointed to by <code>msgp</code>.</p>
+<p>The argument <code>msgsz</code> specifies the maximum size in bytes for the member <code>mtext</code> of the structure pointed to by the <code>msgp</code> argument. If the message text has length greater than <code>msgsz</code>, then the behavior depends on whether <strong>MSG_NOERROR</strong> is specified in <code>msgflg</code>. If <strong>MSG_NOERROR</strong> is specified, then the message text will be truncated (and the truncated part will be lost); if <strong>MSG_NOERROR</strong> is not specified, then the message isn't removed from the queue and the system call fails returning -1 with <code>errno</code> set to <strong>E2BIG</strong>.</p>
+<p>Unless <strong>MSG_COPY</strong> is specified in <code>msgflg</code> (see below), the <code>msgtyp</code> argument specifies the type of message requested, as follows:</p>
+<ul>
+<li><p>If <code>msgtyp</code> is 0, then the first message in the queue is read.</p></li>
+<li><p>If <code>msgtyp</code> is greater than 0, then the first message in the queue of type <code>msgtyp</code> is read, unless <strong>MSG_EXCEPT</strong> was specified in <code>msgflg</code>, in which case the first message in the queue of type not equal to <code>msgtyp</code> will be read.</p></li>
+<li><p>If <code>msgtyp</code> is less than 0, then the first message in the queue with the lowest type less than or equal to the absolute value of <code>msgtyp</code> will be read.</p></li>
+</ul>
+<p>The <code>msgflg</code> argument is a bit mask constructed by ORing together zero or more of the following flags:</p>
+<dl>
+<dt><strong>IPC_NOWAIT</strong></dt>
+<dd><p>Return immediately if no message of the requested type is in the queue. The system call fails with <code>errno</code> set to <strong>ENOMSG</strong>.</p>
+</dd>
+<dt><strong>MSG_COPY</strong> (since Linux 3.8)</dt>
+<dd><p>Nondestructively fetch a copy of the message at the ordinal position in the queue specified by <code>msgtyp</code> (messages are considered to be numbered starting at 0).</p>
+<p>This flag must be specified in conjunction with <strong>IPC_NOWAIT</strong>, with the result that, if there is no message available at the given position, the call fails immediately with the error <strong>ENOMSG</strong>. Because they alter the meaning of <code>msgtyp</code> in orthogonal ways, <strong>MSG_COPY</strong> and <strong>MSG_EXCEPT</strong> may not both be specified in <code>msgflg</code>.</p>
+<p>The <strong>MSG_COPY</strong> flag was added for the implementation of the kernel checkpoint-restore facility and is available only if the kernel was built with the <strong>CONFIG_CHECKPOINT_RESTORE</strong> option.</p>
+</dd>
+<dt><strong>MSG_EXCEPT</strong></dt>
+<dd><p>Used with <code>msgtyp</code> greater than 0 to read the first message in the queue with message type that differs from <code>msgtyp</code>.</p>
+</dd>
+<dt><strong>MSG_NOERROR</strong></dt>
+<dd><p>To truncate the message text if longer than <code>msgsz</code> bytes.</p>
+</dd>
+</dl>
+<p>If no message of the requested type is available and <strong>IPC_NOWAIT</strong> isn't specified in <code>msgflg</code>, the calling process is blocked until one of the following conditions occurs:</p>
+<ul>
+<li><p>A message of the desired type is placed in the queue.</p></li>
+<li><p>The message queue is removed from the system. In this case, the system call fails with <code>errno</code> set to <strong>EIDRM</strong>.</p></li>
+<li><p>The calling process catches a signal. In this case, the system call fails with <code>errno</code> set to <strong>EINTR</strong>. (<a href='msgrcv'>msgrcv</a>() is never automatically restarted after being interrupted by a signal handler, regardless of the setting of the <strong>SA_RESTART</strong> flag when establishing a signal handler.)</p></li>
+</ul>
+<p>Upon successful completion the message queue data structure is updated as follows:</p>
+<blockquote>
+<p><code>msg_lrpid</code> is set to the process ID of the calling process.</p>
+<p><code>msg_qnum</code> is decremented by 1.</p>
+<p><code>msg_rtime</code> is set to the current time.</p>
+</blockquote>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On failure both functions return -1 with <code>errno</code> indicating the error, otherwise <a href='msgsnd'>msgsnd</a>() returns 0 and <a href='msgrcv'>msgrcv</a>() returns the number of bytes actually copied into the <code>mtext</code> array.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below demonstrates the use of <a href='msgsnd'>msgsnd</a>() and <a href='msgrcv'>msgrcv</a>().</p>
+<p>The example program is first run with the <strong>-s</strong> option to send a message and then run again with the <strong>-r</strong> option to receive a message.</p>
+<p>The following shell session shows a sample run of the program:</p>
+<pre><code>$ ./a.out -s
+sent: a message at Wed Mar  4 16:25:45 2015
+
+$ ./a.out -r
+message received: a message at Wed Mar  4 16:25:45 2015</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;time.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/msg.h&gt;
+
+struct msgbuf {
+    long mtype;
+    char mtext[80];
+};
+
+static void
+usage(<a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>prog_name, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>msg)
+{
+    if (msg != NULL)
+        fputs(msg, stderr);
+
+    fprintf(stderr, "Usage: %s [options]\n", prog_name);
+    fprintf(stderr, "Options are:\n");
+    fprintf(stderr, "-s        send message using msgsnd()\n");
+    fprintf(stderr, "-r        read message using msgrcv()\n");
+    fprintf(stderr, "-t        message type (default is 1)\n");
+    fprintf(stderr, "-k        message queue key (default is 1234)\n");
+    exit(EXIT_FAILURE);
+}
+
+static void
+send_msg(int qid, int msgtype)
+{
+    struct msgbuf msg;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a> t;
+
+    msg.mtype = msgtype;
+
+    time(&amp;t);
+    snprintf(msg.mtext, sizeof(msg.mtext), "a message at %s",
+            ctime(&amp;t));
+
+    if (msgsnd(qid, &amp;msg, sizeof(msg.mtext),
+                IPC_NOWAIT) == -1) {
+        perror("msgsnd error");
+        exit(EXIT_FAILURE);
+    }
+    printf("sent: %s\n", msg.mtext);
+}
+
+static void
+get_msg(int qid, int msgtype)
+{
+    struct msgbuf msg;
+
+    if (msgrcv(qid, &amp;msg, sizeof(msg.mtext), msgtype,
+               MSG_NOERROR | IPC_NOWAIT) == -1) {
+        if (errno != ENOMSG) {
+            perror("msgrcv");
+            exit(EXIT_FAILURE);
+        }
+        printf("No message available for msgrcv()\n");
+    } else
+        printf("message received: %s\n", msg.mtext);
+}
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    int qid, opt;
+    int mode = 0;               /* 1 = send, 2 = receive */
+    int msgtype = 1;
+    int msgkey = 1234;
+
+    while ((opt = getopt(argc, argv, "srt:k:")) != -1) {
+        switch (opt) {
+        case 's':
+            mode = 1;
+            break;
+        case 'r':
+            mode = 2;
+            break;
+        case 't':
+            msgtype = atoi(optarg);
+            if (msgtype &lt;= 0)
+                usage(argv[0], "-t option must be greater than 0\n");
+            break;
+        case 'k':
+            msgkey = atoi(optarg);
+            break;
+        default:
+            usage(argv[0], "Unrecognized option\n");
+        }
+    }
+
+    if (mode == 0)
+        usage(argv[0], "must use either -s or -r option\n");
+
+    qid = msgget(msgkey, IPC_CREAT | 0666);
+
+    if (qid == -1) {
+        perror("msgget");
+        exit(EXIT_FAILURE);
+    }
+
+    if (mode == 2)
+        get_msg(qid, msgtype);
+    else
+        send_msg(qid, msgtype);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p>When <a href='msgsnd'>msgsnd</a>() fails, <code>errno</code> will be set to one among the following values:</p>
+<dl>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The calling process does not have write permission on the message queue, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The message can't be sent due to the <code>msg_qbytes</code> limit for the queue and <strong>IPC_NOWAIT</strong> was specified in <code>msgflg</code>.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The address pointed to by <code>msgp</code> isn't accessible.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p>The message queue was removed.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>Sleeping on a full message queue condition, the process caught a signal.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>Invalid <code>msqid</code> value, or nonpositive <code>mtype</code> value, or invalid <code>msgsz</code> value (less than 0 or greater than the system value <strong>MSGMAX</strong>).</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>The system does not have enough memory to make a copy of the message pointed to by <code>msgp</code>.</p>
+</dd>
+</dl>
+<p>When <a href='msgrcv'>msgrcv</a>() fails, <code>errno</code> will be set to one among the following values:</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>The message text length is greater than <code>msgsz</code> and <strong>MSG_NOERROR</strong> isn't specified in <code>msgflg</code>.</p>
+</dd>
+<dt><strong>EACCES</strong></dt>
+<dd><p>The calling process does not have read permission on the message queue, and does not have the <strong>CAP_IPC_OWNER</strong> capability in the user namespace that governs its IPC namespace.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p>The address pointed to by <code>msgp</code> isn't accessible.</p>
+</dd>
+<dt><strong>EIDRM</strong></dt>
+<dd><p>While the process was sleeping to receive a message, the message queue was removed.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>While the process was sleeping to receive a message, the process caught a signal; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>msqid</code> was invalid, or <code>msgsz</code> was less than 0.</p>
+</dd>
+<dt><strong>EINVAL</strong> (since Linux 3.14)</dt>
+<dd><p><code>msgflg</code> specified <strong>MSG_COPY</strong>, but not <strong>IPC_NOWAIT</strong>.</p>
+</dd>
+<dt><strong>EINVAL</strong> (since Linux 3.14)</dt>
+<dd><p><code>msgflg</code> specified both <strong>MSG_COPY</strong> and <strong>MSG_EXCEPT</strong>.</p>
+</dd>
+<dt><strong>ENOMSG</strong></dt>
+<dd><p><strong>IPC_NOWAIT</strong> was specified in <code>msgflg</code> and no message of the requested type existed on the message queue.</p>
+</dd>
+<dt><strong>ENOMSG</strong></dt>
+<dd><p><strong>IPC_NOWAIT</strong> and <strong>MSG_COPY</strong> were specified in <code>msgflg</code> and the queue contains less than <code>msgtyp</code> messages.</p>
+</dd>
+<dt><strong>ENOSYS</strong> (since Linux 3.8)</dt>
+<dd><p>Both <strong>MSG_COPY</strong> and <strong>IPC_NOWAIT</strong> were specified in <code>msgflg</code>, and this kernel was configured without <strong>CONFIG_CHECKPOINT_RESTORE</strong>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008, SVr4.</p>
+<p>The <strong>MSG_EXCEPT</strong> and <strong>MSG_COPY</strong> flags are Linux-specific; their definitions can be obtained by defining the <strong>_GNU_SOURCE</strong> feature test macro.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The inclusion of <code>&lt;sys/types.h&gt;</code> and <code>&lt;sys/ipc.h&gt;</code> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.</p>
+<p>The <code>msgp</code> argument is declared as <code>struct msgbuf *</code> in glibc 2.0 and 2.1. It is declared as <code>void *</code> in glibc 2.2 and later, as required by SUSv2 and SUSv3.</p>
+<p>The following limits on message queue resources affect the <a href='msgsnd'>msgsnd</a>() call:</p>
+<dl>
+<dt><strong>MSGMAX</strong></dt>
+<dd><p>Maximum size of a message text, in bytes (default value: 8192 bytes). On Linux, this limit can be read and modified via <code>/proc/sys/kernel/msgmax</code>.</p>
+</dd>
+<dt><strong>MSGMNB</strong></dt>
+<dd><p>Maximum number of bytes that can be held in a message queue (default value: 16384 bytes). On Linux, this limit can be read and modified via <code>/proc/sys/kernel/msgmnb</code>. A privileged process (Linux: a process with the <strong>CAP_SYS_RESOURCE</strong> capability) can increase the size of a message queue beyond <strong>MSGMNB</strong> using the <a href='/2/msgctl'>msgctl</a>(2) <strong>IPC_SET</strong> operation.</p>
+</dd>
+</dl>
+<p>The implementation has no intrinsic system-wide limits on the number of message headers (<strong>MSGTQL</strong>) and the number of bytes in the message pool (<strong>MSGPOOL</strong>).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In Linux 3.13 and earlier, if <a href='msgrcv'>msgrcv</a>() was called with the <strong>MSG_COPY</strong> flag, but without <strong>IPC_NOWAIT</strong>, and the message queue contained less than <code>msgtyp</code> messages, then the call would block until the next message is written to the queue. At that point, the call would return a copy of the message, <code>regardless</code> of whether that message was at the ordinal position <code>msgtyp</code>. This bug is fixed in Linux 3.14.</p>
+<p>Specifying both <strong>MSG_COPY</strong> and <strong>MSC_EXCEPT</strong> in <code>msgflg</code> is a logical error (since these flags impose different interpretations on <code>msgtyp</code>). In Linux 3.13 and earlier, this error was not diagnosed by <a href='msgrcv'>msgrcv</a>(). This bug is fixed in Linux 3.14.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/msgctl'>msgctl</a>(2), <a href='/2/msgget'>msgget</a>(2), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/mq_overview'>mq_overview</a>(7), <a href='/7/sysvipc'>sysvipc</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

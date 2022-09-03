@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>dmesg - print or control the kernel ring buffer</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>dmesg</strong> [options]</p>
+<p><strong>dmesg</strong> <strong>--clear</strong></p>
+<p><strong>dmesg</strong> <strong>--read-clear</strong> [options]</p>
+<p><strong>dmesg</strong> <strong>--console-level</strong> <code>level</code></p>
+<p><strong>dmesg</strong> <strong>--console-on</strong></p>
+<p><strong>dmesg</strong> <strong>--console-off</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>dmesg</strong> is used to examine or control the kernel ring buffer.</p>
+<p>The default action is to display all messages from the kernel ring buffer.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The <strong>--clear</strong>, <strong>--read-clear</strong>, <strong>--console-on</strong>, <strong>--console-off</strong>, and <strong>--console-level</strong> options are mutually exclusive.</p>
+<p><strong>-C</strong>, <strong>--clear</strong></p>
+<blockquote>
+<p>Clear the ring buffer.</p>
+</blockquote>
+<p><strong>-c</strong>, <strong>--read-clear</strong></p>
+<blockquote>
+<p>Clear the ring buffer after first printing its contents.</p>
+</blockquote>
+<p><strong>-D</strong>, <strong>--console-off</strong></p>
+<blockquote>
+<p>Disable the printing of messages to the console.</p>
+</blockquote>
+<p><strong>-d</strong>, <strong>--show-delta</strong></p>
+<blockquote>
+<p>Display the timestamp and the time delta spent between messages. If used together with <strong>--notime</strong> then only the time delta without the timestamp is printed.</p>
+</blockquote>
+<p><strong>-E</strong>, <strong>--console-on</strong></p>
+<blockquote>
+<p>Enable printing messages to the console.</p>
+</blockquote>
+<p><strong>-e</strong>, <strong>--reltime</strong></p>
+<blockquote>
+<p>Display the local time and the delta in human-readable format. Be aware that conversion to the local time could be inaccurate (see <strong>-T</strong> for more details).</p>
+</blockquote>
+<p><strong>-F</strong>, <strong>--file</strong> <code>file</code></p>
+<blockquote>
+<p>Read the syslog messages from the given <code>file</code>. Note that <strong>-F</strong> does not support messages in kmsg format. The old syslog format is supported only.</p>
+</blockquote>
+<p><strong>-f</strong>, <strong>--facility</strong> <code>list</code></p>
+<blockquote>
+<p>Restrict output to the given (comma-separated) <code>list</code> of facilities. For example:</p>
+<p><strong>dmesg --facility=daemon</strong></p>
+<p>will print messages from system daemons only. For all supported facilities see the <strong>--help</strong> output.</p>
+</blockquote>
+<p><strong>-H</strong>, <strong>--human</strong></p>
+<blockquote>
+<p>Enable human-readable output. See also <strong>--color</strong>, <strong>--reltime</strong> and <strong>--nopager</strong>.</p>
+</blockquote>
+<p><strong>-k</strong>, <strong>--kernel</strong></p>
+<blockquote>
+<p>Print kernel messages.</p>
+</blockquote>
+<p><strong>-L</strong>, <strong>--color</strong>[=<code>when</code>]</p>
+<blockquote>
+<p>Colorize the output. The optional argument <code>when</code> can be <strong>auto</strong>, <strong>never</strong> or <strong>always</strong>. If the <code>when</code> argument is omitted, it defaults to <strong>auto</strong>. The colors can be disabled; for the current built-in default see the <strong>--help</strong> output. See also the <strong>COLORS</strong> section below.</p>
+</blockquote>
+<p><strong>-l</strong>, <strong>--level</strong> <code>list</code></p>
+<blockquote>
+<p>Restrict output to the given (comma-separated) <code>list</code> of levels. For example:</p>
+<p><strong>dmesg --level=err,warn</strong></p>
+<p>will print error and warning messages only. For all supported levels see the <strong>--help</strong> output.</p>
+</blockquote>
+<p><strong>-n</strong>, <strong>--console-level</strong> <code>level</code></p>
+<blockquote>
+<p>Set the <code>level</code> at which printing of messages is done to the console. The <code>level</code> is a level number or abbreviation of the level name. For all supported levels see the <strong>--help</strong> output.</p>
+<p>For example, <strong>-n 1</strong> or <strong>-n emerg</strong> prevents all messages, except emergency (panic) messages, from appearing on the console. All levels of messages are still written to <code>/proc/kmsg</code>, so <a href='/8/syslogd'>syslogd</a>(8) can still be used to control exactly where kernel messages appear. When the <strong>-n</strong> option is used, <strong>dmesg</strong> will <code>not</code> print or clear the kernel ring buffer.</p>
+</blockquote>
+<p><strong>--noescape</strong></p>
+<blockquote>
+<p>The unprintable and potentially unsafe characters (e.g., broken multi-byte sequences, terminal controlling chars, etc.) are escaped in format \x&lt;hex&gt; for security reason by default. This option disables this feature at all. It’s usable for example for debugging purpose together with <strong>--raw</strong>. Be careful and don’t use it by default.</p>
+</blockquote>
+<p><strong>-P</strong>, <strong>--nopager</strong></p>
+<blockquote>
+<p>Do not pipe output into a pager. A pager is enabled by default for <strong>--human</strong> output.</p>
+</blockquote>
+<p><strong>-p</strong>, <strong>--force-prefix</strong></p>
+<blockquote>
+<p>Add facility, level or timestamp information to each line of a multi-line message.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--raw</strong></p>
+<blockquote>
+<p>Print the raw message buffer, i.e., do not strip the log-level prefixes, but all unprintable characters are still escaped (see also <strong>--noescape</strong>).</p>
+<p>Note that the real raw format depends on the method how <strong>dmesg</strong> reads kernel messages. The <code>/dev/kmsg</code> device uses a different format than <a href='/2/syslog'>syslog</a>(2). For backward compatibility, <strong>dmesg</strong> returns data always in the <a href='/2/syslog'>syslog</a>(2) format. It is possible to read the real raw data from <code>/dev/kmsg</code> by, for example, the command 'dd if=/dev/kmsg iflag=nonblock'.</p>
+</blockquote>
+<p><strong>-S</strong>, <strong>--syslog</strong></p>
+<blockquote>
+<p>Force <strong>dmesg</strong> to use the <a href='/2/syslog'>syslog</a>(2) kernel interface to read kernel messages. The default is to use <code>/dev/kmsg</code> rather than <a href='/2/syslog'>syslog</a>(2) since kernel 3.5.0.</p>
+</blockquote>
+<p><strong>-s</strong>, <strong>--buffer-size</strong> <code>size</code></p>
+<blockquote>
+<p>Use a buffer of <code>size</code> to query the kernel ring buffer. This is 16392 by default. (The default kernel syslog buffer size was 4096 at first, 8192 since 1.3.54, 16384 since 2.1.113.) If you have set the kernel buffer to be larger than the default, then this option can be used to view the entire buffer.</p>
+</blockquote>
+<p><strong>-T</strong>, <strong>--ctime</strong></p>
+<blockquote>
+<p>Print human-readable timestamps.</p>
+<p><strong>Be aware that the timestamp could be inaccurate!</strong> The <strong>time</strong> source used for the logs is <strong>not updated after</strong> system <strong>SUSPEND</strong>/<strong>RESUME</strong>. Timestamps are adjusted according to current delta between boottime and monotonic clocks, this works only for messages printed after last resume.</p>
+</blockquote>
+<p><strong>--since</strong> <code>time</code></p>
+<blockquote>
+<p>Display record since the specified time. The time is possible to specify in absolute way as well as by relative notation (e.g. '1 hour ago'). Be aware that the timestamp could be inaccurate and see <strong>--ctime</strong> for more details.</p>
+</blockquote>
+<p><strong>--until</strong> <code>time</code></p>
+<blockquote>
+<p>Display record until the specified time. The time is possible to specify in absolute way as well as by relative notation (e.g. '1 hour ago'). Be aware that the timestamp could be inaccurate and see <strong>--ctime</strong> for more details.</p>
+</blockquote>
+<p><strong>-t</strong>, <strong>--notime</strong></p>
+<blockquote>
+<p>Do not print kernel’s timestamps.</p>
+</blockquote>
+<p><strong>--time-format</strong> <code>format</code></p>
+<blockquote>
+<p>Print timestamps using the given <code>format</code>, which can be <strong>ctime</strong>, <strong>reltime</strong>, <strong>delta</strong> or <strong>iso</strong>. The first three formats are aliases of the time-format-specific options. The <strong>iso</strong> format is a <strong>dmesg</strong> implementation of the ISO-8601 timestamp format. The purpose of this format is to make the comparing of timestamps between two systems, and any other parsing, easy. The definition of the <strong>iso</strong> timestamp is: YYYY-MM-DD&lt;T&gt;HH:MM:SS,&lt;microseconds&gt;←+&gt;&lt;timezone offset from UTC&gt;.</p>
+<p>The <strong>iso</strong> format has the same issue as <strong>ctime</strong>: the time may be inaccurate when a system is suspended and resumed.</p>
+</blockquote>
+<p><strong>-u</strong>, <strong>--userspace</strong></p>
+<blockquote>
+<p>Print userspace messages.</p>
+</blockquote>
+<p><strong>-w</strong>, <strong>--follow</strong></p>
+<blockquote>
+<p>Wait for new messages. This feature is supported only on systems with a readable <code>/dev/kmsg</code> (since kernel 3.5.0).</p>
+</blockquote>
+<p><strong>-W</strong>, <strong>--follow-new</strong></p>
+<blockquote>
+<p>Wait and print only new messages.</p>
+</blockquote>
+<p><strong>-x</strong>, <strong>--decode</strong></p>
+<blockquote>
+<p>Decode facility and level (priority) numbers to human-readable prefixes.</p>
+</blockquote>
+<p><strong>-V</strong>, <strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+</div></div></div><h1 id='colors'><a href='#colors'>COLORS</a></h1><div data-for='colors' data-hide><div class='section' data-for='colors'><div data-more>
+<p>Implicit coloring can be disabled by an empty file <code>/etc/terminal-colors.d/dmesg.disable</code>. See <a href='/5/terminal-colors.d'>terminal-colors.d</a>(5) for more details about colorization configuration.</p>
+<p>The logical color names supported by <strong>dmesg</strong> are:</p>
+<p><strong>subsys</strong></p>
+<blockquote>
+<p>The message sub-system prefix (e.g., "ACPI:").</p>
+</blockquote>
+<p><strong>time</strong></p>
+<blockquote>
+<p>The message timestamp.</p>
+</blockquote>
+<p><strong>timebreak</strong></p>
+<blockquote>
+<p>The message timestamp in short ctime format in <strong>--reltime</strong> or <strong>--human</strong> output.</p>
+</blockquote>
+<p><strong>alert</strong></p>
+<blockquote>
+<p>The text of the message with the alert log priority.</p>
+</blockquote>
+<p><strong>crit</strong></p>
+<blockquote>
+<p>The text of the message with the critical log priority.</p>
+</blockquote>
+<p><strong>err</strong></p>
+<blockquote>
+<p>The text of the message with the error log priority.</p>
+</blockquote>
+<p><strong>warn</strong></p>
+<blockquote>
+<p>The text of the message with the warning log priority.</p>
+</blockquote>
+<p><strong>segfault</strong></p>
+<blockquote>
+<p>The text of the message that inform about segmentation fault.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p><strong>dmesg</strong> can fail reporting permission denied error. This is usually caused by <strong>dmesg_restrict</strong> kernel setting, please see <a href='/2/syslog'>syslog</a>(2) for more details.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p><strong>dmesg</strong> was originally written by</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/terminal-colors.d'>terminal-colors.d</a>(5), <a href='/8/syslogd'>syslogd</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>dmesg</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

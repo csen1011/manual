@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>write - write to a file descriptor</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;unistd.h&gt;</strong></p>
+<p><strong>ssize_t write(int </strong><code>fd</code><strong>, const void *</strong><code>buf</code><strong>, <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> </strong><code>count</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='write'>write</a>() writes up to <code>count</code> bytes from the buffer starting at <code>buf</code> to the file referred to by the file descriptor <code>fd</code>.</p>
+<p>The number of bytes written may be less than <code>count</code> if, for example, there is insufficient space on the underlying physical medium, or the <strong>RLIMIT_FSIZE</strong> resource limit is encountered (see <a href='/2/setrlimit'>setrlimit</a>(2)), or the call was interrupted by a signal handler after having written less than <code>count</code> bytes. (See also <a href='/7/pipe'>pipe</a>(7).)</p>
+<p>For a seekable file (i.e., one to which <a href='/2/lseek'>lseek</a>(2) may be applied, for example, a regular file) writing takes place at the file offset, and the file offset is incremented by the number of bytes actually written. If the file was <a href='/2/open'>open</a>(2)ed with <strong>O_APPEND</strong>, the file offset is first set to the end of the file before writing. The adjustment of the file offset and the write operation are performed as an atomic step.</p>
+<p>POSIX requires that a <a href='/2/read'>read</a>(2) that can be proved to occur after a <a href='write'>write</a>() has returned will return the new data. Note that not all filesystems are POSIX conforming.</p>
+<p>According to POSIX.1, if <code>count</code> is greater than <strong>SSIZE_MAX</strong>, the result is implementation-defined; see NOTES for the upper limit on Linux.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, the number of bytes written is returned. On error, -1 is returned, and <code>errno</code> is set to indicate the cause of the error.</p>
+<p>Note that a successful <a href='write'>write</a>() may transfer fewer than <code>count</code> bytes. Such partial writes can occur for various reasons; for example, because there was insufficient space on the disk device to write all of the requested bytes, or because a blocked <a href='write'>write</a>() to a socket, pipe, or similar was interrupted by a signal handler after it had transferred some, but before it had transferred all of the requested bytes. In the event of a partial write, the caller can make another <a href='write'>write</a>() call to transfer the remaining bytes. The subsequent call will either transfer further bytes or may result in an error (e.g., if the disk is now full).</p>
+<p>If <code>count</code> is zero and <code>fd</code> refers to a regular file, then <a href='write'>write</a>() may return a failure status if one of the errors below is detected. If no errors are detected, or error detection is not performed, 0 will be returned without causing any other effect. If <code>count</code> is zero and <code>fd</code> refers to a file other than a regular file, the results are not specified.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>The file descriptor <code>fd</code> refers to a file other than a socket and has been marked nonblocking (<strong>O_NONBLOCK</strong>), and the write would block. See <a href='/2/open'>open</a>(2) for further details on the <strong>O_NONBLOCK</strong> flag.</p>
+</dd>
+<dt><strong>EAGAIN</strong> or <strong>EWOULDBLOCK</strong></dt>
+<dd><p>The file descriptor <code>fd</code> refers to a socket and has been marked nonblocking (<strong>O_NONBLOCK</strong>), and the write would block. POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.</p>
+</dd>
+<dt><strong>EBADF</strong></dt>
+<dd><p><code>fd</code> is not a valid file descriptor or is not open for writing.</p>
+</dd>
+<dt><strong>EDESTADDRREQ</strong></dt>
+<dd><p><code>fd</code> refers to a datagram socket for which a peer address has not been set using <a href='/2/connect'>connect</a>(2).</p>
+</dd>
+<dt><strong>EDQUOT</strong></dt>
+<dd><p>The user's quota of disk blocks on the filesystem containing the file referred to by <code>fd</code> has been exhausted.</p>
+</dd>
+<dt><strong>EFAULT</strong></dt>
+<dd><p><code>buf</code> is outside your accessible address space.</p>
+</dd>
+<dt><strong>EFBIG</strong></dt>
+<dd><p>An attempt was made to write a file that exceeds the implementation-defined maximum file size or the process's file size limit, or to write at a position past the maximum allowed offset.</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The call was interrupted by a signal before any data was written; see <a href='/7/signal'>signal</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>fd</code> is attached to an object which is unsuitable for writing; or the file was opened with the <strong>O_DIRECT</strong> flag, and either the address specified in <code>buf</code>, the value specified in <code>count</code>, or the file offset is not suitably aligned.</p>
+</dd>
+<dt><strong>EIO</strong></dt>
+<dd><p>A low-level I/O error occurred while modifying the inode. This error may relate to the write-back of data written by an earlier <a href='write'>write</a>(), which may have been issued to a different file descriptor on the same file. Since Linux 4.13, errors from write-back come with a promise that they <code>may</code> be reported by subsequent. <a href='write'>write</a>() requests, and <code>will</code> be reported by a subsequent <a href='/2/fsync'>fsync</a>(2) (whether or not they were also reported by <a href='write'>write</a>()). An alternate cause of <strong>EIO</strong> on networked filesystems is when an advisory lock had been taken out on the file descriptor and this lock has been lost. See the <code>Lost locks</code> section of <a href='/2/fcntl'>fcntl</a>(2) for further details.</p>
+</dd>
+<dt><strong>ENOSPC</strong></dt>
+<dd><p>The device containing the file referred to by <code>fd</code> has no room for the data.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The operation was prevented by a file seal; see <a href='/2/fcntl'>fcntl</a>(2).</p>
+</dd>
+<dt><strong>EPIPE</strong></dt>
+<dd><p><code>fd</code> is connected to a pipe or socket whose reading end is closed. When this happens the writing process will also receive a <strong>SIGPIPE</strong> signal. (Thus, the write return value is seen only if the program catches, blocks or ignores this signal.)</p>
+</dd>
+</dl>
+<p>Other errors may occur, depending on the object connected to <code>fd</code>.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>SVr4, 4.3BSD, POSIX.1-2001.</p>
+<p>Under SVr4 a write may be interrupted and return <strong>EINTR</strong> at any point, not just before any data is written.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>The types <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a></code> and <code>ssize_t</code> are, respectively, unsigned and signed integer data types specified by POSIX.1.</p>
+<p>A successful return from <a href='write'>write</a>() does not make any guarantee that data has been committed to disk. On some filesystems, including NFS, it does not even guarantee that space has successfully been reserved for the data. In this case, some errors might be delayed until a future <a href='write'>write</a>(), <a href='/2/fsync'>fsync</a>(2), or even <a href='/2/close'>close</a>(2). The only way to be sure is to call <a href='/2/fsync'>fsync</a>(2) after you are done writing all your data.</p>
+<p>If a <a href='write'>write</a>() is interrupted by a signal handler before any bytes are written, then the call fails with the error <strong>EINTR</strong>; if it is interrupted after at least one byte has been written, the call succeeds, and returns the number of bytes written.</p>
+<p>On Linux, <a href='write'>write</a>() (and similar system calls) will transfer at most 0x7ffff000 (2,147,479,552) bytes, returning the number of bytes actually transferred. (This is true on both 32-bit and 64-bit systems.)</p>
+<p>An error return value while performing <a href='write'>write</a>() using direct I/O does not mean the entire write has failed. Partial data may be written and the data at the file offset on which the <a href='write'>write</a>() was attempted should be considered inconsistent.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>According to POSIX.1-2008/SUSv4 Section XSI 2.9.7 ("Thread Interactions with Regular File Operations"):</p>
+<blockquote>
+<p>All of the following functions shall be atomic with respect to each other in the effects specified in POSIX.1-2008 when they operate on regular files or symbolic links: ...</p>
+</blockquote>
+<p>Among the APIs subsequently listed are <a href='write'>write</a>() and <a href='/2/writev'>writev</a>(2). And among the effects that should be atomic across threads (and processes) are updates of the file offset. However, on Linux before version 3.14, this was not the case: if two processes that share an open file description (see <a href='/2/open'>open</a>(2)) perform a <a href='write'>write</a>() (or <a href='/2/writev'>writev</a>(2)) at the same time, then the I/O operations were not atomic with respect updating the file offset, with the result that the blocks of data output by the two processes might (incorrectly) overlap. This problem was fixed in Linux 3.14.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/close'>close</a>(2), <a href='/2/fcntl'>fcntl</a>(2), <a href='/2/fsync'>fsync</a>(2), <a href='/2/ioctl'>ioctl</a>(2), <a href='/2/lseek'>lseek</a>(2), <a href='/2/open'>open</a>(2), <a href='/2/pwrite'>pwrite</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/select'>select</a>(2), <a href='/2/writev'>writev</a>(2), <a href='/3/fwrite'>fwrite</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

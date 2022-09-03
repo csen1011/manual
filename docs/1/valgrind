@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>valgrind - a suite of tools for debugging and profiling programs</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>valgrind</strong> [<code>valgrind-options</code>] [<code>your-program</code>] [<code>your-program-options</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>Valgrind</strong> is a flexible program for debugging and profiling Linux executables. It consists of a core, which provides a synthetic CPU in software, and a series of debugging and profiling tools. The architecture is modular, so that new tools can be created easily and without disturbing the existing structure.</p>
+<p>Some of the options described below work with all Valgrind tools, and some only work with a few or one. The section MEMCHECK OPTIONS and those below it describe tool-specific options.</p>
+<p>This manual page covers only basic usage and options. For more comprehensive information, please see the HTML documentation on your system: $INSTALL/share/doc/valgrind/html/index.html, or online: <a href="http://www.valgrind.org/docs/manual/index.html">http://www.valgrind.org/docs/manual/index.html</a>.</p>
+</div></div><h1 id='tool-selection-options'><a href='#tool-selection-options'>TOOL SELECTION OPTIONS</a></h1><div data-for='tool-selection-options' data-hide><div class='section' data-for='tool-selection-options'><div data-more>
+<p>The single most important option.</p>
+<p><strong>--tool=&lt;toolname&gt; [default: memcheck] </strong></p>
+<blockquote>
+<p>Run the Valgrind tool called <code>toolname</code>, e.g. memcheck, cachegrind, callgrind, helgrind, drd, massif, dhat, lackey, none, exp-bbv, etc.</p>
+</blockquote>
+</div></div></div><h1 id='basic-options'><a href='#basic-options'>BASIC OPTIONS</a></h1><div data-for='basic-options' data-hide><div class='section' data-for='basic-options'><div data-more>
+<p>These options work with all tools.</p>
+<p><strong>-h --help</strong></p>
+<blockquote>
+<p>Show help for all options, both for the core and for the selected tool. If the option is repeated it is equivalent to giving <strong>--help-debug</strong>.</p>
+</blockquote>
+<p><strong>--help-debug</strong></p>
+<blockquote>
+<p>Same as <strong>--help</strong>, but also lists debugging options which usually are only of use to Valgrinds developers.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Show the version number of the Valgrind core. Tools can have their own version numbers. There is a scheme in place to ensure that tools only execute when the core version is one they are known to work with. This was done to minimise the chances of strange problems arising from tool-vs-core version incompatibilities.</p>
+</blockquote>
+<p><strong>-q</strong>, <strong>--quiet</strong></p>
+<blockquote>
+<p>Run silently, and only print error messages. Useful if you are running regression tests or have some other automated test machinery.</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--verbose</strong></p>
+<blockquote>
+<p>Be more verbose. Gives extra information on various aspects of your program, such as: the shared objects loaded, the suppressions used, the progress of the instrumentation and execution engines, and warnings about unusual behaviour. Repeating the option increases the verbosity level.</p>
+</blockquote>
+<p><strong>--trace-children=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will trace into sub-processes initiated via the <code>exec</code> system call. This is necessary for multi-process programs.</p>
+<p>Note that Valgrind does trace into the child of a <code>fork</code> (it would be difficult not to, since <code>fork</code> makes an identical copy of a process), so this option is arguably badly named. However, most children of <code>fork</code> calls immediately call <code>exec</code> anyway.</p>
+</blockquote>
+<p><strong>--trace-children-skip=patt1,patt2,... </strong></p>
+<blockquote>
+<p>This option only has an effect when <strong>--trace-children=yes</strong> is specified. It allows for some children to be skipped. The option takes a comma separated list of patterns for the names of child executables that Valgrind should not trace into. Patterns may include the metacharacters ? and *, which have the usual meaning.</p>
+<p>This can be useful for pruning uninteresting branches from a tree of processes being run on Valgrind. But you should be careful when using it. When Valgrind skips tracing into an executable, it doesnt just skip tracing that executable, it also skips tracing any of that executables child processes. In other words, the flag doesnt merely cause tracing to stop at the specified executables -- it skips tracing of entire process subtrees rooted at any of the specified executables.</p>
+</blockquote>
+<p><strong>--trace-children-skip-by-arg=patt1,patt2,... </strong></p>
+<blockquote>
+<p>This is the same as <strong>--trace-children-skip</strong>, with one difference: the decision as to whether to trace into a child process is made by examining the arguments to the child process, rather than the name of its executable.</p>
+</blockquote>
+<p><strong>--child-silent-after-fork=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will not show any debugging or logging output for the child process resulting from a <code>fork</code> call. This can make the output less confusing (although more misleading) when dealing with processes that create children. It is particularly useful in conjunction with <code>--trace-children=</code>. Use of this option is also strongly recommended if you are requesting XML output (<code>--xml=yes</code>), since otherwise the XML from child and parent may become mixed up, which usually makes it useless.</p>
+</blockquote>
+<p><strong>--vgdb=&lt;no|yes|full&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Valgrind will provide "gdbserver" functionality when <strong>--vgdb=yes</strong> or <strong>--vgdb=full</strong> is specified. This allows an external GNU GDB debugger to control and debug your program when it runs on Valgrind. <strong>--vgdb=full</strong> incurs significant performance overheads, but provides more precise breakpoints and watchpoints. See <a href='#d'>D</a>ebugging your program using Valgrind's gdbserver and GDB for a detailed description.</p>
+<p>If the embedded gdbserver is enabled but no gdb is currently being used, the vgdb command line utility can send "monitor commands" to Valgrind from a shell. The Valgrind core provides a set of Valgrind monitor commands. A tool can optionally provide tool specific monitor commands, which are documented in the tool specific chapter.</p>
+</blockquote>
+<p><strong>--vgdb-error=&lt;number&gt; [default: 999999999] </strong></p>
+<blockquote>
+<p>Use this option when the Valgrind gdbserver is enabled with <strong>--vgdb=yes</strong> or <strong>--vgdb=full</strong>. Tools that report errors will wait for "number" errors to be reported before freezing the program and waiting for you to connect with GDB. It follows that a value of zero will cause the gdbserver to be started before your program is executed. This is typically used to insert GDB breakpoints before execution, and also works with tools that do not report errors, such as Massif.</p>
+</blockquote>
+<p><strong>--vgdb-stop-at=&lt;set&gt; [default: none] </strong></p>
+<blockquote>
+<p>Use this option when the Valgrind gdbserver is enabled with <strong>--vgdb=yes</strong> or <strong>--vgdb=full</strong>. The Valgrind gdbserver will be invoked for each error after <strong>--vgdb-error</strong> have been reported. You can additionally ask the Valgrind gdbserver to be invoked for other events, specified in one of the following ways:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>a comma separated list of one or more of <strong>startup exit valgrindabexit</strong>.</p>
+<p>The values <strong>startup</strong> <strong>exit</strong> <strong>valgrindabexit</strong> respectively indicate to invoke gdbserver before your program is executed, after the last instruction of your program, on Valgrind abnormal exit (e.g. internal error, out of memory, ...).</p>
+<p>Note: <strong>startup</strong> and <strong>--vgdb-error=0</strong> will both cause Valgrind gdbserver to be invoked before your program is executed. The <strong>--vgdb-error=0</strong> will in addition cause your program to stop on all subsequent errors.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>all</strong> to specify the complete set. It is equivalent to <strong>--vgdb-stop-at=startup,exit,valgrindabexit</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>none</strong> for the empty set.</p>
+</blockquote>
+</blockquote>
+<p><strong>--track-fds=&lt;yes|no|all&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will print out a list of open file descriptors on exit or on request, via the gdbserver monitor command <code><a href="http://v.info">v.info</a> open_fds</code>. Along with each file descriptor is printed a stack backtrace of where the file was opened and any details relating to the file descriptor such as the file name or socket details. Use <strong>all</strong> to include reporting on stdin, stdout and stderr.</p>
+</blockquote>
+<p><strong>--time-stamp=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, each message is preceded with an indication of the elapsed wallclock time since startup, expressed as days, hours, minutes, seconds and milliseconds.</p>
+</blockquote>
+<p><strong>--log-fd=&lt;number&gt; [default: 2, stderr] </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send all of its messages to the specified file descriptor. The default, 2, is the standard error channel (stderr). Note that this may interfere with the clients own use of stderr, as Valgrinds output will be interleaved with any output that the client sends to stderr.</p>
+</blockquote>
+<p><strong>--log-file=&lt;filename&gt; </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send all of its messages to the specified file. If the file name is empty, it causes an abort. There are three special format specifiers that can be used in the file name.</p>
+<p><strong>%p</strong> is replaced with the current process ID. This is very useful for program that invoke multiple processes. WARNING: If you use <strong>--trace-children=yes</strong> and your program invokes multiple processes OR your program forks without calling exec afterwards, and you dont use this specifier (or the <strong>%q</strong> specifier below), the Valgrind output from all those processes will go into one file, possibly jumbled up, and possibly incomplete. Note: If the program forks and calls exec afterwards, Valgrind output of the child from the period between fork and exec will be lost. Fortunately this gap is really tiny for most programs; and modern programs use posix_spawn anyway.</p>
+<p><strong>%n</strong> is replaced with a file sequence number unique for this process. This is useful for processes that produces several files from the same filename template.</p>
+<p><strong>%q{FOO}</strong> is replaced with the contents of the environment variable <code>FOO</code>. If the <strong>{FOO}</strong> part is malformed, it causes an abort. This specifier is rarely needed, but very useful in certain circumstances (eg. when running MPI programs). The idea is that you specify a variable which will be set differently for each process in the job, for example BPROC_RANK or whatever is applicable in your MPI setup. If the named environment variable is not set, it causes an abort. Note that in some shells, the <strong>{</strong> and <strong>}</strong> characters may need to be escaped with a backslash.</p>
+<p><strong>%%</strong> is replaced with <strong>%</strong>.</p>
+<p>If an <strong>%</strong> is followed by any other character, it causes an abort.</p>
+<p>If the file name specifies a relative file name, it is put in the programs initial working directory: this is the current directory when the program started its execution after the fork or after the exec. If it specifies an absolute file name (ie. starts with /) then it is put there.</p>
+</blockquote>
+<p><strong>--log-socket=&lt;ip-address:port-number&gt; </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send all of its messages to the specified port at the specified IP address. The port may be omitted, in which case port 1500 is used. If a connection cannot be made to the specified socket, Valgrind falls back to writing output to the standard error (stderr). This option is intended to be used in conjunction with the valgrind-listener program. For further details, see the commentary in the manual.</p>
+</blockquote>
+</div></div></div><h1 id='error-related-options'><a href='#error-related-options'>ERROR-RELATED OPTIONS</a></h1><div data-for='error-related-options' data-hide><div class='section' data-for='error-related-options'><div data-more>
+<p>These options are used by all tools that can report errors, e.g. Memcheck, but not Cachegrind.</p>
+<p><strong>--xml=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, the important parts of the output (e.g. tool error messages) will be in XML format rather than plain text. Furthermore, the XML output will be sent to a different output channel than the plain text output. Therefore, you also must use one of <strong>--xml-fd</strong>, <strong>--xml-file</strong> or <strong>--xml-socket</strong> to specify where the XML is to be sent.</p>
+<p>Less important messages will still be printed in plain text, but because the XML output and plain text output are sent to different output channels (the destination of the plain text output is still controlled by <strong>--log-fd</strong>, <strong>--log-file</strong> and <strong>--log-socket</strong>) this should not cause problems.</p>
+<p>This option is aimed at making life easier for tools that consume Valgrinds output as input, such as GUI front ends. Currently this option works with Memcheck, Helgrind and DRD. The output format is specified in the file docs/internals/xml-output-protocol4.txt in the source tree for Valgrind 3.5.0 or later.</p>
+<p>The recommended options for a GUI to pass, when requesting XML output, are: <strong>--xml=yes</strong> to enable XML output, <strong>--xml-file</strong> to send the XML output to a (presumably GUI-selected) file, <strong>--log-file</strong> to send the plain text output to a second GUI-selected file, <strong>--child-silent-after-fork=yes</strong>, and <strong>-q</strong> to restrict the plain text output to critical error messages created by Valgrind itself. For example, failure to read a specified suppressions file counts as a critical error message. In this way, for a successful run the text output file will be empty. But if it isnt empty, then it will contain important information which the GUI user should be made aware of.</p>
+</blockquote>
+<p><strong>--xml-fd=&lt;number&gt; [default: -1, disabled] </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send its XML output to the specified file descriptor. It must be used in conjunction with <strong>--xml=yes</strong>.</p>
+</blockquote>
+<p><strong>--xml-file=&lt;filename&gt; </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send its XML output to the specified file. It must be used in conjunction with <strong>--xml=yes</strong>. Any <strong>%p</strong> or <strong>%q</strong> sequences appearing in the filename are expanded in exactly the same way as they are for <strong>--log-file</strong>. See the description of --log-file for details.</p>
+</blockquote>
+<p><strong>--xml-socket=&lt;ip-address:port-number&gt; </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should send its XML output the specified port at the specified IP address. It must be used in conjunction with <strong>--xml=yes</strong>. The form of the argument is the same as that used by <strong>--log-socket</strong>. See the description of <strong>--log-socket</strong> for further details.</p>
+</blockquote>
+<p><strong>--xml-user-comment=&lt;string&gt; </strong></p>
+<blockquote>
+<p>Embeds an extra user comment string at the start of the XML output. Only works when <strong>--xml=yes</strong> is specified; ignored otherwise.</p>
+</blockquote>
+<p><strong>--demangle=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Enable/disable automatic demangling (decoding) of C++ names. Enabled by default. When enabled, Valgrind will attempt to translate encoded C++ names back to something approaching the original. The demangler handles symbols mangled by g++ versions 2.X, 3.X and 4.X.</p>
+<p>An important fact about demangling is that function names mentioned in suppressions files should be in their mangled form. Valgrind does not demangle function names when searching for applicable suppressions, because to do otherwise would make suppression file contents dependent on the state of Valgrinds demangling machinery, and also slow down suppression matching.</p>
+</blockquote>
+<p><strong>--num-callers=&lt;number&gt; [default: 12] </strong></p>
+<blockquote>
+<p>Specifies the maximum number of entries shown in stack traces that identify program locations. Note that errors are commoned up using only the top four function locations (the place in the current function, and that of its three immediate callers). So this doesnt affect the total number of errors reported.</p>
+<p>The maximum value for this is 500. Note that higher settings will make Valgrind run a bit more slowly and take a bit more memory, but can be useful when working with programs with deeply-nested call chains.</p>
+</blockquote>
+<p><strong>--unw-stack-scan-thresh=&lt;number&gt; [default: 0] </strong>, <strong>--unw-stack-scan-frames=&lt;number&gt; [default: 5] </strong></p>
+<blockquote>
+<p>Stack-scanning support is available only on ARM targets.</p>
+<p>These flags enable and control stack unwinding by stack scanning. When the normal stack unwinding mechanisms -- usage of Dwarf CFI records, and frame-pointer following -- fail, stack scanning may be able to recover a stack trace.</p>
+<p>Note that stack scanning is an imprecise, heuristic mechanism that may give very misleading results, or none at all. It should be used only in emergencies, when normal unwinding fails, and it is important to nevertheless have stack traces.</p>
+<p>Stack scanning is a simple technique: the unwinder reads words from the stack, and tries to guess which of them might be return addresses, by checking to see if they point just after ARM or Thumb call instructions. If so, the word is added to the backtrace.</p>
+<p>The main danger occurs when a function call returns, leaving its return address exposed, and a new function is called, but the new function does not overwrite the old address. The result of this is that the backtrace may contain entries for functions which have already returned, and so be very confusing.</p>
+<p>A second limitation of this implementation is that it will scan only the page (4KB, normally) containing the starting stack pointer. If the stack frames are large, this may result in only a few (or not even any) being present in the trace. Also, if you are unlucky and have an initial stack pointer near the end of its containing page, the scan may miss all interesting frames.</p>
+<p>By default stack scanning is disabled. The normal use case is to ask for it when a stack trace would otherwise be very short. So, to enable it, use --unw-stack-scan-thresh=number. This requests Valgrind to try using stack scanning to "extend" stack traces which contain fewer than number frames.</p>
+<p>If stack scanning does take place, it will only generate at most the number of frames specified by --unw-stack-scan-frames. Typically, stack scanning generates so many garbage entries that this value is set to a low value (5) by default. In no case will a stack trace larger than the value specified by --num-callers be created.</p>
+</blockquote>
+<p><strong>--error-limit=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind stops reporting errors after 10,000,000 in total, or 1,000 different ones, have been seen. This is to stop the error tracking machinery from becoming a huge performance overhead in programs with many errors.</p>
+</blockquote>
+<p><strong>--error-exitcode=&lt;number&gt; [default: 0] </strong></p>
+<blockquote>
+<p>Specifies an alternative exit code to return if Valgrind reported any errors in the run. When set to the default value (zero), the return value from Valgrind will always be the return value of the process being simulated. When set to a nonzero value, that value is returned instead, if Valgrind detects any errors. This is useful for using Valgrind as part of an automated test suite, since it makes it easy to detect test cases for which Valgrind has reported errors, just by inspecting return codes.</p>
+</blockquote>
+<p><strong>--exit-on-first-error=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>If this option is enabled, Valgrind exits on the first error. A nonzero exit value must be defined using --error-exitcode option. Useful if you are running regression tests or have some other automated test machinery.</p>
+</blockquote>
+<p><strong>--error-markers=&lt;begin&gt;,&lt;end&gt; [default: none]</strong></p>
+<blockquote>
+<p>When errors are output as plain text (i.e. XML not used), <strong>--error-markers</strong> instructs to output a line containing the <strong>begin</strong> (<strong>end</strong>) string before (after) each error.</p>
+<p>Such marker lines facilitate searching for errors and/or extracting errors in an output file that contain valgrind errors mixed with the program output.</p>
+<p>Note that empty markers are accepted. So, only using a begin (or an end) marker is possible.</p>
+</blockquote>
+<p><strong>--show-error-list=no|yes [default: no]</strong></p>
+<blockquote>
+<p>If this option is enabled, for tools that report errors, valgrind will show the list of detected errors and the list of used suppressions at exit.</p>
+<p>Note that at verbosity 2 and above, valgrind automatically shows the list of detected errors and the list of used suppressions at exit, unless <strong>--show-error-list=no</strong> is selected.</p>
+</blockquote>
+<p><strong>-s</strong></p>
+<blockquote>
+<p>Specifying <strong>-s</strong> is equivalent to <strong>--show-error-list=yes</strong>.</p>
+</blockquote>
+<p><strong>--sigill-diagnostics=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Enable/disable printing of illegal instruction diagnostics. Enabled by default, but defaults to disabled when <strong>--quiet</strong> is given. The default can always be explicitly overridden by giving this option.</p>
+<p>When enabled, a warning message will be printed, along with some diagnostics, whenever an instruction is encountered that Valgrind cannot decode or translate, before the program is given a SIGILL signal. Often an illegal instruction indicates a bug in the program or missing support for the particular instruction in Valgrind. But some programs do deliberately try to execute an instruction that might be missing and trap the SIGILL signal to detect processor features. Using this flag makes it possible to avoid the diagnostic output that you would otherwise get in such cases.</p>
+</blockquote>
+<p><strong>--keep-debuginfo=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, keep ("archive") symbols and all other debuginfo for unloaded code. This allows saved stack traces to include file/line info for code that has been dlclosed (or similar). Be careful with this, since it can lead to unbounded memory use for programs which repeatedly load and unload shared objects.</p>
+<p>Some tools and some functionalities have only limited support for archived debug info. Memcheck fully supports it. Generally, tools that report errors can use archived debug info to show the error stack traces. The known limitations are: Helgrinds past access stack trace of a race condition is does not use archived debug info. Massif (and more generally the xtree Massif output format) does not make use of archived debug info. Only Memcheck has been (somewhat) tested with <strong>--keep-debuginfo=yes</strong>, so other tools may have unknown limitations.</p>
+</blockquote>
+<p><strong>--show-below-main=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>By default, stack traces for errors do not show any functions that appear beneath <strong>main</strong> because most of the time its uninteresting C library stuff and/or gobbledygook. Alternatively, if <strong>main</strong> is not present in the stack trace, stack traces will not show any functions below <strong>main</strong>-like functions such as glibcs <strong>__libc_start_main</strong>. Furthermore, if <strong>main</strong>-like functions are present in the trace, they are normalised as <strong>(below main)</strong>, in order to make the output more deterministic.</p>
+<p>If this option is enabled, all stack trace entries will be shown and <strong>main</strong>-like functions will not be normalised.</p>
+</blockquote>
+<p><strong>--fullpath-after=&lt;string&gt; [default: dont show source paths] </strong></p>
+<blockquote>
+<p>By default Valgrind only shows the filenames in stack traces, but not full paths to source files. When using Valgrind in large projects where the sources reside in multiple different directories, this can be inconvenient. <strong>--fullpath-after</strong> provides a flexible solution to this problem. When this option is present, the path to each source file is shown, with the following all-important caveat: if <strong>string</strong> is found in the path, then the path up to and including <strong>string</strong> is omitted, else the path is shown unmodified. Note that <strong>string</strong> is not required to be a prefix of the path.</p>
+<p>For example, consider a file named /home/janedoe/blah/src/foo/bar/xyzzy.c. Specifying <strong>--fullpath-after=/home/janedoe/blah/src/</strong> will cause Valgrind to show the name as foo/bar/xyzzy.c.</p>
+<p>Because the string is not required to be a prefix, <strong>--fullpath-after=src/</strong> will produce the same output. This is useful when the path contains arbitrary machine-generated characters. For example, the path /my/build/dir/C32A1B47/blah/src/foo/xyzzy can be pruned to foo/xyzzy using <strong>--fullpath-after=/blah/src/</strong>.</p>
+<p>If you simply want to see the full path, just specify an empty string: <strong>--fullpath-after=</strong>. This isnt a special case, merely a logical consequence of the above rules.</p>
+<p>Finally, you can use <strong>--fullpath-after</strong> multiple times. Any appearance of it causes Valgrind to switch to producing full paths and applying the above filtering rule. Each produced path is compared against all the <strong>--fullpath-after</strong>-specified strings, in the order specified. The first string to match causes the path to be truncated as described above. If none match, the full path is shown. This facilitates chopping off prefixes when the sources are drawn from a number of unrelated directories.</p>
+</blockquote>
+<p><strong>--extra-debuginfo-path=&lt;path&gt; [default: undefined and unused] </strong></p>
+<blockquote>
+<p>By default Valgrind searches in several well-known paths for debug objects, such as /usr/lib/debug/.</p>
+<p>However, there may be scenarios where you may wish to put debug objects at an arbitrary location, such as external storage when running Valgrind on a mobile device with limited local storage. Another example might be a situation where you do not have permission to install debug object packages on the system where you are running Valgrind.</p>
+<p>In these scenarios, you may provide an absolute path as an extra, final place for Valgrind to search for debug objects by specifying <strong>--extra-debuginfo-path=/path/to/debug/objects</strong>. The given path will be prepended to the absolute path name of the searched-for object. For example, if Valgrind is looking for the debuginfo for /w/x/y/<a href="http://zz.so">zz.so</a> and <strong>--extra-debuginfo-path=/a/b/c</strong> is specified, it will look for a debug object at /a/b/c/w/x/y/<a href="http://zz.so">zz.so</a>.</p>
+<p>This flag should only be specified once. If it is specified multiple times, only the last instance is honoured.</p>
+</blockquote>
+<p><strong>--debuginfo-server=ipaddr:port [default: undefined and unused]</strong></p>
+<blockquote>
+<p>This is a new, experimental, feature introduced in version 3.9.0.</p>
+<p>In some scenarios it may be convenient to read debuginfo from objects stored on a different machine. With this flag, Valgrind will query a debuginfo server running on ipaddr and listening on port port, if it cannot find the debuginfo object in the local filesystem.</p>
+<p>The debuginfo server must accept TCP connections on port port. The debuginfo server is contained in the source file auxprogs/valgrind-di-server.c. It will only serve from the directory it is started in. port defaults to 1500 in both client and server if not specified.</p>
+<p>If Valgrind looks for the debuginfo for /w/x/y/<a href="http://zz.so">zz.so</a> by using the debuginfo server, it will strip the pathname components and merely request <a href="http://zz.so">zz.so</a> on the server. That in turn will look only in its current working directory for a matching debuginfo object.</p>
+<p>The debuginfo data is transmitted in small fragments (8 KB) as requested by Valgrind. Each block is compressed using LZO to reduce transmission time. The implementation has been tuned for best performance over a single-stage 802.11g (WiFi) network link.</p>
+<p>Note that checks for matching primary vs debug objects, using GNU debuglink CRC scheme, are performed even when using the debuginfo server. To disable such checking, you need to also specify --allow-mismatched-debuginfo=yes.</p>
+<p>By default the Valgrind build system will build valgrind-di-server for the target platform, which is almost certainly not what you want. So far we have been unable to find out how to get automake/autoconf to build it for the build platform. If you want to use it, you will have to recompile it by hand using the command shown at the top of auxprogs/valgrind-di-server.c.</p>
+<p>Valgrind can also download debuginfo via debuginfod. See the DEBUGINFOD section for more information.</p>
+</blockquote>
+<p><strong>--allow-mismatched-debuginfo=no|yes [no] </strong></p>
+<blockquote>
+<p>When reading debuginfo from separate debuginfo objects, Valgrind will by default check that the main and debuginfo objects match, using the GNU debuglink mechanism. This guarantees that it does not read debuginfo from out of date debuginfo objects, and also ensures that Valgrind cant crash as a result of mismatches.</p>
+<p>This check can be overridden using --allow-mismatched-debuginfo=yes. This may be useful when the debuginfo and main objects have not been split in the proper way. Be careful when using this, though: it disables all consistency checking, and Valgrind has been observed to crash when the main and debuginfo objects dont match.</p>
+</blockquote>
+<p><strong>--suppressions=&lt;filename&gt; [default: $PREFIX/lib/valgrind/default.supp] </strong></p>
+<blockquote>
+<p>Specifies an extra file from which to read descriptions of errors to suppress. You may use up to 100 extra suppression files.</p>
+</blockquote>
+<p><strong>--gen-suppressions=&lt;yes|no|all&gt; [default: no] </strong></p>
+<blockquote>
+<p>When set to <code>yes</code>, Valgrind will pause after every error shown and print the line:</p>
+<p>.RS 4</p>
+<pre><code>    ---- Print suppression ? --- [Return/N/n/Y/y/C/c] ----</code></pre>
+<p>.RE</p>
+<p>Pressing <code>Ret</code>, or <code>N Ret</code> or <code>n Ret</code>, causes Valgrind continue execution without printing a suppression for this error.</p>
+<p>Pressing <code>Y Ret</code> or <code>y Ret</code> causes Valgrind to write a suppression for this error. You can then cut and paste it into a suppression file if you dont want to hear about the error in the future.</p>
+<p>When set to <code>all</code>, Valgrind will print a suppression for every reported error, without querying the user.</p>
+<p>This option is particularly useful with C++ programs, as it prints out the suppressions with mangled names, as required.</p>
+<p>Note that the suppressions printed are as specific as possible. You may want to common up similar ones, by adding wildcards to function names, and by using frame-level wildcards. The wildcarding facilities are powerful yet flexible, and with a bit of careful editing, you may be able to suppress a whole family of related errors with only a few suppressions.</p>
+<p>Sometimes two different errors are suppressed by the same suppression, in which case Valgrind will output the suppression more than once, but you only need to have one copy in your suppression file (but having more than one wont cause problems). Also, the suppression name is given as &lt;insert a suppression name here&gt;; the name doesnt really matter, its only used with the <strong>-v</strong> option which prints out all used suppression records.</p>
+</blockquote>
+<p><strong>--input-fd=&lt;number&gt; [default: 0, stdin] </strong></p>
+<blockquote>
+<p>When using <strong>--gen-suppressions=yes</strong>, Valgrind will stop so as to read keyboard input from you when each error occurs. By default it reads from the standard input (stdin), which is problematic for programs which close stdin. This option allows you to specify an alternative file descriptor from which to read input.</p>
+</blockquote>
+<p><strong>--dsymutil=no|yes [yes] </strong></p>
+<blockquote>
+<p>This option is only relevant when running Valgrind on Mac OS X.</p>
+<p>Mac OS X uses a deferred debug information (debuginfo) linking scheme. When object files containing debuginfo are linked into a .dylib or an executable, the debuginfo is not copied into the final file. Instead, the debuginfo must be linked manually by running dsymutil, a system-provided utility, on the executable or .dylib. The resulting combined debuginfo is placed in a directory alongside the executable or .dylib, but with the extension .dSYM.</p>
+<p>With <strong>--dsymutil=no</strong>, Valgrind will detect cases where the .dSYM directory is either missing, or is present but does not appear to match the associated executable or .dylib, most likely because it is out of date. In these cases, Valgrind will print a warning message but take no further action.</p>
+<p>With <strong>--dsymutil=yes</strong>, Valgrind will, in such cases, automatically run dsymutil as necessary to bring the debuginfo up to date. For all practical purposes, if you always use <strong>--dsymutil=yes</strong>, then there is never any need to run dsymutil manually or as part of your applicationss build system, since Valgrind will run it as necessary.</p>
+<p>Valgrind will not attempt to run dsymutil on any executable or library in /usr/, /bin/, /sbin/, /opt/, /sw/, /System/, /Library/ or /Applications/ since dsymutil will always fail in such situations. It fails both because the debuginfo for such pre-installed system components is not available anywhere, and also because it would require write privileges in those directories.</p>
+<p>Be careful when using <strong>--dsymutil=yes</strong>, since it will cause pre-existing .dSYM directories to be silently deleted and re-created. Also note that dsymutil is quite slow, sometimes excessively so.</p>
+</blockquote>
+<p><strong>--max-stackframe=&lt;number&gt; [default: 2000000] </strong></p>
+<blockquote>
+<p>The maximum size of a stack frame. If the stack pointer moves by more than this amount then Valgrind will assume that the program is switching to a different stack.</p>
+<p>You may need to use this option if your program has large stack-allocated arrays. Valgrind keeps track of your programs stack pointer. If it changes by more than the threshold amount, Valgrind assumes your program is switching to a different stack, and Memcheck behaves differently than it would for a stack pointer change smaller than the threshold. Usually this heuristic works well. However, if your program allocates large structures on the stack, this heuristic will be fooled, and Memcheck will subsequently report large numbers of invalid stack accesses. This option allows you to change the threshold to a different value.</p>
+<p>You should only consider use of this option if Valgrinds debug output directs you to do so. In that case it will tell you the new threshold you should specify.</p>
+<p>In general, allocating large structures on the stack is a bad idea, because you can easily run out of stack space, especially on systems with limited memory or which expect to support large numbers of threads each with a small stack, and also because the error checking performed by Memcheck is more effective for heap-allocated data than for stack-allocated data. If you have to use this option, you may wish to consider rewriting your code to allocate on the heap rather than on the stack.</p>
+</blockquote>
+<p><strong>--main-stacksize=&lt;number&gt; [default: use current ulimit value] </strong></p>
+<blockquote>
+<p>Specifies the size of the main threads stack.</p>
+<p>To simplify its memory management, Valgrind reserves all required space for the main threads stack at startup. That means it needs to know the required stack size at startup.</p>
+<p>By default, Valgrind uses the current "ulimit" value for the stack size, or 16 MB, whichever is lower. In many cases this gives a stack size in the range 8 to 16 MB, which almost never overflows for most applications.</p>
+<p>If you need a larger total stack size, use <strong>--main-stacksize</strong> to specify it. Only set it as high as you need, since reserving far more space than you need (that is, hundreds of megabytes more than you need) constrains Valgrinds memory allocators and may reduce the total amount of memory that Valgrind can use. This is only really of significance on 32-bit machines.</p>
+<p>On Linux, you may request a stack of size up to 2GB. Valgrind will stop with a diagnostic message if the stack cannot be allocated.</p>
+<p><strong>--main-stacksize</strong> only affects the stack size for the programs initial thread. It has no bearing on the size of thread stacks, as Valgrind does not allocate those.</p>
+<p>You may need to use both <strong>--main-stacksize</strong> and <strong>--max-stackframe</strong> together. It is important to understand that <strong>--main-stacksize</strong> sets the maximum total stack size, whilst <strong>--max-stackframe</strong> specifies the largest size of any one stack frame. You will have to work out the <strong>--main-stacksize</strong> value for yourself (usually, if your applications segfaults). But Valgrind will tell you the needed <strong>--max-stackframe</strong> size, if necessary.</p>
+<p>As discussed further in the description of <strong>--max-stackframe</strong>, a requirement for a large stack is a sign of potential portability problems. You are best advised to place all large data in heap-allocated memory.</p>
+</blockquote>
+<p><strong>--max-threads=&lt;number&gt; [default: 500] </strong></p>
+<blockquote>
+<p>By default, Valgrind can handle to up to 500 threads. Occasionally, that number is too small. Use this option to provide a different limit. E.g. --max-threads=3000.</p>
+</blockquote>
+</div></div></div><h1 id='malloc-related-options'><a href='#malloc-related-options'>MALLOC()-RELATED OPTIONS</a></h1><div data-for='malloc-related-options' data-hide><div class='section' data-for='malloc-related-options'><div data-more>
+<p>For tools that use their own version of malloc (e.g. Memcheck, Massif, Helgrind, DRD), the following options apply.</p>
+<p><strong>--alignment=&lt;number&gt; [default: 8 or 16, depending on the platform] </strong></p>
+<blockquote>
+<p>By default Valgrinds <strong>malloc</strong>, <strong>realloc</strong>, etc, return a block whose starting address is 8-byte aligned or 16-byte aligned (the value depends on the platform and matches the platform default). This option allows you to specify a different alignment. The supplied value must be greater than or equal to the default, less than or equal to 4096, and must be a power of two.</p>
+</blockquote>
+<p><strong>--redzone-size=&lt;number&gt; [default: depends on the tool] </strong></p>
+<blockquote>
+<p>Valgrinds <strong>malloc, realloc,</strong> etc, add padding blocks before and after each heap block allocated by the program being run. Such padding blocks are called redzones. The default value for the redzone size depends on the tool. For example, Memcheck adds and protects a minimum of 16 bytes before and after each block allocated by the client. This allows it to detect block underruns or overruns of up to 16 bytes.</p>
+<p>Increasing the redzone size makes it possible to detect overruns of larger distances, but increases the amount of memory used by Valgrind. Decreasing the redzone size will reduce the memory needed by Valgrind but also reduces the chances of detecting over/underruns, so is not recommended.</p>
+</blockquote>
+<p><strong>--xtree-memory=none|allocs|full [none] </strong></p>
+<blockquote>
+<p>Tools replacing Valgrinds <strong>malloc, realloc,</strong> etc, can optionally produce an execution tree detailing which piece of code is responsible for heap memory usage. See <a href='#e'>E</a>xecution Trees for a detailed explanation about execution trees.</p>
+<p>When set to <code>none</code>, no memory execution tree is produced.</p>
+<p>When set to <code>allocs</code>, the memory execution tree gives the current number of allocated bytes and the current number of allocated blocks.</p>
+<p>When set to <code>full</code>, the memory execution tree gives 6 different measurements : the current number of allocated bytes and blocks (same values as for <code>allocs</code>), the total number of allocated bytes and blocks, the total number of freed bytes and blocks.</p>
+<p>Note that the overhead in cpu and memory to produce an xtree depends on the tool. The overhead in cpu is small for the value <code>allocs</code>, as the information needed to produce this report is maintained in any case by the tool. For massif and helgrind, specifying <code>full</code> implies to capture a stack trace for each free operation, while normally these tools only capture an allocation stack trace. For Memcheck, the cpu overhead for the value <code>full</code> is small, as this can only be used in combination with <strong>--keep-stacktraces=alloc-and-free</strong> or <strong>--keep-stacktraces=alloc-then-free</strong>, which already records a stack trace for each free operation. The memory overhead varies between 5 and 10 words per unique stacktrace in the xtree, plus the memory needed to record the stack trace for the free operations, if needed specifically for the xtree.</p>
+</blockquote>
+<p><strong>--xtree-memory-file=&lt;filename&gt; [default: xtmemory.kcg.%p] </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should produce the xtree memory report in the specified file. Any <strong>%p</strong> or <strong>%q</strong> sequences appearing in the filename are expanded in exactly the same way as they are for <strong>--log-file</strong>. See the description of --log-file for details.</p>
+<p>If the filename contains the extension <strong>.ms</strong>, then the produced file format will be a massif output file format. If the filename contains the extension <strong>.kcg</strong> or no extension is provided or recognised, then the produced file format will be a callgrind output format.</p>
+<p>See <a href='#e'>E</a>xecution Trees for a detailed explanation about execution trees formats.</p>
+</blockquote>
+</div></div></div><h1 id='uncommon-options'><a href='#uncommon-options'>UNCOMMON OPTIONS</a></h1><div data-for='uncommon-options' data-hide><div class='section' data-for='uncommon-options'><div data-more>
+<p>These options apply to all tools, as they affect certain obscure workings of the Valgrind core. Most people wont need to use them.</p>
+<p><strong>--smc-check=&lt;none|stack|all|all-non-file&gt; [default: all-non-file for x86/amd64/s390x, stack for other archs] </strong></p>
+<blockquote>
+<p>This option controls Valgrinds detection of self-modifying code. If no checking is done, when a program executes some code, then overwrites it with new code, and executes the new code, Valgrind will continue to execute the translations it made for the old code. This will likely lead to incorrect behaviour and/or crashes.</p>
+<p>For "modern" architectures -- anything thats not x86, amd64 or s390x -- the default is <code>stack</code>. This is because a correct program must take explicit action to reestablish D-I cache coherence following code modification. Valgrind observes and honours such actions, with the result that self-modifying code is transparently handled with zero extra cost.</p>
+<p>For x86, amd64 and s390x, the program is not required to notify the hardware of required D-I coherence syncing. Hence the default is <code>all-non-file</code>, which covers the normal case of generating code into an anonymous (non-file-backed) mmapd area.</p>
+<p>The meanings of the four available settings are as follows. No detection (<code>none</code>), detect self-modifying code on the stack (which is used by GCC to implement nested functions) (<code>stack</code>), detect self-modifying code everywhere (<code>all</code>), and detect self-modifying code everywhere except in file-backed mappings (<code>all-non-file</code>).</p>
+<p>Running with <code>all</code> will slow Valgrind down noticeably. Running with <code>none</code> will rarely speed things up, since very little code gets dynamically generated in most programs. The <strong>VALGRIND_DISCARD_TRANSLATIONS</strong> client request is an alternative to <strong>--smc-check=all</strong> and <strong>--smc-check=all-non-file</strong> that requires more programmer effort but allows Valgrind to run your program faster, by telling it precisely when translations need to be re-made.</p>
+<p><strong>--smc-check=all-non-file</strong> provides a cheaper but more limited version of <strong>--smc-check=all</strong>. It adds checks to any translations that do not originate from file-backed memory mappings. Typical applications that generate code, for example JITs in web browsers, generate code into anonymous mmaped areas, whereas the "fixed" code of the browser always lives in file-backed mappings. <strong>--smc-check=all-non-file</strong> takes advantage of this observation, limiting the overhead of checking to code which is likely to be JIT generated.</p>
+</blockquote>
+<p><strong>--read-inline-info=&lt;yes|no&gt; [default: see below] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will read information about inlined function calls from DWARF3 debug info. This slows Valgrind startup and makes it use more memory (typically for each inlined piece of code, 6 words and space for the function name), but it results in more descriptive stacktraces. Currently, this functionality is enabled by default only for Linux, Android and Solaris targets and only for the tools Memcheck, Massif, Helgrind and DRD. Here is an example of some stacktraces with <strong>--read-inline-info=no</strong>:</p>
+<p>.RS 4</p>
+<pre><code>==15380== Conditional jump or move depends on uninitialised value(s)
+==15380==    at 0x80484EA: main (inlinfo.c:6)
+==15380== 
+==15380== Conditional jump or move depends on uninitialised value(s)
+==15380==    at 0x8048550: fun_noninline (inlinfo.c:6)
+==15380==    by 0x804850E: main (inlinfo.c:34)
+==15380== 
+==15380== Conditional jump or move depends on uninitialised value(s)
+==15380==    at 0x8048520: main (inlinfo.c:6)</code></pre>
+<p>.RE</p>
+<p>And here are the same errors with <strong>--read-inline-info=yes</strong>:</p>
+<p>.RS 4</p>
+<pre><code>==15377== Conditional jump or move depends on uninitialised value(s)
+==15377==    at 0x80484EA: fun_d (inlinfo.c:6)
+==15377==    by 0x80484EA: fun_c (inlinfo.c:14)
+==15377==    by 0x80484EA: fun_b (inlinfo.c:20)
+==15377==    by 0x80484EA: fun_a (inlinfo.c:26)
+==15377==    by 0x80484EA: main (inlinfo.c:33)
+==15377== 
+==15377== Conditional jump or move depends on uninitialised value(s)
+==15377==    at 0x8048550: fun_d (inlinfo.c:6)
+==15377==    by 0x8048550: fun_noninline (inlinfo.c:41)
+==15377==    by 0x804850E: main (inlinfo.c:34)
+==15377== 
+==15377== Conditional jump or move depends on uninitialised value(s)
+==15377==    at 0x8048520: fun_d (inlinfo.c:6)
+==15377==    by 0x8048520: main (inlinfo.c:35)</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><strong>--read-var-info=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will read information about variable types and locations from DWARF3 debug info. This slows Valgrind startup significantly and makes it use significantly more memory, but for the tools that can take advantage of it (Memcheck, Helgrind, DRD) it can result in more precise error messages. For example, here are some standard errors issued by Memcheck:</p>
+<p>.RS 4</p>
+<pre><code>==15363== Uninitialised byte(s) found during client check request
+==15363==    at 0x80484A9: croak (varinfo1.c:28)
+==15363==    by 0x8048544: main (varinfo1.c:55)
+==15363==  Address 0x80497f7 is 7 bytes inside data symbol "global_i2"
+==15363== 
+==15363== Uninitialised byte(s) found during client check request
+==15363==    at 0x80484A9: croak (varinfo1.c:28)
+==15363==    by 0x8048550: main (varinfo1.c:56)
+==15363==  Address 0xbea0d0cc is on thread 1s stack
+==15363==  in frame #1, created by main (varinfo1.c:45)</code></pre>
+<p>.RE</p>
+<p>And here are the same errors with <strong>--read-var-info=yes</strong>:</p>
+<p>.RS 4</p>
+<pre><code>==15370== Uninitialised byte(s) found during client check request
+==15370==    at 0x80484A9: croak (varinfo1.c:28)
+==15370==    by 0x8048544: main (varinfo1.c:55)
+==15370==  Location 0x80497f7 is 0 bytes inside global_i2[7],
+==15370==  a global variable declared at varinfo1.c:41
+==15370== 
+==15370== Uninitialised byte(s) found during client check request
+==15370==    at 0x80484A9: croak (varinfo1.c:28)
+==15370==    by 0x8048550: main (varinfo1.c:56)
+==15370==  Location 0xbeb4a0cc is 0 bytes inside local var "local"
+==15370==  declared at varinfo1.c:46, in frame #1 of thread 1</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><strong>--vgdb-poll=&lt;number&gt; [default: 5000] </strong></p>
+<blockquote>
+<p>As part of its main loop, the Valgrind scheduler will poll to check if some activity (such as an external command or some input from a gdb) has to be handled by gdbserver. This activity poll will be done after having run the given number of basic blocks (or slightly more than the given number of basic blocks). This poll is quite cheap so the default value is set relatively low. You might further decrease this value if vgdb cannot use ptrace system call to interrupt Valgrind if all threads are (most of the time) blocked in a system call.</p>
+</blockquote>
+<p><strong>--vgdb-shadow-registers=no|yes [default: no] </strong></p>
+<blockquote>
+<p>When activated, gdbserver will expose the Valgrind shadow registers to GDB. With this, the value of the Valgrind shadow registers can be examined or changed using GDB. Exposing shadow registers only works with GDB version 7.1 or later.</p>
+</blockquote>
+<p><strong>--vgdb-prefix=&lt;prefix&gt; [default: /tmp/vgdb-pipe] </strong></p>
+<blockquote>
+<p>To communicate with gdb/vgdb, the Valgrind gdbserver creates 3 files (2 named FIFOs and a mmap shared memory file). The prefix option controls the directory and prefix for the creation of these files.</p>
+</blockquote>
+<p><strong>--run-libc-freeres=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>This option is only relevant when running Valgrind on Linux.</p>
+<p>The GNU C library (<strong><a href="http://libc.so">libc.so</a></strong>), which is used by all programs, may allocate memory for its own uses. Usually it doesnt bother to free that memory when the program ends—there would be no point, since the Linux kernel reclaims all process resources when a process exits anyway, so it would just slow things down.</p>
+<p>The glibc authors realised that this behaviour causes leak checkers, such as Valgrind, to falsely report leaks in glibc, when a leak check is done at exit. In order to avoid this, they provided a routine called <strong>__libc_freeres</strong> specifically to make glibc release all memory it has allocated. Memcheck therefore tries to run <strong>__libc_freeres</strong> at exit.</p>
+<p>Unfortunately, in some very old versions of glibc, <strong>__libc_freeres</strong> is sufficiently buggy to cause segmentation faults. This was particularly noticeable on Red Hat 7.1. So this option is provided in order to inhibit the run of <strong>__libc_freeres</strong>. If your program seems to run fine on Valgrind, but segfaults at exit, you may find that <strong>--run-libc-freeres=no</strong> fixes that, although at the cost of possibly falsely reporting space leaks in <a href="http://libc.so">libc.so</a>.</p>
+</blockquote>
+<p><strong>--run-cxx-freeres=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>This option is only relevant when running Valgrind on Linux or Solaris C++ programs.</p>
+<p>The GNU Standard C++ library (<strong>libstdc++.so</strong>), which is used by all C++ programs compiled with g++, may allocate memory for its own uses. Usually it doesnt bother to free that memory when the program ends—there would be no point, since the kernel reclaims all process resources when a process exits anyway, so it would just slow things down.</p>
+<p>The gcc authors realised that this behaviour causes leak checkers, such as Valgrind, to falsely report leaks in libstdc++, when a leak check is done at exit. In order to avoid this, they provided a routine called <strong>__gnu_cxx::__freeres</strong> specifically to make libstdc++ release all memory it has allocated. Memcheck therefore tries to run <strong>__gnu_cxx::__freeres</strong> at exit.</p>
+<p>For the sake of flexibility and unforeseen problems with <strong>__gnu_cxx::__freeres</strong>, option <strong>--run-cxx-freeres=no</strong> exists, although at the cost of possibly falsely reporting space leaks in libstdc++.so.</p>
+</blockquote>
+<p><strong>--sim-hints=hint1,hint2,... </strong></p>
+<blockquote>
+<p>Pass miscellaneous hints to Valgrind which slightly modify the simulated behaviour in nonstandard or dangerous ways, possibly to help the simulation of strange features. By default no hints are enabled. Use with caution! Currently known hints are:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>lax-ioctls: </strong> Be very lax about ioctl handling; the only assumption is that the size is correct. Doesnt require the full buffer to be initialised when writing. Without this, using some device drivers with a large number of strange ioctl commands becomes very tiresome.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>fuse-compatible: </strong> Enable special handling for certain system calls that may block in a FUSE file-system. This may be necessary when running Valgrind on a multi-threaded program that uses one thread to manage a FUSE file-system and another thread to access that file-system.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>enable-outer: </strong> Enable some special magic needed when the program being run is itself Valgrind.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>no-inner-prefix: </strong> Disable printing a prefix <strong>&gt;</strong> in front of each stdout or stderr output line in an inner Valgrind being run by an outer Valgrind. This is useful when running Valgrind regression tests in an outer/inner setup. Note that the prefix <strong>&gt;</strong> will always be printed in front of the inner debug logging lines.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>no-nptl-pthread-stackcache: </strong> This hint is only relevant when running Valgrind on Linux; it is ignored on Solaris and Mac OS X.</p>
+<p>The GNU glibc pthread library (<strong><a href="http://libpthread.so">libpthread.so</a></strong>), which is used by pthread programs, maintains a cache of pthread stacks. When a pthread terminates, the memory used for the pthread stack and some thread local storage related data structure are not always directly released. This memory is kept in a cache (up to a certain size), and is re-used if a new thread is started.</p>
+<p>This cache causes the helgrind tool to report some false positive race condition errors on this cached memory, as helgrind does not understand the internal glibc cache synchronisation primitives. So, when using helgrind, disabling the cache helps to avoid false positive race conditions, in particular when using thread local storage variables (e.g. variables using the <strong>__thread</strong> qualifier).</p>
+<p>When using the memcheck tool, disabling the cache ensures the memory used by glibc to handle __thread variables is directly released when a thread terminates.</p>
+<p>Note: Valgrind disables the cache using some internal knowledge of the glibc stack cache implementation and by examining the debug information of the pthread library. This technique is thus somewhat fragile and might not work for all glibc versions. This has been successfully tested with various glibc versions (e.g. 2.11, 2.16, 2.18) on various platforms.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>lax-doors: </strong> (Solaris only) Be very lax about door syscall handling over unrecognised door file descriptors. Does not require that full buffer is initialised when writing. Without this, programs using libdoor(3LIB) functionality with completely proprietary semantics may report large number of false positives.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>fallback-llsc: </strong>(MIPS and ARM64 only): Enables an alternative implementation of Load-Linked (LL) and Store-Conditional (SC) instructions. The standard implementation gives more correct behaviour, but can cause indefinite looping on certain processor implementations that are intolerant of extra memory references between LL and SC. So far this is known only to happen on Cavium 3 cores. You should not need to use this flag, since the relevant cores are detected at startup and the alternative implementation is automatically enabled if necessary. There is no equivalent anti-flag: you cannot force-disable the alternative implementation, if it is automatically enabled. The underlying problem exists because the "standard" implementation of LL and SC is done by copying through LL and SC instructions into the instrumented code. However, tools may insert extra instrumentation memory references in between the LL and SC instructions. These memory references are not present in the original uninstrumented code, and their presence in the instrumented code can cause the SC instructions to persistently fail, leading to indefinite looping in LL-SC blocks. The alternative implementation gives correct behaviour of LL and SC instructions between threads in a process, up to and including the ABA scenario. It also gives correct behaviour between a Valgrinded thread and a non-Valgrinded thread running in a different process, that communicate via shared memory, but only up to and including correct CAS behaviour -- in this case the ABA scenario may not be correctly handled.</p>
+</blockquote>
+</blockquote>
+<p><strong>--fair-sched=&lt;no|yes|try&gt; [default: no] </strong></p>
+<blockquote>
+<p>The <strong>--fair-sched</strong> option controls the locking mechanism used by Valgrind to serialise thread execution. The locking mechanism controls the way the threads are scheduled, and different settings give different trade-offs between fairness and performance. For more details about the Valgrind thread serialisation scheme and its impact on performance and thread scheduling, see Scheduling and Multi-Thread Performance.</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The value <strong>--fair-sched=yes</strong> activates a fair scheduler. In short, if multiple threads are ready to run, the threads will be scheduled in a round robin fashion. This mechanism is not available on all platforms or Linux versions. If not available, using <strong>--fair-sched=yes</strong> will cause Valgrind to terminate with an error.</p>
+<p>You may find this setting improves overall responsiveness if you are running an interactive multithreaded program, for example a web browser, on Valgrind.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The value <strong>--fair-sched=try</strong> activates fair scheduling if available on the platform. Otherwise, it will automatically fall back to <strong>--fair-sched=no</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>The value <strong>--fair-sched=no</strong> activates a scheduler which does not guarantee fairness between threads ready to run, but which in general gives the highest performance.</p>
+</blockquote>
+</blockquote>
+<p><strong>--kernel-variant=variant1,variant2,...</strong></p>
+<blockquote>
+<p>Handle system calls and ioctls arising from minor variants of the default kernel for this platform. This is useful for running on hacked kernels or with kernel modules which support nonstandard ioctls, for example. Use with caution. If you dont understand what this option does then you almost certainly dont need it. Currently known variants are:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>bproc</strong>: support the <strong>sys_broc</strong> system call on x86. This is for running on BProc, which is a minor variant of standard Linux which is sometimes used for building clusters.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>android-no-hw-tls</strong>: some versions of the Android emulator for ARM do not provide a hardware TLS (thread-local state) register, and Valgrind crashes at startup. Use this variant to select software support for TLS.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>android-gpu-sgx5xx</strong>: use this to support handling of proprietary ioctls for the PowerVR SGX 5XX series of GPUs on Android devices. Failure to select this does not cause stability problems, but may cause Memcheck to report false errors after the program performs GPU-specific ioctls.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>android-gpu-adreno3xx</strong>: similarly, use this to support handling of proprietary ioctls for the Qualcomm Adreno 3XX series of GPUs on Android devices.</p>
+</blockquote>
+</blockquote>
+<p><strong>--merge-recursive-frames=&lt;number&gt; [default: 0] </strong></p>
+<blockquote>
+<p>Some recursive algorithms, for example balanced binary tree implementations, create many different stack traces, each containing cycles of calls. A cycle is defined as two identical program counter values separated by zero or more other program counter values. Valgrind may then use a lot of memory to store all these stack traces. This is a poor use of memory considering that such stack traces contain repeated uninteresting recursive calls instead of more interesting information such as the function that has initiated the recursive call.</p>
+<p>The option <strong>--merge-recursive-frames=&lt;number&gt;</strong> instructs Valgrind to detect and merge recursive call cycles having a size of up to <strong>&lt;number&gt;</strong> frames. When such a cycle is detected, Valgrind records the cycle in the stack trace as a unique program counter.</p>
+<p>The value 0 (the default) causes no recursive call merging. A value of 1 will cause stack traces of simple recursive algorithms (for example, a factorial implementation) to be collapsed. A value of 2 will usually be needed to collapse stack traces produced by recursive algorithms such as binary trees, quick sort, etc. Higher values might be needed for more complex recursive algorithms.</p>
+<p>Note: recursive calls are detected by analysis of program counter values. They are not detected by looking at function names.</p>
+</blockquote>
+<p><strong>--num-transtab-sectors=&lt;number&gt; [default: 6 for Android platforms, 16 for all others] </strong></p>
+<blockquote>
+<p>Valgrind translates and instruments your programs machine code in small fragments (basic blocks). The translations are stored in a translation cache that is divided into a number of sections (sectors). If the cache is full, the sector containing the oldest translations is emptied and reused. If these old translations are needed again, Valgrind must re-translate and re-instrument the corresponding machine code, which is expensive. If the "executed instructions" working set of a program is big, increasing the number of sectors may improve performance by reducing the number of re-translations needed. Sectors are allocated on demand. Once allocated, a sector can never be freed, and occupies considerable space, depending on the tool and the value of <strong>--avg-transtab-entry-size</strong> (about 40 MB per sector for Memcheck). Use the option <strong>--stats=yes</strong> to obtain precise information about the memory used by a sector and the allocation and recycling of sectors.</p>
+</blockquote>
+<p><strong>--avg-transtab-entry-size=&lt;number&gt; [default: 0, meaning use tool provided default] </strong></p>
+<blockquote>
+<p>Average size of translated basic block. This average size is used to dimension the size of a sector. Each tool provides a default value to be used. If this default value is too small, the translation sectors will become full too quickly. If this default value is too big, a significant part of the translation sector memory will be unused. Note that the average size of a basic block translation depends on the tool, and might depend on tool options. For example, the memcheck option <strong>--track-origins=yes</strong> increases the size of the basic block translations. Use <strong>--avg-transtab-entry-size</strong> to tune the size of the sectors, either to gain memory or to avoid too many retranslations.</p>
+</blockquote>
+<p><strong>--aspace-minaddr=&lt;address&gt; [default: depends on the platform] </strong></p>
+<blockquote>
+<p>To avoid potential conflicts with some system libraries, Valgrind does not use the address space below <strong>--aspace-minaddr</strong> value, keeping it reserved in case a library specifically requests memory in this region. So, some "pessimistic" value is guessed by Valgrind depending on the platform. On linux, by default, Valgrind avoids using the first 64MB even if typically there is no conflict in this complete zone. You can use the option <strong>--aspace-minaddr</strong> to have your memory hungry application benefitting from more of this lower memory. On the other hand, if you encounter a conflict, increasing aspace-minaddr value might solve it. Conflicts will typically manifest themselves with mmap failures in the low range of the address space. The provided address must be page aligned and must be equal or bigger to 0x1000 (4KB). To find the default value on your platform, do something such as valgrind -d -d date 2&gt;&amp;1 | grep -i minaddr. Values lower than 0x10000 (64KB) are known to create problems on some distributions.</p>
+</blockquote>
+<p><strong>--valgrind-stacksize=&lt;number&gt; [default: 1MB] </strong></p>
+<blockquote>
+<p>For each thread, Valgrind needs its own private stack. The default size for these stacks is largely dimensioned, and so should be sufficient in most cases. In case the size is too small, Valgrind will segfault. Before segfaulting, a warning might be produced by Valgrind when approaching the limit.</p>
+<p>Use the option <strong>--valgrind-stacksize</strong> if such an (unlikely) warning is produced, or Valgrind dies due to a segmentation violation. Such segmentation violations have been seen when demangling huge C++ symbols.</p>
+<p>If your application uses many threads and needs a lot of memory, you can gain some memory by reducing the size of these Valgrind stacks using the option <strong>--valgrind-stacksize</strong>.</p>
+</blockquote>
+<p><strong>--show-emwarns=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Valgrind will emit warnings about its CPU emulation in certain cases. These are usually not interesting.</p>
+</blockquote>
+<p><strong>--require-text-symbol=:sonamepatt:fnnamepatt</strong></p>
+<blockquote>
+<p>When a shared object whose soname matches <code>sonamepatt</code> is loaded into the process, examine all the text symbols it exports. If none of those match <code>fnnamepatt</code>, print an error message and abandon the run. This makes it possible to ensure that the run does not continue unless a given shared object contains a particular function name.</p>
+<p>Both <code>sonamepatt</code> and <code>fnnamepatt</code> can be written using the usual <code>?</code> and <code>*</code> wildcards. For example: <code>":*<a href="http://libc.so">libc.so</a>*:foo?bar"</code>. You may use characters other than a colon to separate the two patterns. It is only important that the first character and the separator character are the same. For example, the above example could also be written <code>"Q*<a href="http://libc.so">libc.so</a>*Qfoo?bar"</code>. Multiple <code> --require-text-symbol</code> flags are allowed, in which case shared objects that are loaded into the process will be checked against all of them.</p>
+<p>The purpose of this is to support reliable usage of marked-up libraries. For example, suppose we have a version of GCCs <code><a href="http://libgomp.so">libgomp.so</a></code> which has been marked up with annotations to support Helgrind. It is only too easy and confusing to load the wrong, un-annotated <code><a href="http://libgomp.so">libgomp.so</a></code> into the application. So the idea is: add a text symbol in the marked-up library, for example <code>annotated_for_helgrind_3_6</code>, and then give the flag <code>--require-text-symbol=:*libgomp*so*:annotated_for_helgrind_3_6</code> so that when <code><a href="http://libgomp.so">libgomp.so</a></code> is loaded, Valgrind scans its symbol table, and if the symbol isnt present the run is aborted, rather than continuing silently with the un-marked-up library. Note that you should put the entire flag in quotes to stop shells expanding up the <code>*</code> and <code>?</code> wildcards.</p>
+</blockquote>
+<p><strong>--soname-synonyms=syn1=pattern1,syn2=pattern2,...</strong></p>
+<blockquote>
+<p>When a shared library is loaded, Valgrind checks for functions in the library that must be replaced or wrapped. For example, Memcheck replaces some string and memory functions (strchr, strlen, strcpy, memchr, memcpy, memmove, etc.) with its own versions. Such replacements are normally done only in shared libraries whose soname matches a predefined soname pattern (e.g. <code><a href="http://libc.so">libc.so</a>*</code> on linux). By default, no replacement is done for a statically linked binary or for alternative libraries, except for the allocation functions (malloc, free, calloc, memalign, realloc, operator new, operator delete, etc.) Such allocation functions are intercepted by default in any shared library or in the executable if they are exported as global symbols. This means that if a replacement allocation library such as tcmalloc is found, its functions are also intercepted by default. In some cases, the replacements allow <strong>--soname-synonyms</strong> to specify one additional synonym pattern, giving flexibility in the replacement. Or to prevent interception of all public allocation symbols.</p>
+<p>Currently, this flexibility is only allowed for the malloc related functions, using the synonym <code>somalloc</code>. This synonym is usable for all tools doing standard replacement of malloc related functions (e.g. memcheck, helgrind, drd, massif, dhat).</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Alternate malloc library: to replace the malloc related functions in a specific alternate library with soname <code><a href="http://mymalloclib.so">mymalloclib.so</a></code> (and not in any others), give the option <strong>--soname-synonyms=somalloc=<a href="http://mymalloclib.so">mymalloclib.so</a></strong>. A pattern can be used to match multiple libraries sonames. For example, <strong>--soname-synonyms=somalloc=*tcmalloc*</strong> will match the soname of all variants of the tcmalloc library (native, debug, profiled, ... tcmalloc variants).</p>
+<p>Note: the soname of a elf shared library can be retrieved using the readelf utility.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Replacements in a statically linked library are done by using the <code>NONE</code> pattern. For example, if you link with <code>libtcmalloc.a</code>, and only want to intercept the malloc related functions in the executable (and standard libraries) themselves, but not any other shared libraries, you can give the option <strong>--soname-synonyms=somalloc=NONE</strong>. Note that a NONE pattern will match the main executable and any shared library having no soname.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>To run a "default" Firefox build for Linux, in which JEMalloc is linked in to the main executable, use <strong>--soname-synonyms=somalloc=NONE</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>To only intercept allocation symbols in the default system libraries, but not in any other shared library or the executable defining public malloc or operator new related functions use a non-existing library name like <strong>--soname-synonyms=somalloc=nouserintercepts</strong> (where <code>nouserintercepts</code> can be any non-existing library name).</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Shared library of the dynamic (runtime) linker is excluded from searching for global public symbols, such as those for the malloc related functions (identified by <code>somalloc</code> synonym).</p>
+</blockquote>
+</blockquote>
+<p><strong>--progress-interval=&lt;number&gt; [default: 0, meaning disabled] </strong></p>
+<blockquote>
+<p>This is an enhancement to Valgrinds debugging output. It is unlikely to be of interest to end users.</p>
+<p>When <code>number</code> is set to a non-zero value, Valgrind will print a one-line progress summary every <code>number</code> seconds. Valid settings for <code>number</code> are between 0 and 3600 inclusive. Heres some example output with <code>number</code> set to 10:</p>
+<p>.RS 4</p>
+<pre><code>PROGRESS: U 110s, W 113s, 97.3% CPU, EvC 414.79M, TIn 616.7k, TOut 0.5k, #thr 67
+PROGRESS: U 120s, W 124s, 96.8% CPU, EvC 505.27M, TIn 636.6k, TOut 3.0k, #thr 64
+PROGRESS: U 130s, W 134s, 97.0% CPU, EvC 574.90M, TIn 657.5k, TOut 3.0k, #thr 63</code></pre>
+<p>.RE</p>
+<p>Each line shows:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>U</code>: total user time</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>W</code>: total wallclock time</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>CPU</code>: overall average cpu use</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>EvC</code>: number of event checks. An event check is a backwards branch in the simulated program, so this is a measure of forward progress of the program</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>TIn</code>: number of code blocks instrumented by the JIT</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>TOut</code>: number of instrumented code blocks that have been thrown away</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><code>#thr</code>: number of threads in the program</p>
+</blockquote>
+<p>From the progress of these, it is possible to observe:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is compute bound (<code>TIn</code> rises slowly, <code>EvC</code> rises rapidly)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is in a spinloop (<code>TIn</code>/<code>TOut</code> fixed, <code>EvC</code> rises rapidly)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is JIT-bound (<code>TIn</code> rises rapidly)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is rapidly discarding code (<code>TOut</code> rises rapidly)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is about to achieve some expected state (<code>EvC</code> arrives at some value you expect)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>when the program is idling (<code>U</code> rises more slowly than <code>W</code>)</p>
+</blockquote>
+</blockquote>
+</div></div></div><h1 id='debugging-valgrind-options'><a href='#debugging-valgrind-options'>DEBUGGING VALGRIND OPTIONS</a></h1><div data-for='debugging-valgrind-options' data-hide><div class='section' data-for='debugging-valgrind-options'><div data-more>
+<p>There are also some options for debugging Valgrind itself. You shouldnt need to use them in the normal run of things. If you wish to see the list, use the <strong>--help-debug</strong> option.</p>
+</div></div></div><h1 id='memcheck-options'><a href='#memcheck-options'>MEMCHECK OPTIONS</a></h1><div data-for='memcheck-options' data-hide><div class='section' data-for='memcheck-options'><div data-more>
+<p><strong>--leak-check=&lt;no|summary|yes|full&gt; [default: summary] </strong></p>
+<blockquote>
+<p>When enabled, search for memory leaks when the client program finishes. If set to <code>summary</code>, it says how many leaks occurred. If set to <code>full</code> or <code>yes</code>, each individual leak will be shown in detail and/or counted as an error, as specified by the options <strong>--show-leak-kinds</strong> and <strong>--errors-for-leak-kinds</strong>.</p>
+<p>If <code>--xml=yes</code> is given, memcheck will automatically use the value <code>--leak-check=full</code>. You can use <strong>--show-leak-kinds=none</strong> to reduce the size of the xml output if you are not interested in the leak results.</p>
+</blockquote>
+<p><strong>--leak-resolution=&lt;low|med|high&gt; [default: high] </strong></p>
+<blockquote>
+<p>When doing leak checking, determines how willing Memcheck is to consider different backtraces to be the same for the purposes of merging multiple leaks into a single leak report. When set to <code>low</code>, only the first two entries need match. When <code>med</code>, four entries have to match. When <code>high</code>, all entries need to match.</p>
+<p>For hardcore leak debugging, you probably want to use <strong>--leak-resolution=high</strong> together with <strong>--num-callers=40</strong> or some such large number.</p>
+<p>Note that the <strong>--leak-resolution</strong> setting does not affect Memchecks ability to find leaks. It only changes how the results are presented.</p>
+</blockquote>
+<p><strong>--show-leak-kinds=&lt;set&gt; [default: definite,possible] </strong></p>
+<blockquote>
+<p>Specifies the leak kinds to show in a <code>full</code> leak search, in one of the following ways:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>a comma separated list of one or more of <strong>definite indirect possible reachable</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>all</strong> to specify the complete set (all leak kinds). It is equivalent to <strong>--show-leak-kinds=definite,indirect,possible,reachable</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>none</strong> for the empty set.</p>
+</blockquote>
+</blockquote>
+<p><strong>--errors-for-leak-kinds=&lt;set&gt; [default: definite,possible] </strong></p>
+<blockquote>
+<p>Specifies the leak kinds to count as errors in a <code>full</code> leak search. The <strong>&lt;set&gt;</strong> is specified similarly to <strong>--show-leak-kinds</strong></p>
+</blockquote>
+<p><strong>--leak-check-heuristics=&lt;set&gt; [default: all] </strong></p>
+<blockquote>
+<p>Specifies the set of leak check heuristics to be used during leak searches. The heuristics control which interior pointers to a block cause it to be considered as reachable. The heuristic set is specified in one of the following ways:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>a comma separated list of one or more of <strong>stdstring length64 newarray multipleinheritance</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>all</strong> to activate the complete set of heuristics. It is equivalent to <strong>--leak-check-heuristics=stdstring,length64,newarray,multipleinheritance</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>none</strong> for the empty set.</p>
+</blockquote>
+<p>Note that these heuristics are dependent on the layout of the objects produced by the C++ compiler. They have been tested with some gcc versions (e.g. 4.4 and 4.7). They might not work properly with other C++ compilers.</p>
+</blockquote>
+<p><strong>--show-reachable=&lt;yes|no&gt; </strong>, <strong>--show-possibly-lost=&lt;yes|no&gt; </strong></p>
+<blockquote>
+<p>These options provide an alternative way to specify the leak kinds to show:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>--show-reachable=no --show-possibly-lost=yes</strong> is equivalent to <strong>--show-leak-kinds=definite,possible</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>--show-reachable=no --show-possibly-lost=no</strong> is equivalent to <strong>--show-leak-kinds=definite</strong>.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>--show-reachable=yes</strong> is equivalent to <strong>--show-leak-kinds=all</strong>.</p>
+</blockquote>
+<p>Note that <strong>--show-possibly-lost=no</strong> has no effect if <strong>--show-reachable=yes</strong> is specified.</p>
+</blockquote>
+<p><strong>--xtree-leak=&lt;no|yes&gt; [no] </strong></p>
+<blockquote>
+<p>If set to yes, the results for the leak search done at exit will be output in a Callgrind Format execution tree file. Note that this automatically sets the options <strong>--leak-check=full</strong> and <strong>--show-leak-kinds=all</strong>, to allow xtree visualisation tools such as kcachegrind to select what kind to leak to visualise. The produced file will contain the following events:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>RB</strong> : Reachable Bytes</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>PB</strong> : Possibly lost Bytes</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>IB</strong> : Indirectly lost Bytes</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>DB</strong> : Definitely lost Bytes (direct plus indirect)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>DIB</strong> : Definitely Indirectly lost Bytes (subset of DB)</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>RBk</strong> : reachable Blocks</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>PBk</strong> : Possibly lost Blocks</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>IBk</strong> : Indirectly lost Blocks</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p><strong>DBk</strong> : Definitely lost Blocks</p>
+</blockquote>
+<p>The increase or decrease for all events above will also be output in the file to provide the delta (increase or decrease) between 2 successive leak searches. For example, <strong>iRB</strong> is the increase of the <strong>RB</strong> event, <strong>dPBk</strong> is the decrease of <strong>PBk</strong> event. The values for the increase and decrease events will be zero for the first leak search done.</p>
+<p>See <a href='#e'>E</a>xecution Trees for a detailed explanation about execution trees.</p>
+</blockquote>
+<p><strong>--xtree-leak-file=&lt;filename&gt; [default: xtleak.kcg.%p] </strong></p>
+<blockquote>
+<p>Specifies that Valgrind should produce the xtree leak report in the specified file. Any <strong>%p</strong>, <strong>%q</strong> or <strong>%n</strong> sequences appearing in the filename are expanded in exactly the same way as they are for <strong>--log-file</strong>. See the description of --log-file for details.</p>
+<p>See <a href='#e'>E</a>xecution Trees for a detailed explanation about execution trees formats.</p>
+</blockquote>
+<p><strong>--undef-value-errors=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Controls whether Memcheck reports uses of undefined value errors. Set this to <code>no</code> if you dont want to see undefined value errors. It also has the side effect of speeding up Memcheck somewhat. AddrCheck (removed in Valgrind 3.1.0) functioned like Memcheck with <strong>--undef-value-errors=no</strong>.</p>
+</blockquote>
+<p><strong>--track-origins=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Controls whether Memcheck tracks the origin of uninitialised values. By default, it does not, which means that although it can tell you that an uninitialised value is being used in a dangerous way, it cannot tell you where the uninitialised value came from. This often makes it difficult to track down the root problem.</p>
+<p>When set to <code>yes</code>, Memcheck keeps track of the origins of all uninitialised values. Then, when an uninitialised value error is reported, Memcheck will try to show the origin of the value. An origin can be one of the following four places: a heap block, a stack allocation, a client request, or miscellaneous other sources (eg, a call to <code>brk</code>).</p>
+<p>For uninitialised values originating from a heap block, Memcheck shows where the block was allocated. For uninitialised values originating from a stack allocation, Memcheck can tell you which function allocated the value, but no more than that -- typically it shows you the source location of the opening brace of the function. So you should carefully check that all of the functions local variables are initialised properly.</p>
+<p>Performance overhead: origin tracking is expensive. It halves Memchecks speed and increases memory use by a minimum of 100MB, and possibly more. Nevertheless it can drastically reduce the effort required to identify the root cause of uninitialised value errors, and so is often a programmer productivity win, despite running more slowly.</p>
+<p>Accuracy: Memcheck tracks origins quite accurately. To avoid very large space and time overheads, some approximations are made. It is possible, although unlikely, that Memcheck will report an incorrect origin, or not be able to identify any origin.</p>
+<p>Note that the combination <strong>--track-origins=yes</strong> and <strong>--undef-value-errors=no</strong> is nonsensical. Memcheck checks for and rejects this combination at startup.</p>
+</blockquote>
+<p><strong>--partial-loads-ok=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Controls how Memcheck handles 32-, 64-, 128- and 256-bit naturally aligned loads from addresses for which some bytes are addressable and others are not. When <code>yes</code>, such loads do not produce an address error. Instead, loaded bytes originating from illegal addresses are marked as uninitialised, and those corresponding to legal addresses are handled in the normal way.</p>
+<p>When <code>no</code>, loads from partially invalid addresses are treated the same as loads from completely invalid addresses: an illegal-address error is issued, and the resulting bytes are marked as initialised.</p>
+<p>Note that code that behaves in this way is in violation of the ISO C/C++ standards, and should be considered broken. If at all possible, such code should be fixed.</p>
+</blockquote>
+<p><strong>--expensive-definedness-checks=&lt;no|auto|yes&gt; [default: auto] </strong></p>
+<blockquote>
+<p>Controls whether Memcheck should employ more precise but also more expensive (time consuming) instrumentation when checking the definedness of certain values. In particular, this affects the instrumentation of integer adds, subtracts and equality comparisons.</p>
+<p>Selecting <strong>--expensive-definedness-checks=yes</strong> causes Memcheck to use the most accurate analysis possible. This minimises false error rates but can cause up to 30% performance degradation.</p>
+<p>Selecting <strong>--expensive-definedness-checks=no</strong> causes Memcheck to use the cheapest instrumentation possible. This maximises performance but will normally give an unusably high false error rate.</p>
+<p>The default setting, <strong>--expensive-definedness-checks=auto</strong>, is strongly recommended. This causes Memcheck to use the minimum of expensive instrumentation needed to achieve the same false error rate as <strong>--expensive-definedness-checks=yes</strong>. It also enables an instrumentation-time analysis pass which aims to further reduce the costs of accurate instrumentation. Overall, the performance loss is generally around 5% relative to <strong>--expensive-definedness-checks=no</strong>, although this is strongly workload dependent. Note that the exact instrumentation settings in this mode are architecture dependent.</p>
+</blockquote>
+<p><strong>--keep-stacktraces=alloc|free|alloc-and-free|alloc-then-free|none [default: alloc-and-free] </strong></p>
+<blockquote>
+<p>Controls which stack trace(s) to keep for mallocd and/or freed blocks.</p>
+<p>With <code>alloc-then-free</code>, a stack trace is recorded at allocation time, and is associated with the block. When the block is freed, a second stack trace is recorded, and this replaces the allocation stack trace. As a result, any "use after free" errors relating to this block can only show a stack trace for where the block was freed.</p>
+<p>With <code>alloc-and-free</code>, both allocation and the deallocation stack traces for the block are stored. Hence a "use after free" error will show both, which may make the error easier to diagnose. Compared to <code>alloc-then-free</code>, this setting slightly increases Valgrinds memory use as the block contains two references instead of one.</p>
+<p>With <code>alloc</code>, only the allocation stack trace is recorded (and reported). With <code>free</code>, only the deallocation stack trace is recorded (and reported). These values somewhat decrease Valgrinds memory and cpu usage. They can be useful depending on the error types you are searching for and the level of detail you need to analyse them. For example, if you are only interested in memory leak errors, it is sufficient to record the allocation stack traces.</p>
+<p>With <code>none</code>, no stack traces are recorded for malloc and free operations. If your program allocates a lot of blocks and/or allocates/frees from many different stack traces, this can significantly decrease cpu and/or memory required. Of course, few details will be reported for errors related to heap blocks.</p>
+<p>Note that once a stack trace is recorded, Valgrind keeps the stack trace in memory even if it is not referenced by any block. Some programs (for example, recursive algorithms) can generate a huge number of stack traces. If Valgrind uses too much memory in such circumstances, you can reduce the memory required with the options <code>--keep-stacktraces</code> and/or by using a smaller value for the option <code>--num-callers</code>.</p>
+<p>If you want to use --xtree-memory=full memory profiling (see Execution Trees), then you cannot specify <code>--keep-stacktraces=free</code> or <code>--keep-stacktraces=none</code>.</p>
+</blockquote>
+<p><strong>--freelist-vol=&lt;number&gt; [default: 20000000] </strong></p>
+<blockquote>
+<p>When the client program releases memory using <strong>free</strong> (in C) or delete (C++), that memory is not immediately made available for re-allocation. Instead, it is marked inaccessible and placed in a queue of freed blocks. The purpose is to defer as long as possible the point at which freed-up memory comes back into circulation. This increases the chance that Memcheck will be able to detect invalid accesses to blocks for some significant period of time after they have been freed.</p>
+<p>This option specifies the maximum total size, in bytes, of the blocks in the queue. The default value is twenty million bytes. Increasing this increases the total amount of memory used by Memcheck but may detect invalid uses of freed blocks which would otherwise go undetected.</p>
+</blockquote>
+<p><strong>--freelist-big-blocks=&lt;number&gt; [default: 1000000] </strong></p>
+<blockquote>
+<p>When making blocks from the queue of freed blocks available for re-allocation, Memcheck will in priority re-circulate the blocks with a size greater or equal to <strong>--freelist-big-blocks</strong>. This ensures that freeing big blocks (in particular freeing blocks bigger than <strong>--freelist-vol</strong>) does not immediately lead to a re-circulation of all (or a lot of) the small blocks in the free list. In other words, this option increases the likelihood to discover dangling pointers for the "small" blocks, even when big blocks are freed.</p>
+<p>Setting a value of 0 means that all the blocks are re-circulated in a FIFO order.</p>
+</blockquote>
+<p><strong>--workaround-gcc296-bugs=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, assume that reads and writes some small distance below the stack pointer are due to bugs in GCC 2.96, and does not report them. The "small distance" is 256 bytes by default. Note that GCC 2.96 is the default compiler on some ancient Linux distributions (RedHat 7.X) and so you may need to use this option. Do not use it if you do not have to, as it can cause real errors to be overlooked. A better alternative is to use a more recent GCC in which this bug is fixed.</p>
+<p>You may also need to use this option when working with GCC 3.X or 4.X on 32-bit PowerPC Linux. This is because GCC generates code which occasionally accesses below the stack pointer, particularly for floating-point to/from integer conversions. This is in violation of the 32-bit PowerPC ELF specification, which makes no provision for locations below the stack pointer to be accessible.</p>
+<p>This option is deprecated as of version 3.12 and may be removed from future versions. You should instead use <strong>--ignore-range-below-sp</strong> to specify the exact range of offsets below the stack pointer that should be ignored. A suitable equivalent is <strong>--ignore-range-below-sp=1024-1</strong>.</p>
+</blockquote>
+<p><strong>--ignore-range-below-sp=&lt;number&gt;-&lt;number&gt; </strong></p>
+<blockquote>
+<p>This is a more general replacement for the deprecated <strong>--workaround-gcc296-bugs</strong> option. When specified, it causes Memcheck not to report errors for accesses at the specified offsets below the stack pointer. The two offsets must be positive decimal numbers and -- somewhat counterintuitively -- the first one must be larger, in order to imply a non-wraparound address range to ignore. For example, to ignore 4 byte accesses at 8192 bytes below the stack pointer, use <strong>--ignore-range-below-sp=8192-8189</strong>. Only one range may be specified.</p>
+</blockquote>
+<p><strong>--show-mismatched-frees=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>When enabled, Memcheck checks that heap blocks are deallocated using a function that matches the allocating function. That is, it expects <code>free</code> to be used to deallocate blocks allocated by <code>malloc</code>, <code>delete</code> for blocks allocated by <code>new</code>, and <code>delete[]</code> for blocks allocated by <code>new[]</code>. If a mismatch is detected, an error is reported. This is in general important because in some environments, freeing with a non-matching function can cause crashes.</p>
+<p>There is however a scenario where such mismatches cannot be avoided. That is when the user provides implementations of <code>new</code>/<code>new[]</code> that call <code>malloc</code> and of <code>delete</code>/<code>delete[]</code> that call <code>free</code>, and these functions are asymmetrically inlined. For example, imagine that <code>delete[]</code> is inlined but <code>new[]</code> is not. The result is that Memcheck "sees" all <code>delete[]</code> calls as direct calls to <code>free</code>, even when the program source contains no mismatched calls.</p>
+<p>This causes a lot of confusing and irrelevant error reports. <code>--show-mismatched-frees=no</code> disables these checks. It is not generally advisable to disable them, though, because you may miss real errors as a result.</p>
+</blockquote>
+<p><strong>--ignore-ranges=0xPP-0xQQ[,0xRR-0xSS] </strong></p>
+<blockquote>
+<p>Any ranges listed in this option (and multiple ranges can be specified, separated by commas) will be ignored by Memchecks addressability checking.</p>
+</blockquote>
+<p><strong>--malloc-fill=&lt;hexnumber&gt; </strong></p>
+<blockquote>
+<p>Fills blocks allocated by malloc, new, etc, but not by calloc, with the specified byte. This can be useful when trying to shake out obscure memory corruption problems. The allocated area is still regarded by Memcheck as undefined -- this option only affects its contents. Note that <strong>--malloc-fill</strong> does not affect a block of memory when it is used as argument to client requests VALGRIND_MEMPOOL_ALLOC or VALGRIND_MALLOCLIKE_BLOCK.</p>
+</blockquote>
+<p><strong>--free-fill=&lt;hexnumber&gt; </strong></p>
+<blockquote>
+<p>Fills blocks freed by free, delete, etc, with the specified byte value. This can be useful when trying to shake out obscure memory corruption problems. The freed area is still regarded by Memcheck as not valid for access -- this option only affects its contents. Note that <strong>--free-fill</strong> does not affect a block of memory when it is used as argument to client requests VALGRIND_MEMPOOL_FREE or VALGRIND_FREELIKE_BLOCK.</p>
+</blockquote>
+</div></div></div><h1 id='cachegrind-options'><a href='#cachegrind-options'>CACHEGRIND OPTIONS</a></h1><div data-for='cachegrind-options' data-hide><div class='section' data-for='cachegrind-options'><div data-more>
+<p><strong>--I1=&lt;size&gt;,&lt;associativity&gt;,&lt;line size&gt; </strong></p>
+<blockquote>
+<p>Specify the size, associativity and line size of the level 1 instruction cache.</p>
+</blockquote>
+<p><strong>--D1=&lt;size&gt;,&lt;associativity&gt;,&lt;line size&gt; </strong></p>
+<blockquote>
+<p>Specify the size, associativity and line size of the level 1 data cache.</p>
+</blockquote>
+<p><strong>--LL=&lt;size&gt;,&lt;associativity&gt;,&lt;line size&gt; </strong></p>
+<blockquote>
+<p>Specify the size, associativity and line size of the last-level cache.</p>
+</blockquote>
+<p><strong>--cache-sim=no|yes [yes] </strong></p>
+<blockquote>
+<p>Enables or disables collection of cache access and miss counts.</p>
+</blockquote>
+<p><strong>--branch-sim=no|yes [no] </strong></p>
+<blockquote>
+<p>Enables or disables collection of branch instruction and misprediction counts. By default this is disabled as it slows Cachegrind down by approximately 25%. Note that you cannot specify <strong>--cache-sim=no</strong> and <strong>--branch-sim=no</strong> together, as that would leave Cachegrind with no information to collect.</p>
+</blockquote>
+<p><strong>--cachegrind-out-file=&lt;file&gt; </strong></p>
+<blockquote>
+<p>Write the profile data to file rather than to the default output file, cachegrind.out.&lt;pid&gt;. The <strong>%p</strong> and <strong>%q</strong> format specifiers can be used to embed the process ID and/or the contents of an environment variable in the name, as is the case for the core option <strong>--log-file</strong>.</p>
+</blockquote>
+</div></div></div><h1 id='callgrind-options'><a href='#callgrind-options'>CALLGRIND OPTIONS</a></h1><div data-for='callgrind-options' data-hide><div class='section' data-for='callgrind-options'><div data-more>
+<p><strong>--callgrind-out-file=&lt;file&gt; </strong></p>
+<blockquote>
+<p>Write the profile data to file rather than to the default output file, callgrind.out.&lt;pid&gt;. The <strong>%p</strong> and <strong>%q</strong> format specifiers can be used to embed the process ID and/or the contents of an environment variable in the name, as is the case for the core option <strong>--log-file</strong>. When multiple dumps are made, the file name is modified further; see below.</p>
+</blockquote>
+<p><strong>--dump-line=&lt;no|yes&gt; [default: yes] </strong></p>
+<blockquote>
+<p>This specifies that event counting should be performed at source line granularity. This allows source annotation for sources which are compiled with debug information (<strong>-g</strong>).</p>
+</blockquote>
+<p><strong>--dump-instr=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>This specifies that event counting should be performed at per-instruction granularity. This allows for assembly code annotation. Currently the results can only be displayed by KCachegrind.</p>
+</blockquote>
+<p><strong>--compress-strings=&lt;no|yes&gt; [default: yes] </strong></p>
+<blockquote>
+<p>This option influences the output format of the profile data. It specifies whether strings (file and function names) should be identified by numbers. This shrinks the file, but makes it more difficult for humans to read (which is not recommended in any case).</p>
+</blockquote>
+<p><strong>--compress-pos=&lt;no|yes&gt; [default: yes] </strong></p>
+<blockquote>
+<p>This option influences the output format of the profile data. It specifies whether numerical positions are always specified as absolute values or are allowed to be relative to previous numbers. This shrinks the file size.</p>
+</blockquote>
+<p><strong>--combine-dumps=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, when multiple profile data parts are to be generated these parts are appended to the same output file. Not recommended.</p>
+</blockquote>
+<p><strong>--dump-every-bb=&lt;count&gt; [default: 0, never] </strong></p>
+<blockquote>
+<p>Dump profile data every <strong>count</strong> basic blocks. Whether a dump is needed is only checked when Valgrinds internal scheduler is run. Therefore, the minimum setting useful is about 100000. The count is a 64-bit value to make long dump periods possible.</p>
+</blockquote>
+<p><strong>--dump-before=&lt;function&gt; </strong></p>
+<blockquote>
+<p>Dump when entering <strong>function</strong>.</p>
+</blockquote>
+<p><strong>--zero-before=&lt;function&gt; </strong></p>
+<blockquote>
+<p>Zero all costs when entering <strong>function</strong>.</p>
+</blockquote>
+<p><strong>--dump-after=&lt;function&gt; </strong></p>
+<blockquote>
+<p>Dump when leaving <strong>function</strong>.</p>
+</blockquote>
+<p><strong>--instr-atstart=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Specify if you want Callgrind to start simulation and profiling from the beginning of the program. When set to no, Callgrind will not be able to collect any information, including calls, but it will have at most a slowdown of around 4, which is the minimum Valgrind overhead. Instrumentation can be interactively enabled via callgrind_control -i on.</p>
+<p>Note that the resulting call graph will most probably not contain <strong>main</strong>, but will contain all the functions executed after instrumentation was enabled. Instrumentation can also be programmatically enabled/disabled. See the Callgrind include file callgrind.h for the macro you have to use in your source code.</p>
+<p>For cache simulation, results will be less accurate when switching on instrumentation later in the program run, as the simulator starts with an empty cache at that moment. Switch on event collection later to cope with this error.</p>
+</blockquote>
+<p><strong>--collect-atstart=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Specify whether event collection is enabled at beginning of the profile run.</p>
+<p>To only look at parts of your program, you have two possibilities:</p>
+<blockquote>
+<p>1.</p>
+<ul>
+<li></li>
+</ul>
+<p>Zero event counters before entering the program part you want to profile, and dump the event counters to a file after leaving that program part.</p>
+</blockquote>
+<blockquote>
+<p>2.</p>
+<ul>
+<li></li>
+</ul>
+<p>Switch on/off collection state as needed to only see event counters happening while inside of the program part you want to profile.</p>
+</blockquote>
+<p>The second option can be used if the program part you want to profile is called many times. Option 1, i.e. creating a lot of dumps is not practical here.</p>
+<p>Collection state can be toggled at entry and exit of a given function with the option <strong>--toggle-collect</strong>. If you use this option, collection state should be disabled at the beginning. Note that the specification of <strong>--toggle-collect</strong> implicitly sets <strong>--collect-state=no</strong>.</p>
+<p>Collection state can be toggled also by inserting the client request CALLGRIND_TOGGLE_COLLECT ; at the needed code positions.</p>
+</blockquote>
+<p><strong>--toggle-collect=&lt;function&gt; </strong></p>
+<blockquote>
+<p>Toggle collection on entry/exit of <strong>function</strong>.</p>
+</blockquote>
+<p><strong>--collect-jumps=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>This specifies whether information for (conditional) jumps should be collected. As above, callgrind_annotate currently is not able to show you the data. You have to use KCachegrind to get jump arrows in the annotated code.</p>
+</blockquote>
+<p><strong>--collect-systime=&lt;no|yes|msec|usec|nsec&gt; [default: no] </strong></p>
+<blockquote>
+<p>This specifies whether information for system call times should be collected.</p>
+<p>The value no indicates to record no system call information.</p>
+<p>The other values indicate to record the number of system calls done (sysCount event) and the elapsed time (sysTime event) spent in system calls. The --collect-systime value gives the unit used for sysTime : milli seconds, micro seconds or nano seconds. With the value nsec, callgrind also records the cpu time spent during system calls (sysCpuTime).</p>
+<p>The value yes is a synonym of msec. The value nsec is not supported on Darwin.</p>
+</blockquote>
+<p><strong>--collect-bus=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>This specifies whether the number of global bus events executed should be collected. The event type "Ge" is used for these events.</p>
+</blockquote>
+<p><strong>--cache-sim=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Specify if you want to do full cache simulation. By default, only instruction read accesses will be counted ("Ir"). With cache simulation, further event counters are enabled: Cache misses on instruction reads ("I1mr"/"ILmr"), data read accesses ("Dr") and related cache misses ("D1mr"/"DLmr"), data write accesses ("Dw") and related cache misses ("D1mw"/"DLmw"). For more information, see Cachegrind: a cache and branch-prediction profiler.</p>
+</blockquote>
+<p><strong>--branch-sim=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Specify if you want to do branch prediction simulation. Further event counters are enabled: Number of executed conditional branches and related predictor misses ("Bc"/"Bcm"), executed indirect jumps and related misses of the jump address predictor ("Bi"/"Bim").</p>
+</blockquote>
+</div></div></div><h1 id='helgrind-options'><a href='#helgrind-options'>HELGRIND OPTIONS</a></h1><div data-for='helgrind-options' data-hide><div class='section' data-for='helgrind-options'><div data-more>
+<p><strong>--free-is-write=no|yes [default: no] </strong></p>
+<blockquote>
+<p>When enabled (not the default), Helgrind treats freeing of heap memory as if the memory was written immediately before the free. This exposes races where memory is referenced by one thread, and freed by another, but there is no observable synchronisation event to ensure that the reference happens before the free.</p>
+<p>This functionality is new in Valgrind 3.7.0, and is regarded as experimental. It is not enabled by default because its interaction with custom memory allocators is not well understood at present. User feedback is welcomed.</p>
+</blockquote>
+<p><strong>--track-lockorders=no|yes [default: yes] </strong></p>
+<blockquote>
+<p>When enabled (the default), Helgrind performs lock order consistency checking. For some buggy programs, the large number of lock order errors reported can become annoying, particularly if youre only interested in race errors. You may therefore find it helpful to disable lock order checking.</p>
+</blockquote>
+<p><strong>--history-level=none|approx|full [default: full] </strong></p>
+<blockquote>
+<p><strong>--history-level=full</strong> (the default) causes Helgrind collects enough information about "old" accesses that it can produce two stack traces in a race report -- both the stack trace for the current access, and the trace for the older, conflicting access. To limit memory usage, "old" accesses stack traces are limited to a maximum of 8 entries, even if <strong>--num-callers</strong> value is bigger.</p>
+<p>Collecting such information is expensive in both speed and memory, particularly for programs that do many inter-thread synchronisation events (locks, unlocks, etc). Without such information, it is more difficult to track down the root causes of races. Nonetheless, you may not need it in situations where you just want to check for the presence or absence of races, for example, when doing regression testing of a previously race-free program.</p>
+<p><strong>--history-level=none</strong> is the opposite extreme. It causes Helgrind not to collect any information about previous accesses. This can be dramatically faster than <strong>--history-level=full</strong>.</p>
+<p><strong>--history-level=approx</strong> provides a compromise between these two extremes. It causes Helgrind to show a full trace for the later access, and approximate information regarding the earlier access. This approximate information consists of two stacks, and the earlier access is guaranteed to have occurred somewhere between program points denoted by the two stacks. This is not as useful as showing the exact stack for the previous access (as <strong>--history-level=full</strong> does), but it is better than nothing, and it is almost as fast as <strong>--history-level=none</strong>.</p>
+</blockquote>
+<p><strong>--delta-stacktrace=no|yes [default: yes on linux amd64/x86] </strong></p>
+<blockquote>
+<p>This flag only has any effect at <strong>--history-level=full</strong>.</p>
+<p><strong>--delta-stacktrace</strong> configures the way Helgrind captures the stacktraces for the option <strong>--history-level=full</strong>. Such a stacktrace is typically needed each time a new piece of memory is read or written in a basic block of instructions.</p>
+<p><strong>--delta-stacktrace=no</strong> causes Helgrind to compute a full history stacktrace from the unwind info each time a stacktrace is needed.</p>
+<p><strong>--delta-stacktrace=yes</strong> indicates to Helgrind to derive a new stacktrace from the previous stacktrace, as long as there was no call instruction, no return instruction, or any other instruction changing the call stack since the previous stacktrace was captured. If no such instruction was executed, the new stacktrace can be derived from the previous stacktrace by just changing the top frame to the current program counter. This option can speed up Helgrind by 25% when using <strong>--history-level=full</strong>.</p>
+<p>The following aspects have to be considered when using <strong>--delta-stacktrace=yes</strong> :</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>In some cases (for example in a function prologue), the valgrind unwinder might not properly unwind the stack, due to some limitations and/or due to wrong unwind info. When using --delta-stacktrace=yes, the wrong stack trace captured in the function prologue will be kept till the next call or return.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>On the other hand, --delta-stacktrace=yes sometimes helps to obtain a correct stacktrace, for example when the unwind info allows a correct stacktrace to be done in the beginning of the sequence, but not later on in the instruction sequence.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Determining which instructions are changing the callstack is partially based on platform dependent heuristics, which have to be tuned/validated specifically for the platform. Also, unwinding in a function prologue must be good enough to allow using --delta-stacktrace=yes. Currently, the option --delta-stacktrace=yes has been reasonably validated only on linux x86 32 bits and linux amd64 64 bits. For more details about how to validate --delta-stacktrace=yes, see debug option --hg-sanity-flags and the function check_cached_rcec_ok in libhb_core.c.</p>
+</blockquote>
+</blockquote>
+<p><strong>--conflict-cache-size=N [default: 1000000] </strong></p>
+<blockquote>
+<p>This flag only has any effect at <strong>--history-level=full</strong>.</p>
+<p>Information about "old" conflicting accesses is stored in a cache of limited size, with LRU-style management. This is necessary because it isnt practical to store a stack trace for every single memory access made by the program. Historical information on not recently accessed locations is periodically discarded, to free up space in the cache.</p>
+<p>This option controls the size of the cache, in terms of the number of different memory addresses for which conflicting access information is stored. If you find that Helgrind is showing race errors with only one stack instead of the expected two stacks, try increasing this value.</p>
+<p>The minimum value is 10,000 and the maximum is 30,000,000 (thirty times the default value). Increasing the value by 1 increases Helgrinds memory requirement by very roughly 100 bytes, so the maximum value will easily eat up three extra gigabytes or so of memory.</p>
+</blockquote>
+<p><strong>--check-stack-refs=no|yes [default: yes] </strong></p>
+<blockquote>
+<p>By default Helgrind checks all data memory accesses made by your program. This flag enables you to skip checking for accesses to thread stacks (local variables). This can improve performance, but comes at the cost of missing races on stack-allocated data.</p>
+</blockquote>
+<p><strong>--ignore-thread-creation=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Controls whether all activities during thread creation should be ignored. By default enabled only on Solaris. Solaris provides higher throughput, parallelism and scalability than other operating systems, at the cost of more fine-grained locking activity. This means for example that when a thread is created under glibc, just one big lock is used for all thread setup. Solaris libc uses several fine-grained locks and the creator thread resumes its activities as soon as possible, leaving for example stack and TLS setup sequence to the created thread. This situation confuses Helgrind as it assumes there is some false ordering in place between creator and created thread; and therefore many types of race conditions in the application would not be reported. To prevent such false ordering, this command line option is set to yes by default on Solaris. All activity (loads, stores, client requests) is therefore ignored during:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>pthread_create() call in the creator thread</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>thread creation phase (stack and TLS setup) in the created thread</p>
+</blockquote>
+<p>Also new memory allocated during thread creation is untracked, that is race reporting is suppressed there. DRD does the same thing implicitly. This is necessary because Solaris libc caches many objects and reuses them for different threads and that confuses Helgrind.</p>
+</blockquote>
+</div></div></div><h1 id='drd-options'><a href='#drd-options'>DRD OPTIONS</a></h1><div data-for='drd-options' data-hide><div class='section' data-for='drd-options'><div data-more>
+<p><strong>--check-stack-var=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Controls whether DRD detects data races on stack variables. Verifying stack variables is disabled by default because most programs do not share stack variables over threads.</p>
+</blockquote>
+<p><strong>--exclusive-threshold=&lt;n&gt; [default: off]</strong></p>
+<blockquote>
+<p>Print an error message if any mutex or writer lock has been held longer than the time specified in milliseconds. This option enables the detection of lock contention.</p>
+</blockquote>
+<p><strong>--join-list-vol=&lt;n&gt; [default: 10]</strong></p>
+<blockquote>
+<p>Data races that occur between a statement at the end of one thread and another thread can be missed if memory access information is discarded immediately after a thread has been joined. This option allows one to specify for how many joined threads memory access information should be retained.</p>
+</blockquote>
+<p><strong> --first-race-only=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Whether to report only the first data race that has been detected on a memory location or all data races that have been detected on a memory location.</p>
+</blockquote>
+<p><strong> --free-is-write=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Whether to report races between accessing memory and freeing memory. Enabling this option may cause DRD to run slightly slower. Notes:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Dont enable this option when using custom memory allocators that use the VG_USERREQ__MALLOCLIKE_BLOCK and VG_USERREQ__FREELIKE_BLOCK because that would result in false positives.</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>Dont enable this option when using reference-counted objects because that will result in false positives, even when that code has been annotated properly with ANNOTATE_HAPPENS_BEFORE and ANNOTATE_HAPPENS_AFTER. See e.g. the output of the following command for an example: valgrind --tool=drd --free-is-write=yes drd/tests/annotate_smart_pointer.</p>
+</blockquote>
+</blockquote>
+<p><strong> --report-signal-unlocked=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Whether to report calls to <strong>pthread_cond_signal</strong> and <strong>pthread_cond_broadcast</strong> where the mutex associated with the signal through <strong>pthread_cond_wait</strong> or <strong>pthread_cond_timed_wait</strong>is not locked at the time the signal is sent. Sending a signal without holding a lock on the associated mutex is a common programming error which can cause subtle race conditions and unpredictable behavior. There exist some uncommon synchronization patterns however where it is safe to send a signal without holding a lock on the associated mutex.</p>
+</blockquote>
+<p><strong>--segment-merging=&lt;yes|no&gt; [default: yes]</strong></p>
+<blockquote>
+<p>Controls segment merging. Segment merging is an algorithm to limit memory usage of the data race detection algorithm. Disabling segment merging may improve the accuracy of the so-called other segments displayed in race reports but can also trigger an out of memory error.</p>
+</blockquote>
+<p><strong>--segment-merging-interval=&lt;n&gt; [default: 10]</strong></p>
+<blockquote>
+<p>Perform segment merging only after the specified number of new segments have been created. This is an advanced configuration option that allows one to choose whether to minimize DRDs memory usage by choosing a low value or to let DRD run faster by choosing a slightly higher value. The optimal value for this parameter depends on the program being analyzed. The default value works well for most programs.</p>
+</blockquote>
+<p><strong>--shared-threshold=&lt;n&gt; [default: off]</strong></p>
+<blockquote>
+<p>Print an error message if a reader lock has been held longer than the specified time (in milliseconds). This option enables the detection of lock contention.</p>
+</blockquote>
+<p><strong>--show-confl-seg=&lt;yes|no&gt; [default: yes]</strong></p>
+<blockquote>
+<p>Show conflicting segments in race reports. Since this information can help to find the cause of a data race, this option is enabled by default. Disabling this option makes the output of DRD more compact.</p>
+</blockquote>
+<p><strong>--show-stack-usage=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Print stack usage at thread exit time. When a program creates a large number of threads it becomes important to limit the amount of virtual memory allocated for thread stacks. This option makes it possible to observe how much stack memory has been used by each thread of the client program. Note: the DRD tool itself allocates some temporary data on the client thread stack. The space necessary for this temporary data must be allocated by the client program when it allocates stack memory, but is not included in stack usage reported by DRD.</p>
+</blockquote>
+<p><strong>--ignore-thread-creation=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Controls whether all activities during thread creation should be ignored. By default enabled only on Solaris. Solaris provides higher throughput, parallelism and scalability than other operating systems, at the cost of more fine-grained locking activity. This means for example that when a thread is created under glibc, just one big lock is used for all thread setup. Solaris libc uses several fine-grained locks and the creator thread resumes its activities as soon as possible, leaving for example stack and TLS setup sequence to the created thread. This situation confuses DRD as it assumes there is some false ordering in place between creator and created thread; and therefore many types of race conditions in the application would not be reported. To prevent such false ordering, this command line option is set to yes by default on Solaris. All activity (loads, stores, client requests) is therefore ignored during:</p>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>pthread_create() call in the creator thread</p>
+</blockquote>
+<blockquote>
+<p>·</p>
+<ul>
+<li></li>
+</ul>
+<p>thread creation phase (stack and TLS setup) in the created thread</p>
+</blockquote>
+</blockquote>
+<p><strong>--trace-addr=&lt;address&gt; [default: none]</strong></p>
+<blockquote>
+<p>Trace all load and store activity for the specified address. This option may be specified more than once.</p>
+</blockquote>
+<p><strong>--ptrace-addr=&lt;address&gt; [default: none]</strong></p>
+<blockquote>
+<p>Trace all load and store activity for the specified address and keep doing that even after the memory at that address has been freed and reallocated.</p>
+</blockquote>
+<p><strong>--trace-alloc=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all memory allocations and deallocations. May produce a huge amount of output.</p>
+</blockquote>
+<p><strong>--trace-barrier=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all barrier activity.</p>
+</blockquote>
+<p><strong>--trace-cond=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all condition variable activity.</p>
+</blockquote>
+<p><strong>--trace-fork-join=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all thread creation and all thread termination events.</p>
+</blockquote>
+<p><strong>--trace-hb=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace execution of the ANNOTATE_HAPPENS_BEFORE(), ANNOTATE_HAPPENS_AFTER() and ANNOTATE_HAPPENS_DONE() client requests.</p>
+</blockquote>
+<p><strong>--trace-mutex=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all mutex activity.</p>
+</blockquote>
+<p><strong>--trace-rwlock=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all reader-writer lock activity.</p>
+</blockquote>
+<p><strong>--trace-semaphore=&lt;yes|no&gt; [default: no]</strong></p>
+<blockquote>
+<p>Trace all semaphore activity.</p>
+</blockquote>
+</div></div></div><h1 id='massif-options'><a href='#massif-options'>MASSIF OPTIONS</a></h1><div data-for='massif-options' data-hide><div class='section' data-for='massif-options'><div data-more>
+<p><strong>--heap=&lt;yes|no&gt; [default: yes] </strong></p>
+<blockquote>
+<p>Specifies whether heap profiling should be done.</p>
+</blockquote>
+<p><strong>--heap-admin=&lt;size&gt; [default: 8] </strong></p>
+<blockquote>
+<p>If heap profiling is enabled, gives the number of administrative bytes per block to use. This should be an estimate of the average, since it may vary. For example, the allocator used by glibc on Linux requires somewhere between 4 to 15 bytes per block, depending on various factors. That allocator also requires admin space for freed blocks, but Massif cannot account for this.</p>
+</blockquote>
+<p><strong>--stacks=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Specifies whether stack profiling should be done. This option slows Massif down greatly, and so is off by default. Note that Massif assumes that the main stack has size zero at start-up. This is not true, but doing otherwise accurately is difficult. Furthermore, starting at zero better indicates the size of the part of the main stack that a user program actually has control over.</p>
+</blockquote>
+<p><strong>--pages-as-heap=&lt;yes|no&gt; [default: no] </strong></p>
+<blockquote>
+<p>Tells Massif to profile memory at the page level rather than at the mallocd block level. See above for details.</p>
+</blockquote>
+<p><strong>--depth=&lt;number&gt; [default: 30] </strong></p>
+<blockquote>
+<p>Maximum depth of the allocation trees recorded for detailed snapshots. Increasing it will make Massif run somewhat more slowly, use more memory, and produce bigger output files.</p>
+</blockquote>
+<p><strong>--alloc-fn=&lt;name&gt; </strong></p>
+<blockquote>
+<p>Functions specified with this option will be treated as though they were a heap allocation function such as <strong>malloc</strong>. This is useful for functions that are wrappers to <strong>malloc</strong> or <strong>new</strong>, which can fill up the allocation trees with uninteresting information. This option can be specified multiple times on the command line, to name multiple functions.</p>
+<p>Note that the named function will only be treated this way if it is the top entry in a stack trace, or just below another function treated this way. For example, if you have a function <strong>malloc1</strong> that wraps <strong>malloc</strong>, and <strong>malloc2</strong> that wraps <strong>malloc1</strong>, just specifying <strong>--alloc-fn=malloc2</strong> will have no effect. You need to specify <strong>--alloc-fn=malloc1</strong> as well. This is a little inconvenient, but the reason is that checking for allocation functions is slow, and it saves a lot of time if Massif can stop looking through the stack trace entries as soon as it finds one that doesnt match rather than having to continue through all the entries.</p>
+<p>Note that C++ names are demangled. Note also that overloaded C++ names must be written in full. Single quotes may be necessary to prevent the shell from breaking them up. For example:</p>
+<p>.RS 4</p>
+<pre><code>--alloc-fn=operator new(unsigned, std::nothrow_t const&amp;)</code></pre>
+<p>.RE</p>
+</blockquote>
+<p><strong>--ignore-fn=&lt;name&gt; </strong></p>
+<blockquote>
+<p>Any direct heap allocation (i.e. a call to <strong>malloc</strong>, <strong>new</strong>, etc, or a call to a function named by an <strong>--alloc-fn</strong> option) that occurs in a function specified by this option will be ignored. This is mostly useful for testing purposes. This option can be specified multiple times on the command line, to name multiple functions.</p>
+<p>Any <strong>realloc</strong> of an ignored block will also be ignored, even if the <strong>realloc</strong> call does not occur in an ignored function. This avoids the possibility of negative heap sizes if ignored blocks are shrunk with <strong>realloc</strong>.</p>
+<p>The rules for writing C++ function names are the same as for <strong>--alloc-fn</strong> above.</p>
+</blockquote>
+<p><strong>--threshold=&lt;m.n&gt; [default: 1.0] </strong></p>
+<blockquote>
+<p>The significance threshold for heap allocations, as a percentage of total memory size. Allocation tree entries that account for less than this will be aggregated. Note that this should be specified in tandem with ms_prints option of the same name.</p>
+</blockquote>
+<p><strong>--peak-inaccuracy=&lt;m.n&gt; [default: 1.0] </strong></p>
+<blockquote>
+<p>Massif does not necessarily record the actual global memory allocation peak; by default it records a peak only when the global memory allocation size exceeds the previous peak by at least 1.0%. This is because there can be many local allocation peaks along the way, and doing a detailed snapshot for every one would be expensive and wasteful, as all but one of them will be later discarded. This inaccuracy can be changed (even to 0.0%) via this option, but Massif will run drastically slower as the number approaches zero.</p>
+</blockquote>
+<p><strong>--time-unit=&lt;i|ms|B&gt; [default: i] </strong></p>
+<blockquote>
+<p>The time unit used for the profiling. There are three possibilities: instructions executed (i), which is good for most cases; real (wallclock) time (ms, i.e. milliseconds), which is sometimes useful; and bytes allocated/deallocated on the heap and/or stack (B), which is useful for very short-run programs, and for testing purposes, because it is the most reproducible across different machines.</p>
+</blockquote>
+<p><strong>--detailed-freq=&lt;n&gt; [default: 10] </strong></p>
+<blockquote>
+<p>Frequency of detailed snapshots. With <strong>--detailed-freq=1</strong>, every snapshot is detailed.</p>
+</blockquote>
+<p><strong>--max-snapshots=&lt;n&gt; [default: 100] </strong></p>
+<blockquote>
+<p>The maximum number of snapshots recorded. If set to N, for all programs except very short-running ones, the final number of snapshots will be between N/2 and N.</p>
+</blockquote>
+<p><strong>--massif-out-file=&lt;file&gt; [default: massif.out.%p] </strong></p>
+<blockquote>
+<p>Write the profile data to file rather than to the default output file, massif.out.&lt;pid&gt;. The <strong>%p</strong> and <strong>%q</strong> format specifiers can be used to embed the process ID and/or the contents of an environment variable in the name, as is the case for the core option <strong>--log-file</strong>.</p>
+</blockquote>
+</div></div></div><h1 id='bbv-options'><a href='#bbv-options'>BBV OPTIONS</a></h1><div data-for='bbv-options' data-hide><div class='section' data-for='bbv-options'><div data-more>
+<p><strong>--bb-out-file=&lt;name&gt; [default: bb.out.%p] </strong></p>
+<blockquote>
+<p>This option selects the name of the basic block vector file. The <strong>%p</strong> and <strong>%q</strong> format specifiers can be used to embed the process ID and/or the contents of an environment variable in the name, as is the case for the core option <strong>--log-file</strong>.</p>
+</blockquote>
+<p><strong>--pc-out-file=&lt;name&gt; [default: pc.out.%p] </strong></p>
+<blockquote>
+<p>This option selects the name of the PC file. This file holds program counter addresses and function name info for the various basic blocks. This can be used in conjunction with the basic block vector file to fast-forward via function names instead of just instruction counts. The <strong>%p</strong> and <strong>%q</strong> format specifiers can be used to embed the process ID and/or the contents of an environment variable in the name, as is the case for the core option <strong>--log-file</strong>.</p>
+</blockquote>
+<p><strong>--interval-size=&lt;number&gt; [default: 100000000] </strong></p>
+<blockquote>
+<p>This option selects the size of the interval to use. The default is 100 million instructions, which is a commonly used value. Other sizes can be used; smaller intervals can help programs with finer-grained phases. However smaller interval size can lead to accuracy issues due to warm-up effects (When fast-forwarding the various architectural features will be un-initialized, and it will take some number of instructions before they "warm up" to the state a full simulation would be at without the fast-forwarding. Large interval sizes tend to mitigate this.)</p>
+</blockquote>
+<p><strong>--instr-count-only [default: no] </strong></p>
+<blockquote>
+<p>This option tells the tool to only display instruction count totals, and to not generate the actual basic block vector file. This is useful for debugging, and for gathering instruction count info without generating the large basic block vector files.</p>
+</blockquote>
+</div></div></div><h1 id='lackey-options'><a href='#lackey-options'>LACKEY OPTIONS</a></h1><div data-for='lackey-options' data-hide><div class='section' data-for='lackey-options'><div data-more>
+<p><strong>--basic-counts=&lt;no|yes&gt; [default: yes] </strong></p>
+<blockquote>
+<p>When enabled, Lackey prints the following statistics and information about the execution of the client program:</p>
+<blockquote>
+<p>1.</p>
+<ul>
+<li></li>
+</ul>
+<p>The number of calls to the function specified by the <strong>--fnname</strong> option (the default is main). If the program has had its symbols stripped, the count will always be zero.</p>
+</blockquote>
+<blockquote>
+<p>2.</p>
+<ul>
+<li></li>
+</ul>
+<p>The number of conditional branches encountered and the number and proportion of those taken.</p>
+</blockquote>
+<blockquote>
+<p>3.</p>
+<ul>
+<li></li>
+</ul>
+<p>The number of superblocks entered and completed by the program. Note that due to optimisations done by the JIT, this is not at all an accurate value.</p>
+</blockquote>
+<blockquote>
+<p>4.</p>
+<ul>
+<li></li>
+</ul>
+<p>The number of guest (x86, amd64, ppc, etc.) instructions and IR statements executed. IR is Valgrinds RISC-like intermediate representation via which all instrumentation is done.</p>
+</blockquote>
+<blockquote>
+<p>5.</p>
+<ul>
+<li></li>
+</ul>
+<p>Ratios between some of these counts.</p>
+</blockquote>
+<blockquote>
+<p>6.</p>
+<ul>
+<li></li>
+</ul>
+<p>The exit code of the client program.</p>
+</blockquote>
+</blockquote>
+<p><strong>--detailed-counts=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Lackey prints a table containing counts of loads, stores and ALU operations, differentiated by their IR types. The IR types are identified by their IR name ("I1", "I8", ... "I128", "F32", "F64", and "V128").</p>
+</blockquote>
+<p><strong>--trace-mem=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Lackey prints the size and address of almost every memory access made by the program. See the comments at the top of the file lackey/lk_main.c for details about the output format, how it works, and inaccuracies in the address trace. Note that this option produces immense amounts of output.</p>
+</blockquote>
+<p><strong>--trace-superblocks=&lt;no|yes&gt; [default: no] </strong></p>
+<blockquote>
+<p>When enabled, Lackey prints out the address of every superblock (a single entry, multiple exit, linear chunk of code) executed by the program. This is primarily of interest to Valgrind developers. See the comments at the top of the file lackey/lk_main.c for details about the output format. Note that this option produces large amounts of output.</p>
+</blockquote>
+<p><strong>--fnname=&lt;name&gt; [default: main] </strong></p>
+<blockquote>
+<p>Changes the function for which calls are counted when <strong>--basic-counts=yes</strong> is specified.</p>
+</blockquote>
+</div></div></div><h1 id='debuginfod'><a href='#debuginfod'>DEBUGINFOD</a></h1><div data-for='debuginfod' data-hide><div class='section' data-for='debuginfod'><div data-more>
+<p>Valgrind supports the downloading of debuginfo files via debuginfod, an HTTP server for distributing ELF/DWARF debugging information. When a debuginfo file cannot be found locally, Valgrind is able to query debuginfod servers for the file using its build-id.</p>
+<p>In order to use this feature debuginfod-find must be installed and $DEBUGINFOD_URLS must contain URLs of debuginfod servers. Valgrind does not support debuginfod-find verbose output that is normally enabled with $DEBUGINFOD_PROGRESS and $DEBUGINFOD_VERBOSE. These environment variables will be ignored.</p>
+<p>For more information regarding debuginfod, see <a href="https://sourceware.org/elfutils/Debuginfod.html">https://sourceware.org/elfutils/Debuginfod.html</a></p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p>cg_annotate(1), callgrind_annotate(1), callgrind_control(1), ms_print(1), $INSTALL/share/doc/valgrind/html/index.html or <a href="http://www.valgrind.org/docs/manual/index.html">http://www.valgrind.org/docs/manual/index.html</a>, <strong>Debugging your program using Valgrinds gdbserver and GDB</strong>[1] <strong>vgdb</strong>[2], <strong>Valgrind monitor commands</strong>[3], <strong>The Commentary</strong>[4], <strong>Scheduling and Multi-Thread Performance</strong>[5], <strong>Cachegrind: a cache and branch-prediction profiler</strong>[6]. <strong>Execution Trees</strong>[7]</p>
+</div></div><h1 id='author'><a href='#author'>AUTHOR</a></h1><div data-for='author' data-hide><div class='section' data-for='author'><div data-more>
+<p>See the AUTHORS file in the valgrind distribution for a comprehensive list of authors.</p>
+<p>This manpage was written by Andres Roldan &lt;<a href="mailto:aroldan@debian.org">aroldan@debian.org</a>&gt; and the Valgrind developers.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>Debugging your program using Valgrind's gdbserver and GDB</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.gdbserver">http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.gdbserver</a></p></li>
+<li><p>vgdb</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.vgdb">http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.vgdb</a></p></li>
+<li><p>Valgrind monitor commands</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.valgrind-monitor-commands">http://www.valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.valgrind-monitor-commands</a></p></li>
+<li><p>The Commentary</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core.html#manual-core.comment">http://www.valgrind.org/docs/manual/manual-core.html#manual-core.comment</a></p></li>
+<li><p>Scheduling and Multi-Thread Performance</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core.html#manual-core.pthreads_perf_sched">http://www.valgrind.org/docs/manual/manual-core.html#manual-core.pthreads_perf_sched</a></p></li>
+<li><p>Cachegrind: a cache and branch-prediction profiler</p>
+<p><a href="http://www.valgrind.org/docs/manual/cg-manual.html">http://www.valgrind.org/docs/manual/cg-manual.html</a></p></li>
+<li><p>Execution Trees</p>
+<p><a href="http://www.valgrind.org/docs/manual/manual-core.html#manual-core.xtree">http://www.valgrind.org/docs/manual/manual-core.html#manual-core.xtree</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

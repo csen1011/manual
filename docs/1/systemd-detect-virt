@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>systemd-detect-virt - Detect execution in a virtualized environment</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>systemd-detect-virt</strong> [OPTIONS...]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>systemd-detect-virt</strong> detects execution in a virtualized environment. It identifies the virtualization technology and can distinguish full machine virtualization from container virtualization. systemd-detect-virt exits with a return value of 0 (success) if a virtualization technology is detected, and non-zero (error) otherwise. By default, any type of virtualization is detected, and the options <strong>--container</strong> and <strong>--vm</strong> can be used to limit what types of virtualization are detected.</p>
+<p>When executed without <strong>--quiet</strong> will print a short identifier for the detected virtualization technology. The following technologies are currently identified:</p>
+<p><br/>
+<strong>Table 1. Known virtualization technologies (both VM, i.e. full hardware virtualization, and container, i.e. shared kernel virtualization)</strong></p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Type</td>
+<td style="text-align: left;">ID</td>
+<td style="text-align: left;">Product</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VM</td>
+<td style="text-align: left;"><code>qemu</code></td>
+<td style="text-align: left;">QEMU software virtualization, without KVM</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>kvm</code></td>
+<td style="text-align: left;">Linux KVM kernel virtual machine, in combination with QEMU. Not used for other virtualizers using the KVM interfaces, such as Oracle VirtualBox or Amazon EC2 Nitro, see below.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>amazon</code></td>
+<td style="text-align: left;">Amazon EC2 Nitro using Linux KVM</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>zvm</code></td>
+<td style="text-align: left;">s390 z/VM</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>vmware</code></td>
+<td style="text-align: left;">VMware Workstation or Server, and related products</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>microsoft</code></td>
+<td style="text-align: left;">Hyper-V, also known as Viridian or Windows Server Virtualization</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>oracle</code></td>
+<td style="text-align: left;">Oracle VM VirtualBox (historically marketed by innotek and Sun Microsystems), for legacy and KVM hypervisor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>powervm</code></td>
+<td style="text-align: left;">IBM PowerVM hypervisor — comes as firmware with some IBM POWER servers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>xen</code></td>
+<td style="text-align: left;">Xen hypervisor (only domU, not dom0)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>bochs</code></td>
+<td style="text-align: left;">Bochs Emulator</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>uml</code></td>
+<td style="text-align: left;">User-mode Linux</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>parallels</code></td>
+<td style="text-align: left;">Parallels Desktop, Parallels Server</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>bhyve</code></td>
+<td style="text-align: left;">bhyve, FreeBSD hypervisor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>qnx</code></td>
+<td style="text-align: left;">QNX hypervisor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>acrn</code></td>
+<td style="text-align: left;"><strong>ACRN hypervisor</strong>[1]</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Container</td>
+<td style="text-align: left;"><code>openvz</code></td>
+<td style="text-align: left;">OpenVZ/Virtuozzo</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>lxc</code></td>
+<td style="text-align: left;">Linux container implementation by LXC</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>lxc-libvirt</code></td>
+<td style="text-align: left;">Linux container implementation by libvirt</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>systemd-nspawn</code></td>
+<td style="text-align: left;">systemds minimal container implementation, see <a href='/1/systemd-nspawn'>systemd-nspawn</a>(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>docker</code></td>
+<td style="text-align: left;">Docker container manager</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>podman</code></td>
+<td style="text-align: left;"><strong>Podman</strong>[2] container manager</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>rkt</code></td>
+<td style="text-align: left;">rkt app container runtime</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>wsl</code></td>
+<td style="text-align: left;"><strong>Windows Subsystem for Linux</strong>[3]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>proot</code></td>
+<td style="text-align: left;"><strong>proot</strong>[4] userspace chroot/bind mount emulation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>pouch</code></td>
+<td style="text-align: left;"><strong>Pouch</strong>[5] Container Engine</td>
+</tr>
+</tbody>
+</table>
+<p>If multiple virtualization solutions are used, only the "innermost" is detected and identified. That means if both machine and container virtualization are used in conjunction, only the latter will be identified (unless <strong>--vm</strong> is passed).</p>
+<p>Windows Subsystem for Linux is not a Linux container, but an environment for running Linux userspace applications on top of the Windows kernel using a Linux-compatible interface. WSL is categorized as a container for practical purposes. Multiple WSL environments share the same kernel and services should generally behave like when being run in a container.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p>The following options are understood:</p>
+<p><strong>-c</strong>, <strong>--container</strong></p>
+<blockquote>
+<p>Only detects container virtualization (i.e. shared kernel virtualization).</p>
+</blockquote>
+<p><strong>-v</strong>, <strong>--vm</strong></p>
+<blockquote>
+<p>Only detects hardware virtualization.</p>
+</blockquote>
+<p><strong>-r</strong>, <strong>--chroot</strong></p>
+<blockquote>
+<p>Detect whether invoked in a <a href='/2/chroot'>chroot</a>(2) environment. In this mode, no output is written, but the return value indicates whether the process was invoked in a <strong>chroot()</strong> environment or not.</p>
+</blockquote>
+<p><strong>--private-users</strong></p>
+<blockquote>
+<p>Detect whether invoked in a user namespace. In this mode, no output is written, but the return value indicates whether the process was invoked inside of a user namespace or not. See <a href='/7/user_namespaces'>user_namespaces</a>(7) for more information.</p>
+</blockquote>
+<p><strong>-q</strong>, <strong>--quiet</strong></p>
+<blockquote>
+<p>Suppress output of the virtualization technology identifier.</p>
+</blockquote>
+<p><strong>--list</strong></p>
+<blockquote>
+<p>Output all currently known and detectable container and VM environments.</p>
+</blockquote>
+<p><strong>-h</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Print a short help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Print a short version string and exit.</p>
+</blockquote>
+</div></div></div><h1 id='exit-status'><a href='#exit-status'>EXIT STATUS</a></h1><div data-for='exit-status' data-hide><div class='section' data-for='exit-status'><div data-more>
+<p>If a virtualization technology is detected, 0 is returned, a non-zero code otherwise.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/systemd'>systemd</a>(1), <a href='/1/systemd-nspawn'>systemd-nspawn</a>(1), <a href='/2/chroot'>chroot</a>(2), <a href='/7/namespaces'>namespaces</a>(7)</p>
+</div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<ul>
+<li><p>ACRN hypervisor</p>
+<p><a href="https://projectacrn.org">https://projectacrn.org</a></p></li>
+<li><p>Podman</p>
+<p><a href="https://podman.io">https://podman.io</a></p></li>
+<li><p>Windows Subsystem for Linux</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/wsl/about">https://docs.microsoft.com/en-us/windows/wsl/about</a></p></li>
+<li><p>proot</p>
+<p><a href="https://proot-me.github.io/">https://proot-me.github.io/</a></p></li>
+<li><p>Pouch</p>
+<p><a href="https://github.com/alibaba/pouch">https://github.com/alibaba/pouch</a></p></li>
+</ul></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

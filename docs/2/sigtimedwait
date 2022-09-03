@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sigwaitinfo, <a data-bs-content='This is the man page for &lt;code&gt;sigtimedwait&lt;/code&gt; and 2 related functions.' data-bs-toggle='popover' tabindex='0'>sigtimedwait</a>, rt_sigtimedwait - synchronously wait for queued signals</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;signal.h&gt;</a>
+
+int sigwaitinfo(const sigset_t *set, siginfo_t *info);
+
+int sigtimedwait(const sigset_t *set, siginfo_t *info,
+ const struct timespec *timeout);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='sigwaitinfo'>sigwaitinfo</a>(), <a href='sigtimedwait'>sigtimedwait</a>(): _POSIX_C_SOURCE &gt;= 199309L</p>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='sigwaitinfo'>sigwaitinfo</a>() suspends execution of the calling thread until one of the signals in <code>set</code> is pending (If one of the signals in <code>set</code> is already pending for the calling thread, <a href='sigwaitinfo'>sigwaitinfo</a>() will return immediately.)</p>
+<p><a href='sigwaitinfo'>sigwaitinfo</a>() removes the signal from the set of pending signals and returns the signal number as its function result. If the <code>info</code> argument is not NULL, then the buffer that it points to is used to return a structure of type <code>siginfo_t</code> (see <a href='/2/sigaction'>sigaction</a>(2)) containing information about the signal.</p>
+<p>If multiple signals in <code>set</code> are pending for the caller, the signal that is retrieved by <a href='sigwaitinfo'>sigwaitinfo</a>() is determined according to the usual ordering rules; see <a href='/7/signal'>signal</a>(7) for further details.</p>
+<p><a href='sigtimedwait'>sigtimedwait</a>() operates in exactly the same way as <a href='sigwaitinfo'>sigwaitinfo</a>() except that it has an additional argument, <code>timeout</code>, which specifies the interval for which the thread is suspended waiting for a signal. (This interval will be rounded up to the system clock granularity, and kernel scheduling delays mean that the interval may overrun by a small amount.) This argument is of the following type:</p>
+<pre><code>struct timespec {
+    long    tv_sec;         /* seconds */
+    long    tv_nsec;        /* nanoseconds */
+}</code></pre>
+<p>If both fields of this structure are specified as 0, a poll is performed: <a href='sigtimedwait'>sigtimedwait</a>() returns immediately, either with information about a signal that was pending for the caller, or with an error if none of the signals in <code>set</code> was pending.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, both <a href='sigwaitinfo'>sigwaitinfo</a>() and <a href='sigtimedwait'>sigtimedwait</a>() return a signal number (i.e., a value greater than zero). On failure both calls return -1, with <code>errno</code> set to indicate the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EAGAIN</strong></dt>
+<dd><p>No signal in <code>set</code> was became pending within the <code>timeout</code> period specified to <a href='sigtimedwait'>sigtimedwait</a>().</p>
+</dd>
+<dt><strong>EINTR</strong></dt>
+<dd><p>The wait was interrupted by a signal handler; see <a href='/7/signal'>signal</a>(7). (This handler was for a signal other than one of those in <code>set</code>.)</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>timeout</code> was invalid.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2001, POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>In normal usage, the calling program blocks the signals in <code>set</code> via a prior call to <a href='/2/sigprocmask'>sigprocmask</a>(2) (so that the default disposition for these signals does not occur if they become pending between successive calls to <a href='sigwaitinfo'>sigwaitinfo</a>() or <a href='sigtimedwait'>sigtimedwait</a>()) and does not establish handlers for these signals. In a multithreaded program, the signal should be blocked in all threads, in order to prevent the signal being treated according to its default disposition in a thread other than the one calling <a href='sigwaitinfo'>sigwaitinfo</a>() or <a href='sigtimedwait'>sigtimedwait</a>()).</p>
+<p>The set of signals that is pending for a given thread is the union of the set of signals that is pending specifically for that thread and the set of signals that is pending for the process as a whole (see <a href='/7/signal'>signal</a>(7)).</p>
+<p>Attempts to wait for <strong>SIGKILL</strong> and <strong>SIGSTOP</strong> are silently ignored.</p>
+<p>If multiple threads of a process are blocked waiting for the same signal(s) in <a href='sigwaitinfo'>sigwaitinfo</a>() or <a href='sigtimedwait'>sigtimedwait</a>(), then exactly one of the threads will actually receive the signal if it becomes pending for the process as a whole; which of the threads receives the signal is indeterminate.</p>
+<p><a href='sigwaitinfo'>sigwaitinfo</a>() or <a href='sigtimedwait'>sigtimedwait</a>(), can't be used to receive signals that are synchronously generated, such as the <strong>SIGSEGV</strong> signal that results from accessing an invalid memory address or the <strong>SIGFPE</strong> signal that results from an arithmetic error. Such signals can be caught only via signal handler.</p>
+<p>POSIX leaves the meaning of a NULL value for the <code>timeout</code> argument of <a href='sigtimedwait'>sigtimedwait</a>() unspecified, permitting the possibility that this has the same meaning as a call to <a href='sigwaitinfo'>sigwaitinfo</a>(), and indeed this is what is done on Linux. On Linux, <a href='sigwaitinfo'>sigwaitinfo</a>() is a library function implemented on top of <a href='sigtimedwait'>sigtimedwait</a>().</p>
+<p>The glibc wrapper functions for <a href='sigwaitinfo'>sigwaitinfo</a>() and <a href='sigtimedwait'>sigtimedwait</a>() silently ignore attempts to wait for the two real-time signals that are used internally by the NPTL threading implementation. See <a href='/7/nptl'>nptl</a>(7) for details.</p>
+<p>The original Linux system call was named <a href='sigtimedwait'>sigtimedwait</a>(). However, with the addition of real-time signals in Linux 2.2, the fixed-size, 32-bit <code>sigset_t</code> type supported by that system call was no longer fit for purpose. Consequently, a new system call, <a href='rt_sigtimedwait'>rt_sigtimedwait</a>(), was added to support an enlarged <code>sigset_t</code> type. The new system call takes a fourth argument, <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> sigsetsize</code>, which specifies the size in bytes of the signal set in <code>set</code>. This argument is currently required to have the value <code>sizeof(sigset_t)</code> (or the error <strong>EINVAL</strong> results). The glibc <a href='sigtimedwait'>sigtimedwait</a>() wrapper function hides these details from us, transparently calling <a href='rt_sigtimedwait'>rt_sigtimedwait</a>() when the kernel provides it. <a href='/2/kill'>kill</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/signal'>signal</a>(2), <a href='/2/signalfd'>signalfd</a>(2), <a href='/2/sigpending'>sigpending</a>(2), <a href='/2/sigprocmask'>sigprocmask</a>(2), <a href='/3/sigqueue'>sigqueue</a>(3), <a href='/3/sigsetops'>sigsetops</a>(3), <a href='/3/sigwait'>sigwait</a>(3), <a href='/7/signal'>signal</a>(7), <a href='/7/time'>time</a>(7)</p>
+</div></div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

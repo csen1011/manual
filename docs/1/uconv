@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p><strong><a data-bs-content='This is the man page for &lt;code&gt;uconv&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>uconv</a></strong> - convert data from one encoding to another</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>uconv</strong> [ <strong>-h, <strong>-?</strong>, <strong>--help</strong></strong> ] [ <strong>-V, <strong>--version</strong></strong> ] [ <strong>-s, <strong>--silent</strong></strong> ] [ <strong>-v, <strong>--verbose</strong></strong> ] [ <strong>-l, <strong>--list</strong></strong> | <strong>-l, <strong>--list-code</strong></strong><code> code</code> | <strong>--default-code</strong> | <strong>-L, <strong>--list-transliterators</strong></strong> ] [ <strong>--canon</strong> ] [ <strong>-x</strong><code>"</code><strong>transliteration</strong> ] [ <strong>--to-callback</strong><code> callback</code> | <strong>-c</strong> ] [ <strong>--from-callback</strong><code> callback</code> | <strong>-i</strong> ] [ <strong>--callback</strong><code> callback</code> ] [ <strong>--fallback</strong> | <strong>--no-fallback</strong> ] [ <strong>-b, <strong>--block-size</strong></strong><code> size</code> ] [ <strong>-f, <strong>--from-code</strong></strong><code> encoding</code> ] [ <strong>-t, <strong>--to-code</strong></strong><code> encoding</code> ] [ <strong>--add-signature</strong> ] [ <strong>--remove-signature</strong> ] [ <strong>-o, <strong>--output</strong></strong><code> file</code> ] [ <code>file</code>. . . ]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>uconv</strong> converts, or transcodes, each given <code>file</code> (or its standard input if no <code>file</code> is specified) from one <code>encoding</code> to another. The transcoding is done using Unicode as a pivot encoding (i.e. the data are first transcoded from their original encoding to Unicode, and then from Unicode to the destination encoding).</p>
+<p>If an <code>encoding</code> is not specified or is <strong>-</strong>, the default encoding is used. Thus, calling <strong>uconv</strong> with no <code>encoding</code> provides an easy way to validate and sanitize data files for further consumption by tools requiring data in the default encoding.</p>
+<p>When calling <strong>uconv</strong>, it is possible to specify callbacks that are used to handle invalid characters in the input, or characters that cannot be transcoded to the destination encoding. Some encodings, for example, offer a default substitution character that can be used to represent the occurrence of such characters in the input. Other callbacks offer a useful visual representation of the invalid data.</p>
+<p><strong>uconv</strong> can also run the specified <code>transliteration</code> on the transcoded data, in which case transliteration will happen as an intermediate step, after the data have been transcoded to Unicode. The <code>transliteration</code> can be either a list of semicolon-separated transliterator names, or an arbitrarily complex set of rules in the ICU transliteration rules format.</p>
+<p>For transcoding purposes, <strong>uconv</strong> options are compatible with those of <a href='/1/iconv'>iconv</a>(1), making it easy to replace it in scripts. It is not necessarily the case, however, that the encoding names used by <strong>uconv</strong> and ICU are the same as the ones used by <a href='/1/iconv'>iconv</a>(1). Also, options that provide informational data, such as the <strong>-l, <strong>--list</strong></strong> one offered by some <a href='/1/iconv'>iconv</a>(1) variants such as GNU's, produce data in a slightly different and easier to parse format.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<dl>
+<dt><strong>-h, <strong>-?</strong>, <strong>--help</strong></strong></dt>
+<dd><p>Print help about usage and exit.</p>
+</dd>
+<dt><strong>-V, <strong>--version</strong></strong></dt>
+<dd><p>Print the version of <strong>uconv</strong> and exit.</p>
+</dd>
+<dt><strong>-s, <strong>--silent</strong></strong></dt>
+<dd><p>Suppress messages during execution.</p>
+</dd>
+<dt><strong>-v, <strong>--verbose</strong></strong></dt>
+<dd><p>Display extra informative messages during execution.</p>
+</dd>
+<dt><strong>-l, <strong>--list</strong></strong></dt>
+<dd><p>List all the available encodings and exit.</p>
+</dd>
+<dt><strong>-l, <strong>--list-code</strong></strong><code> code</code></dt>
+<dd><p>List only the <code>code</code> encoding and exit. If <code>code</code> is not a proper encoding, exit with an error.</p>
+</dd>
+<dt><strong>--default-code</strong></dt>
+<dd><p>List only the name of the default encoding and exit.</p>
+</dd>
+<dt><strong>-L, <strong>--list-transliterators</strong></strong></dt>
+<dd><p>List all the available transliterators and exit.</p>
+</dd>
+<dt><strong>--canon</strong></dt>
+<dd><p>If used with <strong>-l, <strong>--list</strong></strong> or <strong>--default-code</strong>, the list of encodings is produced in a format compatible with <a href='/5/convrtrs.txt'>convrtrs.txt</a>(5). If used with <strong>-L, <strong>--list-transliterators</strong></strong>, print only one transliterator name per line.</p>
+</dd>
+<dt><strong>-x</strong><code> transliteration</code></dt>
+<dd><p>Run the given <code>transliteration</code> on the transcoded Unicode data, and use the transliterated data as input for the transcoding to the destination encoding.</p>
+</dd>
+<dt><strong>--to-callback</strong><code> callback</code></dt>
+<dd><p>Use <code>callback</code> to handle characters that cannot be transcoded to the destination encoding. See section <strong>CALLBACKS</strong> for details on valid callbacks.</p>
+</dd>
+<dt><strong>-c</strong></dt>
+<dd><p>Omit invalid characters from the output. Same as <strong>--to-callback skip</strong>.</p>
+</dd>
+<dt><strong>--from-callback</strong><code> callback</code></dt>
+<dd><p>Use <code>callback</code> to handle characters that cannot be transcoded from the original encoding. See section <strong>CALLBACKS</strong> for details on valid callbacks.</p>
+</dd>
+<dt><strong>-i</strong></dt>
+<dd><p>Ignore invalid sequences in the input. Same as <strong>--from-callback skip</strong>.</p>
+</dd>
+<dt><strong>--callback</strong><code> callback</code></dt>
+<dd><p>Use <code>callback</code> to handle both characters that cannot be transcoded from the original encoding and characters that cannot be transcoded to the destination encoding. See section <strong>CALLBACKS</strong> for details on valid callbacks.</p>
+</dd>
+<dt><strong>--fallback</strong></dt>
+<dd><p>Use the fallback mapping when transcoding from Unicode to the destination encoding.</p>
+</dd>
+<dt><strong>--no-fallback</strong></dt>
+<dd><p>Do not use the fallback mapping when transcoding from Unicode to the destination encoding. This is the default.</p>
+</dd>
+<dt><strong>-b, <strong>--block-size</strong></strong><code> size</code></dt>
+<dd><p>Read input in blocks of <code>size</code> bytes at a time. The default block size is 4096.</p>
+</dd>
+<dt><strong>-f, <strong>--from-code</strong></strong><code> encoding</code></dt>
+<dd><p>Set the original encoding of the data to <code>encoding</code>.</p>
+</dd>
+<dt><strong>-t, <strong>--to-code</strong></strong><code> encoding</code></dt>
+<dd><p>Transcode the data to <code>encoding</code>.</p>
+</dd>
+<dt><strong>--add-signature</strong></dt>
+<dd><p>Add a U+FEFF Unicode signature character (BOM) if the output charset supports it and does not add one anyway.</p>
+</dd>
+<dt><strong>--remove-signature</strong></dt>
+<dd><p>Remove a U+FEFF Unicode signature character (BOM).</p>
+</dd>
+<dt><strong>-o, <strong>--output</strong></strong><code> file</code></dt>
+<dd><p>Write the transcoded data to <code>file</code>.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='callbacks'><a href='#callbacks'>CALLBACKS</a></h1><div data-for='callbacks' data-hide><div class='section' data-for='callbacks'><div data-more>
+<p><strong>uconv</strong> supports specifying callbacks to handle invalid data. Callbacks can be set for both directions of transcoding: from the original encoding to Unicode, with the <strong>--from-callback</strong> option, and from Unicode to the destination encoding, with the <strong>--to-callback</strong> option.</p>
+<p>The following is a list of valid <code>callback</code> names, along with a description of their behavior. The list of callbacks actually supported by <strong>uconv</strong> is displayed when it is called with <strong>-h, <strong>--help</strong></strong>.</p>
+<dl>
+<dt><strong>substitute</strong></dt>
+<dd><p>Write the encoding's substitute sequence, or the Unicode replacement character <strong>U+FFFD</strong> when transcoding to Unicode.</p>
+</dd>
+<dt><strong>skip</strong></dt>
+<dd><p>Ignore the invalid data.</p>
+</dd>
+<dt><strong>stop</strong></dt>
+<dd><p>Stop with an error when encountering invalid data. This is the default callback.</p>
+</dd>
+<dt><strong>escape</strong></dt>
+<dd><p>Same as <strong>escape-icu</strong>.</p>
+</dd>
+<dt><strong>escape-icu</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>%U<code>hhhh</code></strong> for plane 0 characters, and <strong>%U<code>hhhh</code><strong>%U</strong><code>hhhh</code></strong> for planes 1 and above characters, where <code>hhhh</code> is the hexadecimal value of one of the UTF-16 code units representing the character. Characters from planes 1 and above are written as a pair of UTF-16 surrogate code units.</p>
+</dd>
+<dt><strong>escape-java</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>\u<code>hhhh</code></strong> for plane 0 characters, and <strong>\u<code>hhhh</code><strong>\u</strong><code>hhhh</code></strong> for planes 1 and above characters, where <code>hhhh</code> is the hexadecimal value of one of the UTF-16 code units representing the character. Characters from planes 1 and above are written as a pair of UTF-16 surrogate code units.</p>
+</dd>
+<dt><strong>escape-c</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>\u<code>hhhh</code></strong> for plane 0 characters, and <strong>\U<code>hhhhhhhh</code></strong> for planes 1 and above characters, where <code>hhhh</code> and <code>hhhhhhhh</code> are the hexadecimal values of the Unicode codepoint.</p>
+</dd>
+<dt><strong>escape-xml</strong></dt>
+<dd><p>Same as <strong>escape-xml-hex</strong>.</p>
+</dd>
+<dt><strong>escape-xml-hex</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>&amp;#x<code>hhhh</code><strong>;</strong></strong>, where <code>hhhh</code> is the hexadecimal value of the Unicode codepoint.</p>
+</dd>
+<dt><strong>escape-xml-dec</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>&amp;#<code>nnnn</code><strong>;</strong></strong>, where <code>nnnn</code> is the decimal value of the Unicode codepoint.</p>
+</dd>
+<dt><strong>escape-unicode</strong></dt>
+<dd><p>Replace the missing characters with a string of the format <strong>{U+<code>hhhh</code><strong>}</strong></strong>, where <code>hhhh</code> is the hexadecimal value of the Unicode codepoint. That hexadecimal string is of variable length and can use from 4 to 6 digits. This is the format universally used to denote a Unicode codepoint in the literature, delimited by curly braces for easy recognition of those substitutions in the output.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>Convert data from a given <code>encoding</code> to the platform encoding:</p>
+<blockquote>
+<p><strong>$ <strong>uconv</strong> -f <code>encoding</code></strong></p>
+</blockquote>
+<p>Check if a <code>file</code> contains valid data for a given <code>encoding</code>:</p>
+<blockquote>
+<p><strong>$ <strong>uconv</strong> -f <code>encoding</code> -c <code>file</code> &gt;/dev/null</strong></p>
+</blockquote>
+<p>Convert a UTF-8 <code>file</code> to a given <code>encoding</code> and ensure that the resulting text is good for any version of HTML:</p>
+<blockquote>
+<p><strong>$ <strong>uconv</strong> -f utf-8 -t <code>encoding</code> \</strong><br/>
+<strong> --callback escape-xml-dec <code>file</code></strong></p>
+</blockquote>
+<p>Display the names of the Unicode code points in a UTF-file:</p>
+<blockquote>
+<p><strong>$ <strong>uconv</strong> -f utf-8 -x any-name <code>file</code></strong></p>
+</blockquote>
+<p>Print the name of a Unicode code point whose value is known (<strong>U+30AB</strong> in this example):</p>
+<blockquote>
+<p><strong>$ <strong>echo</strong> '\u30ab' | uconv -x 'hex-any; any-name'; echo</strong><br/>
+{KATAKANA LETTER KA}{LINE FEED}<br/>
+$</p>
+</blockquote>
+<p>(The names are delimited by curly braces. Also, the name of the line terminator is also displayed.)</p>
+<p>Normalize UTF-8 data using Unicode NFKC, remove all control characters, and map Katakana to Hiragana:</p>
+<blockquote>
+<p><strong>$ <strong>uconv</strong> -f utf-8 -t utf-8 \</strong><br/>
+<strong> -x '::nfkc; [:Cc:] &gt;; ::katakana-hiragana;'</strong></p>
+</blockquote>
+</div></div><h1 id='caveats-and-bugs'><a href='#caveats-and-bugs'>CAVEATS AND BUGS</a></h1><div data-for='caveats-and-bugs' data-hide><div class='section' data-for='caveats-and-bugs'><div data-more>
+<p><strong>uconv</strong> does report errors as occurring at the first invalid byte encountered. This may be confusing to users of GNU <a href='/1/iconv'>iconv</a>(1), which reports errors as occurring at the first byte of an invalid sequence. For multi-byte character sets or encodings, this means that <strong>uconv</strong> error positions may be at a later offset in the input stream than would be the case with GNU <a href='/1/iconv'>iconv</a>(1).</p>
+<p>The reporting of error positions when a transliterator is used may be inaccurate or unavailable, in which case <strong>uconv</strong> will report the offset in the output stream at which the error occurred.</p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+<p>Jonas Utterstroem<br/>
+Yves Arrouye</p>
+</div></div></div><h1 id='version'><a href='#version'>VERSION</a></h1><div data-for='version' data-hide><div class='section' data-for='version'><div data-more>
+<p>70.1</p>
+</div></div></div><h1 id='copyright'><a href='#copyright'>COPYRIGHT</a></h1><div data-for='copyright' data-hide><div class='section' data-for='copyright'><div data-more>
+<p>Copyright (C) 2000-2005 IBM, Inc. and others.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/iconv'>iconv</a>(1)</p></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

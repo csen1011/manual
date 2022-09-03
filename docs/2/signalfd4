@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>signalfd - create a file descriptor for accepting signals</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;sys/signalfd.h&gt;</strong></p>
+<p><strong>int signalfd(int </strong><code>fd</code><strong>, const sigset_t *</strong><code>mask</code><strong>, int </strong><code>flags</code><strong>);</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><a href='signalfd'>signalfd</a>() creates a file descriptor that can be used to accept signals targeted at the caller. This provides an alternative to the use of a signal handler or <a href='/2/sigwaitinfo'>sigwaitinfo</a>(2), and has the advantage that the file descriptor may be monitored by <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), and <a href='/7/epoll'>epoll</a>(7).</p>
+<p>The <code>mask</code> argument specifies the set of signals that the caller wishes to accept via the file descriptor. This argument is a signal set whose contents can be initialized using the macros described in <a href='/3/sigsetops'>sigsetops</a>(3). Normally, the set of signals to be received via the file descriptor should be blocked using <a href='/2/sigprocmask'>sigprocmask</a>(2), to prevent the signals being handled according to their default dispositions. It is not possible to receive <strong>SIGKILL</strong> or <strong>SIGSTOP</strong> signals via a signalfd file descriptor; these signals are silently ignored if specified in <code>mask</code>.</p>
+<p>If the <code>fd</code> argument is -1, then the call creates a new file descriptor and associates the signal set specified in <code>mask</code> with that file descriptor. If <code>fd</code> is not -1, then it must specify a valid existing signalfd file descriptor, and <code>mask</code> is used to replace the signal set associated with that file descriptor.</p>
+<p>Starting with Linux 2.6.27, the following values may be bitwise ORed in <code>flags</code> to change the behavior of <a href='signalfd'>signalfd</a>():</p>
+<dl>
+<dt><strong>SFD_NONBLOCK</strong></dt>
+<dd><p>Set the <strong>O_NONBLOCK</strong> file status flag on the open file description (see <a href='/2/open'>open</a>(2)) referred to by the new file descriptor. Using this flag saves extra calls to <a href='/2/fcntl'>fcntl</a>(2) to achieve the same result.</p>
+</dd>
+<dt><strong>SFD_CLOEXEC</strong></dt>
+<dd><p>Set the close-on-exec (<strong>FD_CLOEXEC</strong>) flag on the new file descriptor. See the description of the <strong>O_CLOEXEC</strong> flag in <a href='/2/open'>open</a>(2) for reasons why this may be useful.</p>
+</dd>
+</dl>
+<p>In Linux up to version 2.6.26, the <code>flags</code> argument is unused, and must be specified as zero.</p>
+<p><a href='signalfd'>signalfd</a>() returns a file descriptor that supports the following operations:</p>
+<dl>
+<dt><a href='/2/read'>read</a>(2)</dt>
+<dd><p>If one or more of the signals specified in <code>mask</code> is pending for the process, then the buffer supplied to <a href='/2/read'>read</a>(2) is used to return one or more <code>signalfd_siginfo</code> structures (see below) that describe the signals. The <a href='/2/read'>read</a>(2) returns information for as many signals as are pending and will fit in the supplied buffer. The buffer must be at least <code>sizeof(struct signalfd_siginfo)</code> bytes. The return value of the <a href='/2/read'>read</a>(2) is the total number of bytes read.</p>
+<p>As a consequence of the <a href='/2/read'>read</a>(2), the signals are consumed, so that they are no longer pending for the process (i.e., will not be caught by signal handlers, and cannot be accepted using <a href='/2/sigwaitinfo'>sigwaitinfo</a>(2)).</p>
+<p>If none of the signals in <code>mask</code> is pending for the process, then the <a href='/2/read'>read</a>(2) either blocks until one of the signals in <code>mask</code> is generated for the process, or fails with the error <strong>EAGAIN</strong> if the file descriptor has been made nonblocking.</p>
+</dd>
+<dt><a href='/2/poll'>poll</a>(2), <a href='/2/select'>select</a>(2) (and similar)</dt>
+<dd><p>The file descriptor is readable (the <a href='/2/select'>select</a>(2) <code>readfds</code> argument; the <a href='/2/poll'>poll</a>(2) <strong>POLLIN</strong> flag) if one or more of the signals in <code>mask</code> is pending for the process.</p>
+<p>The signalfd file descriptor also supports the other file-descriptor multiplexing APIs: <a href='/2/pselect'>pselect</a>(2), <a href='/2/ppoll'>ppoll</a>(2), and <a href='/7/epoll'>epoll</a>(7).</p>
+</dd>
+<dt><a href='/2/close'>close</a>(2)</dt>
+<dd><p>When the file descriptor is no longer required it should be closed. When all file descriptors associated with the same signalfd object have been closed, the resources for object are freed by the kernel.</p>
+</dd>
+</dl>
+<h2>The signalfd_siginfo structure</h2>
+<p>The format of the <code>signalfd_siginfo</code> structure(s) returned by <a href='/2/read'>read</a>(2)s from a signalfd file descriptor is as follows:</p>
+<pre><code>struct signalfd_siginfo {
+    uint32_t ssi_signo;    /* Signal number */
+    int32_t  ssi_errno;    /* Error number (unused) */
+    int32_t  ssi_code;     /* Signal code */
+    uint32_t ssi_pid;      /* PID of sender */
+    uint32_t ssi_uid;      /* Real UID of sender */
+    int32_t  ssi_fd;       /* File descriptor (SIGIO) */
+    uint32_t ssi_tid;      /* Kernel timer ID (POSIX timers)
+    uint32_t ssi_band;     /* Band event (SIGIO) */
+    uint32_t ssi_overrun;  /* POSIX timer overrun count */
+    uint32_t ssi_trapno;   /* Trap number that caused signal */
+    int32_t  ssi_status;   /* Exit status or signal (SIGCHLD) */
+    int32_t  ssi_int;      /* Integer sent by sigqueue(3) */
+    uint64_t ssi_ptr;      /* Pointer sent by sigqueue(3) */
+    uint64_t ssi_utime;    /* User CPU time consumed (SIGCHLD) */
+    uint64_t ssi_stime;    /* System CPU time consumed
+                              (SIGCHLD) */
+    uint64_t ssi_addr;     /* Address that generated signal
+                              (for hardware-generated signals) */
+    uint16_t ssi_addr_lsb; /* Least significant bit of address
+                              (SIGBUS; since Linux 2.6.37)
+    uint8_t  pad[X];       /* Pad size to 128 bytes (allow for
+                              additional fields in the future) */
+};</code></pre>
+<p>Each of the fields in this structure is analogous to the similarly named field in the <code>siginfo_t</code> structure. The <code>siginfo_t</code> structure is described in <a href='/2/sigaction'>sigaction</a>(2). Not all fields in the returned <code>signalfd_siginfo</code> structure will be valid for a specific signal; the set of valid fields can be determined from the value returned in the <code>ssi_code</code> field. This field is the analog of the <code>siginfo_t</code> <code>si_code</code> field; see <a href='/2/sigaction'>sigaction</a>(2) for details.</p>
+<h2>fork(2) semantics</h2>
+<p>After a <a href='/2/fork'>fork</a>(2), the child inherits a copy of the signalfd file descriptor. A <a href='/2/read'>read</a>(2) from the file descriptor in the child will return information about signals queued to the child.</p>
+<h2>Semantics of file descriptor passing</h2>
+<p>As with other file descriptors, signalfd file descriptors can be passed to another process via a UNIX domain socket (see <a href='/7/unix'>unix</a>(7)). In the receiving process, a <a href='/2/read'>read</a>(2) from the received file descriptor will return information about signals queued to that process.</p>
+<h2>execve(2) semantics</h2>
+<p>Just like any other file descriptor, a signalfd file descriptor remains open across an <a href='/2/execve'>execve</a>(2), unless it has been marked for close-on-exec (see <a href='/2/fcntl'>fcntl</a>(2)). Any signals that were available for reading before the <a href='/2/execve'>execve</a>(2) remain available to the newly loaded program. (This is analogous to traditional signal semantics, where a blocked signal that is pending remains pending across an <a href='/2/execve'>execve</a>(2).)</p>
+<h2>Thread semantics</h2>
+<p>The semantics of signalfd file descriptors in a multithreaded program mirror the standard semantics for signals. In other words, when a thread reads from a signalfd file descriptor, it will read the signals that are directed to the thread itself and the signals that are directed to the process (i.e., the entire thread group). (A thread will not be able to read signals that are directed to other threads in the process.) If a process adds (via <a href='/2/epoll_ctl'>epoll_ctl</a>(2)) a signalfd file descriptor to an <a href='/7/epoll'>epoll</a>(7) instance, then <a href='/2/epoll_wait'>epoll_wait</a>(2) returns events only for signals sent to that process. In particular, if the process then uses <a href='/2/fork'>fork</a>(2) to create a child process, then the child will be able to <a href='/2/read'>read</a>(2) signals that are sent to it using the signalfd file descriptor, but <a href='/2/epoll_wait'>epoll_wait</a>(2) will <strong>not</strong> indicate that the signalfd file descriptor is ready. In this scenario, a possible workaround is that after the <a href='/2/fork'>fork</a>(2), the child process can close the signalfd file descriptor that it inherited from the parent process and then create another signalfd file descriptor and add it to the epoll instance. Alternatively, the parent and the child could delay creating their (separate) signalfd file descriptors and adding them to the epoll instance until after the call to <a href='/2/fork'>fork</a>(2).</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='signalfd'>signalfd</a>() returns a signalfd file descriptor; this is either a new file descriptor (if <code>fd</code> was -1), or <code>fd</code> if <code>fd</code> was a valid signalfd file descriptor. On error, -1 is returned and <code>errno</code> is set to indicate the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below accepts the signals <strong>SIGINT</strong> and <strong>SIGQUIT</strong> via a signalfd file descriptor. The program terminates after accepting a <strong>SIGQUIT</strong> signal. The following shell session demonstrates the use of the program:</p>
+<pre><code>$ ./signalfd_demo
+^C # Control-C generates SIGINT
+Got SIGINT
+^C
+Got SIGINT
+^\                    # Control-\ generates SIGQUIT
+Got SIGQUIT
+$</code></pre>
+<h2>Program source</h2>
+<pre><code>#include &lt;sys/signalfd.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    sigset_t mask;
+    int sfd;
+    struct signalfd_siginfo fdsi;
+    ssize_t s;
+
+    sigemptyset(&amp;mask);
+    sigaddset(&amp;mask, SIGINT);
+    sigaddset(&amp;mask, SIGQUIT);
+
+    /* Block signals so that they aren't handled
+       according to their default dispositions */
+
+    if (sigprocmask(SIG_BLOCK, &amp;mask, NULL) == -1)
+        handle_error("sigprocmask");
+
+    sfd = signalfd(-1, &amp;mask, 0);
+    if (sfd == -1)
+        handle_error("signalfd");
+
+    for (;;) {
+        s = read(sfd, &amp;fdsi, sizeof(fdsi));
+        if (s != sizeof(fdsi))
+            handle_error("read");
+
+        if (fdsi.ssi_signo == SIGINT) {
+            printf("Got SIGINT\n");
+        } else if (fdsi.ssi_signo == SIGQUIT) {
+            printf("Got SIGQUIT\n");
+            exit(EXIT_SUCCESS);
+        } else {
+            printf("Read unexpected signal\n");
+        }
+    }
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EBADF</strong></dt>
+<dd><p>The <code>fd</code> file descriptor is not a valid file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>fd</code> is not a valid signalfd file descriptor.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>flags</code> is invalid; or, in Linux 2.6.26 or earlier, <code>flags</code> is nonzero.</p>
+</dd>
+<dt><strong>EMFILE</strong></dt>
+<dd><p>The per-process limit on the number of open file descriptors has been reached.</p>
+</dd>
+<dt><strong>ENFILE</strong></dt>
+<dd><p>The system-wide limit on the total number of open files has been reached.</p>
+</dd>
+<dt><strong>ENODEV</strong></dt>
+<dd><p>Could not mount (internal) anonymous inode device.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>There was insufficient memory to create a new signalfd file descriptor.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p><a href='signalfd'>signalfd</a>() is available on Linux since kernel 2.6.22. Working support is provided in glibc since version 2.8. The <a href='signalfd4'>signalfd4</a>() system call (see NOTES) is available on Linux since kernel 2.6.27.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p><a href='signalfd'>signalfd</a>() and <a href='signalfd4'>signalfd4</a>() are Linux-specific.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>A process can create multiple signalfd file descriptors. This makes it possible to accept different signals on different file descriptors. (This may be useful if monitoring the file descriptors using <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), or <a href='/7/epoll'>epoll</a>(7): the arrival of different signals will make different file descriptors ready.) If a signal appears in the <code>mask</code> of more than one of the file descriptors, then occurrences of that signal can be read (once) from any one of the file descriptors.</p>
+<p>Attempts to include <strong>SIGKILL</strong> and <strong>SIGSTOP</strong> in <code>mask</code> are silently ignored.</p>
+<p>The signal mask employed by a signalfd file descriptor can be viewed via the entry for the corresponding file descriptor in the process's <code>/proc/[pid]/fdinfo</code> directory. See <a href='/5/proc'>proc</a>(5) for further details. The signalfd mechanism can't be used to receive signals that are synchronously generated, such as the <strong>SIGSEGV</strong> signal that results from accessing an invalid memory address or the <strong>SIGFPE</strong> signal that results from an arithmetic error. Such signals can be caught only via signal handler.</p>
+<p>As described above, in normal usage one blocks the signals that will be accepted via <a href='signalfd'>signalfd</a>(). If spawning a child process to execute a helper program (that does not need the signalfd file descriptor), then, after the call to <a href='/2/fork'>fork</a>(2), you will normally want to unblock those signals before calling <a href='/2/execve'>execve</a>(2), so that the helper program can see any signals that it expects to see. Be aware, however, that this won't be possible in the case of a helper program spawned behind the scenes by any library function that the program may call. In such cases, one must fall back to using a traditional signal handler that writes to a file descriptor monitored by <a href='/2/select'>select</a>(2), <a href='/2/poll'>poll</a>(2), or <a href='/7/epoll'>epoll</a>(7). The underlying Linux system call requires an additional argument, <code><a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> sizemask</code>, which specifies the size of the <code>mask</code> argument. The glibc <a href='signalfd'>signalfd</a>() wrapper function does not include this argument, since it provides the required value for the underlying system call.</p>
+<p>There are two underlying Linux system calls: <a href='signalfd'>signalfd</a>() and the more recent <a href='signalfd4'>signalfd4</a>(). The former system call does not implement a <code>flags</code> argument. The latter system call implements the <code>flags</code> values described above. Starting with glibc 2.9, the <a href='signalfd'>signalfd</a>() wrapper function will use <a href='signalfd4'>signalfd4</a>() where it is available.</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In kernels before 2.6.25, the <code>ssi_ptr</code> and <code>ssi_int</code> fields are not filled in with the data accompanying a signal sent by <a href='/3/sigqueue'>sigqueue</a>(3).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/2/eventfd'>eventfd</a>(2), <a href='/2/poll'>poll</a>(2), <a href='/2/read'>read</a>(2), <a href='/2/select'>select</a>(2), <a href='/2/sigaction'>sigaction</a>(2), <a href='/2/sigprocmask'>sigprocmask</a>(2), <a href='/2/sigwaitinfo'>sigwaitinfo</a>(2), <a href='/2/timerfd_create'>timerfd_create</a>(2), <a href='/3/sigsetops'>sigsetops</a>(3), <a href='/3/sigwait'>sigwait</a>(3), <a href='/7/epoll'>epoll</a>(7), <a href='/7/signal'>signal</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

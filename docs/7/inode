@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>inode - file inode information</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>Each file has an inode containing metadata about the file. An application can retrieve this metadata using <a href='/2/stat'>stat</a>(2) (or related calls), which returns a <code>stat</code> structure, or <a href='/2/statx'>statx</a>(2), which returns a <code>statx</code> structure.</p>
+<p>The following is a list of the information typically found in, or associated with, the file inode, with the names of the corresponding structure fields returned by <a href='/2/stat'>stat</a>(2) and <a href='/2/statx'>statx</a>(2):</p>
+<dl>
+<dt>Device where inode resides</dt>
+<dd><p><code>stat.st_dev</code>; <code>statx.stx_dev_minor</code> and <code>statx.stx_dev_major</code></p>
+<p>Each inode (as well as the associated file) resides in a filesystem that is hosted on a device. That device is identified by the combination of its major ID (which identifies the general class of device) and minor ID (which identifies a specific instance in the general class).</p>
+</dd>
+<dt>Inode number</dt>
+<dd><p><code>stat.st_ino</code>; <code>statx.stx_ino</code></p>
+<p>Each file in a filesystem has a unique inode number. Inode numbers are guaranteed to be unique only within a filesystem (i.e., the same inode numbers may be used by different filesystems, which is the reason that hard links may not cross filesystem boundaries). This field contains the file's inode number.</p>
+</dd>
+<dt>File type and mode</dt>
+<dd><p><code>stat.st_mode</code>; <code>statx.stx_mode</code></p>
+<p>See the discussion of file type and mode, below.</p>
+</dd>
+<dt>Link count</dt>
+<dd><p><code>stat.st_nlink</code>; <code>statx.stx_nlink</code></p>
+<p>This field contains the number of hard links to the file. Additional links to an existing file are created using <a href='/2/link'>link</a>(2).</p>
+</dd>
+<dt>User ID</dt>
+<dd><p><code>st_uid</code> <code>stat.st_uid</code>; <code>statx.stx_uid</code></p>
+<p>This field records the user ID of the owner of the file. For newly created files, the file user ID is the effective user ID of the creating process. The user ID of a file can be changed using <a href='/2/chown'>chown</a>(2).</p>
+</dd>
+<dt>Group ID</dt>
+<dd><p><code>stat.st_gid</code>; <code>statx.stx_gid</code></p>
+<p>The inode records the ID of the group owner of the file. For newly created files, the file group ID is either the group ID of the parent directory or the effective group ID of the creating process, depending on whether or not the set-group-ID bit is set on the parent directory (see below). The group ID of a file can be changed using <a href='/2/chown'>chown</a>(2).</p>
+</dd>
+<dt>Device represented by this inode</dt>
+<dd><p><code>stat.st_rdev</code>; <code>statx.stx_rdev_minor</code> and <code>statx.stx_rdev_major</code></p>
+<p>If this file (inode) represents a device, then the inode records the major and minor ID of that device.</p>
+</dd>
+<dt>File size</dt>
+<dd><p><code>stat.st_size</code>; <code>statx.stx_size</code></p>
+<p>This field gives the size of the file (if it is a regular file or a symbolic link) in bytes. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.</p>
+</dd>
+<dt>Preferred block size for I/O</dt>
+<dd><p><code>stat.st_blksize</code>; <code>statx.stx_blksize</code></p>
+<p>This field gives the "preferred" blocksize for efficient filesystem I/O. (Writing to a file in smaller chunks may cause an inefficient read-modify-rewrite.)</p>
+</dd>
+<dt>Number of blocks allocated to the file</dt>
+<dd><p><code>stat.st_blocks</code>; <code>statx.stx_size</code></p>
+<p>This field indicates the number of blocks allocated to the file, 512-byte units, (This may be smaller than <code>st_size</code>/512 when the file has holes.)</p>
+<p>The POSIX.1 standard notes that the unit for the <code>st_blocks</code> member of the <code>stat</code> structure is not defined by the standard. On many implementations it is 512 bytes; on a few systems, a different unit is used, such as 1024. Furthermore, the unit may differ on a per-filesystem basis.</p>
+</dd>
+<dt>Last access timestamp (atime)</dt>
+<dd><p><code>stat.st_atime</code>; <code>statx.stx_atime</code></p>
+<p>This is the file's last access timestamp. It is changed by file accesses, for example, by <a href='/2/execve'>execve</a>(2), <a href='/2/mknod'>mknod</a>(2), <a href='/2/pipe'>pipe</a>(2), <a href='/2/utime'>utime</a>(2), and <a href='/2/read'>read</a>(2) (of more than zero bytes). Other interfaces, such as <a href='/2/mmap'>mmap</a>(2), may or may not update the atime timestamp</p>
+<p>Some filesystem types allow mounting in such a way that file and/or directory accesses do not cause an update of the atime timestamp. (See <code>noatime</code>, <code>nodiratime</code>, and <code>relatime</code> in <a href='/8/mount'>mount</a>(8), and related information in <a href='/2/mount'>mount</a>(2).) In addition, the atime timestamp is not updated if a file is opened with the <strong>O_NOATIME</strong> flag; see <a href='/2/open'>open</a>(2).</p>
+</dd>
+<dt>File creation (birth) timestamp (btime)</dt>
+<dd><p>(not returned in the <code>stat</code> structure); <code>statx.stx_btime</code></p>
+<p>The file's creation timestamp. This is set on file creation and not changed subsequently.</p>
+<p>The btime timestamp was not historically present on UNIX systems and is not currently supported by most Linux filesystems.</p>
+</dd>
+<dt>Last modification timestamp (mtime)</dt>
+<dd><p><code>stat.st_mtime</code>; <code>statx.stx_mtime</code></p>
+<p>This is the file's last modification timestamp. It is changed by file modifications, for example, by <a href='/2/mknod'>mknod</a>(2), <a href='/2/truncate'>truncate</a>(2), <a href='/2/utime'>utime</a>(2), and <a href='/2/write'>write</a>(2) (of more than zero bytes). Moreover, the mtime timestamp of a directory is changed by the creation or deletion of files in that directory. The mtime timestamp is <code>not</code> changed for changes in owner, group, hard link count, or mode.</p>
+</dd>
+<dt>Last status change timestamp (ctime)</dt>
+<dd><p><code>stat.st_ctime</code>; <code>statx.stx_ctime</code></p>
+<p>This is the file's last status change timestamp. It is changed by writing or by setting inode information (i.e., owner, group, link count, mode, etc.).</p>
+</dd>
+</dl>
+<p>The timestamp fields report time measured with a zero point at the <code>Epoch</code>, 1970-01-02 00:00:00 +0000, UTC (see <a href='/7/time'>time</a>(7)).</p>
+<p>Nanosecond timestamps are supported on XFS, JFS, Btrfs, and ext4 (since Linux 2.6.23). Nanosecond timestamps are not supported in ext2, ext3, and Reiserfs. In order to return timestamps with nanosecond precision, the timestamp fields in the <code>stat</code> and <code>statx</code> structures are defined as structures that include a nanosecond component. See <a href='/2/stat'>stat</a>(2) and <a href='/2/statx'>statx</a>(2) for details. On filesystems that do not support subsecond timestamps, the nanosecond fields in the <code>stat</code> and <code>statx</code> structures are returned with the value 0. The <code>stat.st_mode</code> field (for <a href='/2/statx'>statx</a>(2), the <code>statx.stx_mode</code> field) contains the file type and mode.</p>
+<p>POSIX refers to the <code>stat.st_mode</code> bits corresponding to the mask <strong>S_IFMT</strong> (see below) as the <code>file type</code>, the 12 bits corresponding to the mask 07777 as the <code>file mode bits</code> and the least significant 9 bits (0777) as the <code>file permission bits</code>.</p>
+<p>The following mask values are defined for the file type:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">S_IFMT</td>
+<td style="text-align: left;">0170000</td>
+<td style="text-align: left;">bit mask for the file type bit field</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IFSOCK</td>
+<td style="text-align: left;">0140000</td>
+<td style="text-align: left;">socket</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IFLNK</td>
+<td style="text-align: left;">0120000</td>
+<td style="text-align: left;">symbolic link</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IFREG</td>
+<td style="text-align: left;">0100000</td>
+<td style="text-align: left;">regular file</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IFBLK</td>
+<td style="text-align: left;">0060000</td>
+<td style="text-align: left;">block device</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IFDIR</td>
+<td style="text-align: left;">0040000</td>
+<td style="text-align: left;">directory</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IFCHR</td>
+<td style="text-align: left;">0020000</td>
+<td style="text-align: left;">character device</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IFIFO</td>
+<td style="text-align: left;">0010000</td>
+<td style="text-align: left;">FIFO</td>
+</tr>
+</tbody>
+</table>
+<p>Thus, to test for a regular file (for example), one could write:</p>
+<pre><code>stat(pathname, &amp;sb);
+if ((sb.st_mode &amp; S_IFMT) == S_IFREG) {
+    /* Handle regular file */
+}</code></pre>
+<p>Because tests of the above form are common, additional macros are defined by POSIX to allow the test of the file type in <code>st_mode</code> to be written more concisely:</p>
+<blockquote>
+<dl>
+<dt><strong>S_ISREG</strong>(m)</dt>
+<dd><p>is it a regular file?</p>
+</dd>
+<dt><strong>S_ISDIR</strong>(m)</dt>
+<dd><p>directory?</p>
+</dd>
+<dt><strong>S_ISCHR</strong>(m)</dt>
+<dd><p>character device?</p>
+</dd>
+<dt><strong>S_ISBLK</strong>(m)</dt>
+<dd><p>block device?</p>
+</dd>
+<dt><strong>S_ISFIFO</strong>(m)</dt>
+<dd><p>FIFO (named pipe)?</p>
+</dd>
+<dt><strong>S_ISLNK</strong>(m)</dt>
+<dd><p>symbolic link? (Not in POSIX.1-1996.)</p>
+</dd>
+<dt><strong>S_ISSOCK</strong>(m)</dt>
+<dd><p>socket? (Not in POSIX.1-1996.)</p>
+</dd>
+</dl>
+</blockquote>
+<p>The preceding code snippet could thus be rewritten as:</p>
+<pre><code>stat(pathname, &amp;sb);
+if (S_ISREG(sb.st_mode)) {
+    /* Handle regular file */
+}</code></pre>
+<p>The definitions of most of the above file type test macros are provided if any of the following feature test macros is defined: <strong>_BSD_SOURCE</strong> (in glibc 2.19 and earlier), <strong>_SVID_SOURCE</strong> (in glibc 2.19 and earlier), or <strong>_DEFAULT_SOURCE</strong> (in glibc 2.20 and later). In addition, definitions of all of the above macros except <strong>S_IFSOCK</strong> and <a href='S_ISSOCK'>S_ISSOCK</a>() are provided if <strong>_XOPEN_SOURCE</strong> is defined.</p>
+<p>The definition of <strong>S_IFSOCK</strong> can also be exposed either by defining <strong>_XOPEN_SOURCE</strong> with a value of 500 or greater or (since glibc 2.24) by defining both <strong>_XOPEN_SOURCE</strong> and <strong>_XOPEN_SOURCE_EXTENDED</strong>.</p>
+<p>The definition of <a href='S_ISSOCK'>S_ISSOCK</a>() is exposed if any of the following feature test macros is defined: <strong>_BSD_SOURCE</strong> (in glibc 2.19 and earlier), <strong>_DEFAULT_SOURCE</strong> (in glibc 2.20 and later), <strong>_XOPEN_SOURCE</strong> with a value of 500 or greater, <strong>_POSIX_C_SOURCE</strong> with a value of 200112L or greater, or (since glibc 2.24) by defining both <strong>_XOPEN_SOURCE</strong> and <strong>_XOPEN_SOURCE_EXTENDED</strong>.</p>
+<p>The following mask values are defined for the file mode component of the <code>st_mode</code> field:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">S_ISUID</td>
+<td style="text-align: left;">04000</td>
+<td style="text-align: left;">set-user-ID bit (see <a href='/2/execve'>execve</a>(2))</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_ISGID</td>
+<td style="text-align: left;">02000</td>
+<td style="text-align: left;">set-group-ID bit (see below)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_ISVTX</td>
+<td style="text-align: left;">01000</td>
+<td style="text-align: left;">sticky bit (see below)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IRWXU</td>
+<td style="text-align: left;">00700</td>
+<td style="text-align: left;">owner has read, write, and execute permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IRUSR</td>
+<td style="text-align: left;">00400</td>
+<td style="text-align: left;">owner has read permission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IWUSR</td>
+<td style="text-align: left;">00200</td>
+<td style="text-align: left;">owner has write permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IXUSR</td>
+<td style="text-align: left;">00100</td>
+<td style="text-align: left;">owner has execute permission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IRWXG</td>
+<td style="text-align: left;">00070</td>
+<td style="text-align: left;">group has read, write, and execute permission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IRGRP</td>
+<td style="text-align: left;">00040</td>
+<td style="text-align: left;">group has read permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IWGRP</td>
+<td style="text-align: left;">00020</td>
+<td style="text-align: left;">group has write permission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IXGRP</td>
+<td style="text-align: left;">00010</td>
+<td style="text-align: left;">group has execute permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IRWXO</td>
+<td style="text-align: left;">00007</td>
+<td style="text-align: left;">others (not in group) have read, write, and execute permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IROTH</td>
+<td style="text-align: left;">00004</td>
+<td style="text-align: left;">others have read permission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S_IWOTH</td>
+<td style="text-align: left;">00002</td>
+<td style="text-align: left;">others have write permission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S_IXOTH</td>
+<td style="text-align: left;">00001</td>
+<td style="text-align: left;">others have execute permission</td>
+</tr>
+</tbody>
+</table>
+<p>The set-group-ID bit (<strong>S_ISGID</strong>) has several special uses. For a directory, it indicates that BSD semantics are to be used for that directory: files created there inherit their group ID from the directory, not from the effective group ID of the creating process, and directories created there will also get the <strong>S_ISGID</strong> bit set. For an executable file, the set-group-ID bit causes the effective group ID of a process that executes the file to change as described in <a href='/2/execve'>execve</a>(2). For a file that does not have the group execution bit (<strong>S_IXGRP</strong>) set, the set-group-ID bit indicates mandatory file/record locking.</p>
+<p>The sticky bit (<strong>S_ISVTX</strong>) on a directory means that a file in that directory can be renamed or deleted only by the owner of the file, by the owner of the directory, and by a privileged process.</p>
+</div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>If you need to obtain the definition of the <code>blkcnt_t</code> or <code>blksize_t</code> types from <code>&lt;sys/stat.h&gt;</code>, then define <strong>_XOPEN_SOURCE</strong> with the value 500 or greater (before including <code>any</code> header files).</p>
+<p>POSIX.1-1990 did not describe the <strong>S_IFMT</strong>, <strong>S_IFSOCK</strong>, <strong>S_IFLNK</strong>, <strong>S_IFREG</strong>, <strong>S_IFBLK</strong>, <strong>S_IFDIR</strong>, <strong>S_IFCHR</strong>, <strong>S_IFIFO</strong>, <strong>S_ISVTX</strong> constants, but instead specified the use of the macros <a href='S_ISDIR'>S_ISDIR</a>(), and so on. The <strong>S_IF*</strong> constants are present in POSIX.1-2001 and later.</p>
+<p>The <a href='S_ISLNK'>S_ISLNK</a>() and <a href='S_ISSOCK'>S_ISSOCK</a>() macros were not in POSIX.1-1996, but both are present in POSIX.1-2001; the former is from SVID 4, the latter from SUSv2.</p>
+<p>UNIX V7 (and later systems) had <strong>S_IREAD</strong>, <strong>S_IWRITE</strong>, <strong>S_IEXEC</strong>, where POSIX prescribes the synonyms <strong>S_IRUSR</strong>, <strong>S_IWUSR</strong>, <strong>S_IXUSR</strong>.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>For pseudofiles that are autogenerated by the kernel, the file size (<code>stat.st_size</code>; <code>statx.stx_size</code>) reported by the kernel is not accurate. For example, the value 0 is returned for many files under the <code>/proc</code> directory, while various files under <code>/sys</code> report a size of 4096 bytes, even though the file content is smaller. For such files, one should simply try to read as many bytes as possible (and append '\0' to the returned buffer if it is to be interpreted as a string).</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/stat'>stat</a>(1), <a href='/2/stat'>stat</a>(2), <a href='/2/statx'>statx</a>(2), <a href='/7/symlink'>symlink</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

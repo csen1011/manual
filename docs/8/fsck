@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>fsck - check and repair a Linux filesystem</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>fsck</strong> [<strong>-lsAVRTMNP</strong>] [<strong>-r</strong> [<code>fd</code>]] [<strong>-C</strong> [<code>fd</code>]] [<strong>-t</strong> <code>fstype</code>] [<code>filesystem</code>...] [<strong>--</strong>] [<code>fs-specific-options</code>]</p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p><strong>fsck</strong> is used to check and optionally repair one or more Linux filesystems. <code>filesystem</code> can be a device name (e.g., <code>/dev/hdc1</code>, <code>/dev/sdb2</code>), a mount point (e.g., <code>/</code>, <code>/usr</code>, <code>/home</code>), or an filesystem label or UUID specifier (e.g., UUID=8868abf6-88c5-4a83-98b8-bfc24057f7bd or LABEL=root). Normally, the <strong>fsck</strong> program will try to handle filesystems on different physical disk drives in parallel to reduce the total amount of time needed to check all of them.</p>
+<p>If no filesystems are specified on the command line, and the <strong>-A</strong> option is not specified, <strong>fsck</strong> will default to checking filesystems in <code>/etc/fstab</code> serially. This is equivalent to the <strong>-As</strong> options.</p>
+<p>The exit status returned by <strong>fsck</strong> is the sum of the following conditions:</p>
+<p><strong>0</strong></p>
+<blockquote>
+<p>No errors</p>
+</blockquote>
+<p><strong>1</strong></p>
+<blockquote>
+<p>Filesystem errors corrected</p>
+</blockquote>
+<p><strong>2</strong></p>
+<blockquote>
+<p>System should be rebooted</p>
+</blockquote>
+<p><strong>4</strong></p>
+<blockquote>
+<p>Filesystem errors left uncorrected</p>
+</blockquote>
+<p><strong>8</strong></p>
+<blockquote>
+<p>Operational error</p>
+</blockquote>
+<p><strong>16</strong></p>
+<blockquote>
+<p>Usage or syntax error</p>
+</blockquote>
+<p><strong>32</strong></p>
+<blockquote>
+<p>Checking canceled by user request</p>
+</blockquote>
+<p><strong>128</strong></p>
+<blockquote>
+<p>Shared-library error</p>
+</blockquote>
+<p>The exit status returned when multiple filesystems are checked is the bit-wise OR of the exit statuses for each filesystem that is checked.</p>
+<p>In actuality, <strong>fsck</strong> is simply a front-end for the various filesystem checkers (<strong>fsck</strong>.<code>fstype</code>) available under Linux. The filesystem-specific checker is searched for in the <strong>PATH</strong> environment variable. If the <strong>PATH</strong> is undefined then fallback to <code>/sbin</code>.</p>
+<p>Please see the filesystem-specific checker manual pages for further details.</p>
+</div></div><h1 id='options'><a href='#options'>OPTIONS</a></h1><div data-for='options' data-hide><div class='section' data-for='options'><div data-more>
+<p><strong>-l</strong></p>
+<blockquote>
+<p>Create an exclusive <a href='/2/flock'>flock</a>(2) lock file (<code>/run/fsck/&lt;diskname&gt;.lock</code>) for whole-disk device. This option can be used with one device only (this means that <strong>-A</strong> and <strong>-l</strong> are mutually exclusive). This option is recommended when more <strong>fsck</strong> instances are executed in the same time. The option is ignored when used for multiple devices or for non-rotating disks. <strong>fsck</strong> does not lock underlying devices when executed to check stacked devices (e.g. MD or DM) - this feature is not implemented yet.</p>
+</blockquote>
+<p><strong>-r</strong> [<code>fd</code>]</p>
+<blockquote>
+<p>Report certain statistics for each fsck when it completes. These statistics include the exit status, the maximum run set size (in kilobytes), the elapsed all-clock time and the user and system CPU time used by the fsck run. For example:</p>
+<p><strong>/dev/sda1: status 0, rss 92828, real 4.002804, user 2.677592, sys 0.86186</strong></p>
+<p>GUI front-ends may specify a file descriptor <code>fd</code>, in which case the progress bar information will be sent to that file descriptor in a machine parsable format. For example:</p>
+<p><strong>/dev/sda1 0 92828 4.002804 2.677592 0.86186</strong></p>
+</blockquote>
+<p><strong>-s</strong></p>
+<blockquote>
+<p>Serialize <strong>fsck</strong> operations. This is a good idea if you are checking multiple filesystems and the checkers are in an interactive mode. (Note: <a href='/8/e2fsck'>e2fsck</a>(8) runs in an interactive mode by default. To make <a href='/8/e2fsck'>e2fsck</a>(8) run in a non-interactive mode, you must either specify the <strong>-p</strong> or <strong>-a</strong> option, if you wish for errors to be corrected automatically, or the <strong>-n</strong> option if you do not.)</p>
+</blockquote>
+<p><strong>-t</strong> <code>fslist</code></p>
+<blockquote>
+<p>Specifies the type(s) of filesystem to be checked. When the <strong>-A</strong> flag is specified, only filesystems that match <code>fslist</code> are checked. The <code>fslist</code> parameter is a comma-separated list of filesystems and options specifiers. All of the filesystems in this comma-separated list may be prefixed by a negation operator '<strong>no</strong>' or '<strong>!</strong>', which requests that only those filesystems not listed in <code>fslist</code> will be checked. If none of the filesystems in <code>fslist</code> is prefixed by a negation operator, then only those listed filesystems will be checked.</p>
+<p>Options specifiers may be included in the comma-separated <code>fslist</code>. They must have the format <strong>opts=</strong><code>fs-option</code>. If an options specifier is present, then only filesystems which contain <code>fs-option</code> in their mount options field of <code>/etc/fstab</code> will be checked. If the options specifier is prefixed by a negation operator, then only those filesystems that do not have <code>fs-option</code> in their mount options field of <code>/etc/fstab</code> will be checked.</p>
+<p>For example, if <strong>opts=ro</strong> appears in <code>fslist</code>, then only filesystems listed in <code>/etc/fstab</code> with the <strong>ro</strong> option will be checked.</p>
+<p>For compatibility with Mandrake distributions whose boot scripts depend upon an unauthorized UI change to the <strong>fsck</strong> program, if a filesystem type of <strong>loop</strong> is found in <code>fslist</code>, it is treated as if <strong>opts=loop</strong> were specified as an argument to the <strong>-t</strong> option.</p>
+<p>Normally, the filesystem type is deduced by searching for <code>filesys</code> in the <code>/etc/fstab</code> file and using the corresponding entry. If the type cannot be deduced, and there is only a single filesystem given as an argument to the <strong>-t</strong> option, <strong>fsck</strong> will use the specified filesystem type. If this type is not available, then the default filesystem type (currently ext2) is used.</p>
+</blockquote>
+<p><strong>-A</strong></p>
+<blockquote>
+<p>Walk through the <code>/etc/fstab</code> file and try to check all filesystems in one run. This option is typically used from the <code>/etc/rc</code> system initialization file, instead of multiple commands for checking a single filesystem.</p>
+<p>The root filesystem will be checked first unless the <strong>-P</strong> option is specified (see below). After that, filesystems will be checked in the order specified by the <code>fs_passno</code> (the sixth) field in the <code>/etc/fstab</code> file. Filesystems with a <code>fs_passno</code> value of 0 are skipped and are not checked at all. Filesystems with a <code>fs_passno</code> value of greater than zero will be checked in order, with filesystems with the lowest <code>fs_passno</code> number being checked first. If there are multiple filesystems with the same pass number, <strong>fsck</strong> will attempt to check them in parallel, although it will avoid running multiple filesystem checks on the same physical disk.</p>
+<p><strong>fsck</strong> does not check stacked devices (RAIDs, dm-crypt, ...) in parallel with any other device. See below for <strong>FSCK_FORCE_ALL_PARALLEL</strong> setting. The <code>/sys</code> filesystem is used to determine dependencies between devices.</p>
+<p>Hence, a very common configuration in <code>/etc/fstab</code> files is to set the root filesystem to have a <code>fs_passno</code> value of 1 and to set all other filesystems to have a <code>fs_passno</code> value of 2. This will allow <strong>fsck</strong> to automatically run filesystem checkers in parallel if it is advantageous to do so. System administrators might choose not to use this configuration if they need to avoid multiple filesystem checks running in parallel for some reason - for example, if the machine in question is short on memory so that excessive paging is a concern.</p>
+<p><strong>fsck</strong> normally does not check whether the device actually exists before calling a filesystem specific checker. Therefore non-existing devices may cause the system to enter filesystem repair mode during boot if the filesystem specific checker returns a fatal error. The <code>/etc/fstab</code> mount option <strong>nofail</strong> may be used to have <strong>fsck</strong> skip non-existing devices. <strong>fsck</strong> also skips non-existing devices that have the special filesystem type <strong>auto</strong>.</p>
+</blockquote>
+<p><strong>-C</strong> [<code>fd</code>]</p>
+<blockquote>
+<p>Display completion/progress bars for those filesystem checkers (currently only for ext[234]) which support them. <strong>fsck</strong> will manage the filesystem checkers so that only one of them will display a progress bar at a time. GUI front-ends may specify a file descriptor <code>fd</code>, in which case the progress bar information will be sent to that file descriptor.</p>
+</blockquote>
+<p><strong>-M</strong></p>
+<blockquote>
+<p>Do not check mounted filesystems and return an exit status of 0 for mounted filesystems.</p>
+</blockquote>
+<p><strong>-N</strong></p>
+<blockquote>
+<p>Don’t execute, just show what would be done.</p>
+</blockquote>
+<p><strong>-P</strong></p>
+<blockquote>
+<p>When the <strong>-A</strong> flag is set, check the root filesystem in parallel with the other filesystems. This is not the safest thing in the world to do, since if the root filesystem is in doubt things like the <a href='/8/e2fsck'>e2fsck</a>(8) executable might be corrupted! This option is mainly provided for those sysadmins who don’t want to repartition the root filesystem to be small and compact (which is really the right solution).</p>
+</blockquote>
+<p><strong>-R</strong></p>
+<blockquote>
+<p>When checking all filesystems with the <strong>-A</strong> flag, skip the root filesystem. (This is useful in case the root filesystem has already been mounted read-write.)</p>
+</blockquote>
+<p><strong>-T</strong></p>
+<blockquote>
+<p>Don’t show the title on startup.</p>
+</blockquote>
+<p><strong>-V</strong></p>
+<blockquote>
+<p>Produce verbose output, including all filesystem-specific commands that are executed.</p>
+</blockquote>
+<p><strong>-?</strong>, <strong>--help</strong></p>
+<blockquote>
+<p>Display help text and exit.</p>
+</blockquote>
+<p><strong>--version</strong></p>
+<blockquote>
+<p>Display version information and exit.</p>
+</blockquote>
+</div></div></div><h1 id='filesystem-specific-options'><a href='#filesystem-specific-options'>FILESYSTEM SPECIFIC OPTIONS</a></h1><div data-for='filesystem-specific-options' data-hide><div class='section' data-for='filesystem-specific-options'><div data-more>
+<p><strong>Options which are not understood by fsck are passed to the filesystem-specific checker!</strong></p>
+<p>These options <strong>must</strong> not take arguments, as there is no way for <strong>fsck</strong> to be able to properly guess which options take arguments and which don’t.</p>
+<p>Options and arguments which follow the <strong>--</strong> are treated as filesystem-specific options to be passed to the filesystem-specific checker.</p>
+<p>Please note that <strong>fsck</strong> is not designed to pass arbitrarily complicated options to filesystem-specific checkers. If you’re doing something complicated, please just execute the filesystem-specific checker directly. If you pass <strong>fsck</strong> some horribly complicated options and arguments, and it doesn’t do what you expect, <strong>don’t bother reporting it as a bug.</strong> You’re almost certainly doing something that you shouldn’t be doing with <strong>fsck</strong>. Options to different filesystem-specific fsck’s are not standardized.</p>
+</div></div></div><h1 id='environment'><a href='#environment'>ENVIRONMENT</a></h1><div data-for='environment' data-hide><div class='section' data-for='environment'><div data-more>
+<p>The <strong>fsck</strong> program’s behavior is affected by the following environment variables:</p>
+<p><strong>FSCK_FORCE_ALL_PARALLEL</strong></p>
+<blockquote>
+<p>If this environment variable is set, <strong>fsck</strong> will attempt to check all of the specified filesystems in parallel, regardless of whether the filesystems appear to be on the same device. (This is useful for RAID systems or high-end storage systems such as those sold by companies such as IBM or EMC.) Note that the <code>fs_passno</code> value is still used.</p>
+</blockquote>
+<p><strong>FSCK_MAX_INST</strong></p>
+<blockquote>
+<p>This environment variable will limit the maximum number of filesystem checkers that can be running at one time. This allows configurations which have a large number of disks to avoid <strong>fsck</strong> starting too many filesystem checkers at once, which might overload CPU and memory resources available on the system. If this value is zero, then an unlimited number of processes can be spawned. This is currently the default, but future versions of <strong>fsck</strong> may attempt to automatically determine how many filesystem checks can be run based on gathering accounting data from the operating system.</p>
+</blockquote>
+<p><strong>PATH</strong></p>
+<blockquote>
+<p>The <strong>PATH</strong> environment variable is used to find filesystem checkers.</p>
+</blockquote>
+<p><strong>FSTAB_FILE</strong></p>
+<blockquote>
+<p>This environment variable allows the system administrator to override the standard location of the <code>/etc/fstab</code> file. It is also useful for developers who are testing <strong>fsck</strong>.</p>
+</blockquote>
+<p><strong>LIBBLKID_DEBUG=all</strong></p>
+<blockquote>
+<p>enables libblkid debug output.</p>
+</blockquote>
+<p><strong>LIBMOUNT_DEBUG=all</strong></p>
+<blockquote>
+<p>enables libmount debug output.</p>
+</blockquote>
+</div></div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/etc/fstab</code></p>
+</div></div></div><h1 id='authors'><a href='#authors'>AUTHORS</a></h1><div data-for='authors' data-hide><div class='section' data-for='authors'><div data-more>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/5/fstab'>fstab</a>(5), <a href='/8/mkfs'>mkfs</a>(8), <a href='/8/fsck.ext2'>fsck.ext2</a>(8) or <a href='/8/fsck.ext3'>fsck.ext3</a>(8) or <a href='/8/e2fsck'>e2fsck</a>(8), <a href='/8/fsck.cramfs'>fsck.cramfs</a>(8), <a href='/8/fsck.jfs'>fsck.jfs</a>(8), <a href='/8/fsck.nfs'>fsck.nfs</a>(8), <a href='/8/fsck.minix'>fsck.minix</a>(8), <a href='/8/fsck.msdos'>fsck.msdos</a>(8), <a href='/8/fsck.vfat'>fsck.vfat</a>(8), <a href='/8/fsck.xfs'>fsck.xfs</a>(8), <a href='/8/reiserfsck'>reiserfsck</a>(8)</p>
+</div></div><h1 id='reporting-bugs'><a href='#reporting-bugs'>REPORTING BUGS</a></h1><div data-for='reporting-bugs' data-hide><div class='section' data-for='reporting-bugs'><div data-more>
+<p>For bug reports, use the issue tracker at &lt;<a href="https://github.com/karelzak/util-linux/issues&amp;gt;">https://github.com/karelzak/util-linux/issues&gt;</a>.</p>
+</div></div></div><h1 id='availability'><a href='#availability'>AVAILABILITY</a></h1><div data-for='availability' data-hide><div class='section' data-for='availability'><div data-more>
+<p>The <strong>fsck</strong> command is part of the util-linux package which can be downloaded from <code>Linux Kernel Archive</code> &lt;<a href="https://www.kernel.org/pub/linux/utils/util-linux/&amp;gt;">https://www.kernel.org/pub/linux/utils/util-linux/&gt;</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

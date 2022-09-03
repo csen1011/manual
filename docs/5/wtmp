@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>utmp, wtmp - login records</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<p><strong>#include &lt;utmp.h&gt;</strong></p>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <code>utmp</code> file allows one to discover information about who is currently using the system. There may be more users currently using the system, because not all programs use utmp logging.</p>
+<p><strong>Warning:</strong> <code>utmp</code> must not be writable by the user class "other", because many system programs (foolishly) depend on its integrity. You risk faked system logfiles and modifications of system files if you leave <code>utmp</code> writable to any user other than the owner and group owner of the file.</p>
+<p>The file is a sequence of <code>utmp</code> structures, declared as follows in <code>&lt;utmp.h&gt;</code> (note that this is only one of several definitions around; details depend on the version of libc):</p>
+<pre><code>/* Values for ut_type field, below */
+
+#define EMPTY         0 /* Record does not contain valid info
+                           (formerly known as UT_UNKNOWN on Linux) */
+#define RUN_LVL       1 /* Change in system run-level (see
+                           init(1)) */
+#define BOOT_TIME     2 /* Time of system boot (in ut_tv) */
+#define NEW_TIME      3 /* Time after system clock change
+                           (in ut_tv) */
+#define OLD_TIME      4 /* Time before system clock change
+                           (in ut_tv) */
+#define INIT_PROCESS  5 /* Process spawned by init(1) */
+#define LOGIN_PROCESS 6 /* Session leader process for user login */
+#define USER_PROCESS  7 /* Normal process */
+#define DEAD_PROCESS  8 /* Terminated process */
+#define ACCOUNTING    9 /* Not implemented */
+
+#define UT_LINESIZE      32
+#define UT_NAMESIZE      32
+#define UT_HOSTSIZE     256
+
+struct exit_status {              /* Type for ut_exit, below */
+    short e_termination;          /* Process termination status */
+    short e_exit;                 /* Process exit status */
+};
+
+struct utmp {
+    short   ut_type;              /* Type of record */
+    pid_t   ut_pid;               /* PID of login process */
+    char    ut_line[UT_LINESIZE]; /* Device name of tty - "/dev/" */
+    char    ut_id[4];             /* Terminal name suffix,
+                                     or inittab(5) ID */
+    char    ut_user[UT_NAMESIZE]; /* Username */
+    char    ut_host[UT_HOSTSIZE]; /* Hostname for remote login, or
+                                     kernel version for run-level
+                                     messages */
+    struct  exit_status ut_exit;  /* Exit status of a process
+                                     marked as DEAD_PROCESS; not
+                                     used by Linux init(1) */
+    /* The ut_session and ut_tv fields must be the same size when
+       compiled 32- and 64-bit.  This allows data files and shared
+       memory to be shared between 32- and 64-bit applications. */
+#if __WORDSIZE == 64 &amp;&amp; defined __WORDSIZE_COMPAT32
+    int32_t ut_session;           /* Session ID (getsid(2)),
+                                     used for windowing */
+    struct {
+        int32_t tv_sec;           /* Seconds */
+        int32_t tv_usec;          /* Microseconds */
+    } ut_tv;                      /* Time entry was made */
+#else
+     long   ut_session;           /* Session ID */
+     struct timeval ut_tv;        /* Time entry was made */
+#endif
+
+    int32_t ut_addr_v6[4];        /* Internet address of remote
+                                     host; IPv4 address uses
+                                     just ut_addr_v6[0] */
+    char __unused[20];            /* Reserved for future use */
+};
+
+/* Backward compatibility hacks */
+#define ut_name ut_user
+#ifndef _NO_UT_TIME
+#define ut_time ut_tv.tv_sec
+#endif
+#define ut_xtime ut_tv.tv_sec
+#define ut_addr ut_addr_v6[0]</code></pre>
+<p>This structure gives the name of the special file associated with the user's terminal, the user's login name, and the time of login in the form of <a href='/2/time'>time</a>(2). String fields are terminated by a null byte ('\0') if they are shorter than the size of the field.</p>
+<p>The first entries ever created result from <a href='/1/init'>init</a>(1) processing <a href='/5/inittab'>inittab</a>(5). Before an entry is processed, though, <a href='/1/init'>init</a>(1) cleans up utmp by setting <code>ut_type</code> to <strong>DEAD_PROCESS</strong>, clearing <code>ut_user</code>, <code>ut_host</code>, and <code>ut_time</code> with null bytes for each record which <code>ut_type</code> is not <strong>DEAD_PROCESS</strong> or <strong>RUN_LVL</strong> and where no process with PID <code>ut_pid</code> exists. If no empty record with the needed <code>ut_id</code> can be found, <a href='/1/init'>init</a>(1) creates a new one. It sets <code>ut_id</code> from the inittab, <code>ut_pid</code> and <code>ut_time</code> to the current values, and <code>ut_type</code> to <strong>INIT_PROCESS</strong>.</p>
+<p><a href='/8/mingetty'>mingetty</a>(8) (or <a href='/8/agetty'>agetty</a>(8)) locates the entry by the PID, changes <code>ut_type</code> to <strong>LOGIN_PROCESS</strong>, changes <code>ut_time</code>, sets <code>ut_line</code>, and waits for connection to be established. <a href='/1/login'>login</a>(1), after a user has been authenticated, changes <code>ut_type</code> to <strong>USER_PROCESS</strong>, changes <code>ut_time</code>, and sets <code>ut_host</code> and <code>ut_addr</code>. Depending on <a href='/8/mingetty'>mingetty</a>(8) (or <a href='/8/agetty'>agetty</a>(8)) and <a href='/1/login'>login</a>(1), records may be located by <code>ut_line</code> instead of the preferable <code>ut_pid</code>.</p>
+<p>When <a href='/1/init'>init</a>(1) finds that a process has exited, it locates its utmp entry by <code>ut_pid</code>, sets <code>ut_type</code> to <strong>DEAD_PROCESS</strong>, and clears <code>ut_user</code>, <code>ut_host</code>, and <code>ut_time</code> with null bytes.</p>
+<p><a href='/1/xterm'>xterm</a>(1) and other terminal emulators directly create a <strong>USER_PROCESS</strong> record and generate the <code>ut_id</code> by using the string that suffix part of the terminal name (the characters following <code>/dev/[pt]ty</code>). If they find a <strong>DEAD_PROCESS</strong> for this ID, they recycle it, otherwise they create a new entry. If they can, they will mark it as <strong>DEAD_PROCESS</strong> on exiting and it is advised that they null <code>ut_line</code>, <code>ut_time</code>, <code>ut_user</code>, and <code>ut_host</code> as well.</p>
+<p><a href='/8/telnetd'>telnetd</a>(8) sets up a <strong>LOGIN_PROCESS</strong> entry and leaves the rest to <a href='/1/login'>login</a>(1) as usual. After the telnet session ends, <a href='/8/telnetd'>telnetd</a>(8) cleans up utmp in the described way.</p>
+<p>The <code>wtmp</code> file records all logins and logouts. Its format is exactly like <code>utmp</code> except that a null username indicates a logout on the associated terminal. Furthermore, the terminal name <strong>~</strong> with username <strong>shutdown</strong> or <strong>reboot</strong> indicates a system shutdown or reboot and the pair of terminal names <strong>|</strong>/<strong>}</strong> logs the old/new system time when <a href='/1/date'>date</a>(1) changes it. <code>wtmp</code> is maintained by <a href='/1/login'>login</a>(1), <a href='/1/init'>init</a>(1), and some versions of <a href='/8/getty'>getty</a>(8) (e.g., <a href='/8/mingetty'>mingetty</a>(8) or <a href='/8/agetty'>agetty</a>(8)). None of these programs creates the file, so if it is removed, record-keeping is turned off.</p>
+</div></div><h1 id='files'><a href='#files'>FILES</a></h1><div data-for='files' data-hide><div class='section' data-for='files'><div data-more>
+<p><code>/var/run/utmp</code><br/>
+<code>/var/log/wtmp</code></p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1 does not specify a <code>utmp</code> structure, but rather one named <code>utmpx</code>, with specifications for the fields <code>ut_type</code>, <code>ut_pid</code>, <code>ut_line</code>, <code>ut_id</code>, <code>ut_user</code>, and <code>ut_tv</code>. POSIX.1 does not specify the lengths of the <code>ut_line</code> and <code>ut_user</code> fields.</p>
+<p>Linux defines the <code>utmpx</code> structure to be the same as the <code>utmp</code> structure.</p>
+<h2>Comparison with historical systems</h2>
+<p>Linux utmp entries conform neither to v7/BSD nor to System V; they are a mix of the two.</p>
+<p>v7/BSD has fewer fields; most importantly it lacks <code>ut_type</code>, which causes native v7/BSD-like programs to display (for example) dead or login entries. Further, there is no configuration file which allocates slots to sessions. BSD does so because it lacks <code>ut_id</code> fields.</p>
+<p>In Linux (as in System V), the <code>ut_id</code> field of a record will never change once it has been set, which reserves that slot without needing a configuration file. Clearing <code>ut_id</code> may result in race conditions leading to corrupted utmp entries and potential security holes. Clearing the abovementioned fields by filling them with null bytes is not required by System V semantics, but makes it possible to run many programs which assume BSD semantics and which do not modify utmp. Linux uses the BSD conventions for line contents, as documented above.</p>
+<p>System V has no <code>ut_host</code> or <code>ut_addr_v6</code> fields.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Unlike various other systems, where utmp logging can be disabled by removing the file, utmp must always exist on Linux. If you want to disable <a href='/1/who'>who</a>(1), then do not make utmp world readable.</p>
+<p>The file format is machine-dependent, so it is recommended that it be processed only on the machine architecture where it was created.</p>
+<p>Note that on <code>biarch</code> platforms, that is, systems which can run both 32-bit and 64-bit applications (x86-64, ppc64, s390x, etc.), <code>ut_tv</code> is the same size in 32-bit mode as in 64-bit mode. The same goes for <code>ut_session</code> and <code>ut_time</code> if they are present. This allows data files and shared memory to be shared between 32-bit and 64-bit applications. This is achieved by changing the type of <code>ut_session</code> to <code>int32_t</code>, and that of <code>ut_tv</code> to a struct with two <code>int32_t</code> fields <code>tv_sec</code> and <code>tv_usec</code>. Since <code>ut_tv</code> may not be the same as <code>struct timeval</code>, then instead of the call:</p>
+<pre><code>gettimeofday((struct timeval *) &amp;ut.ut_tv, NULL);</code></pre>
+<p>the following method of setting this field is recommended:</p>
+<pre><code>struct utmp ut;
+struct timeval tv;
+
+gettimeofday(&amp;tv, NULL);
+ut.ut_tv.tv_sec = tv.tv_sec;
+ut.ut_tv.tv_usec = tv.tv_usec;</code></pre>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/ac'>ac</a>(1), <a href='/1/date'>date</a>(1), <a href='/1/init'>init</a>(1), <a href='/1/last'>last</a>(1), <a href='/1/login'>login</a>(1), <a href='/1/logname'>logname</a>(1), <a href='/1/lslogins'>lslogins</a>(1), <a href='/1/users'>users</a>(1), <a href='/1/utmpdump'>utmpdump</a>(1), <a href='/1/who'>who</a>(1), <a href='/3/getutent'>getutent</a>(3), <a href='/3/getutmp'>getutmp</a>(3), <a href='/3/login'>login</a>(3), <a href='/3/logout'>logout</a>(3), <a href='/3/logwtmp'>logwtmp</a>(3), <a href='/3/updwtmp'>updwtmp</a>(3)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

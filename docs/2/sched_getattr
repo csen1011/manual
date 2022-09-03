@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>sched_setattr, sched_getattr - set and get scheduling policy and attributes</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;sched.h&gt;</a>
+
+int sched_setattr(pid_t pid, struct sched_attr *attr,
+ unsigned int flags);
+
+int sched_getattr(pid_t pid, struct sched_attr *attr,
+ unsigned int size, unsigned int flags);</code></pre>
+</div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<h2>sched_setattr()</h2>
+<p>The <a href='sched_setattr'>sched_setattr</a>() system call sets the scheduling policy and associated attributes for the thread whose ID is specified in <code>pid</code>. If <code>pid</code> equals zero, the scheduling policy and attributes of the calling thread will be set.</p>
+<p>Currently, Linux supports the following "normal" (i.e., non-real-time) scheduling policies as values that may be specified in <code>policy</code>:</p>
+<dl>
+<dt><strong>SCHED_OTHER</strong></dt>
+<dd><p>the standard round-robin time-sharing policy;</p>
+</dd>
+<dt><strong>SCHED_BATCH</strong></dt>
+<dd><p>for "batch" style execution of processes; and</p>
+</dd>
+<dt><strong>SCHED_IDLE</strong></dt>
+<dd><p>for running <code>very</code> low priority background jobs.</p>
+</dd>
+</dl>
+<p>Various "real-time" policies are also supported, for special time-critical applications that need precise control over the way in which runnable threads are selected for execution. For the rules governing when a process may use these policies, see <a href='/7/sched'>sched</a>(7). The real-time policies that may be specified in <code>policy</code> are:</p>
+<dl>
+<dt><strong>SCHED_FIFO</strong></dt>
+<dd><p>a first-in, first-out policy; and</p>
+</dd>
+<dt><strong>SCHED_RR</strong></dt>
+<dd><p>a round-robin policy.</p>
+</dd>
+</dl>
+<p>Linux also provides the following policy:</p>
+<dl>
+<dt><strong>SCHED_DEADLINE</strong></dt>
+<dd><p>a deadline scheduling policy; see <a href='/7/sched'>sched</a>(7) for details.</p>
+</dd>
+</dl>
+<p>The <code>attr</code> argument is a pointer to a structure that defines the new scheduling policy and attributes for the specified thread. This structure has the following form:</p>
+<pre><code>struct sched_attr {
+    u32 size;              /* Size of this structure */
+    u32 sched_policy;      /* Policy (SCHED_*) */
+    u64 sched_flags;       /* Flags */
+    s32 sched_nice;        /* Nice value (SCHED_OTHER,
+                              SCHED_BATCH) */
+    u32 sched_priority;    /* Static priority (SCHED_FIFO,
+                              SCHED_RR) */
+    /* Remaining fields are for SCHED_DEADLINE */
+    u64 sched_runtime;
+    u64 sched_deadline;
+    u64 sched_period;
+};</code></pre>
+<p>The fields of the <code>sched_attr</code> structure are as follows:</p>
+<dl>
+<dt><strong>size</strong></dt>
+<dd><p>This field should be set to the size of the structure in bytes, as in <code>sizeof(struct sched_attr)</code>. If the provided structure is smaller than the kernel structure, any additional fields are assumed to be '0'. If the provided structure is larger than the kernel structure, the kernel verifies that all additional fields are 0; if they are not, <a href='sched_setattr'>sched_setattr</a>() fails with the error <strong>E2BIG</strong> and updates <code>size</code> to contain the size of the kernel structure.</p>
+<p>The above behavior when the size of the user-space <code>sched_attr</code> structure does not match the size of the kernel structure allows for future extensibility of the interface. Malformed applications that pass oversize structures won't break in the future if the size of the kernel <code>sched_attr</code> structure is increased. In the future, it could also allow applications that know about a larger user-space <code>sched_attr</code> structure to determine whether they are running on an older kernel that does not support the larger structure.</p>
+</dd>
+<dt><code>sched_policy</code></dt>
+<dd><p>This field specifies the scheduling policy, as one of the <strong>SCHED_*</strong> values listed above.</p>
+</dd>
+<dt><code>sched_flags</code></dt>
+<dd><p>This field contains zero or more of the following flags that are ORed together to control scheduling behavior:</p>
+<dl>
+<dt><strong>SCHED_FLAG_RESET_ON_FORK</strong></dt>
+<dd><p>Children created by <a href='/2/fork'>fork</a>(2) do not inherit privileged scheduling policies. See <a href='/7/sched'>sched</a>(7) for details.</p>
+</dd>
+<dt><strong>SCHED_FLAG_RECLAIM</strong> (since Linux 4.13)</dt>
+<dd><p>This flag allows a <strong>SCHED_DEADLINE</strong> thread to reclaim bandwidth unused by other real-time threads.</p>
+</dd>
+<dt><strong>SCHED_FLAG_DL_OVERRUN</strong> (since Linux 4.16)</dt>
+<dd><p>This flag allows an application to get informed about run-time overruns in <strong>SCHED_DEADLINE</strong> threads. Such overruns may be caused by (for example) coarse execution time accounting or incorrect parameter assignment. Notification takes the form of a <strong>SIGXCPU</strong> signal which is generated on each overrun.</p>
+<p>This <strong>SIGXCPU</strong> signal is <code>process-directed</code> (see <a href='/7/signal'>signal</a>(7)) rather than thread-directed. This is probably a bug. On the one hand, <a href='sched_setattr'>sched_setattr</a>() is being used to set a per-thread attribute. On the other hand, if the process-directed signal is delivered to a thread inside the process other than the one that had a run-time overrun, the application has no way of knowing which thread overran.</p>
+</dd>
+</dl>
+</dd>
+<dt><code>sched_nice</code></dt>
+<dd><p>This field specifies the nice value to be set when specifying <code>sched_policy</code> as <strong>SCHED_OTHER</strong> or <strong>SCHED_BATCH</strong>. The nice value is a number in the range -20 (high priority) to +19 (low priority); see <a href='/7/sched'>sched</a>(7).</p>
+</dd>
+<dt><code>sched_priority</code></dt>
+<dd><p>This field specifies the static priority to be set when specifying <code>sched_policy</code> as <strong>SCHED_FIFO</strong> or <strong>SCHED_RR</strong>. The allowed range of priorities for these policies can be determined using <a href='/2/sched_get_priority_min'>sched_get_priority_min</a>(2) and <a href='/2/sched_get_priority_max'>sched_get_priority_max</a>(2). For other policies, this field must be specified as 0.</p>
+</dd>
+<dt><code>sched_runtime</code></dt>
+<dd><p>This field specifies the "Runtime" parameter for deadline scheduling. The value is expressed in nanoseconds. This field, and the next two fields, are used only for <strong>SCHED_DEADLINE</strong> scheduling; for further details, see <a href='/7/sched'>sched</a>(7).</p>
+</dd>
+<dt><code>sched_deadline</code></dt>
+<dd><p>This field specifies the "Deadline" parameter for deadline scheduling. The value is expressed in nanoseconds.</p>
+</dd>
+<dt><code>sched_period</code></dt>
+<dd><p>This field specifies the "Period" parameter for deadline scheduling. The value is expressed in nanoseconds.</p>
+</dd>
+</dl>
+<p>The <code>flags</code> argument is provided to allow for future extensions to the interface; in the current implementation it must be specified as 0.</p>
+<h2>sched_getattr()</h2>
+<p>The <a href='sched_getattr'>sched_getattr</a>() system call fetches the scheduling policy and the associated attributes for the thread whose ID is specified in <code>pid</code>. If <code>pid</code> equals zero, the scheduling policy and attributes of the calling thread will be retrieved.</p>
+<p>The <code>size</code> argument should be set to the size of the <code>sched_attr</code> structure as known to user space. The value must be at least as large as the size of the initially published <code>sched_attr</code> structure, or the call fails with the error <strong>EINVAL</strong>.</p>
+<p>The retrieved scheduling attributes are placed in the fields of the <code>sched_attr</code> structure pointed to by <code>attr</code>. The kernel sets <code>attr.size</code> to the size of its <code>sched_attr</code> structure.</p>
+<p>If the caller-provided <code>attr</code> buffer is larger than the kernel's <code>sched_attr</code> structure, the additional bytes in the user-space structure are not touched. If the caller-provided structure is smaller than the kernel <code>sched_attr</code> structure, the kernel will silently not return any values which would be stored outside the provided space. As with <a href='sched_setattr'>sched_setattr</a>(), these semantics allow for future extensibility of the interface.</p>
+<p>The <code>flags</code> argument is provided to allow for future extensions to the interface; in the current implementation it must be specified as 0.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='sched_setattr'>sched_setattr</a>() and <a href='sched_getattr'>sched_getattr</a>() return 0. On error, -1 is returned, and <code>errno</code> is set to indicate the cause of the error.</p>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<p><a href='sched_getattr'>sched_getattr</a>() and <a href='sched_setattr'>sched_setattr</a>() can both fail for the following reasons:</p>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>attr</code> is NULL; or <code>pid</code> is negative; or <code>flags</code> is not zero.</p>
+</dd>
+<dt><strong>ESRCH</strong></dt>
+<dd><p>The thread whose ID is <code>pid</code> could not be found.</p>
+</dd>
+</dl>
+<p>In addition, <a href='sched_getattr'>sched_getattr</a>() can fail for the following reasons:</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>The buffer specified by <code>size</code> and <code>attr</code> is too small.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>size</code> is invalid; that is, it is smaller than the initial version of the <code>sched_attr</code> structure (48 bytes) or larger than the system page size.</p>
+</dd>
+</dl>
+<p>In addition, <a href='sched_setattr'>sched_setattr</a>() can fail for the following reasons:</p>
+<dl>
+<dt><strong>E2BIG</strong></dt>
+<dd><p>The buffer specified by <code>size</code> and <code>attr</code> is larger than the kernel structure, and one or more of the excess bytes is nonzero.</p>
+</dd>
+<dt><strong>EBUSY</strong></dt>
+<dd><p><strong>SCHED_DEADLINE</strong> admission control failure, see <a href='/7/sched'>sched</a>(7).</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>attr.sched_policy</code> is not one of the recognized policies; <code>attr.sched_flags</code> contains a flag other than <strong>SCHED_FLAG_RESET_ON_FORK</strong>; or <code>attr.sched_priority</code> is invalid; or <code>attr.sched_policy</code> is <strong>SCHED_DEADLINE</strong> and the deadline scheduling parameters in <code>attr</code> are invalid.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The caller does not have appropriate privileges.</p>
+</dd>
+<dt><strong>EPERM</strong></dt>
+<dd><p>The CPU affinity mask of the thread specified by <code>pid</code> does not include all CPUs in the system (see <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2)).</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>These system calls first appeared in Linux 3.14.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>These system calls are nonstandard Linux extensions.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p><a href='sched_setattr'>sched_setattr</a>() provides a superset of the functionality of <a href='/2/sched_setscheduler'>sched_setscheduler</a>(2), <a href='/2/sched_setparam'>sched_setparam</a>(2), <a href='/2/nice'>nice</a>(2), and (other than the ability to set the priority of all processes belonging to a specified user or all processes in a specified group) <a href='/2/setpriority'>setpriority</a>(2). Analogously, <a href='sched_getattr'>sched_getattr</a>() provides a superset of the functionality of <a href='/2/sched_getscheduler'>sched_getscheduler</a>(2), <a href='/2/sched_getparam'>sched_getparam</a>(2), and (partially) <a href='/2/getpriority'>getpriority</a>(2).</p>
+</div></div></div><h1 id='bugs'><a href='#bugs'>BUGS</a></h1><div data-for='bugs' data-hide><div class='section' data-for='bugs'><div data-more>
+<p>In Linux versions up to 3.15, <a href='sched_setattr'>sched_setattr</a>() failed with the error <strong>EFAULT</strong> instead of <strong>E2BIG</strong> for the case described in ERRORS.</p>
+<p>In Linux versions up to 5.3, <a href='sched_getattr'>sched_getattr</a>() failed with the error <strong>EFBIG</strong> if the in-kernel <code>sched_attr</code> structure was larger than the <code>size</code> passed by user space.</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/chrt'>chrt</a>(1), <a href='/2/nice'>nice</a>(2), <a href='/2/sched_get_priority_max'>sched_get_priority_max</a>(2), <a href='/2/sched_get_priority_min'>sched_get_priority_min</a>(2), <a href='/2/sched_getaffinity'>sched_getaffinity</a>(2), <a href='/2/sched_getparam'>sched_getparam</a>(2), <a href='/2/sched_getscheduler'>sched_getscheduler</a>(2), <a href='/2/sched_rr_get_interval'>sched_rr_get_interval</a>(2), <a href='/2/sched_setaffinity'>sched_setaffinity</a>(2), <a href='/2/sched_setparam'>sched_setparam</a>(2), <a href='/2/sched_setscheduler'>sched_setscheduler</a>(2), <a href='/2/sched_yield'>sched_yield</a>(2), <a href='/2/setpriority'>setpriority</a>(2), <a href='/3/pthread_getschedparam'>pthread_getschedparam</a>(3), <a href='/3/pthread_setschedparam'>pthread_setschedparam</a>(3), <a href='/3/pthread_setschedprio'>pthread_setschedprio</a>(3), <a href='/7/capabilities'>capabilities</a>(7), <a href='/7/cpuset'>cpuset</a>(7), <a href='/7/sched'>sched</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" rel="stylesheet">
+        <script crossorigin="anonymous" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- https://jquery.com/ -->
+        <script crossorigin="anonymous" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Ensure all elements are styled the same
+        $('pre').addClass('p-3');
+        $('table').addClass('table');
+
+        // Add toggles
+        $('div.section').each(function(index, element) {
+
+            // Prepare switch
+            const $section = $(element);
+            const id = 'switch-' + $section.attr('data-for');
+            const $switch = $(
+                '<div class="form-check form-switch mb-4">' +
+                '<input id="' + id + '" class="form-check-input" type="checkbox">' +
+                '<label class="form-check-label" for="' + id + '">less comfortable</label>' +
+                '</div>'
+            );
+
+            // Find comfort levels
+            const $less = $section.find('[data-less]');
+            const $more = $section.find('[data-more]');
+
+            // If a less-comfortable section exists, check it by default
+            if ($less.length) {
+                $switch.find('input').prop('checked', true);
+            }
+
+            // If only one comfort level exists, disable switch
+            if (!$less.length || !$more.length) {
+                $switch.find('input').prop('disabled', true);
+            }
+
+            // Listen for changes
+            $switch.find('input').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $less.removeClass('d-none');
+                    $more.addClass('d-none');
+                }
+                else {
+                    $less.addClass('d-none');
+                    $more.removeClass('d-none');
+                }
+            }).trigger('change');
+
+            // Add switch to DOM section has less-comfy level
+            if ($section.find('[data-less]').length) {
+                $section.prepend($switch);
+            }
+        });
+
+        // Hide sections
+        $('[data-hide]').each(function(index, element) {
+            const $button = $('<button class="btn btn-outline-primary btn-sm" type="button">Show</button>');
+            const id = $(element).attr('data-for');
+            $(element).before($button);
+            $button.on('click', function() {
+                $(element).show();
+                $(this).remove();
+            });
+            if (id) {
+                $button.attr('data-for', id);
+                $('#' + id).children('a').on('click', function() {
+                    $button.trigger('click');
+                });
+            }
+            $(element).hide();
+        });
+
+        // Show section if in hash
+        $(window).on('hashchange', function() {
+            const id = window.location.hash.slice(1);
+            if (id) {
+                $('button[data-for="' + id + '"]').trigger('click');
+            }
+        });
+        $(window).trigger('hashchange');
+    });
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Match dl and p */
+    button {
+        margin-bottom: 1rem;
+    }
+
+    /* Ensure syntax-highlighted code scrolls on iOS, https://stackoverflow.com/a/49592093 */
+    pre code {
+        white-space: pre;
+        word-wrap: normal;
+    }
+    pre code span {
+        white-space: nowrap;
+    }
+
+    
+
+        </style>
+
+        <title>CS50 Manual Pages</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>CS50 Manual Pages</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <h1 id='name'><a href='#name'>NAME</a></h1><div class='section' data-for='name'><div data-more>
+<p>newlocale, freelocale - create, modify, and free a locale object</p>
+</div></div><h1 id='synopsis'><a href='#synopsis'>SYNOPSIS</a></h1><div class='section' data-for='synopsis'><div data-more>
+<pre><code><a data-bs-content='Be sure this line is atop your own code.' data-bs-toggle='popover' tabindex='0'>#include &lt;locale.h&gt;</a>
+
+locale_t newlocale(int category_mask, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>const char *</a>locale,
+ locale_t base);
+
+void freelocale(locale_t locobj);</code></pre>
+<blockquote>
+<p>Feature Test Macro Requirements for glibc (see <a href='/7/feature_test_macros'>feature_test_macros</a>(7)):</p>
+</blockquote><div data-hide>
+<p><a href='newlocale'>newlocale</a>(), <a href='freelocale'>freelocale</a>():</p>
+<blockquote>
+<dl>
+<dt>Since glibc 2.10:</dt>
+<dd><p>_XOPEN_SOURCE &gt;= 700</p>
+</dd>
+<dt>Before glibc 2.10:</dt>
+<dd><p>_GNU_SOURCE</p>
+</dd>
+</dl>
+</blockquote>
+</div></div></div><h1 id='description'><a href='#description'>DESCRIPTION</a></h1><div class='section' data-for='description'><div data-more>
+<p>The <a href='newlocale'>newlocale</a>() function creates a new locale object, or modifies an existing object, returning a reference to the new or modified object as the function result. Whether the call creates a new object or modifies an existing object is determined by the value of <code>base</code>:</p>
+<ul>
+<li><p>If <code>base</code> is <code>(locale_t) 0</code>, a new object is created.</p></li>
+<li><p>If <code>base</code> refers to valid existing locale object (i.e., an object returned by a previous call to <a href='newlocale'>newlocale</a>() or <a href='/3/duplocale'>duplocale</a>(3)), then that object is modified by the call. If the call is successful, the contents of <code>base</code> are unspecified (in particular, the object referred to by <code>base</code> may be freed, and a new object created). Therefore, the caller should ensure that it stops using <code>base</code> before the call to <a href='newlocale'>newlocale</a>(), and should subsequently refer to the modified object via the reference returned as the function result. If the call fails, the contents of <code>base</code> remain valid and unchanged.</p></li>
+</ul>
+<p>If <code>base</code> is the special locale object <strong>LC_GLOBAL_LOCALE</strong> (see <a href='/3/duplocale'>duplocale</a>(3)), or is not <code>(locale_t) 0</code> and is not a valid locale object handle, the behavior is undefined.</p>
+<p>The <code>category_mask</code> argument is a bit mask that specifies the locale categories that are to be set in a newly created locale object or modified in an existing object. The mask is constructed by a bitwise OR of the constants <strong>LC_ADDRESS_MASK</strong>, <strong>LC_CTYPE_MASK</strong>, <strong>LC_COLLATE_MASK</strong>, <strong>LC_IDENTIFICATION_MASK</strong>, <strong>LC_MEASUREMENT_MASK</strong>, <strong>LC_MESSAGES_MASK</strong>, <strong>LC_MONETARY_MASK</strong>, <strong>LC_NUMERIC_MASK</strong>, <strong>LC_NAME_MASK</strong>, <strong>LC_PAPER_MASK</strong>, <strong>LC_TELEPHONE_MASK</strong>, and <strong>LC_TIME_MASK</strong>. Alternatively, the mask can be specified as <strong>LC_ALL_MASK</strong>, which is equivalent to ORing all of the preceding constants.</p>
+<p>For each category specified in <code>category_mask</code>, the locale data from <code>locale</code> will be used in the object returned by <a href='newlocale'>newlocale</a>(). If a new locale object is being created, data for all categories not specified in <code>category_mask</code> is taken from the default ("POSIX") locale.</p>
+<p>The following preset values of <code>locale</code> are defined for all categories that can be specified in <code>category_mask</code>:</p>
+<dl>
+<dt>"POSIX"</dt>
+<dd><p>A minimal locale environment for C language programs.</p>
+</dd>
+<dt>"C"</dt>
+<dd><p>Equivalent to "POSIX".</p>
+</dd>
+<dt>""</dt>
+<dd><p>An implementation-defined native environment corresponding to the values of the <strong>LC_*</strong> and <strong>LANG</strong> environment variables (see <a href='/7/locale'>locale</a>(7)).</p>
+</dd>
+</dl>
+<h2>freelocale()</h2>
+<p>The <a href='freelocale'>freelocale</a>() function deallocates the resources associated with <code>locobj</code>, a locale object previously returned by a call to <a href='newlocale'>newlocale</a>() or <a href='/3/duplocale'>duplocale</a>(3). If <code>locobj</code> is <strong>LC_GLOBAL_LOCALE</strong> or is not valid locale object handle, the results are undefined.</p>
+<p>Once a locale object has been freed, the program should make no further use of it.</p>
+</div></div><h1 id='return-value'><a href='#return-value'>RETURN VALUE</a></h1><div class='section' data-for='return-value'><div data-more>
+<p>On success, <a href='newlocale'>newlocale</a>() returns a handle that can be used in calls to <a href='/3/duplocale'>duplocale</a>(3), <a href='freelocale'>freelocale</a>(), and other functions that take a <code>locale_t</code> argument. On error, <a href='newlocale'>newlocale</a>() returns <code>(locale_t) 0</code>, and sets <code>errno</code> to indicate the cause of the error.</p>
+</div></div><h1 id='examples'><a href='#examples'>EXAMPLES</a></h1><div class='section' data-for='examples'><div data-more>
+<p>The program below takes up to two command-line arguments, which each identify locales. The first argument is required, and is used to set the <strong>LC_NUMERIC</strong> category in a locale object created using <a href='newlocale'>newlocale</a>(). The second command-line argument is optional; if it is present, it is used to set the <strong>LC_TIME</strong> category of the locale object.</p>
+<p>Having created and initialized the locale object, the program then applies it using <a href='/3/uselocale'>uselocale</a>(3), and then tests the effect of the locale changes by:</p>
+<ol type="1">
+<li><p>Displaying a floating-point number with a fractional part. This output will be affected by the <strong>LC_NUMERIC</strong> setting. In many European-language locales, the fractional part of the number is separated from the integer part using a comma, rather than a period.</p></li>
+<li><p>Displaying the date. The format and language of the output will be affected by the <strong>LC_TIME</strong> setting.</p></li>
+</ol>
+<p>The following shell sessions show some example runs of this program.</p>
+<p>Set the <strong>LC_NUMERIC</strong> category to <code>fr_FR</code> (French):</p>
+<pre><code>$ ./a.out fr_FR
+123456,789
+Fri Mar  7 00:25:08 2014</code></pre>
+<p>Set the <strong>LC_NUMERIC</strong> category to <code>fr_FR</code> (French), and the <strong>LC_TIME</strong> category to <code>it_IT</code> (Italian):</p>
+<pre><code>$ ./a.out fr_FR it_IT
+123456,789
+ven 07 mar 2014 00:26:01 CET</code></pre>
+<p>Specify the <strong>LC_TIME</strong> setting as an empty string, which causes the value to be taken from environment variable settings (which, here, specify <code>mi_NZ</code>, New Zealand Māori):</p>
+<pre><code>$ LC_ALL=mi_NZ ./a.out fr_FR ""
+123456,789
+Te Paraire, te 07 o Poutū-te-rangi, 2014 00:38:44 CET</code></pre>
+<h2>Program source</h2>
+<pre><code>#define _XOPEN_SOURCE 700
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;locale.h&gt;
+#include &lt;time.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, <a data-bs-content='Think of this as a &lt;code&gt;string&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>char *</a>argv[])
+{
+    char buf[100];
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>time_t</a> t;
+    <a data-bs-content='Think of this as a &lt;code&gt;long&lt;/code&gt;.' data-bs-toggle='popover' tabindex='0'>size_t</a> s;
+    struct tm *tm;
+    locale_t loc, nloc;
+
+    if (argc &lt; 2) {
+        fprintf(stderr, "Usage: %s locale1 [locale2]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Create a new locale object, taking the LC_NUMERIC settings
+       from the locale specified in argv[1] */
+
+    loc = newlocale(LC_NUMERIC_MASK, argv[1], (locale_t) 0);
+    if (loc == (locale_t) 0)
+        errExit("newlocale");
+
+    /* If a second command-line argument was specified, modify the
+       locale object to take the LC_TIME settings from the locale
+       specified in argv[2]. We assign the result of this newlocale()
+       call to 'nloc' rather than 'loc', since in some cases, we might
+       want to preserve 'loc' if this call fails. */
+
+    if (argc &gt; 2) {
+        nloc = newlocale(LC_TIME_MASK, argv[2], loc);
+        if (nloc == (locale_t) 0)
+            errExit("newlocale");
+        loc = nloc;
+    }
+
+    /* Apply the newly created locale to this thread */
+
+    uselocale(loc);
+
+    /* Test effect of LC_NUMERIC */
+
+    printf("%8.3f\n", 123456.789);
+
+    /* Test effect of LC_TIME */
+
+    t = time(NULL);
+    tm = localtime(&amp;t);
+    if (tm == NULL)
+        errExit("time");
+
+    s = strftime(buf, sizeof(buf), "%c", tm);
+    if (s == 0)
+        errExit("strftime");
+
+    printf("%s\n", buf);
+
+    /* Free the locale object */
+
+    uselocale(LC_GLOBAL_HANDLE);    /* So 'loc' is no longer in use */
+    freelocale(loc);
+
+    exit(EXIT_SUCCESS);
+}</code></pre>
+</div></div><h1 id='errors'><a href='#errors'>ERRORS</a></h1><div data-for='errors' data-hide><div class='section' data-for='errors'><div data-more>
+<dl>
+<dt><strong>EINVAL</strong></dt>
+<dd><p>One or more bits in <code>category_mask</code> do not correspond to a valid locale category.</p>
+</dd>
+<dt><strong>EINVAL</strong></dt>
+<dd><p><code>locale</code> is NULL.</p>
+</dd>
+<dt><strong>ENOENT</strong></dt>
+<dd><p><code>locale</code> is not a string pointer referring to a valid locale.</p>
+</dd>
+<dt><strong>ENOMEM</strong></dt>
+<dd><p>Insufficient memory to create a locale object.</p>
+</dd>
+</dl>
+</div></div></div><h1 id='versions'><a href='#versions'>VERSIONS</a></h1><div data-for='versions' data-hide><div class='section' data-for='versions'><div data-more>
+<p>The <a href='newlocale'>newlocale</a>() and <a href='freelocale'>freelocale</a>() functions first appeared in version 2.3 of the GNU C library.</p>
+</div></div></div><h1 id='conforming-to'><a href='#conforming-to'>CONFORMING TO</a></h1><div data-for='conforming-to' data-hide><div class='section' data-for='conforming-to'><div data-more>
+<p>POSIX.1-2008.</p>
+</div></div></div><h1 id='notes'><a href='#notes'>NOTES</a></h1><div data-for='notes' data-hide><div class='section' data-for='notes'><div data-more>
+<p>Each locale object created by <a href='newlocale'>newlocale</a>() should be deallocated using <a href='freelocale'>freelocale</a>().</p>
+</div></div></div><h1 id='see-also'><a href='#see-also'>SEE ALSO</a></h1><div class='section' data-for='see-also'><div data-more>
+<p><a href='/1/locale'>locale</a>(1), <a href='/3/duplocale'>duplocale</a>(3), <a href='/3/setlocale'>setlocale</a>(3), <a href='/3/uselocale'>uselocale</a>(3), <a href='/5/locale'>locale</a>(5), <a href='/7/locale'>locale</a>(7)</p>
+</div></div><h1 id='colophon'><a href='#colophon'>COLOPHON</a></h1><div data-for='colophon' data-hide><div class='section' data-for='colophon'><div data-more>
+<p>This page is part of release 5.10 of the Linux <code>man-pages</code> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at <a href="https://www.kernel.org/doc/man-pages/">https://www.kernel.org/doc/man-pages/</a>.</p></div></div></div>
+
+
+        </div>
+
+    </body>
+
+</html>
